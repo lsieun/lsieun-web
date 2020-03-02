@@ -14,9 +14,9 @@
   - [x] font进行缓存（3年）
 - [x] 压缩Response的内容，使用算法：gzip, deflate
 - [x] 整理日志，打印request和response的Header内容
-- [ ] Etag: "5dc3a743-0"
+- [x] Connection可以为keep-alive
+- [x] Etag: "5dc3a743-0"
 - [ ] Last-Modified: Thu, 07 Nov 2019 05:10:27 GMT
-- [ ] Connection可以为keep-alive
 - [ ] HTML拼接
 - [ ] 缓存2：用If-Modified-Since
 

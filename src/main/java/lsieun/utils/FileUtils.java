@@ -46,23 +46,13 @@ public class FileUtils {
         }
     }
 
-    public static void writeHtml(final String html, final String basic_name) throws IOException {
+    public static void writeHtml(final String html, final String filepath) throws IOException {
         byte[] bytes = html.getBytes(StandardCharsets.UTF_8);
-        String filepath = getTmpFilePath(basic_name);
         writeFile(bytes, filepath);
     }
 
-    public static String readHtml(final String basic_name) throws IOException {
-        String filepath = getTmpFilePath(basic_name);
+    public static String readHtml(final String filepath) throws IOException {
         byte[] bytes = readFile(filepath);
         return ByteUtils.toStr(bytes);
     }
-
-    public static String getTmpFilePath(final String filename) {
-        String user_dir = System.getProperty("user.dir");
-        String filepath = String.format("%s/target/tmp/%s", user_dir, filename);
-        return filepath;
-    }
-
-
 }
