@@ -126,7 +126,8 @@ public class FileHandler {
                 uri_path.startsWith("/css") ||
                 uri_path.startsWith("/images") ||
                 uri_path.startsWith("/font") ||
-                uri_path.startsWith("/js")
+                uri_path.startsWith("/js") ||
+                uri_path.startsWith("/videos")
         ) {
             return ROOT_PATH + "static" + uri_path;
         } else {
