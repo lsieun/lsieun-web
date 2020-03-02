@@ -6,11 +6,11 @@ import lsieun.net.http.bean.KeyValuePair;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
+
+import static lsieun.utils.LogUtils.audit;
 
 public class HttpResponse extends Response {
     public final String status_line;
@@ -21,19 +21,22 @@ public class HttpResponse extends Response {
         this.status_line = status_line;
         this.headers = headers;
         this.payload = payload;
+
+        audit.fine(() -> {
+            StringBuilder sb = new StringBuilder();
+            Formatter fm = new Formatter(sb);
+            fm.format("%n%s%n", status_line);
+            for (KeyValuePair item : headers) {
+                fm.format("%s: %s%n", item.key, item.value);
+            }
+            return sb.toString();
+        });
     }
 
     public byte[] toBytes() {
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
         try {
             write(bao, status_line + "\r\n");
-            if (payload != null) {
-                headers.add(new KeyValuePair("Content-Length", String.valueOf(payload.length)));
-            }
-            else {
-                headers.add(new KeyValuePair("Content-Length", "0"));
-            }
-
             for (KeyValuePair item : headers) {
                 String line = String.format("%s: %s\r\n", item.key, item.value);
                 write(bao, line);
@@ -51,7 +54,5 @@ public class HttpResponse extends Response {
     public static void write(OutputStream out, String str) throws IOException {
         out.write(str.getBytes(StandardCharsets.US_ASCII));
     }
-
-
 
 }

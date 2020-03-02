@@ -4,6 +4,7 @@ import lsieun.net.http.bean.HttpRawBean;
 import lsieun.net.http.bean.KeyValuePair;
 import lsieun.net.http.bean.Range;
 import lsieun.net.http.bean.RequestLine;
+import lsieun.net.http.utils.HttpHeaderUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class HttpByteParser {
             return new HttpRequest(request_line, headers, null, header_range.to);
         }
 
-        int contentLength = getContentLength(headers);
+        int contentLength = HttpHeaderUtils.getContentLength(headers);
         Range payloadRange = getPayloadRange(bytes, header_range.to, contentLength);
         if (payloadRange == null) return null;
 
@@ -86,8 +87,8 @@ public class HttpByteParser {
         String path = first_line_array[1];
         String version = first_line_array[2];
 
-        RequestLine requestLine = new RequestLine(method, path, version);
-        return requestLine;
+        RequestLine request_line = new RequestLine(method, path, version);
+        return request_line;
     }
 
     public static List<KeyValuePair> getHeaders(final byte[] bytes) {
@@ -109,13 +110,6 @@ public class HttpByteParser {
         return headers;
     }
 
-    public static int getContentLength(List<KeyValuePair> headers) {
-        for (KeyValuePair item : headers) {
-            if ("Content-Length".equalsIgnoreCase(item.key)) {
-                return Integer.parseInt(item.value);
-            }
-        }
-        return 0;
-    }
+
 
 }

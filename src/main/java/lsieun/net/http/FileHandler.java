@@ -63,14 +63,23 @@ public class FileHandler {
                 // status line
                 status_line = String.format("%s 404 Not Found", http_version);
 
-                // headers
-                headers.add(new KeyValuePair("Content-Type", "text/html"));
-                Date expireDate = DateUtils.addMinutes(now, 5);
-                HttpHeaderUtils.fillExpireHeaders(headers, now, expireDate);
+                if (contentType.startsWith("image/")) {
+                    headers.add(new KeyValuePair("Content-Type", "image/png"));
+                    String not_found_resource = get404ImagePath();
+                    file_bytes = FileUtils.readFile(not_found_resource);
+                }
+                else {
+                    headers.add(new KeyValuePair("Content-Type", "text/html"));
+                    String not_found_resource = get404FilePath();
+                    file_bytes = FileUtils.readFile(not_found_resource);
+                }
 
-                String not_found_resource = get404FilePath();
-                file_bytes = FileUtils.readFile(not_found_resource);
+                Date expireDate = DateUtils.addDays(now, 7);
+                HttpHeaderUtils.fillExpireHeaders(headers, now, expireDate);
             }
+
+            String connection = HttpHeaderUtils.getConnection(requestHeaders);
+            headers.add(new KeyValuePair("Connection", connection));
 
             byte[] payload_bytes = null;
             if (HttpHeaderUtils.containGZIP(requestHeaders)) {
@@ -81,6 +90,13 @@ public class FileHandler {
                 payload_bytes = CompressUtils.deflate_compress(file_bytes);
             } else {
                 payload_bytes = file_bytes;
+            }
+
+            if (payload_bytes != null) {
+                headers.add(new KeyValuePair("Content-Length", String.valueOf(payload_bytes.length)));
+            }
+            else {
+                headers.add(new KeyValuePair("Content-Length", "0"));
             }
 
             // 构造Response
@@ -95,6 +111,10 @@ public class FileHandler {
 
     public static String get404FilePath() {
         return getRealFilePath("/docs/404.html");
+    }
+
+    public static String get404ImagePath() {
+        return getRealFilePath("/images/image_404.png");
     }
 
     public static String getRealFilePath(String uri_path) {
