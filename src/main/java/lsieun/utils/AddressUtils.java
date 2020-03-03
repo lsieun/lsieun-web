@@ -13,4 +13,13 @@ public class AddressUtils {
         }
         return "Unknown Host";
     }
+
+    public static String getHost(SocketChannel socketChannel) {
+        SocketAddress socketAddress = socketChannel.socket().getRemoteSocketAddress();
+        if (socketAddress instanceof InetSocketAddress) {
+            InetSocketAddress addr = (InetSocketAddress) socketAddress;
+            return addr.getHostName();
+        }
+        return "Unknown_Host";
+    }
 }

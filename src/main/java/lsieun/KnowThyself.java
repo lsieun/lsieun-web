@@ -1,6 +1,7 @@
 package lsieun;
 
 import lsieun.net.http.HttpConnection;
+import lsieun.utils.BlackListUtils;
 import lsieun.utils.Const;
 import lsieun.utils.HTMLUtils;
 import lsieun.utils.PropertyUtils;
@@ -123,6 +124,11 @@ public class KnowThyself {
         // log
         audit.info(() -> String.format("Accepted connection from %s", conn.addr));
         audit.info(() -> "Total clients connected: " + dataMap.size());
+
+        if (BlackListUtils.isBlack(conn.host)) {
+            audit.warning(() -> "Black Host Found: " + conn.host);
+            doClose(socketChannel, "blacklist");
+        }
     }
 
 

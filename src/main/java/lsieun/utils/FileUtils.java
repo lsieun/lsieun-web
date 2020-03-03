@@ -2,6 +2,9 @@ package lsieun.utils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 import static lsieun.utils.LogUtils.*;
 
@@ -54,6 +57,38 @@ public class FileUtils {
     public static String readHtml(final String filepath) throws IOException {
         byte[] bytes = readFile(filepath);
         return ByteUtils.toStr(bytes);
+    }
+
+    public static List<String> readLines(final String filepath) {
+        List<String> lines = new ArrayList<>();
+        try (
+                FileInputStream fin = new FileInputStream(filepath);
+                InputStreamReader reader = new InputStreamReader(fin, StandardCharsets.UTF_8);
+                BufferedReader br = new BufferedReader(reader);
+        ) {
+            for (String line = br.readLine(); line != null; line = br.readLine()) {
+                lines.add(line);
+            }
+        } catch (IOException ex) {
+            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
+        }
+        return lines;
+    }
+
+    public static void writeLines(final List<String> lines, final String filepath) {
+        try (
+                FileOutputStream fout = new FileOutputStream(filepath);
+                OutputStreamWriter writer = new OutputStreamWriter(fout, StandardCharsets.UTF_8);
+                BufferedWriter bw = new BufferedWriter(writer);
+        ) {
+            for (String line : lines) {
+                bw.write(line);
+                bw.newLine();
+            }
+
+        } catch (IOException ex) {
+            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
+        }
     }
 
     public static void negate(String from_path, String to_path) {

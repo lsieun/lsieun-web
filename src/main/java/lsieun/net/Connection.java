@@ -15,6 +15,7 @@ public abstract class Connection {
     public final SocketChannel socketChannel;
     public final SelectionKey selectionKey;
     public final String addr;
+    public final String host;
 
     public final long initial_time;
     private long last_read_time;
@@ -24,6 +25,7 @@ public abstract class Connection {
         this.socketChannel = socketChannel;
         this.selectionKey = selectionKey;
         this.addr = AddressUtils.getAddress(socketChannel);
+        this.host = AddressUtils.getHost(socketChannel);
         this.initial_time = System.currentTimeMillis();
         this.last_read_time = initial_time;
         this.last_write_time = initial_time;

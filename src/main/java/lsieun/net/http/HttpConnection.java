@@ -3,6 +3,7 @@ package lsieun.net.http;
 import lsieun.net.Connection;
 import lsieun.net.http.bean.HttpRequest;
 import lsieun.net.http.bean.HttpResponse;
+import lsieun.utils.BlackListUtils;
 import lsieun.utils.PropertyUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -22,8 +23,6 @@ public class HttpConnection extends Connection {
     private ByteBuffer current_out_data;
     private HttpRequest current_request;
     private HttpResponse current_response;
-
-
 
 
     public HttpConnection(SocketChannel socketChannel, SelectionKey selectionKey) {
@@ -52,8 +51,14 @@ public class HttpConnection extends Connection {
             }
             current_response = HttpHandler.getResponse(current_request);
 
-            audit.info(() -> current_request.request_line.toString());
-            audit.info(() -> current_response.status_line);
+            if (current_response != null) {
+                if (current_response.status_line.contains("404")) {
+                    BlackListUtils.add(host);
+                }
+            }
+
+            audit.info(() -> String.format("%s from %s", current_request.request_line.toString(), addr));
+            audit.info(() -> String.format("%s to %s", current_response.status_line, addr));
         }
     }
 
