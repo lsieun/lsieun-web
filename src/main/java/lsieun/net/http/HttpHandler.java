@@ -1,6 +1,8 @@
 package lsieun.net.http;
 
 import lsieun.net.Handler;
+import lsieun.net.http.bean.HttpRequest;
+import lsieun.net.http.bean.HttpResponse;
 import lsieun.utils.Const;
 
 import java.net.MalformedURLException;
@@ -16,7 +18,7 @@ public class HttpHandler extends Handler {
     }
 
     public static HttpResponse getResponse(HttpRequest request) {
-        return FileHandler.handle(request);
+        return HttpRouter.doWork(request);
     }
 
     public static String getURIPath(HttpRequest request) {

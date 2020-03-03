@@ -55,4 +55,20 @@ public class FileUtils {
         byte[] bytes = readFile(filepath);
         return ByteUtils.toStr(bytes);
     }
+
+    public static void negate(String from_path, String to_path) {
+        try (
+                FileInputStream fin = new FileInputStream(from_path);
+                BufferedInputStream in = new BufferedInputStream(fin);
+                FileOutputStream fout = new FileOutputStream(to_path);
+                BufferedOutputStream out = new BufferedOutputStream(fout);
+        ) {
+            for (int b = in.read(); b != -1; b = in.read()) {
+                int value = (~b) & 0xFF;
+                out.write(value);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 }

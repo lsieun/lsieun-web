@@ -9,10 +9,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -46,8 +43,8 @@ public class KnowThyself {
         }
 
         while (true) {
-            checkTimeout();
-            audit.info(() -> "Total clients connected: " + dataMap.size());
+            checkTimeout(null);
+
             try {
                 selector.select();
             } catch (IOException ex) {
@@ -56,6 +53,8 @@ public class KnowThyself {
             }
 
             Set<SelectionKey> readyKeys = selector.selectedKeys();
+            checkTimeout(readyKeys);
+
             Iterator<SelectionKey> it = readyKeys.iterator();
             while (it.hasNext()) {
                 SelectionKey key = it.next();
@@ -79,12 +78,25 @@ public class KnowThyself {
         }
     }
 
-    private static void checkTimeout() {
+    private static void checkTimeout(Set<SelectionKey> readyKeys) {
+        Set<SocketChannel> readySocketChannels = new HashSet<>();
+        if (readyKeys != null) {
+            for (SelectionKey key : readyKeys) {
+                SelectableChannel channel = key.channel();
+                if (channel instanceof SocketChannel) {
+                    readySocketChannels.add((SocketChannel) channel);
+                }
+            }
+        }
+
         Iterator<Map.Entry<SocketChannel, HttpConnection>> dataIt = dataMap.entrySet().iterator();
         List<SocketChannel> timeout_list = new ArrayList<>();
         while (dataIt.hasNext()) {
             Map.Entry<SocketChannel, HttpConnection> entry = dataIt.next();
             SocketChannel sc = entry.getKey();
+
+            if (readySocketChannels.contains(sc)) continue;
+
             HttpConnection conn = entry.getValue();
             if (conn.isTimeOut()) {
                 timeout_list.add(sc);
@@ -109,7 +121,8 @@ public class KnowThyself {
         dataMap.put(socketChannel, conn);
 
         // log
-        audit.info(() -> String.format("Accepted connection from %s, total clients = %s", conn.addr, dataMap.size()));
+        audit.info(() -> String.format("Accepted connection from %s", conn.addr));
+        audit.info(() -> "Total clients connected: " + dataMap.size());
     }
 
 
@@ -124,7 +137,7 @@ public class KnowThyself {
         int read = socketChannel.read(byteBuffer);
         if (read > 0) {
             byteBuffer.flip(); // put buffer in read mode by setting pos=0 and lim=numberOfBytes
-            conn.read(byteBuffer);
+            conn.data(byteBuffer);
             conn.updateReadTime();
 
             // 第3步，只有在新数据读入的情况下，才切换状态（interest）
@@ -132,7 +145,7 @@ public class KnowThyself {
         }
 
         // 第4步，记录日志
-        audit.info(() -> String.format("Read %s bytes from %s", read, conn.addr));
+        audit.fine(() -> String.format("Read %s bytes from %s", read, conn.addr));
 
         // 第5步，如果客户端关闭了连接，服务端也进行关闭
         if (read == -1) { // if connection is closed by the client
@@ -167,7 +180,7 @@ public class KnowThyself {
 //
 //        // 第3步，切换状态（interest）
 //        selectionKey.interestOps(SelectionKey.OP_READ); // change the key to READ
-        ByteBuffer buff = conn.getResponse();
+        ByteBuffer buff = conn.data();
         if (buff != null && buff.hasRemaining()) {
             response_length = socketChannel.write(buff);
         }else {
@@ -177,7 +190,7 @@ public class KnowThyself {
         conn.updateWriteTime();
 
         // 第4步，记录日志
-        audit.info(() -> String.format("Write %s bytes to %s", response_length, conn.addr));
+        audit.fine(() -> String.format("Write %s bytes to %s", response_length, conn.addr));
     }
 
     private static void doClose(SocketChannel socketChannel, String reason) {

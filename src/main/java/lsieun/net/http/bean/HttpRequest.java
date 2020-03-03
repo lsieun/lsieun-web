@@ -1,4 +1,4 @@
-package lsieun.net.http;
+package lsieun.net.http.bean;
 
 import lsieun.net.Request;
 import lsieun.net.http.bean.KeyValuePair;

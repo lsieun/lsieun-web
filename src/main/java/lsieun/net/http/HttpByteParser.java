@@ -1,9 +1,6 @@
 package lsieun.net.http;
 
-import lsieun.net.http.bean.HttpRawBean;
-import lsieun.net.http.bean.KeyValuePair;
-import lsieun.net.http.bean.Range;
-import lsieun.net.http.bean.RequestLine;
+import lsieun.net.http.bean.*;
 import lsieun.net.http.utils.HttpHeaderUtils;
 
 import java.nio.charset.StandardCharsets;
