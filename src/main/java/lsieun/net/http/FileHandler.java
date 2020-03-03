@@ -14,6 +14,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 
 import static lsieun.utils.LogUtils.err;
 
@@ -104,7 +105,7 @@ public class FileHandler {
             return response;
 
         } catch (IOException ex) {
-            LogUtils.err.severe(() -> "unexpected error: " + ex);
+            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
         }
         return null;
     }

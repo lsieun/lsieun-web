@@ -20,7 +20,7 @@ public class PropertyUtils {
         try {
             props.load(new FileInputStream(configPath));
         } catch (IOException ex) {
-            err.severe(() -> "unexpected error: " + ex);
+            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
             System.exit(1);
         }
     }

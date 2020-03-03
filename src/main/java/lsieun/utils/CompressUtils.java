@@ -2,6 +2,7 @@ package lsieun.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -19,7 +20,7 @@ public class CompressUtils {
             out.close();
             return bao.toByteArray();
         } catch (IOException ex) {
-            err.severe("unexpected error: " + ex);
+            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
         }
         return null;
     }
@@ -35,7 +36,7 @@ public class CompressUtils {
             out.close();
             return bao.toByteArray();
         } catch (IOException ex) {
-            err.severe("unexpected error: " + ex);
+            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
         }
         return null;
     }

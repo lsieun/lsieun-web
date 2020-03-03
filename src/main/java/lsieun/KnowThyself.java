@@ -1,8 +1,8 @@
 package lsieun;
 
 import lsieun.net.http.HttpConnection;
-import lsieun.utils.AddressUtils;
 import lsieun.utils.Const;
+import lsieun.utils.HTMLUtils;
 import lsieun.utils.PropertyUtils;
 
 import java.io.IOException;
@@ -14,6 +14,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.*;
+import java.util.logging.Level;
 
 import static lsieun.utils.LogUtils.audit;
 import static lsieun.utils.LogUtils.err;
@@ -23,6 +24,8 @@ public class KnowThyself {
     private static Map<SocketChannel, HttpConnection> dataMap = new HashMap<>();
 
     public static void main(String[] args) {
+        HTMLUtils.generateStaticHTML();
+
         int port = PropertyUtils.getInt("http.port");
 
         audit.info(() -> "Listening for connections on port " + port);
@@ -37,8 +40,8 @@ public class KnowThyself {
             serverChannel.configureBlocking(false);
             selector = Selector.open();
             serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-        } catch (IOException ex) {
-            err.severe(() -> "unexpected error: " + ex);
+        } catch (Exception ex) {
+            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
             return;
         }
 
@@ -48,7 +51,7 @@ public class KnowThyself {
             try {
                 selector.select();
             } catch (IOException ex) {
-                err.severe(() -> "unexpected error: " + ex);
+                err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
                 break;
             }
 
@@ -106,8 +109,7 @@ public class KnowThyself {
         dataMap.put(socketChannel, conn);
 
         // log
-        String addr = AddressUtils.getAddress(socketChannel);
-        audit.info(() -> String.format("Accepted connection from %s, total clients = %s", addr, dataMap.size()));
+        audit.info(() -> String.format("Accepted connection from %s, total clients = %s", conn.addr, dataMap.size()));
     }
 
 
@@ -115,13 +117,13 @@ public class KnowThyself {
         // 第1步，定义变量
         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
         ByteBuffer byteBuffer = (ByteBuffer) selectionKey.attachment();
+        HttpConnection conn = dataMap.get(socketChannel);
 
         // 第2步，尝试从客户端读取数据
         byteBuffer.clear();
         int read = socketChannel.read(byteBuffer);
         if (read > 0) {
             byteBuffer.flip(); // put buffer in read mode by setting pos=0 and lim=numberOfBytes
-            HttpConnection conn = dataMap.get(socketChannel);
             conn.read(byteBuffer);
             conn.updateReadTime();
 
@@ -130,10 +132,7 @@ public class KnowThyself {
         }
 
         // 第4步，记录日志
-        audit.fine(() -> {
-            String addr = AddressUtils.getAddress(socketChannel);
-            return String.format("Read %s bytes from %s", read, addr);
-        });
+        audit.fine(() -> String.format("Read %s bytes from %s", read, conn.addr));
 
         // 第5步，如果客户端关闭了连接，服务端也进行关闭
         if (read == -1) { // if connection is closed by the client
@@ -148,32 +147,36 @@ public class KnowThyself {
         int response_length; // 用于日志
 
         // 第2步，尝试向客户端返回数据
-        byte[] response_bytes = conn.process();
-        if (response_bytes != null) {
-            response_length = response_bytes.length;
-
-            ByteBuffer buf = ByteBuffer.wrap(response_bytes);
-            while (buf.hasRemaining() && socketChannel.write(buf) != -1) {
-                audit.fine(() ->
-                        String.format("position=%s, limit=%s, capacity=%s",
-                                buf.position(),
-                                buf.limit(),
-                                buf.capacity())
-                );
-            }
-        } else {
+//        byte[] response_bytes = conn.process();
+//        if (response_bytes != null) {
+//            response_length = response_bytes.length;
+//
+//            ByteBuffer buf = ByteBuffer.wrap(response_bytes);
+//            while (buf.hasRemaining() && socketChannel.write(buf) != -1) {
+//                audit.fine(() ->
+//                        String.format("position=%s, limit=%s, capacity=%s",
+//                                buf.position(),
+//                                buf.limit(),
+//                                buf.capacity())
+//                );
+//            }
+//        } else {
+//            response_length = 0;
+//        }
+//        conn.updateWriteTime();
+//
+//        // 第3步，切换状态（interest）
+//        selectionKey.interestOps(SelectionKey.OP_READ); // change the key to READ
+        ByteBuffer buff = conn.getResponse();
+        if (buff != null && buff.hasRemaining()) {
+            response_length = socketChannel.write(buff);
+        }else {
             response_length = 0;
+            selectionKey.interestOps(SelectionKey.OP_READ); // change the key to READ
         }
-        conn.updateWriteTime();
-
-        // 第3步，切换状态（interest）
-        selectionKey.interestOps(SelectionKey.OP_READ); // change the key to READ
 
         // 第4步，记录日志
-        audit.fine(() -> {
-            String addr = AddressUtils.getAddress(socketChannel);
-            return String.format("Write %s bytes to %s", response_length, addr);
-        });
+        audit.fine(() -> String.format("Write %s bytes to %s", response_length, conn.addr));
     }
 
     private static void doClose(SocketChannel socketChannel, String reason) {
@@ -182,9 +185,6 @@ public class KnowThyself {
         conn.close();
 
         // log
-        audit.info(() -> {
-            String addr = AddressUtils.getAddress(socketChannel);
-            return String.format("Connection closed by %s: %s", reason, addr);
-        });
+        audit.info(() -> String.format("Connection closed by %s: %s", reason, conn.addr));
     }
 }

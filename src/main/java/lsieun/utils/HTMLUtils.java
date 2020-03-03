@@ -1,24 +1,16 @@
 package lsieun.utils;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HTMLUtils {
     private static final String TEMPLATE_PATH = HTMLUtils.class.getClassLoader().getResource("static/archive/template/").getPath();
-    private static final String ROOT_PATH = HTMLUtils.class.getClassLoader().getResource("static/archive/content/").getPath();
-    private static final String TARGET_PATH = HTMLUtils.class.getClassLoader().getResource("static/docs/").getPath();
-
-    public static String getHead(String title) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("");
-        sb.append("");
-        sb.append("");
-        sb.append("");
-        sb.append("");
-        sb.append("");
-        return sb.toString();
-    }
+    private static final String SRC_PATH = HTMLUtils.class.getClassLoader().getResource("static/archive/content/").getPath();
+    private static final String DEST_PATH = HTMLUtils.class.getClassLoader().getResource("static/docs/").getPath();
 
     public static String getContentHead() throws IOException {
         String filepath = TEMPLATE_PATH + "content_head.html";
@@ -50,8 +42,8 @@ public class HTMLUtils {
 
     public static void generateContentHtml(String relative_path) {
         try {
-            String from_path = ROOT_PATH + relative_path;
-            String to_path = TARGET_PATH + relative_path;
+            String from_path = SRC_PATH + relative_path;
+            String to_path = DEST_PATH + relative_path;
 
             String head = getContentHead();
             String body = getContentBody();
@@ -65,16 +57,38 @@ public class HTMLUtils {
                     .replace("__PAGE_CONTENT__", content);
 
             FileUtils.writeHtml(html, to_path);
-            System.out.println("file://" + to_path);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public static void getAllFiles(File dir, List<File> fileList) {
+        File[] files = dir.listFiles();
+        if (files == null || files.length < 1) return;
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                getAllFiles(file, fileList);
+            } else {
+                if (file.getName().endsWith(".html")) {
+                    fileList.add(file);
+                }
+            }
+        }
+    }
+
+    public static void generateStaticHTML() {
+        File dir = new File(SRC_PATH);
+        List<File> fileList = new ArrayList<>();
+        getAllFiles(dir, fileList);
+
+        for (File f : fileList) {
+            String relative_path = f.getPath().substring(SRC_PATH.length());
+            HTMLUtils.generateContentHtml(relative_path);
+        }
+    }
+
     public static void main(String[] args) throws IOException {
-        String filepath = TARGET_PATH + "life/reason_season_or_lifetime.html";
-        String content = FileUtils.readHtml(filepath);
-        String title = getTitle(content);
-        System.out.println(title);
+        generateStaticHTML();
     }
 }
