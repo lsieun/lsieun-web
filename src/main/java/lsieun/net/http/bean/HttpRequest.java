@@ -15,7 +15,7 @@ public class HttpRequest extends Request {
     public final byte[] payload;
     public final int length;
 
-    public HttpRequest(RequestLine request_line, List<KeyValuePair> headers, byte[] payload, int length) {
+    public HttpRequest(final RequestLine request_line, final List<KeyValuePair> headers, final byte[] payload, int length) {
         this.request_line = request_line;
         this.headers = headers;
         this.payload = payload;
@@ -30,5 +30,16 @@ public class HttpRequest extends Request {
             }
             return sb.toString();
         });
+    }
+
+    public String getHost() {
+        String host = "unknown host";
+        for (KeyValuePair item : headers) {
+            if ("host".equalsIgnoreCase(item.key)) {
+                host = item.value;
+                break;
+            }
+        }
+        return host;
     }
 }

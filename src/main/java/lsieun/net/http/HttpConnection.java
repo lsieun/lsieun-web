@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.Formatter;
 
 import static lsieun.utils.LogUtils.audit;
 
@@ -32,10 +33,14 @@ public class HttpConnection extends Connection {
 
     @Override
     public void data(ByteBuffer buff) {
+        StringBuilder sb = new StringBuilder();
+        Formatter fm = new Formatter(sb);
         while (buff.hasRemaining()) {
             byte b = buff.get();
             byteTank.write(b);
+            fm.format("%c", b);
         }
+        audit.info("read data: " + sb.toString());
 
         // 构建HttpRequest和HttpResponse
         byte[] bytes = byteTank.toByteArray();
@@ -62,9 +67,11 @@ public class HttpConnection extends Connection {
                                 request_line.contains("http") ||
                                 request_line.contains("sql/") ||
                                 request_line.contains("baidu") ||
+                                request_line.contains("struts2") ||
                                 request_line.contains(".php") ||
                                 request_line.contains(".aspx") ||
-                                request_line.contains(".action")
+                                request_line.contains(".action") ||
+                                current_request.getHost().contains("139.199.35.14")
                 ) {
                     BlackListUtils.addBlack(host);
                 }

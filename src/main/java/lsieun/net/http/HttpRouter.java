@@ -1,6 +1,5 @@
 package lsieun.net.http;
 
-import lsieun.net.Resource;
 import lsieun.net.http.bean.HttpRequest;
 import lsieun.net.http.bean.HttpResource;
 import lsieun.net.http.bean.HttpResponse;
@@ -9,9 +8,7 @@ import lsieun.net.http.utils.HttpHeaderUtils;
 import lsieun.utils.CompressUtils;
 import lsieun.utils.Const;
 import lsieun.utils.DateUtils;
-import lsieun.utils.FileUtils;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 

@@ -20,6 +20,10 @@
 - [ ] HTML拼接
 - [ ] 缓存2：用If-Modified-Since
 
+## HTML
+
+- [首页模板](https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_templates_blog&stacked=h)
+
 ## Utils Order
 
 - [x] LogUtils + logging.properties
