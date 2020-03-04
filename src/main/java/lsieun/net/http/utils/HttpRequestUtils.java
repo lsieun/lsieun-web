@@ -53,6 +53,7 @@ public class HttpRequestUtils {
         String request_line = request.request_line.toString().toLowerCase();
         for (String item : malicious_path_list) {
             if (request_line.contains(item)) {
+                audit.info(() -> "malicious path: " + item);
                 return true;
             }
         }
@@ -61,6 +62,7 @@ public class HttpRequestUtils {
         String host = request.header.getHost();
         for (String item : malicious_host_list) {
             if (host.contains(item)) {
+                audit.info(() -> "malicious host: " + item);
                 return true;
             }
         }
@@ -68,6 +70,7 @@ public class HttpRequestUtils {
         // Accept
         String accept = request.header.getAccept();
         if (StringUtils.isBlank(accept)) {
+            audit.info(() -> "malicious accept: " + accept);
             return true;
         }
 
@@ -76,6 +79,7 @@ public class HttpRequestUtils {
         if (StringUtils.isBlank(user_agent)) return true;
         for (String item : malicious_user_agent_list) {
             if (user_agent.contains(item)) {
+                audit.info(() -> "malicious user-agent: " + item);
                 return true;
             }
         }

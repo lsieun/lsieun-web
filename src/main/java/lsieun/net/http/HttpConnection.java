@@ -65,6 +65,7 @@ public class HttpConnection extends Connection {
                 if (
                         HttpRequestUtils.isMalicious(current_request)
                 ) {
+                    audit.info(() -> "add malicious host: " + host);
                     BlackListUtils.addBlack(host);
                 }
 
