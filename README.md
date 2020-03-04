@@ -19,6 +19,8 @@
 - [ ] Last-Modified: Thu, 07 Nov 2019 05:10:27 GMT
 - [ ] HTML拼接
 - [ ] 缓存2：用If-Modified-Since
+- [ ] 视频
+
 
 ## HTML
 

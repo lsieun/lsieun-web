@@ -3,7 +3,8 @@ package lsieun.net.http;
 import lsieun.net.Connection;
 import lsieun.net.http.bean.HttpRequest;
 import lsieun.net.http.bean.HttpResponse;
-import lsieun.utils.BlackListUtils;
+import lsieun.net.http.utils.HttpRequestUtils;
+import lsieun.net.utils.BlackListUtils;
 import lsieun.utils.PropertyUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -60,18 +61,9 @@ public class HttpConnection extends Connection {
             audit.info(() -> String.format("%s to %s", current_response.status_line, addr));
 
             if (current_request != null) {
-                String request_line = current_request.request_line.toString();
+
                 if (
-                        request_line.contains("139.199.35.14") ||
-                                request_line.contains("lsieun") ||
-                                request_line.contains("http") ||
-                                request_line.contains("sql/") ||
-                                request_line.contains("baidu") ||
-                                request_line.contains("struts2") ||
-                                request_line.contains(".php") ||
-                                request_line.contains(".aspx") ||
-                                request_line.contains(".action") ||
-                                current_request.getHost().contains("139.199.35.14")
+                        HttpRequestUtils.isMalicious(current_request)
                 ) {
                     BlackListUtils.addBlack(host);
                 }

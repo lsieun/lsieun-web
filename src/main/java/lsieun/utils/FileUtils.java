@@ -16,7 +16,7 @@ public class FileUtils {
         if (dirFile.exists()) return;
         boolean flag = dirFile.mkdirs();
         if (!flag) {
-            throw new RuntimeException("Cant not create dir: " + dirFile);
+            audit.warning("Cant not create dir: " + dirFile);
         }
     }
 
@@ -61,9 +61,15 @@ public class FileUtils {
 
     public static List<String> readLines(final String filepath) {
         List<String> lines = new ArrayList<>();
+        File file = new File(filepath);
+        if (!file.exists() || !file.isFile()) {
+            audit.warning("File Not Exist: " + filepath);
+            return lines;
+        }
+
         try (
-                FileInputStream fin = new FileInputStream(filepath);
-                InputStreamReader reader = new InputStreamReader(fin, StandardCharsets.UTF_8);
+                FileInputStream in = new FileInputStream(filepath);
+                InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8);
                 BufferedReader br = new BufferedReader(reader);
         ) {
             for (String line = br.readLine(); line != null; line = br.readLine()) {
@@ -76,9 +82,10 @@ public class FileUtils {
     }
 
     public static void writeLines(final List<String> lines, final String filepath) {
+        makeFileDir(filepath);
         try (
-                FileOutputStream fout = new FileOutputStream(filepath);
-                OutputStreamWriter writer = new OutputStreamWriter(fout, StandardCharsets.UTF_8);
+                FileOutputStream out = new FileOutputStream(filepath);
+                OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
                 BufferedWriter bw = new BufferedWriter(writer);
         ) {
             for (String line : lines) {

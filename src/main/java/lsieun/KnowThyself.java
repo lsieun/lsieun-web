@@ -1,8 +1,9 @@
 package lsieun;
 
 import lsieun.net.http.HttpConnection;
-import lsieun.utils.BlackListUtils;
+import lsieun.net.utils.BlackListUtils;
 import lsieun.utils.Const;
+import lsieun.utils.FileUtils;
 import lsieun.utils.HTMLUtils;
 import lsieun.utils.PropertyUtils;
 
@@ -18,22 +19,20 @@ import static lsieun.utils.LogUtils.audit;
 import static lsieun.utils.LogUtils.err;
 
 public class KnowThyself {
-
-    private static Map<SocketChannel, HttpConnection> dataMap = new HashMap<>();
+    private static final int HTTP_PORT = PropertyUtils.getInt("http.port");
+    private static final Map<SocketChannel, HttpConnection> dataMap = new HashMap<>();
 
     public static void main(String[] args) {
-        HTMLUtils.generateStaticHTML();
-
-        int port = PropertyUtils.getInt("http.port");
-
-        audit.info(() -> "Listening for connections on port " + port);
+        banner();
+        audit.info(() -> "Listening for connections on port " + HTTP_PORT);
+        audit.info(() -> String.format("Web Server: http://127.0.0.1:%d/", HTTP_PORT));
 
         ServerSocketChannel serverChannel;
         Selector selector;
         try {
             serverChannel = ServerSocketChannel.open();
             ServerSocket ss = serverChannel.socket();
-            InetSocketAddress address = new InetSocketAddress(port);
+            InetSocketAddress address = new InetSocketAddress(HTTP_PORT);
             ss.bind(address);
             serverChannel.configureBlocking(false);
             selector = Selector.open();
@@ -42,6 +41,8 @@ public class KnowThyself {
             err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
             return;
         }
+
+        HTMLUtils.generateStaticHTML();
 
         while (true) {
             checkTimeout(null);
@@ -77,6 +78,21 @@ public class KnowThyself {
                 }
             }
         }
+    }
+
+    private static void banner() {
+        String dir_path = KnowThyself.class.getClassLoader().getResource(".").getPath();
+        String banner_path = dir_path + "banner.txt";
+        System.out.println(banner_path);
+        List<String> lines = FileUtils.readLines(banner_path);
+
+        StringBuilder sb = new StringBuilder();
+        Formatter fm = new Formatter(sb);
+        fm.format("%n");
+        for (String line : lines) {
+            fm.format("%s%n", line);
+        }
+        audit.info(() -> sb.toString());
     }
 
     private static void checkTimeout(Set<SelectionKey> readyKeys) {
@@ -141,7 +157,6 @@ public class KnowThyself {
         }
     }
 
-
     private static void doRead(SelectionKey selectionKey) throws IOException {
         // 第1步，定义变量
         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
@@ -199,7 +214,7 @@ public class KnowThyself {
         ByteBuffer buff = conn.data();
         if (buff != null && buff.hasRemaining()) {
             response_length = socketChannel.write(buff);
-        }else {
+        } else {
             response_length = 0;
             selectionKey.interestOps(SelectionKey.OP_READ); // change the key to READ
         }
