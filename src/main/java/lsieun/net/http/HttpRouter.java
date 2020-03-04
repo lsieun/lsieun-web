@@ -1,9 +1,6 @@
 package lsieun.net.http;
 
-import lsieun.net.http.bean.HttpRequest;
-import lsieun.net.http.bean.HttpResource;
-import lsieun.net.http.bean.HttpResponse;
-import lsieun.net.http.bean.KeyValuePair;
+import lsieun.net.http.bean.*;
 import lsieun.net.http.utils.HttpHeaderUtils;
 import lsieun.utils.CompressUtils;
 import lsieun.utils.Const;
@@ -70,19 +67,19 @@ public class HttpRouter {
                 }
             }
 
-            List<KeyValuePair> requestHeaders = request.headers;
+            List<KeyValuePair> requestHeaders = request.header.items;
 
-
-            List<KeyValuePair> headers = new ArrayList<>();
+            HttpHeader header = new HttpHeader();
+            List<KeyValuePair> header_items = header.items;
 
 
             // 默认Headers
             Date now = new Date();
-            HttpHeaderUtils.fillDefaultHeaders(headers, now);
+            HttpHeaderUtils.fillDefaultHeaders(header_items, now);
 
             // 内容类型
             String content_type = resource.content_type;
-            headers.add(new KeyValuePair("Content-Type", content_type));
+            header.add("Content-Type", content_type);
 
             //缓存时间
             Date expireDate = null;
@@ -91,32 +88,32 @@ public class HttpRouter {
             } else {
                 expireDate = DateUtils.addYears(now, 3);
             }
-            HttpHeaderUtils.fillExpireHeaders(headers, now, expireDate);
+            HttpHeaderUtils.fillExpireHeaders(header_items, now, expireDate);
 
 
-            String connection = HttpHeaderUtils.getConnection(requestHeaders);
-            headers.add(new KeyValuePair("Connection", connection));
+            String connection = header.getConnection();
+            header.add("Connection", connection);
 
             byte[] content_bytes = resource.content;
             byte[] payload_bytes = null;
             if (HttpHeaderUtils.containGZIP(requestHeaders)) {
-                headers.add(new KeyValuePair("Content-Encoding", "gzip"));
+                header.add("Content-Encoding", "gzip");
                 payload_bytes = CompressUtils.gzip_compress(content_bytes);
             } else if (HttpHeaderUtils.containDeflate(requestHeaders)) {
-                headers.add(new KeyValuePair("Content-Encoding", "deflate"));
+                header.add("Content-Encoding", "deflate");
                 payload_bytes = CompressUtils.deflate_compress(content_bytes);
             } else {
                 payload_bytes = content_bytes;
             }
 
             if (payload_bytes != null) {
-                headers.add(new KeyValuePair("Content-Length", String.valueOf(payload_bytes.length)));
+                header.add("Content-Length", String.valueOf(payload_bytes.length));
             } else {
-                headers.add(new KeyValuePair("Content-Length", "0"));
+                header.add("Content-Length", "0");
             }
 
             // 构造Response
-            HttpResponse response = new HttpResponse(status_line, headers, payload_bytes);
+            HttpResponse response = new HttpResponse(status_line, header, payload_bytes);
             return response;
 
         } catch (Exception ex) {

@@ -4,7 +4,6 @@ import lsieun.net.http.bean.*;
 import lsieun.net.http.utils.HttpHeaderUtils;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 public class HttpByteParser {
@@ -16,13 +15,13 @@ public class HttpByteParser {
 
         Range header_range = getHeaderRange(bytes, first_line_range.to);
         if (header_range == null) return null;
-        List<KeyValuePair> headers = getHeaders(bytes, header_range.from, header_range.to - header_range.from);
+        HttpHeader header = getHeader(bytes, header_range.from, header_range.to - header_range.from);
 
         if (!contain_payload) {
-            return new HttpRequest(request_line, headers, null, header_range.to);
+            return new HttpRequest(request_line, header, null, header_range.to);
         }
 
-        int contentLength = HttpHeaderUtils.getContentLength(headers);
+        int contentLength = header.getContentLength();
         Range payloadRange = getPayloadRange(bytes, header_range.to, contentLength);
         if (payloadRange == null) return null;
 
@@ -31,7 +30,7 @@ public class HttpByteParser {
         for (int i = 0; i < contentLength; i++) {
             payload[i] = bytes[payloadRange.from + i];
         }
-        return new HttpRequest(request_line, headers, payload, payloadRange.to);
+        return new HttpRequest(request_line, header, payload, payloadRange.to);
     }
 
     private static Range getFirstLineRange(final byte[] bytes) {
@@ -88,23 +87,22 @@ public class HttpByteParser {
         return request_line;
     }
 
-    public static List<KeyValuePair> getHeaders(final byte[] bytes) {
-        return getHeaders(bytes, 0, bytes.length);
+    public static HttpHeader getHeader(final byte[] bytes) {
+        return getHeader(bytes, 0, bytes.length);
     }
 
-    public static List<KeyValuePair> getHeaders(final byte[] bytes, int offset, int length) {
+    public static HttpHeader getHeader(final byte[] bytes, int offset, int length) {
         String header_value = new String(bytes, offset, length, StandardCharsets.US_ASCII).trim();
         String[] array = header_value.split("\\r\\n");
 
-        List<KeyValuePair> headers = new ArrayList<>();
+        HttpHeader header = new HttpHeader();
         for (String str : array) {
             String[] kv = str.split("[:]", 2);
             String key = kv[0].trim();
             String value = kv[1].trim();
-            KeyValuePair item = new KeyValuePair(key, value);
-            headers.add(item);
+            header.add(key, value);
         }
-        return headers;
+        return header;
     }
 
 

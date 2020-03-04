@@ -81,9 +81,7 @@ public class KnowThyself {
     }
 
     private static void banner() {
-        String dir_path = KnowThyself.class.getClassLoader().getResource(".").getPath();
-        String banner_path = dir_path + "banner.txt";
-        System.out.println(banner_path);
+        String banner_path = PropertyUtils.getRootPath() + "banner.txt";
         List<String> lines = FileUtils.readLines(banner_path);
 
         StringBuilder sb = new StringBuilder();

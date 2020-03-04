@@ -20,24 +20,6 @@ public class HttpHeaderUtils {
         headers.add(new KeyValuePair("Expires", DateUtils.getGMTFormat(expireDate)));
     }
 
-    public static int getContentLength(List<KeyValuePair> headers) {
-        for (KeyValuePair item : headers) {
-            if ("Content-Length".equalsIgnoreCase(item.key)) {
-                return Integer.parseInt(item.value);
-            }
-        }
-        return 0;
-    }
-
-    public static String getConnection(List<KeyValuePair> headers) {
-        for (KeyValuePair item : headers) {
-            if ("Connection".equalsIgnoreCase(item.key)) {
-                return item.value;
-            }
-        }
-        return "close";
-    }
-
     public static boolean containGZIP(final List<KeyValuePair> headers) {
         return contain_encoding(headers, "gzip");
     }

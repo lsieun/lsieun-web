@@ -1,32 +1,30 @@
 package lsieun.net.http.bean;
 
 import lsieun.net.Response;
-import lsieun.net.http.bean.KeyValuePair;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Formatter;
-import java.util.List;
 
 import static lsieun.utils.LogUtils.audit;
 
 public class HttpResponse extends Response {
     public final String status_line;
-    public final List<KeyValuePair> headers;
+    public final HttpHeader header;
     public final byte[] payload;
 
-    public HttpResponse(String status_line, List<KeyValuePair> headers, byte[] payload) {
+    public HttpResponse(String status_line, HttpHeader header, byte[] payload) {
         this.status_line = status_line;
-        this.headers = headers;
+        this.header = header;
         this.payload = payload;
 
         audit.fine(() -> {
             StringBuilder sb = new StringBuilder();
             Formatter fm = new Formatter(sb);
             fm.format("%n%s%n", status_line);
-            for (KeyValuePair item : headers) {
+            for (KeyValuePair item : header.items) {
                 fm.format("%s: %s%n", item.key, item.value);
             }
             return sb.toString();
@@ -37,7 +35,7 @@ public class HttpResponse extends Response {
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
         try {
             write(bao, status_line + "\r\n");
-            for (KeyValuePair item : headers) {
+            for (KeyValuePair item : header.items) {
                 String line = String.format("%s: %s\r\n", item.key, item.value);
                 write(bao, line);
             }

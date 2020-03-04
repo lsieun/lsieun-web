@@ -34,14 +34,14 @@ public class HttpConnection extends Connection {
 
     @Override
     public void data(ByteBuffer buff) {
-        StringBuilder sb = new StringBuilder();
-        Formatter fm = new Formatter(sb);
+//        StringBuilder sb = new StringBuilder();
+//        Formatter fm = new Formatter(sb);
         while (buff.hasRemaining()) {
             byte b = buff.get();
             byteTank.write(b);
-            fm.format("%c", b);
+//            fm.format("%c", b);
         }
-        audit.info("read data: " + sb.toString());
+//        audit.info("read data: " + sb.toString());
 
         // 构建HttpRequest和HttpResponse
         byte[] bytes = byteTank.toByteArray();
