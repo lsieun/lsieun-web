@@ -92,16 +92,26 @@ public class KnowThyself {
 
         Iterator<Map.Entry<SocketChannel, HttpConnection>> dataIt = dataMap.entrySet().iterator();
         List<SocketChannel> timeout_list = new ArrayList<>();
+        List<SocketChannel> black_list = new ArrayList<>();
         while (dataIt.hasNext()) {
             Map.Entry<SocketChannel, HttpConnection> entry = dataIt.next();
             SocketChannel sc = entry.getKey();
+            HttpConnection conn = entry.getValue();
+
+            if (BlackListUtils.isBlack(conn.host)) {
+                black_list.add(sc);
+                continue;
+            }
 
             if (readySocketChannels.contains(sc)) continue;
 
-            HttpConnection conn = entry.getValue();
             if (conn.isTimeOut()) {
                 timeout_list.add(sc);
             }
+        }
+
+        for (SocketChannel sc : black_list) {
+            doClose(sc, "blacklist");
         }
 
         for (SocketChannel sc : timeout_list) {

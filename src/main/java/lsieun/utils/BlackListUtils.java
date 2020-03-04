@@ -64,6 +64,10 @@ public class BlackListUtils {
         }
     }
 
+    public static void addBlack(String host) {
+        black_host_set.add(host);
+    }
+
     public static boolean isBlack(String host) {
         return black_host_set.contains(host);
     }

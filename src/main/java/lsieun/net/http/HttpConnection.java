@@ -51,14 +51,29 @@ public class HttpConnection extends Connection {
             }
             current_response = HttpHandler.getResponse(current_request);
 
-            if (current_response != null) {
-                if (current_response.status_line.contains("404")) {
-                    BlackListUtils.add(host);
-                }
-            }
-
             audit.info(() -> String.format("%s from %s", current_request.request_line.toString(), addr));
             audit.info(() -> String.format("%s to %s", current_response.status_line, addr));
+
+            if (current_request != null) {
+                String request_line = current_request.request_line.toString();
+                if (
+                        request_line.contains("139.199.35.14") ||
+                                request_line.contains("lsieun") ||
+                                request_line.contains("http") ||
+                                request_line.contains("sql/") ||
+                                request_line.contains("baidu") ||
+                                request_line.contains(".php") ||
+                                request_line.contains(".aspx") ||
+                                request_line.contains(".action")
+                ) {
+                    BlackListUtils.addBlack(host);
+                }
+
+            }
+
+            if (current_response.status_line.contains("404")) {
+                BlackListUtils.add(host);
+            }
         }
     }
 
