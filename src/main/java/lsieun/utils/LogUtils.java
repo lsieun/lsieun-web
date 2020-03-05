@@ -19,12 +19,12 @@ public class LogUtils {
             String user_dir = System.getProperty("user.dir");
             String audit_filepath = user_dir + "/web_audit_%d.%u.log";
             Handler handler = new DailyRollingFileHandler(audit_filepath);
+            handler.setLevel(Level.ALL);
 
             audit.setUseParentHandlers(false);
             audit.addHandler(handler);
             err.setUseParentHandlers(false);
             err.addHandler(handler);
-
         } catch (IOException ex) {
             err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
             System.exit(1);
