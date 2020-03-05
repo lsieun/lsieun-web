@@ -71,14 +71,11 @@ public class KnowThyself {
                             doWrite(key);
                         }
                     } catch (IOException ex) {
-                        err.log(Level.SEVERE, "unexpected first error: " + ex.getMessage(), ex);
                         key.cancel();
                         try {
                             key.channel().close();
                         } catch (IOException cex) {
-                            err.log(Level.SEVERE, "unexpected second error: " + ex.getMessage(), ex);
                         }
-                        err.log(Level.SEVERE, "unexpected third error: " + ex.getMessage(), ex);
                     }
                 }
             }

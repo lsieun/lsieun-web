@@ -33,4 +33,5 @@ build/
 dist/
 *.mp4
 .*
+*.log*
 !.gitignore

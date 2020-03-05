@@ -60,7 +60,7 @@ public class HttpRequestUtils {
         }
 
         // Host
-        String host = request.header.getHost();
+        String host = request.header.getHost().toLowerCase();
         for (String item : malicious_host_list) {
             if (host.contains(item)) {
                 audit.info(() -> "malicious host: " + item);
@@ -78,6 +78,7 @@ public class HttpRequestUtils {
         // User-Agent
         String user_agent = request.header.getUserAgent();
         if (StringUtils.isBlank(user_agent)) return true;
+        user_agent = user_agent.toLowerCase();
         for (String item : malicious_user_agent_list) {
             if (user_agent.contains(item)) {
                 audit.info(() -> "malicious user-agent: " + item);
