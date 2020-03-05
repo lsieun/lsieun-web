@@ -20,7 +20,7 @@ public class HttpHeader {
     }
 
     public String getHost() {
-        return getFieldValue("Host", "unknown host");
+        return getFieldValue("Host", null);
     }
 
     public String getAccept() {
