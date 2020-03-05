@@ -22,6 +22,5 @@ copy_resource config.properties
 copy_resource logging.properties
 
 cp -rf "${DIR_PATH}/videos" "${CLASS_PATH}/static/"
-cd "${CLASS_PATH}"
 
-nohup java lsieun.KnowThyself > /dev/null 2>&1 &
+nohup java -cp "${CLASS_PATH}" lsieun.KnowThyself > /dev/null 2>&1 &
