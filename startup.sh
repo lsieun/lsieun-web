@@ -16,6 +16,7 @@ function copy_resource {
 }
 
 cd "${DIR_PATH}"
+git pull
 mvn clean compile
 
 copy_resource config.properties
