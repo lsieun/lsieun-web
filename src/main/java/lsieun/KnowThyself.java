@@ -23,60 +23,68 @@ public class KnowThyself {
     private static final Map<SocketChannel, HttpConnection> dataMap = new HashMap<>();
 
     public static void main(String[] args) {
-        banner();
-        audit.info(() -> "Listening for connections on port " + HTTP_PORT);
-        audit.info(() -> String.format("Web Server: http://127.0.0.1:%d/", HTTP_PORT));
-
-        ServerSocketChannel serverChannel;
-        Selector selector;
         try {
-            serverChannel = ServerSocketChannel.open();
-            ServerSocket ss = serverChannel.socket();
-            InetSocketAddress address = new InetSocketAddress(HTTP_PORT);
-            ss.bind(address);
-            serverChannel.configureBlocking(false);
-            selector = Selector.open();
-            serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-        } catch (Exception ex) {
-            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
-            return;
-        }
+            banner();
+            audit.info(() -> "Listening for connections on port " + HTTP_PORT);
+            audit.info(() -> String.format("Web Server: http://127.0.0.1:%d/", HTTP_PORT));
 
-        HTMLUtils.generateStaticHTML();
-
-        while (true) {
-            checkTimeout(null);
-
+            ServerSocketChannel serverChannel;
+            Selector selector;
             try {
-                selector.select();
-            } catch (IOException ex) {
+                serverChannel = ServerSocketChannel.open();
+                ServerSocket ss = serverChannel.socket();
+                InetSocketAddress address = new InetSocketAddress(HTTP_PORT);
+                ss.bind(address);
+                serverChannel.configureBlocking(false);
+                selector = Selector.open();
+                serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+            } catch (Exception ex) {
                 err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
-                break;
+                return;
             }
 
-            Set<SelectionKey> readyKeys = selector.selectedKeys();
-            checkTimeout(readyKeys);
+            HTMLUtils.generateStaticHTML();
 
-            Iterator<SelectionKey> it = readyKeys.iterator();
-            while (it.hasNext()) {
-                SelectionKey key = it.next();
-                it.remove();
+            while (true) {
+                checkTimeout(null);
+
                 try {
-                    if (key.isAcceptable()) {
-                        createChannel(serverChannel, key);
-                    } else if (key.isReadable()) {
-                        doRead(key);
-                    } else if (key.isWritable()) {
-                        doWrite(key);
-                    }
+                    selector.select();
                 } catch (IOException ex) {
-                    key.cancel();
+                    err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
+                    break;
+                }
+
+                Set<SelectionKey> readyKeys = selector.selectedKeys();
+                checkTimeout(readyKeys);
+
+                Iterator<SelectionKey> it = readyKeys.iterator();
+                while (it.hasNext()) {
+                    SelectionKey key = it.next();
+                    it.remove();
                     try {
-                        key.channel().close();
-                    } catch (IOException cex) {
+                        if (key.isAcceptable()) {
+                            createChannel(serverChannel, key);
+                        } else if (key.isReadable()) {
+                            doRead(key);
+                        } else if (key.isWritable()) {
+                            doWrite(key);
+                        }
+                    } catch (IOException ex) {
+                        err.log(Level.SEVERE, "unexpected first error: " + ex.getMessage(), ex);
+                        key.cancel();
+                        try {
+                            key.channel().close();
+                        } catch (IOException cex) {
+                            err.log(Level.SEVERE, "unexpected second error: " + ex.getMessage(), ex);
+                        }
+                        err.log(Level.SEVERE, "unexpected third error: " + ex.getMessage(), ex);
                     }
                 }
             }
+        }
+        catch (Throwable th) {
+            err.log(Level.SEVERE, "record possible error: " + th.getMessage(), th);
         }
     }
 

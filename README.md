@@ -25,7 +25,15 @@
 ## HTML
 
 - [首页模板](https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_templates_blog&stacked=h)
+- [fontawesome](https://fontawesome.com/) 这里的CSS样式很不错，将来可能会用到
 
+## Banner
+
+生成banner的URL地址：
+
+```text
+http://patorjk.com/software/taag/#p=display&f=Blocks&t=Web
+```
 ## Utils Order
 
 - [x] LogUtils + logging.properties
