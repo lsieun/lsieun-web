@@ -36,6 +36,7 @@ public class HttpRequestUtils {
         // Log
         audit.info(() -> "Path blacklist keyword: " + malicious_path_list.toString());
         audit.info(() -> "Host blacklist keyword: " + malicious_host_list.toString());
+        audit.info(() -> "User-Agent blacklist keyword: " + malicious_user_agent_list.toString());
     }
 
     public static List<String> getItemList(final String line, final String separator) {

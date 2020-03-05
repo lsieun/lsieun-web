@@ -16,14 +16,12 @@ function copy_resource {
 }
 
 cd "${DIR_PATH}"
-git pull
 mvn clean compile
 
 copy_resource config.properties
 copy_resource logging.properties
 
-cd /root/lsieun-web/target/classes
-mkdir -p "${CLASS_PATH}/static/videos"
-cp "${DIR_PATH}/videos/*" "${CLASS_PATH}/static/videos"
+cp -rf "${DIR_PATH}/videos" "${CLASS_PATH}/static/"
+cd "${CLASS_PATH}"
 
 nohup java lsieun.KnowThyself > /dev/null 2>&1 &
