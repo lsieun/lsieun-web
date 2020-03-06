@@ -5,6 +5,7 @@ import lsieun.net.http.bean.HttpRequest;
 import lsieun.net.http.bean.HttpResponse;
 import lsieun.net.http.utils.HttpRequestUtils;
 import lsieun.net.utils.BlackListUtils;
+import lsieun.utils.ByteUtils;
 import lsieun.utils.PropertyUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -12,7 +13,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.Formatter;
 
 import static lsieun.utils.LogUtils.audit;
 
@@ -43,15 +43,13 @@ public class HttpConnection extends Connection {
         byte[] bytes = byteTank.toByteArray();
         try {
             current_request = HttpHandler.newRequest(bytes);
-        }
-        catch (Exception ex) {
-            StringBuilder sb = new StringBuilder();
-            Formatter fm = new Formatter(sb);
-            for (int i=0;i<bytes.length;i++) {
-                byte b = bytes[i];
-                fm.format("%c", b);
+        } catch (Exception ex) {
+            try {
+                String input_value = ByteUtils.toStr(bytes);
+                audit.fine(() -> "It seems that data format is not correct: " + input_value);
+            } catch (Exception t) {
+                // do nothing
             }
-            audit.fine(() -> "It seems that data format is not correct: " + sb.toString());
             audit.info(() -> "add malicious host: " + host);
             BlackListUtils.addBlack(host);
         }
