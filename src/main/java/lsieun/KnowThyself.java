@@ -70,17 +70,25 @@ public class KnowThyself {
                         } else if (key.isWritable()) {
                             doWrite(key);
                         }
-                    } catch (IOException ex) {
+                    } catch (Exception ex) {
                         key.cancel();
                         try {
-                            key.channel().close();
+                            SelectableChannel channel = key.channel();
+                            if (channel instanceof SocketChannel) {
+                                // 单独处理SocketChannel，是为了复用doClose方法
+                                SocketChannel sc = (SocketChannel) channel;
+                                doClose(sc, ex.getMessage());
+                            } else {
+                                // 如果不是SocketChannel，那就会是ServerSocketChannel，
+                                // 但是我觉得，这样的事情应该不会发生
+                                channel.close();
+                            }
                         } catch (IOException cex) {
                         }
                     }
                 }
             }
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             err.log(Level.SEVERE, "record possible error: " + th.getMessage(), th);
         }
     }
@@ -139,6 +147,7 @@ public class KnowThyself {
     }
 
     private static void createChannel(ServerSocketChannel serverSocketChannel, SelectionKey selectionKey) throws IOException {
+        audit.entering("KnowThyself", "createChannel");
         SocketChannel socketChannel = serverSocketChannel.accept();
         socketChannel.configureBlocking(false);
 
@@ -158,9 +167,11 @@ public class KnowThyself {
             audit.warning(() -> "Black Host Found: " + conn.host);
             doClose(socketChannel, "blacklist");
         }
+        audit.exiting("KnowThyself", "createChannel");
     }
 
     private static void doRead(SelectionKey selectionKey) throws IOException {
+        audit.entering("KnowThyself", "doRead");
         // 第1步，定义变量
         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
         ByteBuffer byteBuffer = (ByteBuffer) selectionKey.attachment();
@@ -185,39 +196,22 @@ public class KnowThyself {
         if (read == -1) { // if connection is closed by the client
             doClose(socketChannel, "client");
         }
+        audit.exiting("KnowThyself", "doRead");
     }
 
     private static void doWrite(SelectionKey selectionKey) throws IOException {
+        audit.entering("KnowThyself", "doWrite");
         // 第1步，定义变量
         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
         HttpConnection conn = dataMap.get(socketChannel);
         int response_length; // 用于日志
 
         // 第2步，尝试向客户端返回数据
-//        byte[] response_bytes = conn.process();
-//        if (response_bytes != null) {
-//            response_length = response_bytes.length;
-//
-//            ByteBuffer buf = ByteBuffer.wrap(response_bytes);
-//            while (buf.hasRemaining() && socketChannel.write(buf) != -1) {
-//                audit.fine(() ->
-//                        String.format("position=%s, limit=%s, capacity=%s",
-//                                buf.position(),
-//                                buf.limit(),
-//                                buf.capacity())
-//                );
-//            }
-//        } else {
-//            response_length = 0;
-//        }
-//        conn.updateWriteTime();
-//
-//        // 第3步，切换状态（interest）
-//        selectionKey.interestOps(SelectionKey.OP_READ); // change the key to READ
         ByteBuffer buff = conn.data();
         if (buff != null && buff.hasRemaining()) {
             response_length = socketChannel.write(buff);
         } else {
+            // 第3步，切换状态（interest）
             response_length = 0;
             selectionKey.interestOps(SelectionKey.OP_READ); // change the key to READ
         }
@@ -225,6 +219,7 @@ public class KnowThyself {
 
         // 第4步，记录日志
         audit.fine(() -> String.format("Write %s bytes to %s", response_length, conn.addr));
+        audit.exiting("KnowThyself", "doWrite");
     }
 
     private static void doClose(SocketChannel socketChannel, String reason) {
