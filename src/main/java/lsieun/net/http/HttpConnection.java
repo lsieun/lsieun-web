@@ -34,18 +34,27 @@ public class HttpConnection extends Connection {
 
     @Override
     public void data(ByteBuffer buff) {
-//        StringBuilder sb = new StringBuilder();
-//        Formatter fm = new Formatter(sb);
         while (buff.hasRemaining()) {
             byte b = buff.get();
             byteTank.write(b);
-//            fm.format("%c", b);
         }
-//        audit.info("read data: " + sb.toString());
 
         // 构建HttpRequest和HttpResponse
         byte[] bytes = byteTank.toByteArray();
-        current_request = HttpHandler.newRequest(bytes);
+        try {
+            current_request = HttpHandler.newRequest(bytes);
+        }
+        catch (Exception ex) {
+            StringBuilder sb = new StringBuilder();
+            Formatter fm = new Formatter(sb);
+            for (int i=0;i<bytes.length;i++) {
+                byte b = bytes[i];
+                fm.format("%c", b);
+            }
+            audit.fine(() -> "It seems that data format is not correct: " + sb.toString());
+            audit.info(() -> "add malicious host: " + host);
+            BlackListUtils.addBlack(host);
+        }
         if (current_request == null) {
             current_response = null;
         } else {

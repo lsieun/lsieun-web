@@ -84,6 +84,13 @@ public class HttpRequestUtils {
             return true;
         }
 
+        // Connection
+        String connection = request.header.getConnection();
+        if (StringUtils.isBlank(connection)) {
+            audit.info(() -> "malicious connection: " + connection);
+            return true;
+        }
+
         // User-Agent
         String user_agent = request.header.getUserAgent();
         if (StringUtils.isBlank(user_agent)) {

@@ -37,7 +37,7 @@ public class HttpHeader {
     }
 
     public String getConnection() {
-        return getFieldValue("Connection", "close");
+        return getFieldValue("Connection", null);
     }
 
     public String getFieldValue(final String field, final String defaultValue) {
