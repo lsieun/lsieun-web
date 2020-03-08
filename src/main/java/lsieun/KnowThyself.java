@@ -2,10 +2,7 @@ package lsieun;
 
 import lsieun.net.http.HttpConnection;
 import lsieun.net.utils.BlackListUtils;
-import lsieun.utils.Const;
-import lsieun.utils.FileUtils;
-import lsieun.utils.HTMLUtils;
-import lsieun.utils.PropertyUtils;
+import lsieun.utils.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -16,7 +13,6 @@ import java.util.*;
 import java.util.logging.Level;
 
 import static lsieun.utils.LogUtils.audit;
-import static lsieun.utils.LogUtils.err;
 
 public class KnowThyself {
     private static final int HTTP_PORT = PropertyUtils.getInt("http.port");
@@ -24,7 +20,7 @@ public class KnowThyself {
 
     public static void main(String[] args) {
         try {
-            banner();
+            BannerUtils.display();
             audit.info(() -> "Listening for connections on port " + HTTP_PORT);
             audit.info(() -> String.format("Web Server: http://127.0.0.1:%d/", HTTP_PORT));
 
@@ -39,7 +35,7 @@ public class KnowThyself {
                 selector = Selector.open();
                 serverChannel.register(selector, SelectionKey.OP_ACCEPT);
             } catch (Exception ex) {
-                err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
+                audit.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
                 return;
             }
 
@@ -51,7 +47,7 @@ public class KnowThyself {
                 try {
                     selector.select();
                 } catch (IOException ex) {
-                    err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
+                    audit.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
                     break;
                 }
 
@@ -89,21 +85,8 @@ public class KnowThyself {
                 }
             }
         } catch (Throwable th) {
-            err.log(Level.SEVERE, "record possible error: " + th.getMessage(), th);
+            audit.log(Level.SEVERE, "record possible error: " + th.getMessage(), th);
         }
-    }
-
-    private static void banner() {
-        String banner_path = PropertyUtils.getRootPath() + "banner.txt";
-        List<String> lines = FileUtils.readLines(banner_path);
-
-        StringBuilder sb = new StringBuilder();
-        Formatter fm = new Formatter(sb);
-        fm.format("%n");
-        for (String line : lines) {
-            fm.format("%s%n", line);
-        }
-        audit.info(() -> sb.toString());
     }
 
     private static void checkTimeout(Set<SelectionKey> readyKeys) {

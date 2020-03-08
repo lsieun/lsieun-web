@@ -10,7 +10,6 @@ import java.util.*;
 import java.util.logging.Level;
 
 import static lsieun.utils.LogUtils.audit;
-import static lsieun.utils.LogUtils.err;
 
 public class HttpRouter {
 
@@ -117,7 +116,7 @@ public class HttpRouter {
             return response;
 
         } catch (Exception ex) {
-            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
+            audit.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
         }
         return null;
     }

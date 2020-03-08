@@ -76,7 +76,7 @@ public class FileUtils {
                 lines.add(line);
             }
         } catch (IOException ex) {
-            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
+            audit.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
         }
         return lines;
     }
@@ -94,7 +94,7 @@ public class FileUtils {
             }
 
         } catch (IOException ex) {
-            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
+            audit.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
         }
     }
 

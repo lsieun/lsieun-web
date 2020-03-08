@@ -17,6 +17,7 @@
 - [x] Connection可以为keep-alive
 - [x] Etag: "5dc3a743-0"
 - [ ] Last-Modified: Thu, 07 Nov 2019 05:10:27 GMT
+- [ ] 日志太多
 - [ ] HTML拼接
 - [ ] 缓存2：用If-Modified-Since
 - [ ] 视频

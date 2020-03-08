@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 
-import static lsieun.utils.LogUtils.err;
+import static lsieun.utils.LogUtils.audit;
 
 public class CompressUtils {
     public static byte[] gzip_compress(byte[] bytes) {
@@ -20,7 +20,7 @@ public class CompressUtils {
             out.close();
             return bao.toByteArray();
         } catch (IOException ex) {
-            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
+            audit.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
         }
         return null;
     }
@@ -36,7 +36,7 @@ public class CompressUtils {
             out.close();
             return bao.toByteArray();
         } catch (IOException ex) {
-            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
+            audit.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
         }
         return null;
     }

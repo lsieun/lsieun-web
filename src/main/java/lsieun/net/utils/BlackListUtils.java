@@ -6,7 +6,8 @@ import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 
-import static lsieun.utils.LogUtils.err;
+import static lsieun.utils.LogUtils.audit;
+
 
 public class BlackListUtils {
     private static final int MAX_VALUE = 10;
@@ -23,7 +24,7 @@ public class BlackListUtils {
                     writeBlacklist(filepath);
                     Thread.sleep(5 * 60 * 1000);
                 } catch (Exception ex) {
-                    err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
+                    audit.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
                 }
             }
         };

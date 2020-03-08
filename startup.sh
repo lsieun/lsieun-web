@@ -1,4 +1,5 @@
 #!/bin/bash
+FQCN="lsieun.KnowThyself"
 DIR_PATH="$(cd "$(dirname "$0")"; pwd -P)"
 CLASS_PATH="${DIR_PATH}/target/classes"
 
@@ -23,4 +24,4 @@ copy_resource logging.properties
 
 cp -rf "${DIR_PATH}/videos" "${CLASS_PATH}/static/"
 
-nohup java -cp "${CLASS_PATH}" lsieun.KnowThyself > /dev/null 2>&1 &
+nohup java -cp "${CLASS_PATH}" "${FQCN}" > /dev/null 2>&1 &

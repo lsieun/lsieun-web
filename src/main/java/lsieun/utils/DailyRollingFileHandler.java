@@ -6,114 +6,25 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.ErrorManager;
-import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
 
-
-/**
- * https://github.com/dmerkushov/log-helper/blob/master/src/main/java/ru/dmerkushov/loghelper/handler/DailyRollingFileHandler.java
- */
 public class DailyRollingFileHandler extends StreamHandler {
-
-    private String pattern;
-    private String previousFilename;
+    public static final String DEFAULT_LOG_FILENAME_PATTERN = "audit_%d_%u.log";
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.S Z");
-    private long unique = 0;
-    private FileOutputStream fos;
+
+    private final long log_file_size;
+    private String pattern;
+    private String current_filename;
     private File file;
-    /**
-     * Default log filename pattern, namely "log_%d_%u"
-     */
-    public static final String DEFAULT_LOG_FILENAME_PATTERN = "log_%d_%u";
+    private FileOutputStream fos;
 
-    /**
-     * Get the filename pattern of the log file, as it was supplied to the {@link DailyRollingFileHandler#DailyRollingFileHandler(String) constructor}
-     *
-     * @return
-     */
-    public String getPattern() {
-        return pattern;
-    }
-
-    /**
-     * Get the date format used by the handler
-     *
-     * @return
-     */
-    public static SimpleDateFormat getDateFormat() {
-        return dateFormat;
-    }
-
-    /**
-     * Get the time format used by the handler
-     *
-     * @return
-     */
-    public static SimpleDateFormat getTimeFormat() {
-        return timeFormat;
-    }
-
-    /**
-     * Get the current unique log number
-     *
-     * @return
-     */
-    public long getUnique() {
-        return unique;
-    }
-
-    /**
-     * Get the {@link FileOutputStream} instance for this handler where
-     * the last record has been logged (or, if none has been logged by this handler,
-     * where the first must be)
-     *
-     * @return
-     */
-    public FileOutputStream getFos() {
-        return fos;
-    }
-
-    /**
-     * Get the {@link File} instance for this handler where the last record has been logged (or, if none has been logged by this handler, where the first must be)
-     *
-     * @return
-     */
-    public File getFile() {
-        return file;
-    }
-
-
-    /**
-     * Create a daily rolling file handler with the pattern "log_%d_%u".
-     *
-     * @throws IOException
-     * @see DailyRollingFileHandler#DailyRollingFileHandler(String)
-     * @see DailyRollingFileHandler#DEFAULT_LOG_FILENAME_PATTERN
-     */
-    public DailyRollingFileHandler() throws IOException {
-        super();
-        this.pattern = DEFAULT_LOG_FILENAME_PATTERN;
-        this.previousFilename = generateFilename(new Date());
-    }
-
-    /**
-     * Create a daily rolling file handler.
-     *
-     * @param pattern The pattern of the file name, containing <code>%d</code>
-     *                to indicate the place of the date in the file name, and <code>%u</code>
-     *                to indicate the place of a unique numeric identifier. The date will be
-     *                formatted as <code>yyyy-MM-dd</code> for <code>SimpleDateFormat</code>.<br> If no <code>%d</code> is
-     *                found, the date is added at the end of the filename. The same
-     *                about <code>%u</code>.<br> If <code>pattern</code> is <code>null</code>, it is initialized to a default value.
-     * @throws IOException              if could not open the file for appending
-     * @throws IllegalArgumentException if the pattern is illegal
-     * @see SimpleDateFormat
-     * @see DailyRollingFileHandler#DEFAULT_LOG_FILENAME_PATTERN
-     */
-    public DailyRollingFileHandler(String pattern) throws IllegalArgumentException, IOException {
-        super();
+    public DailyRollingFileHandler(String pattern, long log_file_size) throws IllegalArgumentException, IOException {
+        if (log_file_size < 1000000) {
+            this.log_file_size = 1000000;
+        }else {
+            this.log_file_size = log_file_size;
+        }
 
         if (pattern == null) {
             pattern = DEFAULT_LOG_FILENAME_PATTERN;
@@ -126,16 +37,34 @@ public class DailyRollingFileHandler extends StreamHandler {
         if (!pattern.contains("%d")) {
             pattern += "%d";
         }
+
         if (!pattern.contains("%u")) {
             pattern += "%u";
         }
 
         this.pattern = pattern;
-        this.previousFilename = generateFilename(new Date());
-        file = new File(previousFilename);
-        fos = new FileOutputStream(file, true);
+        this.current_filename = generateFilename(new Date());
+        this.file = new File(current_filename);
+        this.fos = new FileOutputStream(file, true);
         super.setOutputStream(fos);
-//		firstLogRecord ();
+    }
+
+    private synchronized String generateFilename(Date date) {
+        String dateStr = dateFormat.format(date);
+        String prePattern = pattern.replaceAll("%d", dateStr);
+
+        int unique = 0;
+        String filename = prePattern.replaceAll("%u", String.valueOf(unique));
+
+        // Moving to a new date. Maybe we should find a new unique number
+        File logFile = new File(filename);
+        while (logFile.exists() && logFile.length() > log_file_size) {
+            unique++;
+            filename = prePattern.replaceAll("%u", String.valueOf(unique));
+            logFile = new File(filename);
+        }
+
+        return filename;
     }
 
     @Override
@@ -147,7 +76,7 @@ public class DailyRollingFileHandler extends StreamHandler {
         String filename = generateFilename(new Date(record.getMillis()));
 
         // Change the log file
-        if (!previousFilename.equals(filename)) {
+        if (!current_filename.equals(filename)) {
             file = new File(filename);
             try {
                 fos = new FileOutputStream(file, true);
@@ -159,39 +88,12 @@ public class DailyRollingFileHandler extends StreamHandler {
             } catch (InterruptedException ex) {
                 super.reportError(null, ex, ErrorManager.GENERIC_FAILURE);
             }
-            previousFilename = filename;
+            current_filename = filename;
             super.setOutputStream(fos);
         }
 
         super.publish(record);
-
         super.flush();
     }
 
-    private synchronized String generateFilename(Date date) {
-        String dateStr = dateFormat.format(date);
-
-        String prePattern = pattern.replaceAll("%d", dateStr);
-
-        String filename = prePattern.replaceAll("%u", String.valueOf(unique));
-
-        // Moving to a new date. Maybe we should find a new unique number
-        if (!filename.equals(previousFilename)) {
-            File logFile = new File(filename);
-            while (logFile.exists()) {
-                unique++;
-                filename = prePattern.replaceAll("%u", String.valueOf(unique));
-                logFile = new File(filename);
-            }
-        }
-
-        return filename;
-    }
-
-    private void firstLogRecord() {
-        Date date = new Date();
-        LogRecord record = new LogRecord(Level.INFO, "Logging began on " + dateFormat.format(date) + " at " + timeFormat.format(date));
-        record.setMillis(date.getTime());
-        publish(record);
-    }
 }

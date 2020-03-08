@@ -1,22 +1,17 @@
 package lsieun.net.http;
 
-import lsieun.net.Resource;
 import lsieun.net.http.bean.HttpResource;
-import lsieun.net.http.bean.KeyValuePair;
-import lsieun.net.http.utils.HttpHeaderUtils;
 import lsieun.net.http.utils.MIMEUtils;
 import lsieun.utils.Const;
-import lsieun.utils.DateUtils;
 import lsieun.utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.Optional;
 import java.util.logging.Level;
 
-import static lsieun.utils.LogUtils.err;
+import static lsieun.utils.LogUtils.audit;
+
 
 public class FileHandler extends ResourceHandler {
     private static final String ROOT_PATH = HttpHandler.class.getClassLoader().getResource(".").getPath();
@@ -51,7 +46,7 @@ public class FileHandler extends ResourceHandler {
                 return new HttpResource(uri_path, contentType, lastModified, file_bytes);
             }
         } catch (IOException ex) {
-            err.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
+            audit.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
         }
         return null;
     }
@@ -78,7 +73,7 @@ public class FileHandler extends ResourceHandler {
         ) {
             return ROOT_PATH + "static" + uri_path;
         } else {
-            err.warning("unexpected uri: " + uri_path);
+            audit.warning("unexpected uri: " + uri_path);
             return ROOT_PATH + "static" + uri_path;
         }
     }
