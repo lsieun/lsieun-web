@@ -76,6 +76,12 @@ public class HttpRouter {
             Date now = new Date();
             HttpHeaderUtils.fillDefaultHeaders(header_items, now);
 
+            long lastModified = resource.lastModified;
+            if (lastModified > 0) {
+                Date date = new Date(lastModified);
+                header.add("Last-Modified", DateUtils.getGMTFormat(date));
+            }
+
             // 内容类型
             String content_type = resource.content_type;
             header.add("Content-Type", content_type);
