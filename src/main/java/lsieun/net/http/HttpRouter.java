@@ -1,129 +1,101 @@
 package lsieun.net.http;
 
-import lsieun.net.http.bean.*;
-import lsieun.net.http.utils.HttpHeaderUtils;
-import lsieun.utils.CompressUtils;
-import lsieun.utils.Const;
-import lsieun.utils.DateUtils;
+import lsieun.net.http.bean.HttpHeader;
+import lsieun.net.http.bean.HttpRequest;
+import lsieun.net.http.bean.HttpResource;
+import lsieun.net.http.handler.JsonHandler;
+import lsieun.net.http.handler.sub.*;
 
-import java.util.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import static lsieun.utils.LogUtils.audit;
 
 public class HttpRouter {
+    /**
+     * 所有的URI都注册到uri_set当中
+     * FIXME:1,是不是应该考虑pattern模式，例如/json/*
+     * FIXME：2,是不是应该考虑GET和PUT和POST的访问权限呢
+     */
+    private static final Set<String> uri_set = new HashSet<>();
 
     private static final Map<String, HttpResource> cacheMap = new HashMap<>();
-    private static final FileHandler fileHandler = new FileHandler();
+    private static final PageListHandler page_list_handler = new PageListHandler();
+    private static final CSSHandler css_handler = new CSSHandler();
+    private static final JSHandler js_handler = new JSHandler();
+    private static final ImageHandler image_handler = new ImageHandler();
+    private static final FontHandler font_handler = new FontHandler();
+    private static final ContentHandler content_handler = new ContentHandler();
+    private static final JsonHandler json_handler = new JsonHandler();
+
 
     static {
-        HttpResource page_404_resource = fileHandler.get404PageResource();
-        HttpResource image_404_resource = fileHandler.get404ImageResource();
-
-        cacheMap.put(Const.PAGE_404_PATH, page_404_resource);
-        cacheMap.put(Const.IMAGE_404_PATH, image_404_resource);
+//        HttpResource page_404_resource = fileHandler.get404PageResource();
+//        HttpResource image_404_resource = fileHandler.get404ImageResource();
+//
+//        cacheMap.put(Const.PAGE_404_PATH, page_404_resource);
+//        cacheMap.put(Const.IMAGE_404_PATH, image_404_resource);
     }
 
-    public static HttpResponse doWork(HttpRequest request) {
-        try {
-            String http_version = request.request_line.version;
-            // TODO: 这里可能还有QueryString，例如abc.html?name=tom&password=123
-            String uri_path = HttpHandler.getURIPath(request).toLowerCase();
-
-            String status_line = String.format("%s 200 OK", http_version);
-            HttpResource resource = null;
-
-            if (cacheMap.containsKey(uri_path)) {
-                resource = cacheMap.get(uri_path);
-                audit.fine(() -> "Hit " + uri_path + " from cache");
-            }
-
-            if (resource == null) {
-                resource = fileHandler.getResource(uri_path);
-
-                if (
-                        resource != null &&
-                        resource.content_type != null && (
-                                resource.content_type.startsWith("text/") ||
-                                        resource.content_type.startsWith("image/") ||
-                                        resource.content_type.startsWith("font/") ||
-                                        resource.content_type.equals("application/javascript")
-                        )
-                ) {
-                    cacheMap.put(uri_path, resource);
-                }
-            }
-
-            if (resource == null) {
-                status_line = String.format("%s 404 Not Found", http_version);
-                if (uri_path.endsWith(".png") ||
-                        uri_path.endsWith(".jpg") ||
-                        uri_path.endsWith(".gif")
-                ) {
-                    resource = cacheMap.get(Const.IMAGE_404_PATH);
-                } else {
-                    resource = cacheMap.get(Const.PAGE_404_PATH);
-                }
-            }
-
-            List<KeyValuePair> requestHeaders = request.header.items;
-
-            HttpHeader header = new HttpHeader();
-            List<KeyValuePair> header_items = header.items;
-
-
-            // 默认Headers
-            Date now = new Date();
-            HttpHeaderUtils.fillDefaultHeaders(header_items, now);
-
-            long lastModified = resource.lastModified;
-            if (lastModified > 0) {
-                Date date = new Date(lastModified);
-                header.add("Last-Modified", DateUtils.getGMTFormat(date));
-            }
-
-            // 内容类型
-            String content_type = resource.content_type;
-            header.add("Content-Type", content_type);
-
-            //缓存时间
-            Date expireDate = null;
-            if ("text/html".equalsIgnoreCase(content_type)) {
-                expireDate = DateUtils.addMinutes(now, 30);
-            } else {
-                expireDate = DateUtils.addYears(now, 3);
-            }
-            HttpHeaderUtils.fillExpireHeaders(header_items, now, expireDate);
-
-
-            String connection = header.getConnection();
-            header.add("Connection", connection);
-
-            byte[] content_bytes = resource.content;
-            byte[] payload_bytes = null;
-            if (HttpHeaderUtils.containGZIP(requestHeaders)) {
-                header.add("Content-Encoding", "gzip");
-                payload_bytes = CompressUtils.gzip_compress(content_bytes);
-            } else if (HttpHeaderUtils.containDeflate(requestHeaders)) {
-                header.add("Content-Encoding", "deflate");
-                payload_bytes = CompressUtils.deflate_compress(content_bytes);
-            } else {
-                payload_bytes = content_bytes;
-            }
-
-            if (payload_bytes != null) {
-                header.add("Content-Length", String.valueOf(payload_bytes.length));
-            } else {
-                header.add("Content-Length", "0");
-            }
-
-            // 构造Response
-            HttpResponse response = new HttpResponse(status_line, header, payload_bytes);
-            return response;
-
-        } catch (Exception ex) {
-            audit.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
+    public static void register(final String uri) {
+        if (uri_set.contains(uri)) {
+            audit.log(Level.WARNING, "already contains " + uri);
+        } else {
+            uri_set.add(uri);
         }
-        return null;
     }
+
+    public static HttpResource getResource(final String uri_path, final HttpHeader header) {
+        if (
+            // TODO: 这里的路径匹配，要不断添加才对
+                "/".equals(uri_path) ||
+                        "/excerpt/".equals(uri_path) || "/excerpt".equals(uri_path) ||
+                        "/whim/".equals(uri_path) || "/whim".equals(uri_path) ||
+                        "/life/".equals(uri_path) || "/life".equals(uri_path) ||
+                        "/code/".equals(uri_path) || "/code".equals(uri_path)
+        ) {
+            return page_list_handler.getResource(uri_path, header);
+        } else if ("/favicon.ico".equals(uri_path)) {
+            return image_handler.getResource("/images/favicon.ico", header);
+        } else if ("/images/404.png".equals(uri_path)) {
+            return image_handler.getResource("/images/image_not_found.png", header);
+        } else if (uri_path.startsWith("/archive/")) {
+            return content_handler.getResource(uri_path, header);
+        } else if (uri_path.startsWith("/css/")) {
+            return css_handler.getResource(uri_path, header);
+        } else if (uri_path.startsWith("/js/")) {
+            return js_handler.getResource(uri_path, header);
+        } else if (uri_path.startsWith("/fonts/")) {
+            return font_handler.getResource(uri_path, header);
+        } else if (uri_path.startsWith("/images/")) {
+            return image_handler.getResource(uri_path, header);
+        }
+        else if (uri_path.startsWith("/json/")) {
+            return json_handler.getResource(uri_path, header);
+        }
+        // TODO: 还需要处理Json数据
+        else {
+            // TODO: 这里可能将来不太对
+            return page_list_handler.get404Resource();
+        }
+    }
+
+    public static String getURIPath(HttpRequest request) {
+        try {
+            URL url = new URL(HttpConst.FAKE_DOMAIN_NAME + request.request_line.path);
+            URI uri = url.toURI();
+            return uri.getPath();
+        } catch (MalformedURLException | URISyntaxException ex) {
+            audit.warning("Unexpected path: " + request.request_line.path + ", " + ex);
+        }
+        return request.request_line.path;
+    }
+
 }

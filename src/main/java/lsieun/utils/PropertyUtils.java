@@ -1,5 +1,6 @@
 package lsieun.utils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -12,12 +13,23 @@ public class PropertyUtils {
     private static final Properties props = new Properties();
 
     static {
-        audit.config(() -> "Root Path: " + rootPath);
-        String configPath = rootPath + "config.properties";
-        audit.config(() -> "READ File: " + configPath);
-
         try {
+            audit.config(() -> "Root Path: " + rootPath);
+            String configPath = rootPath + "application.properties";
+            audit.config(() -> "READ File: " + configPath);
+
             props.load(new FileInputStream(configPath));
+
+            String dev_filepath = rootPath + "/dev";
+            File dev_file = new File(dev_filepath);
+            if (dev_file.exists() && dev_file.isFile()) {
+                String dev_config_filepath = rootPath + "/application-dev.properties";
+                File dev_config_file = new File(dev_config_filepath);
+                if (dev_config_file.exists() && dev_config_file.isFile()) {
+                    props.load(new FileInputStream(dev_config_file));
+                }
+            }
+
         } catch (IOException ex) {
             audit.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
             System.exit(1);
@@ -38,9 +50,7 @@ public class PropertyUtils {
     }
 
     public static void main(String[] args) {
-        String value = PropertyUtils.getProperty("http.port");
-        System.out.println(value);
-        value = PropertyUtils.getProperty("audit.level");
+        String value = PropertyUtils.getProperty("http.ip");
         System.out.println(value);
     }
 }

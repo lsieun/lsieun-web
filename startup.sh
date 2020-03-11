@@ -19,7 +19,7 @@ function copy_resource {
 cd "${DIR_PATH}"
 mvn clean compile
 
-copy_resource config.properties
+copy_resource application.properties
 copy_resource logging.properties
 
 cp -rf "${DIR_PATH}/videos" "${CLASS_PATH}/static/"

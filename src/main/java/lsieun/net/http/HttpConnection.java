@@ -4,6 +4,7 @@ import lsieun.net.Connection;
 import lsieun.net.http.bean.HttpRequest;
 import lsieun.net.http.bean.HttpResponse;
 import lsieun.net.http.utils.HttpRequestUtils;
+import lsieun.net.http.utils.HttpUtils;
 import lsieun.net.utils.BlackListUtils;
 import lsieun.utils.ByteUtils;
 import lsieun.utils.PropertyUtils;
@@ -42,7 +43,7 @@ public class HttpConnection extends Connection {
         // 构建HttpRequest和HttpResponse
         byte[] bytes = byteTank.toByteArray();
         try {
-            current_request = HttpHandler.newRequest(bytes);
+            current_request = HttpUtils.tryParseRequest(bytes);
         } catch (Exception ex) {
             try {
                 String input_value = ByteUtils.toStr(bytes);
@@ -62,7 +63,8 @@ public class HttpConnection extends Connection {
                     byteTank.write(bytes[i]);
                 }
             }
-            current_response = HttpHandler.getResponse(current_request);
+            // TODO: fix this code
+            current_response = HttpPipeline.doWork(current_request); // HttpRouter.doWork(current_request);
 
             audit.info(() -> String.format("%s from %s", current_request.request_line.toString(), addr));
             audit.info(() -> String.format("%s to %s", current_response.status_line, addr));

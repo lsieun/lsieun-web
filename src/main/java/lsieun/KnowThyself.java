@@ -1,6 +1,7 @@
 package lsieun;
 
 import lsieun.net.http.HttpConnection;
+import lsieun.net.http.utils.HTMLUtils;
 import lsieun.net.utils.BlackListUtils;
 import lsieun.utils.*;
 
@@ -39,7 +40,6 @@ public class KnowThyself {
                 return;
             }
 
-            HTMLUtils.generateStaticHTML();
 
             while (true) {
                 checkTimeout(null);

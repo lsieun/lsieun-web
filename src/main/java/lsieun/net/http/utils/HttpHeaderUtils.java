@@ -1,5 +1,6 @@
 package lsieun.net.http.utils;
 
+import lsieun.net.http.bean.HttpHeader;
 import lsieun.net.http.bean.KeyValuePair;
 import lsieun.utils.DateUtils;
 
@@ -8,16 +9,16 @@ import java.util.List;
 
 public class HttpHeaderUtils {
 
-    public static void fillDefaultHeaders(final List<KeyValuePair> headers, final Date date) {
-        headers.add(new KeyValuePair("Date", DateUtils.getGMTFormat(date)));
-        headers.add(new KeyValuePair("Server", "Chaos Server"));
+    public static void fillDefaultHeaders(final HttpHeader header, final Date date) {
+        header.add("Date", DateUtils.getGMTFormat(date));
+        header.add("Server", "Chaos Server");
     }
 
-    public static void fillExpireHeaders(final List<KeyValuePair> headers, final Date date, final Date expireDate) {
+    public static void fillExpireHeaders(final HttpHeader header, final Date date, final Date expireDate) {
         long seconds = (expireDate.getTime() - date.getTime()) / 1000;
         String max_age = String.format("max-age=%s", seconds);
-        headers.add(new KeyValuePair("Cache-Control", max_age));
-        headers.add(new KeyValuePair("Expires", DateUtils.getGMTFormat(expireDate)));
+        header.add("Cache-Control", max_age);
+        header.add("Expires", DateUtils.getGMTFormat(expireDate));
     }
 
     public static boolean containGZIP(final List<KeyValuePair> headers) {

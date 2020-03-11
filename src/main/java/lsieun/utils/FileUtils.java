@@ -98,6 +98,15 @@ public class FileUtils {
         }
     }
 
+    public static String getFileExtension(File file) {
+        String name = file.getName();
+        int lastIndex = name.lastIndexOf(".");
+        if (lastIndex == -1) {
+            return ""; // empty extension
+        }
+        return name.substring(lastIndex);
+    }
+
     public static void negate(String from_path, String to_path) {
         try (
                 FileInputStream fin = new FileInputStream(from_path);

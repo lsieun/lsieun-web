@@ -34,4 +34,5 @@ dist/
 *.mp4
 .*
 *.log*
+dev
 !.gitignore

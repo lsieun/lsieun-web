@@ -6,8 +6,7 @@ public class Const {
     public static final int HTTP_PORT = 80;
     public static final int FAKE_HTTP_PORT = 8080;
 
-    public static final String PAGE_404_PATH = "/404.html";
-    public static final String IMAGE_404_PATH = "/404.png";
+
 
     // IO Related
     public static final int BUFFER_SIZE = 1024 * 32;

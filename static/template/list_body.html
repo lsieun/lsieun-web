@@ -1,0 +1,182 @@
+<body class="w3-light-grey">
+
+__NAVIGATION_BAR__
+
+<!-- w3-content defines a container for fixed size centered content,
+and is wrapped around the whole page content, except for the footer in this example -->
+<div class="w3-content" style="max-width:1400px">
+
+    <!-- Header -->
+    <header class="w3-container w3-center w3-padding-32">
+        <h1><b>&nbsp;</b></h1>
+        <p>Welcome to the blog of <span class="w3-tag w3-round-xxlarge">lsieun</span></p>
+    </header>
+
+    <!-- Grid -->
+    <div class="w3-row">
+
+        <!-- Blog entries -->
+        <div class="w3-col l8 s12">
+
+            <div id="blog_entry_list_div">
+                __BLOG_ENTRY_LIST__
+            </div>
+
+
+            <div id="paginator_div" class="w3-margin" page_num="__PAGE_NUM__" page_total="__PAGE_TOTAL__">
+                <button id="paginator_the_first" onclick="go_the_first()"
+                        class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">«« The First
+                </button>
+                <button id="paginator_the_previous" onclick="go_the_previous()"
+                        class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">« Previous
+                </button>
+                <button id="paginator_the_next" onclick="go_the_next()"
+                        class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">Next »
+                </button>
+                <button id="paginator_the_last" onclick="go_the_last()"
+                        class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">The Last »»
+                </button>
+            </div>
+            <!-- END BLOG ENTRIES -->
+        </div>
+
+        __INTRODUCTION_MENU__
+
+        <!-- END GRID -->
+    </div>
+    <br>
+
+    <!-- END w3-content -->
+</div>
+
+<div class="w3-container w3-black w3-center w3-opacity w3-padding-64">
+    <h1 class="w3-margin w3-xlarge">Quote of the day: You don't need wings to fly.</h1>
+</div>
+
+<footer class="w3-container w3-padding-64 w3-center w3-opacity">
+    <p>京ICP备18024191号-1</p>
+    <p>Powered by <a href="javascript:void(0);">lsieun.cn</a></p>
+</footer>
+
+<!--
+Try putting script-Tags over the closing body-Tag,
+this will prevent that the page is loading endless
+for the Javascript file, before the page is actually loaded.
+-->
+<script type="text/javascript" src="/js/main.js"></script>
+<script type="text/javascript" src="/js/jquery-3.4.1.js"></script>
+<script>
+    // Javascript inside this file
+    function go_the_first() {
+        let page_num = $('#paginator_div').attr("page_num");
+        if (page_num <= 1) return;
+        fetch_data(1);
+    }
+
+    function go_the_previous() {
+        let page_num = $('#paginator_div').attr("page_num");
+        if (page_num <= 1) return;
+        fetch_data(parseInt(page_num) - 1);
+    }
+
+    function go_the_next() {
+        let page_num = $('#paginator_div').attr("page_num");
+        let page_total = $('#paginator_div').attr("page_total");
+        if (page_num >= page_total) return;
+        fetch_data(parseInt(page_num) + 1);
+    }
+
+    function go_the_last() {
+        let page_num = $('#paginator_div').attr("page_num");
+        let page_total = $('#paginator_div').attr("page_total");
+        if (page_num >= page_total) return;
+        fetch_data(page_total);
+    }
+
+    function fetch_data(current_page_num) {
+        $.ajax({
+            type: "GET",
+            url: "__BASE_URL__" + current_page_num,
+            dataType: "json",
+            success: function (result) {
+                let data_list = result.data_list;
+                let len = data_list.length;
+                var all_entry_html = '';
+                for (var i = 0; i < len; i++) {
+                    let entry = data_list[i];
+                    all_entry_html += getEntryHtml(entry);
+                }
+                $('#paginator_div').attr("page_num", result.page_num);
+                $('#blog_entry_list_div').html(all_entry_html);
+                change_pagination_buttons_state();
+            },
+            error: function (result) {
+                alert("获取数据失败");
+            }
+
+        });
+    }
+
+    function getEntryHtml(entry) {
+        var html = '';
+        html += '<div class="w3-card-4 w3-margin w3-white">';
+        html += '<img src="' + entry.img_url + '" alt="" style="width:100%">';
+        html += '<div class="w3-container">';
+        html += '<h3><b>' + entry.title + '</b></h3>';
+        html += '<h5>' + entry.author + '，<span class="w3-opacity">' + entry.date + '</span></h5>';
+        html += '</div>';
+        html += '';
+        html += '<div class="w3-container">';
+        html += '<p>' + entry.doc_intro + '</p>';
+        html += '<div class="w3-row">';
+        html += '<div class="w3-col m8 s12">';
+        html += '<p>';
+        html += '<button class="w3-button w3-padding-large w3-white w3-border" onclick="window.location.href=\'' + entry.doc_url + '\'">';
+        html += '<b>READ MORE »</b>';
+        html += '</button>';
+        html += '</p>';
+        html += '</div>';
+        html += '<div class="w3-col m4 w3-hide-small">';
+        html += '<p><span class="w3-padding-large w3-right"><b>Views  </b> <span class="w3-badge">' + entry.read_num + '</span></span></p>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+        html += '<hr/>';
+        return html;
+    }
+
+    function change_pagination_buttons_state() {
+        let page_num = $('#paginator_div').attr("page_num");
+        let page_total = $('#paginator_div').attr("page_total");
+
+        $('#paginator_the_first').removeClass('w3-disabled');
+        $('#paginator_the_previous').removeClass('w3-disabled');
+        $('#paginator_the_next').removeClass('w3-disabled');
+        $('#paginator_the_last').removeClass('w3-disabled');
+
+        if (page_num == 1) {
+            $('#paginator_the_first').addClass('w3-disabled');
+            $('#paginator_the_previous').addClass('w3-disabled');
+        }
+
+        if (page_num == page_total) {
+            $('#paginator_the_next').addClass('w3-disabled');
+            $('#paginator_the_last').addClass('w3-disabled');
+        }
+
+        if (page_total == 0) {
+            $('#paginator_the_first').addClass('w3-disabled');
+            $('#paginator_the_previous').addClass('w3-disabled');
+            $('#paginator_the_next').addClass('w3-disabled');
+            $('#paginator_the_last').addClass('w3-disabled');
+        }
+    }
+
+    $(function () {
+        change_pagination_buttons_state();
+    });
+</script>
+
+</body>
+</html>
