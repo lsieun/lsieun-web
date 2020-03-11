@@ -78,11 +78,11 @@ public class HttpRequestUtils {
         }
 
         // Accept
-        String accept = request.header.getAccept();
-        if (StringUtils.isBlank(accept)) {
-            audit.info(() -> "malicious accept: " + accept);
-            return true;
-        }
+//        String accept = request.header.getAccept();
+//        if (StringUtils.isBlank(accept)) {
+//            audit.info(() -> "malicious accept: " + accept);
+//            return true;
+//        }
 
         // Connection
         String connection = request.header.getConnection();
