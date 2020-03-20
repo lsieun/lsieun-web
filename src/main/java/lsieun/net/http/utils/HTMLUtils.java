@@ -53,7 +53,7 @@ public class HTMLUtils {
     }
 
     public static String getTitle(String content) {
-        String reg = "<h5 .+><span .+>(.+)</span></h5>";
+        String reg = "<h\\d .+><span .+>(.+)</span></h\\d>";
         Pattern p = Pattern.compile(reg);
         Matcher matcher = p.matcher(content);
 

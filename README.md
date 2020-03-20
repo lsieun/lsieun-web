@@ -20,15 +20,15 @@
 - [ ] 要注册URi Path和Handler
 - [ ] bytes --> HttpUtils --> HttpConnection --> HttpPipeline --> HttpRouter request -->  ResourceHandler --> response --> bytes
 - [ ] HttpRouter负责uri_path，并返回可能的相关的ResourceHandler的关联
-- [ ] 先将主页进行拆分，这是一个通用的列表页
-- [ ] 图片，标题，作者，日期，显示内容，链接，浏览数
+- [x] 先将主页进行拆分，这是一个通用的列表页
+- [x] 图片，标题，作者，日期，显示内容，链接，浏览数
 - [x] 分页信息，一共几页，当前是第几页
 - [x] /json/home/list/1
 - [x] 第一次访问的时候，是静态页面，后续通过ajax请求来完成
-- [ ] 文件列表，应该存放在什么地方呢？应该存放在用户的当前目录当中，
-- [ ] 这些静态文件，总是复制来、复制去，一定会修改它的last modified time，如果直接从用户的当前目录读取，是不是就节省了复制的过程
+- [x] 文件列表，应该存放在什么地方呢？应该存放在用户的当前目录当中，
+- [x] 这些静态文件，总是复制来、复制去，一定会修改它的last modified time，如果直接从用户的当前目录读取，是不是就节省了复制的过程
 - [ ] blacklist的名单，放到用户目录中来
-- [ ] 我觉得，首页还是要用自己的home_list.txt文件
+- [x] 我觉得，首页还是要用自己的home_list.txt文件
 - [ ] 日志太多
 - [ ] HTML拼接
 - [ ] 缓存2：用If-Modified-Since
@@ -61,4 +61,5 @@ http://patorjk.com/software/taag/#p=display&f=Blocks&t=Web
 
 - [x] LogUtils + logging.properties
 - [x] PropertyUtils + config.properties
+
 

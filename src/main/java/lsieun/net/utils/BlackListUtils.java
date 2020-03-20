@@ -15,7 +15,7 @@ public class BlackListUtils {
     private static final Map<String, Integer> map = new HashMap<>();
 
     static {
-        String filepath = System.getProperty("user.home") + "/blacklist.txt";
+        String filepath = System.getProperty("user.dir") + "/blacklist.txt";
 
         Runnable r = () -> {
             while (true) {

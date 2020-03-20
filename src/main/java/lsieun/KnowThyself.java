@@ -173,7 +173,7 @@ public class KnowThyself {
         }
 
         // 第4步，记录日志
-        audit.fine(() -> String.format("Read %s bytes from %s", read, conn.addr));
+        audit.finer(() -> String.format("Read %s bytes from %s", read, conn.addr));
 
         // 第5步，如果客户端关闭了连接，服务端也进行关闭
         if (read == -1) { // if connection is closed by the client
@@ -201,7 +201,7 @@ public class KnowThyself {
         conn.updateWriteTime();
 
         // 第4步，记录日志
-        audit.fine(() -> String.format("Write %s bytes to %s", response_length, conn.addr));
+        audit.finer(() -> String.format("Write %s bytes to %s", response_length, conn.addr));
         audit.exiting("KnowThyself", "doWrite");
     }
 
