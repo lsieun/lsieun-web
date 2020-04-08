@@ -34,13 +34,21 @@
 - [ ] 缓存2：用If-Modified-Since
 - [ ] 视频
 
-- [ ] 添加链接[Project Nayuki](https://www.nayuki.io/)
+- [x] 添加链接[Project Nayuki](https://www.nayuki.io/)
 
 - [ ] 如果发现是blacklist，应该提早返回，不用去读取资源了，因为可能是视频资源，非常耗费时间
+
+- [x] `sub`添加class为my_note
 
 - [ ] 我有一些关键字，作为path当中的blacklist，但是，如果有一个合法的路径就是包含那些关键字，该怎么办呢？blacklist是不是应该记录原因，是不是应该限定一个时间解除block呢？
 
 - [ ] 对IP地址进行查询，在日志当中显示出它的所在位置
+
+- [ ] jquery.lazyload.js会有用吗？
+
+- [ ] [The Java2HTML Tool](http://www.java2html.com/)
+
+- [ ] 分离：程序与HTML页面分离，有必要吗？
 
 
 

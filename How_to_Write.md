@@ -8,8 +8,15 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a href="javascript:void(0);" onclick="toggle_all_sub()">Show/Hide Sub</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Show/Hide Sub</a>
 </div>
+```
+
+```javascript
+// Javascript inside this file
+function toggle_all_sub_note() {
+    $('#main_content sub.my_note').toggle();
+}
 ```
 
 ## Content
@@ -35,11 +42,11 @@
 ## Color
 
 ```html
-<sub style="color:red">笔记：</sub>
-<sub style="color:blue">笔记：</sub>
-<sub style="color:green">笔记：</sub>
-<sub style="color:green"></sub>
-In the same vein<sub style="color:green">以同样的方式</sub>
+<sub class="my_note" style="color:red">笔记：</sub>
+<sub class="my_note" style="color:blue">笔记：</sub>
+<sub class="my_note" style="color:green">笔记：</sub>
+<sub class="my_note" style="color:green"></sub>
+In the same vein<sub class="my_note" style="color:green">以同样的方式</sub>
 ```
 
 选用颜色的原则：

@@ -23,7 +23,7 @@ public class KnowThyself {
         try {
             BannerUtils.display();
             audit.info(() -> "Listening for connections on port " + HTTP_PORT);
-            audit.info(() -> String.format("Web Server: http://127.0.0.1:%d/", HTTP_PORT));
+            audit.info(() -> String.format("Web Server: http://localhost:%d/", HTTP_PORT));
 
             ServerSocketChannel serverChannel;
             Selector selector;
