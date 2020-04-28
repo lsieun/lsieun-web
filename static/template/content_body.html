@@ -57,6 +57,13 @@ for the Javascript file, before the page is actually loaded.
     function toggle_all_sub_note() {
         $('#main_content sub.my_note').toggle();
     }
+
+    function toggle_paragraph_sub_note(obj) {
+        $(obj).parent().find("sub.my_note").toggle();
+    }
+    $(function() {
+        toggle_all_sub_note();
+    });
 </script>
 
 </body>

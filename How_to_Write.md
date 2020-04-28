@@ -4,12 +4,17 @@
 
 ```html
 <!-- 标题 -->
-<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">文章标题</span></h1>
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">文章の标题</span></h1>
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Show/Hide Sub</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
+
+<p>
+    <a href="javascript:void(0);" style="color:gray" onclick="toggle_paragraph_sub_note(this)"><b>#Click to Toggle Commentary#</b></a>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
 ```
 
 ```javascript
