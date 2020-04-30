@@ -8,6 +8,7 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
+    <a title="Table Of Content" href="/archive/1984/index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 

@@ -63,6 +63,16 @@ for the Javascript file, before the page is actually loaded.
     }
     $(function() {
         toggle_all_sub_note();
+
+        $('table>tbody>tr').mouseover(function() {
+            $(this).css('backgroundColor','lightgray');
+        }).mouseout(function() {
+            $(this).css('backgroundColor','');
+        }).click(function() {
+            $(this).prevAll().css('backgroundColor','yellow');
+            $(this).css('backgroundColor','violet');
+            $(this).nextAll().css('backgroundColor','yellow');
+        });
     });
 </script>
 

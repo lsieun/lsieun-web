@@ -54,7 +54,7 @@ public class HttpRequestUtils {
         String request_line = request.request_line.toString().toLowerCase();
         for (String item : malicious_path_list) {
             if (request_line.contains(item)) {
-                audit.info(() -> "malicious path: " + item);
+                audit.warning(() -> "malicious path: " + item);
                 return true;
             }
         }
@@ -62,17 +62,17 @@ public class HttpRequestUtils {
         // Host
         String host = request.header.getHost();
         if (StringUtils.isBlank(host)) {
-            audit.info(() -> "malicious host: host is null");
+            audit.warning(() -> "malicious host: host is null");
             return true;
         }
         host = host.toLowerCase();
         if (!host.contains(domain_core)) {
-            audit.info(() -> "malicious host: do not contain my domain name");
+            audit.warning(() -> "malicious host: do not contain my domain name");
             return true;
         }
         for (String item : malicious_host_list) {
             if (host.contains(item)) {
-                audit.info(() -> "malicious host: " + item);
+                audit.warning(() -> "malicious host: " + item);
                 return true;
             }
         }
@@ -87,20 +87,20 @@ public class HttpRequestUtils {
         // Connection
         String connection = request.header.getConnection();
         if (StringUtils.isBlank(connection)) {
-            audit.info(() -> "malicious connection: " + connection);
+            audit.warning(() -> "malicious connection: " + connection);
             return true;
         }
 
         // User-Agent
         String user_agent = request.header.getUserAgent();
         if (StringUtils.isBlank(user_agent)) {
-            audit.info(() -> "malicious user-agent: user-agent is null");
+            audit.warning(() -> "malicious user-agent: user-agent is null");
             return true;
         }
         user_agent = user_agent.toLowerCase();
         for (String item : malicious_user_agent_list) {
             if (user_agent.contains(item)) {
-                audit.info(() -> "malicious user-agent: " + item);
+                audit.warning(() -> "malicious user-agent: " + item);
                 return true;
             }
         }
