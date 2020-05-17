@@ -1,0 +1,82 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">SHA1 Core: (1) Brief Introduction</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>1. Goal</h2>
+
+<p>
+    The goal of SHA1 or any secure hashing algorithm, is to
+    reduce <strong>an arbitrarily sized input</strong> into <strong>an n-bit hash</strong>. For SHA1, n = 160 bits.
+    <sub class="my_note" style="color:blue">笔记：这里从<b>目标</b>的角度来讲SHA1，同时也适用于其他的secure hash算法。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+
+
+<h2>2. Input and Output Data</h2>
+
+<p>
+    SHA1 operates on 512-bit (64-byte) blocks of input. Each block is reduced to a 160-bit (20-byte) hash.
+    <sub class="my_note" style="color:blue">笔记：这里是从<b>输入</b>和<b>输出</b>的角度来讲SHA1。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<table border="1" width="100%" style="text-align: center; border-collapse: collapse;">
+    <caption>SHA1输入数据和输出数据</caption>
+    <thead>
+    <tr>
+        <th>Hash</th>
+        <th>Input Block Size</th>
+        <th>Output Size</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>SHA1</td>
+        <td>512-bit (64-byte)</td>
+        <td>160-bit (20-byte)</td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>3. Procedure</h2>
+
+<ul>
+    <li>第一步，对输入数据进行padding。输入数据是任意长度的，经过padding之后的数据长度是512-bit (64-byte)的倍数。</li>
+    <li>第二步，每次取出512-bit (64-byte)的数据，进行block operation操作。</li>
+    <li>第三步，生成160-bit (20-byte)的输出结果。</li>
+</ul>
+
+<h2>4. SHA1 VS MD5</h2>
+
+<p>
+    Secure Hash Algorithm (SHA-1) is similar to MD5. The only principal difference
+    is in the <strong>block operation</strong><sub class="my_note" style="color:green">不同之处</sub> itself. The other two superficial differences are that
+    <strong>SHA-1 produces a 160-bit (20-byte)</strong><sub class="my_note" style="color:green">不同之处</sub> hash rather than a 128-bit (16-byte) hash,
+    and <strong>SHA-1 deals with big-endian rather</strong><sub class="my_note" style="color:green">不同之处</sub> than little-endian numbers. Like MD5,
+    SHA-1 operates on <strong>512-bit blocks</strong><sub class="my_note" style="color:green">相同之处</sub>, and <strong>the final output is the sum (modulo 32) of
+    the results of all of the blocks</strong><sub class="my_note" style="color:green">相同之处</sub>.
+    <sub class="my_note" style="color:blue">笔记：这段话主要是讲SHA1和MD5的不同之处和相同之处。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    The <strong>operation</strong> itself is slightly simpler; you start
+    by breaking the 512-bit input into 16 four-byte values x. You then compute 80 four-byte
+    W values from the original input where the following is rotated left once:
+    <strong>W[0&lt;t&lt;16] = x[t]</strong>, and <strong>W[17&lt;7&lt;80] = W[t–3] xor W[t–8] xor W[t–14] xor W[t–16]</strong>.
+    <sub class="my_note" style="color:blue">笔记：这段话主要是讲SHA1和MD5相比，block operation的不同之处，需要了解SHA1算法之后，才能读懂。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    This <strong>W</strong> array serves the same purpose as <a href="/archive/crypto/hash/md5_constant.html">the 4294967296 * abs(sin(i)) computation</a>
+    in MD5, but is a bit easier to compute and is also based on the input.
+    <sub class="my_note" style="color:blue">笔记：这段话需要熟悉MD5算法的计算过程，才能理解。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>

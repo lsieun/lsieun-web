@@ -1,0 +1,63 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Secure Hash Algorithm</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    The goal of any secure hashing algorithm, is to
+    reduce <strong>an arbitrarily sized input</strong> into <strong>an n-bit hash</strong>.
+    <sub class="my_note" style="color:blue">笔记：我觉得，这句话就说到了所有Hash算法的本质。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<table border="1" width="100%" style="text-align: center; border-collapse: collapse;">
+    <caption>Secure Hash Algorithm</caption>
+    <thead>
+    <tr>
+        <th>Hash</th>
+        <th>Input Size</th>
+        <th>Input Block Size</th>
+        <th>Output Size</th>
+        <th>Rounds</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>MD5</td>
+        <td>arbitrary</td>
+        <td>512-bit (64-byte)</td>
+        <td>128-bit (16-byte)</td>
+        <td>64</td>
+    </tr>
+    <tr>
+        <td>SHA1</td>
+        <td>arbitrary</td>
+        <td>512-bit (64-byte)</td>
+        <td>160-bit (20-byte)</td>
+        <td>80</td>
+    </tr>
+    <tr>
+        <td>SHA256</td>
+        <td>arbitrary</td>
+        <td>512-bit (64-byte)</td>
+        <td>256-bit (32-byte)</td>
+        <td>64</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    <span style="color:red">注意：</span><strong>Input Size</strong>和<strong>Input Block Size</strong>是两个不同的概念。其中，<strong>Input Size</strong>是指输入数据的<b>总大小</b>，对于Secure Hash Algorithm来说，可以处理任意大小的数据，所以是<b>arbitrary</b>。在处理这些输入数据的时候，Secure Hash Algorithm不是一下子就把所有的输入数据全部处理掉，而是分成多次来进行处理。Secure Hash Algorithm对于<b>每一次处理的数据量的大小</b>就称之为<strong>Input Block Size</strong>。
+</p>
+
+<p>
+    举例一：假如输入的总数据量（Input Size）是800-bit(100-byte)，使MD5算法，每一次处理的数据量（Input Block Size）是512-bit (64-byte)，则需要处理两次，第一次处理输入数据的前512-bit (64-byte)，第二次处理输入数据的剩余288-bit(36-byte)。
+</p>
+
+<p>
+    举例二：假如输入的总数据量（Input Size）是256-bit(32-byte)，使MD5算法，每一次处理的数据量（Input Block Size）是512-bit (64-byte)，则需要处理一次，这一次就能处理全部的256-bit(32-byte)输入数据。
+</p>

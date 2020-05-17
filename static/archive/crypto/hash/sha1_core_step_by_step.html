@@ -1,0 +1,321 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">SHA1 Core: (3) Step By Step</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>第一步，定义常量</h2>
+
+<p>SHA1Const.java: SHA1_XXX_SIZE</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="color:#3F7F5F">// File SHA1Const.java</span>
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA1_BLOCK_SIZE = 64;
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA1_OUTPUT_SIZE = 20;
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA1_RESULT_SIZE = 5;
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA1_PADDING_THRESHOLD = 56;</pre>
+
+
+<h2>第二步，准备初始Hash值</h2>
+
+<p>SHA1Const.java: SHA1_INITIAL_HASH</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="color:#3F7F5F">// File SHA1Const.java</span>
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA1_INITIAL_HASH[] = <span style="font-weight:bold;color:#D3171B">{</span>
+        0x67452301,
+        0xefcdab89,
+        0x98badcfe,
+        0x10325476,
+        0xc3d2e1f0
+<span style="font-weight:bold;color:#D3171B">}</span>;</pre>
+
+<h2>第三步，输入数据padding</h2>
+
+<p>SHA1 Padding</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] sha1_padding(<span style="font-weight:bold;color:#7B0052;">long</span> input_length) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">long</span> length_in_bits = input_length * 8;
+        <span style="font-weight:bold;color:#7B0052;">int</span> remainder = (<span style="font-weight:bold;color:#7B0052;">int</span>) (input_length % SHA1Const.SHA1_BLOCK_SIZE);
+
+        <span style="font-weight:bold;color:#7B0052;">int</span> size = (remainder &gt;= SHA1Const.SHA1_PADDING_THRESHOLD) ?
+                (2 * SHA1Const.SHA1_BLOCK_SIZE - remainder) :
+                (SHA1Const.SHA1_BLOCK_SIZE - remainder);
+
+
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] padding_bytes = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[size];
+        <span style="color:#3F7F5F">// (1) 设置第1个bit为1</span>
+        padding_bytes[0] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x80;
+
+        <span style="color:#3F7F5F">// (2) 中间的bit默认为0,不需要设置</span>
+
+        <span style="color:#3F7F5F">// (3)设置最后64 bit为原始输入数据的长度 big-endian</span>
+        padding_bytes[size - 8] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 56) & 0xFF);
+        padding_bytes[size - 7] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 48) & 0xFF);
+        padding_bytes[size - 6] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 40) & 0xFF);
+        padding_bytes[size - 5] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 32) & 0xFF);
+        padding_bytes[size - 4] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 24) & 0xFF);
+        padding_bytes[size - 3] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 16) & 0xFF);
+        padding_bytes[size - 2] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 8) & 0xFF);
+        padding_bytes[size - 1] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (length_in_bits & 0xFF);
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> padding_bytes;
+    <span style="font-weight:bold;color:#D3171B">}</span></pre>
+
+<h2>第四步，算法轮廓</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] sha1_hash(<span style="font-weight:bold;color:#7B0052;">byte</span>[] input, <span style="font-weight:bold;color:#7B0052;">int</span> input_length) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="color:#3F7F5F">// (1) 初始化SHA1的Hash值</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span>[] hash = Arrays.copyOf(SHA1Const.SHA1_INITIAL_HASH, SHA1Const.SHA1_RESULT_SIZE);
+
+        <span style="color:#3F7F5F">// (2) 对input进行padding</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] padding_bytes = sha1_padding(input_length);
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] all_bytes = concatenate(input, padding_bytes);
+
+        <span style="color:#3F7F5F">// (3) 对于512-bit(64-byte)的数据进行操作</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input_block = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[SHA1Const.SHA1_BLOCK_SIZE];
+        <span style="font-weight:bold;color:#7B0052;">int</span> quotient = all_bytes.length / SHA1Const.SHA1_BLOCK_SIZE;
+
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i = 0; i &lt; quotient; i++) <span style="font-weight:bold;color:#D3171B">{</span>
+            Arrays.fill(input_block, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0);
+            System.arraycopy(all_bytes, i * SHA1Const.SHA1_BLOCK_SIZE, input_block, 0, SHA1Const.SHA1_BLOCK_SIZE);
+            sha1_block_operate(input_block, hash);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        <span style="color:#3F7F5F">// (4) 返回结果</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> encode(hash);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+
+<p>
+    concatenate方法
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] concatenate(<span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes1, <span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes2) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> len1 = bytes1.length;
+        <span style="font-weight:bold;color:#7B0052;">int</span> len2 = bytes2.length;
+
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] result_bytes = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[len1 + len2];
+
+        System.arraycopy(bytes1, 0, result_bytes, 0, len1);
+        System.arraycopy(bytes2, 0, result_bytes, len1, len2);
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> result_bytes;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<p>
+    encode方法
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] encode(<span style="font-weight:bold;color:#7B0052;">int</span>[] hash) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[SHA1Const.SHA1_OUTPUT_SIZE];
+
+        bytes[0] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[0] &gt;&gt;&gt; 24) & 0xFF);
+        bytes[1] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[0] &gt;&gt;&gt; 16) & 0xFF);
+        bytes[2] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[0] &gt;&gt;&gt; 8) & 0xFF);
+        bytes[3] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (hash[0] & 0xFF);
+
+        bytes[4] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[1] &gt;&gt;&gt; 24) & 0xFF);
+        bytes[5] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[1] &gt;&gt;&gt; 16) & 0xFF);
+        bytes[6] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[1] &gt;&gt;&gt; 8) & 0xFF);
+        bytes[7] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (hash[1] & 0xFF);
+
+        bytes[8] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[2] &gt;&gt;&gt; 24) & 0xFF);
+        bytes[9] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[2] &gt;&gt;&gt; 16) & 0xFF);
+        bytes[10] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[2] &gt;&gt;&gt; 8) & 0xFF);
+        bytes[11] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (hash[2] & 0xFF);
+
+        bytes[12] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[3] &gt;&gt;&gt; 24) & 0xFF);
+        bytes[13] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[3] &gt;&gt;&gt; 16) & 0xFF);
+        bytes[14] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[3] &gt;&gt;&gt; 8) & 0xFF);
+        bytes[15] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (hash[3] & 0xFF);
+
+        bytes[16] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[4] &gt;&gt;&gt; 24) & 0xFF);
+        bytes[17] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[4] &gt;&gt;&gt; 16) & 0xFF);
+        bytes[18] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[4] &gt;&gt;&gt; 8) & 0xFF);
+        bytes[19] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (hash[4] & 0xFF);
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> bytes;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<h2>第五步，block operation</h2>
+
+<p>
+    The <strong>block operation</strong> starts
+    by <strong>breaking the 512-bit input into 16 four-byte values x</strong>, then <strong>compute 80 four-byte W values from the original input</strong> where the following is rotated left once:
+    <strong>W[0&lt;t&lt;16] = x[t]</strong>, and <strong>W[17&lt;7&lt;80] = W[t–3] xor W[t–8] xor W[t–14] xor W[t–16]</strong>.
+    <sub class="my_note" style="color:blue">笔记：block operation先生成16 four-byte的x，再生成80 four-byte的W。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    This <strong>W</strong> array serves the same purpose as <a href="/archive/crypto/hash/md5_constant.html">the 4294967296 * abs(sin(i)) computation</a>
+    in MD5, but is a bit easier to compute and is also based on the input.
+    <sub class="my_note" style="color:blue">笔记：这段话需要熟悉MD5算法的计算过程，才能理解。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    After that, the hash is split up into five four-byte values a, b, c, d, and e,
+    which are operated on in a series of 80 rounds, similar to the operation in
+    MD5 — although in this case, somewhat easier to implement in a loop.
+</p>
+
+<p>
+    You don’t really have to try to make sense of the mechanics of this. It’s supposed
+    to be impossible to do so. As long as the details are correct, you can safely
+    think of the block operation function as a true black-box function.
+    <sub class="my_note" style="color:blue">笔记：这里说明了非常重要的一点，我们需要去理解这个算法的每一个步骤是如何计算的，但是并不需要给其中的每一个步骤都赋予一定的理由和意义，例如“这一步为什么要这样计算呢”？因为这个计算过程本身的目的，就是为了将“数据”进行打散，越散乱越好。当然，在这个算法当中，我们选用了这些步骤；但是，如果由我们自己来设计算法的话，完全可以选择自己想使用的步骤。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> sha1_block_operate(<span style="font-weight:bold;color:#7B0052;">byte</span>[] input_block, <span style="font-weight:bold;color:#7B0052;">int</span>[] hash) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span>[] x = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">int</span>[16];
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i = 0; i &lt; 16; i++) <span style="font-weight:bold;color:#D3171B">{</span>
+            x[i] =  ((input_block[(i * 4) + 0] & 0xFF) &lt;&lt; 24) |
+                    ((input_block[(i * 4) + 1] & 0xFF) &lt;&lt; 16) |
+                    ((input_block[(i * 4) + 2] & 0xFF) &lt;&lt; 8) |
+                    ((input_block[(i * 4) + 3] & 0xFF) &lt;&lt; 0);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        <span style="font-weight:bold;color:#7B0052;">int</span>[] W = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">int</span>[80];
+        <span style="color:#3F7F5F">// First 16 blocks of W are the original 16 blocks of the input</span>
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i = 0; i &lt; 80; i++) <span style="font-weight:bold;color:#D3171B">{</span>
+            <span style="font-weight:bold;color:#7B0052;">if</span> (i &lt; 16) <span style="font-weight:bold;color:#D3171B">{</span>
+                W[i] = x[i];
+            <span style="font-weight:bold;color:#D3171B">}</span> <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#D3171B">{</span>
+                W[i] = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
+                <span style="color:#3F7F5F">// Rotate left operation</span>
+                W[i] = (W[i] &lt;&lt; 1) | ((W[i] &gt;&gt;&gt; 31) & 0x01);
+            <span style="font-weight:bold;color:#D3171B">}</span>
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        <span style="font-weight:bold;color:#7B0052;">int</span> a = hash[0];
+        <span style="font-weight:bold;color:#7B0052;">int</span> b = hash[1];
+        <span style="font-weight:bold;color:#7B0052;">int</span> c = hash[2];
+        <span style="font-weight:bold;color:#7B0052;">int</span> d = hash[3];
+        <span style="font-weight:bold;color:#7B0052;">int</span> e = hash[4];
+
+        <span style="color:#3F7F5F">// TODO: 这里进行80次操作，是需要解决的问题</span>
+
+        hash[0] += a;
+        hash[1] += b;
+        hash[2] += c;
+        hash[3] += d;
+        hash[4] += e;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+
+
+<h2>第六步，80 rounds</h2>
+
+<p>
+    At each stage, a rotation, an addition of another hash integer, an addition of an indexed
+    constant, an addition of the W array, and an addition of a function whose operation
+    depends on the round number is applied to the active hash value, and then
+    the hash values are cycled so that a new one becomes the active one.
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> t = 0; t &lt; 80; t++) <span style="font-weight:bold;color:#D3171B">{</span>
+            <span style="color:#3F7F5F">// NOTE: 这里我曾经遇到过个一个问题，之前我使用"a &gt;&gt; 27"，结果总是不对，当我换成"a &gt;&gt;&gt; 27"之后，结果才正确</span>
+            <span style="color:#3F7F5F">// 这个问题，就很好的说明了&gt;&gt; 和 &gt;&gt;&gt; 两者之间的区别</span>
+            <span style="font-weight:bold;color:#7B0052;">int</span> rotation = ((a &lt;&lt; 5) | (a &gt;&gt;&gt; 27));
+            <span style="font-weight:bold;color:#7B0052;">int</span> constant = SHA1Const.k[(t / 20)];
+            <span style="font-weight:bold;color:#7B0052;">int</span> w = W[t];
+
+            <span style="font-weight:bold;color:#7B0052;">int</span> function_value;
+            <span style="font-weight:bold;color:#7B0052;">if</span> (t &lt;= 19) <span style="font-weight:bold;color:#D3171B">{</span>
+                function_value = ch(b, c, d);
+            <span style="font-weight:bold;color:#D3171B">}</span> <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#7B0052;">if</span> (t &lt;= 39) <span style="font-weight:bold;color:#D3171B">{</span>
+                function_value = parity(b, c, d);
+            <span style="font-weight:bold;color:#D3171B">}</span> <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#7B0052;">if</span> (t &lt;= 59) <span style="font-weight:bold;color:#D3171B">{</span>
+                function_value = maj(b, c, d);
+            <span style="font-weight:bold;color:#D3171B">}</span> <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#D3171B">{</span>
+                function_value = parity(b, c, d);
+            <span style="font-weight:bold;color:#D3171B">}</span>
+
+            <span style="font-weight:bold;color:#7B0052;">int</span> temp = rotation + e + constant + w + function_value;
+
+            e = d;
+            d = c;
+            c = ((b &lt;&lt; 30) | (b &gt;&gt;&gt; 2)); <span style="color:#3F7F5F">// NOTE: 这里要用&gt;&gt;&gt;，而不能用&gt;&gt;，因为当b为负数时，就会出现错误结果。或者使用c = Integer.rotateLeft(b, 30);</span>
+            b = a;
+            a = temp;
+        <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<p>
+    在上述代码中，引用到了<code style="color:blue">SHA1Const.java</code>的<code style="color:blue">k</code>变量，定义如下：
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> k[] = <span style="font-weight:bold;color:#D3171B">{</span>
+            0x5a827999, <span style="color:#3F7F5F">// 0 &lt;= t &lt;= 19</span>
+            0x6ed9eba1, <span style="color:#3F7F5F">// 20 &lt;= t &lt;= 39</span>
+            0x8f1bbcdc, <span style="color:#3F7F5F">// 40 &lt;= t &lt;= 59</span>
+            0xca62c1d6 <span style="color:#3F7F5F">// 60 &lt;= t &lt;= 79</span>
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+</pre>
+
+<p>
+    同样，在80 rounds部分的代码中，也用了<code style="color:blue">ch</code>、<code style="color:blue">parity</code>和<code style="color:blue">maj</code>三个方法。
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="color:#3F7F5F">// ch is functions 0 - 19</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> ch(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> y, <span style="font-weight:bold;color:#7B0052;">int</span> z) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> (x & y) ^ (~x & z);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="color:#3F7F5F">// parity is functions 20 - 39 & 60 - 79</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> parity(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> y, <span style="font-weight:bold;color:#7B0052;">int</span> z) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> x ^ y ^ z;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="color:#3F7F5F">// maj is functions 40 - 59</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> maj(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> y, <span style="font-weight:bold;color:#7B0052;">int</span> z) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> (x & y) ^ (x & z) ^ (y & z);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<p>
+    The functions <code style="color:blue">ch</code>, <code style="color:blue">maj</code>, and <code style="color:blue">parity</code> are defined: <code style="color:blue">ch</code> for rounds 0–19, <code style="color:blue">maj</code>
+    for rounds 40–59, and <code style="color:blue">parity</code> for the remaining rounds.
+    These functions just shuffle the bits of their input
+    randomly.
+</p>
+
+<h2>第七步，进行测试</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.nio.charset.StandardCharsets;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.util.Formatter;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> SHA1Test <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#D3171B">{</span>
+        String example_str = <span style="color:#2A00FF">"The quick brown fox jumps over the lazy dog"</span>;
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input = example_str.getBytes(StandardCharsets.UTF_8);
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] digest = SHA1Utils.sha1_hash(input, input.length);
+
+        String hex_str = toHex(digest);
+        System.out.println(hex_str);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> String toHex(<span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+        StringBuilder sb = <span style="font-weight:bold;color:#7B0052;">new</span> StringBuilder();
+        Formatter fm = <span style="font-weight:bold;color:#7B0052;">new</span> Formatter(sb);
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">byte</span> b : bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+            fm.format(<span style="color:#2A00FF">"%02X "</span>, (b & 0xFF));
+        <span style="font-weight:bold;color:#D3171B">}</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> sb.toString();
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<p>
+    输出结果为：
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">2F D4 E1 C6 7A 2D 28 FC ED 84 9E E1 BB 76 E7 39 1B 93 EB 12 </pre>

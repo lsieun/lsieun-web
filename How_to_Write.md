@@ -53,6 +53,7 @@ function toggle_all_sub_note() {
 <sub class="my_note" style="color:green">笔记：</sub>
 <sub class="my_note" style="color:green"></sub>
 In the same vein<sub class="my_note" style="color:green">以同样的方式</sub>
+<code style="color:blue"></code>
 ```
 
 选用颜色的原则：

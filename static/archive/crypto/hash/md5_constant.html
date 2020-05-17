@@ -1,0 +1,172 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">MD5 Constant</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>第1个问题：在哪儿出现？</h2>
+
+<p>
+    在计算MD5的过程中，会调用<code style="color:blue">round</code>方法，如下：
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> round(TriFunction&lt;Integer, Integer, Integer, Integer&gt; func,
+                            <span style="font-weight:bold;color:#7B0052;">int</span> a, <span style="font-weight:bold;color:#7B0052;">int</span> b, <span style="font-weight:bold;color:#7B0052;">int</span> c, <span style="font-weight:bold;color:#7B0052;">int</span> d,
+                            <span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> s, <span style="font-weight:bold;color:#7B0052;">int</span> ac) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> result1 = func.apply(b, c, d);
+        <span style="font-weight:bold;color:#7B0052;">int</span> result2 = result1 + a + x + ac;
+        <span style="font-weight:bold;color:#7B0052;">int</span> result3 = rotate_left(result2, s);
+        <span style="font-weight:bold;color:#7B0052;">int</span> result4 = result3 + b;
+        <span style="font-weight:bold;color:#7B0052;">return</span> result4;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+在对<code style="color:blue">round</code>方法进行调用时，我们注意最后一个参数是一个常量值（0xd76aa478），如下：
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="color:#3F7F5F">/* Round 1 */</span>
+a = round(MD5Utils::F, a, b, c, d, x[0], 7, 0xd76aa478); <span style="color:#3F7F5F">/* 1 */</span></pre>
+
+<h2>第2个问题：如何计算？</h2>
+
+<p>
+    事实上，这些常量并不是随机的，而是根据<code>4294967296 * abs(sin(i))</code>得来的。
+</p>
+
+<p>
+    其中，4294967296也并不是随机选取的，是由1左移32位得到的。
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">long</span> val = 1L &lt;&lt; 32;
+System.out.println(val); <span style="color:#3F7F5F">// 4294967296</span>
+</pre>
+
+<p>
+    完整的计算代码：
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#D3171B">{</span>
+        String format = <span style="color:#2A00FF">"%03d: %08x"</span>;
+        <span style="font-weight:bold;color:#7B0052;">long</span> total = 1L &lt;&lt; 32;
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i = 1; i &lt;= 64; i++) <span style="font-weight:bold;color:#D3171B">{</span>
+            <span style="font-weight:bold;color:#7B0052;">long</span> val = (<span style="font-weight:bold;color:#7B0052;">long</span>) (total * Math.abs(Math.sin(i)));
+            String line = String.format(format, i, val);
+            System.out.println(line);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<p>
+    输出：
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">001: d76aa478
+002: e8c7b756
+003: 242070db
+004: c1bdceee
+005: f57c0faf
+006: 4787c62a
+007: a8304613
+008: fd469501
+009: 698098d8
+010: 8b44f7af
+011: ffff5bb1
+012: 895cd7be
+013: 6b901122
+014: fd987193
+015: a679438e
+016: 49b40821
+017: f61e2562
+018: c040b340
+019: 265e5a51
+020: e9b6c7aa
+021: d62f105d
+022: 02441453
+023: d8a1e681
+024: e7d3fbc8
+025: 21e1cde6
+026: c33707d6
+027: f4d50d87
+028: 455a14ed
+029: a9e3e905
+030: fcefa3f8
+031: 676f02d9
+032: 8d2a4c8a
+033: fffa3942
+034: 8771f681
+035: 6d9d6122
+036: fde5380c
+037: a4beea44
+038: 4bdecfa9
+039: f6bb4b60
+040: bebfbc70
+041: 289b7ec6
+042: eaa127fa
+043: d4ef3085
+044: 04881d05
+045: d9d4d039
+046: e6db99e5
+047: 1fa27cf8
+048: c4ac5665
+049: f4292244
+050: 432aff97
+051: ab9423a7
+052: fc93a039
+053: 655b59c3
+054: 8f0ccc92
+055: ffeff47d
+056: 85845dd1
+057: 6fa87e4f
+058: fe2ce6e0
+059: a3014314
+060: 4e0811a1
+061: f7537e82
+062: bd3af235
+063: 2ad7d2bb
+064: eb86d391</pre>
+
+<h2>第3个问题：这些常量的作用是什么？</h2>
+
+<p>
+    在<code style="color:blue">round</code>方法中，这些常量是用<code style="color:blue">ac</code>来表示的。
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> round(TriFunction&lt;Integer, Integer, Integer, Integer&gt; func,
+                            <span style="font-weight:bold;color:#7B0052;">int</span> a, <span style="font-weight:bold;color:#7B0052;">int</span> b, <span style="font-weight:bold;color:#7B0052;">int</span> c, <span style="font-weight:bold;color:#7B0052;">int</span> d,
+                            <span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> s, <span style="font-weight:bold;color:#7B0052;">int</span> ac) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> result1 = func.apply(b, c, d);
+        <span style="font-weight:bold;color:#7B0052;">int</span> result2 = result1 + a + x + ac;
+        <span style="font-weight:bold;color:#7B0052;">int</span> result3 = rotate_left(result2, s);
+        <span style="font-weight:bold;color:#7B0052;">int</span> result4 = result3 + b;
+        <span style="font-weight:bold;color:#7B0052;">return</span> result4;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<p>
+    这些常量的作用，会让“原来的结果”产生一定的偏移量，这个偏移量会增加最终计算结果的随机性和不可逆性。
+</p>
+
+<h2>第4个问题：全部的值是多少？</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span>[] K_array = <span style="font-weight:bold;color:#D3171B">{</span>
+            0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
+            0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
+            0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
+            0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
+            0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
+            0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
+            0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
+            0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
+            0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
+            0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
+            0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
+            0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
+            0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
+            0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
+            0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
+            0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+</pre>
+

@@ -1,0 +1,507 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">MD5 Core: (3) Step By Step</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>第1步，输入和输出数据分析</h2>
+
+<table border="1" width="100%" style="text-align: center; border-collapse: collapse;">
+    <caption>MD5输入数据和输出数据</caption>
+    <thead>
+    <tr>
+        <th>Hash</th>
+        <th>Input Block Size</th>
+        <th>Output Size</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>MD5</td>
+        <td>512-bit (64-byte)</td>
+        <td>128-bit (16-byte)</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    在MD5算法中，可输入的总数据量（Input Size）是任意长度的，但它每一次处理的数据量（Input Block Size）是固定的512-bit (64-byte)，并且最后输出数据（Output Size）也是固定的128-bit (16-byte)。
+</p>
+
+<p>
+    根据Input Block Size和Output Size这两个信息，可以定义如下两个变量：
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> MD5Const <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> MD5_BLOCK_SIZE = 64;
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> MD5_OUTPUT_SIZE = 16;
+<span style="font-weight:bold;color:#D3171B">}</span></pre>
+
+<p>
+    更进一步地说，MD5算法就是围绕着“512-bit (64-byte)的Input Block”和“128-bit (16-byte)的Hash值”这两个核心数据来进行各种操作。
+</p>
+
+<h2>第2步，输入数据的padding</h2>
+
+<p>
+    <span style="color:red">注意：</span> 我们一定要分清两个概念：Input和Input Block。Input是输入数据，可以是任意长度，而Input Block是MD5算法每一次能够处理的数据量，是512-bit (64-byte)，这512-bit (64-byte)数据是源自于输入数据的。
+</p>
+
+<p>
+    我们知道，输入数据是任意长度的，但MD5算法每一次处理的数据量是512-bit (64-byte)。如果我们停下来，稍微思考一下，就会发现一个问题：输入数据长度是任意的，它可能小于512-bit (64-byte)，也可能大于512-bit (64-byte)，不一定正好就是512-bit (64-byte)的倍数，这样的话，就不满足MD5算法每次处理512-bit (64-byte)的要求了。
+</p>
+
+<p>
+    其实，解决这样的问题也很简单。对于不足512-bit (64-byte)的输入数据，那么补充一些数据，让它达到512-bit (64-byte)数据就可以了。对于多于512-bit (64-byte)的数据，就把输入数据分割成多个512-bit (64-byte)数据进行处理，如果还有剩余的不足512-bit (64-byte)的数据，那就再补足到512-bit (64-byte)就可以了。这样补充数据的方法，就称之为padding。
+</p>
+
+<p>
+    事实上，即使输入数据正好是512-bit (64-byte)，也要进行padding。更进一步的说，无论输入数据长度是多少，都要进行padding，那么padding之后的数据长度，一定要是512-bit (64-byte)的整数倍。
+</p>
+
+<p>
+    对于MD5来说，padding也要遵循一定的规则。那么这个规则到底是什么呢？
+</p>
+
+<p>
+    MD5的padding由三部分组成：第一部分，占用1 bit，值为1；第二部分，占用若干bit，值为0；第三部分，占用64-bit(8-byte)，值为原始输入数据的长度。
+</p>
+
+<p>
+    在这个padding规则中，有两种情况需要处理：第一种情况，就是小于448-bit(56-byte)时，只要补足到512-bit(64-byte)就可以了；第二种情况，就是大于等于448-bit(56-byte)，并且小于512-bit(64-byte)时，它剩余的空间不足以存放64-bit(8-byte)的原始数据长度，因此需要额外的512-byte(64-byte)空间来实现padding。
+</p>
+
+<p>
+    在<code style="color:blue">MD5Const.java</code>文件中，添加<code style="color:blue">MD5_PADDING_THRESHOLD</code>变量，具体如下：
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> MD5_PADDING_THRESHOLD = 56;</pre>
+
+<p>
+    在<code style="color:blue">MD5Utils.java</code>文件中，添加<code style="color:blue">md5_padding</code>方法，具体如下：
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] md5_padding(<span style="font-weight:bold;color:#7B0052;">long</span> input_length) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">long</span> length_in_bits = input_length * 8;
+        <span style="font-weight:bold;color:#7B0052;">int</span> remainder = (<span style="font-weight:bold;color:#7B0052;">int</span>)(input_length % MD5Const.MD5_BLOCK_SIZE);
+
+        <span style="font-weight:bold;color:#7B0052;">int</span> size;
+        <span style="font-weight:bold;color:#7B0052;">if</span> (remainder &gt;= MD5Const.MD5_PADDING_THRESHOLD) <span style="font-weight:bold;color:#D3171B">{</span>
+            size = 2 * MD5Const.MD5_BLOCK_SIZE - remainder;
+
+        <span style="font-weight:bold;color:#D3171B">}</span> <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#D3171B">{</span>
+            size = MD5Const.MD5_BLOCK_SIZE - remainder;
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] padding_bytes = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[size];
+        <span style="color:#3F7F5F">// (1) 设置第1个bit为1</span>
+        padding_bytes[0] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x80;
+
+        <span style="color:#3F7F5F">// (2) 中间的bit默认为0,不需要设置</span>
+
+        <span style="color:#3F7F5F">// (3)设置最后64 bit为原始输入数据的长度 little-endian</span>
+        padding_bytes[size - 1] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 56) & 0xFF);
+        padding_bytes[size - 2] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 48) & 0xFF);
+        padding_bytes[size - 3] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 40) & 0xFF);
+        padding_bytes[size - 4] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 32) & 0xFF);
+        padding_bytes[size - 5] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 24) & 0xFF);
+        padding_bytes[size - 6] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 16) & 0xFF);
+        padding_bytes[size - 7] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 8) & 0xFF);
+        padding_bytes[size - 8] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (length_in_bits & 0xFF);
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> padding_bytes;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<p>
+    If you need to encrypt less than 512 bits, or a bit string that’s not an even multiple
+    of 512 bits, you pad the last block. However, you can’t just pad with 0’s or just
+    with 1’s. Remember, 512 0’s is a legitimate input to MD5. So is one 0. You need
+    some way to ensure that 512 0’s hashes to a different value than one 0. Therefore,
+    <strong>MD5 requires that the last eight bytes of the input be set to the length, in bits</strong>
+    (remember that you may want to hash a value that’s not an even multiple of eight
+    bits) of the input preceding it. This means that MD5 is essentially undefined for
+    lengths greater than 2<sup>64</sup> bits, and that if the input happens to be between 448
+    (512 – 64) and 512 bits, you need to add an extra 512-bit block of padding just to
+    store the length. <strong>A sole “1” bit follows the last bit of input, followed by enough
+    0’s to pad up to 448 bits, followed by the length of the message itself in bits.</strong>
+</p>
+
+<p>
+    According to the specification, if the length is greater than 2<sup>64</sup> bits,
+    you can throw away the high-order bits of the length.
+</p>
+
+<h2>
+    第3步，初始的Hash值
+    <sub class="my_note" style="color:blue">笔记：这里是针对128-bit (16-byte)的Hash值</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</h2>
+
+<p>
+    MD5 operates on 512-bit (64-byte) blocks of input. Each block is reduced to a
+    128-bit (16-byte) hash.
+</p>
+
+<p>
+    从最后的输出结果来看，在MD5算法生成的hash值是128-bit (16-byte)的数据。
+</p>
+
+<p>
+    从整个算法执行的过程来看，它抽象为这样一个过程：初始的128-bit (16-byte) Hash值，经过MD5算法的演算，生成最终的128-bit (16-byte) Hash值。
+</p>
+
+<div class="w3-panel w3-leftbar w3-light-grey">
+    <p>
+        Initial Hash --> MD5 Algorithm --> Final Hash
+    </p>
+</div>
+
+<p>
+    那<b>初始的Hash值</b>究竟取何值？取如下值：
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="color:#3F7F5F">// File: MD5Const.java</span>
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span>[] MD5_INITIAL_HASH = <span style="font-weight:bold;color:#D3171B">{</span>
+    0x67452301,
+    0xefcdab89,
+    0x98badcfe,
+    0x10325476
+<span style="font-weight:bold;color:#D3171B">}</span>;</pre>
+
+<p>
+    这个初始值是由<code>0123456789abcdef</code>变化而来。至于为什么要选取这样一个值呢？其实，这个值本身并没有更深层次的原因，只是在RFC 1321当中规定使它。从算法实现的角度来说，选取任何值都是可以的，只要所有人在实现MD5算法的时候都选取同一个值就是可以的。
+</p>
+
+<h2>
+    第4步，MD5算法概览
+</h2>
+
+<p>
+    MD5 operates on 512-bit (64-byte) blocks of input. Each block is reduced to a
+    128-bit (16-byte) hash.
+</p>
+
+<p>
+    If the message to be hashed is greater than 512 bits, each 512-bit block is hashed
+    independently and the hashes are added together, being allowed to overflow, and
+    the result is the final sum.
+</p>
+
+<p>
+    如果我们有了128-bit (16-byte)的Hash数据和512-bit (64-byte)的输入数据，那么接下来该怎么办呢？
+</p>
+
+<p>
+    MD5 applies 64 transformations to each input block.
+    It first splits the input into 16 32-bit chunks, and the current hash into four
+    32-bit chunks referred to tersely as A, B, C, and D in the specification. Most of
+    the operations are done on A, B, C, and D.
+</p>
+
+<p>
+    After all 64 operations, the final values of A, B, C, and D are concatenated
+    together to become the hash of a 512-bit input block.
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> MD5Utils <span style="font-weight:bold;color:#D3171B">{</span>
+
+    <span style="color:#3F5FBF">/**
+     * @param input 512-bit (64-byte)的输入数据
+     * @param hash 128-bit (16-byte)的Hash数据
+     */</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> md5_block_operate(<span style="font-weight:bold;color:#7B0052;">byte</span>[] input, <span style="font-weight:bold;color:#7B0052;">int</span>[] hash) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> a = hash[0];
+        <span style="font-weight:bold;color:#7B0052;">int</span> b = hash[1];
+        <span style="font-weight:bold;color:#7B0052;">int</span> c = hash[2];
+        <span style="font-weight:bold;color:#7B0052;">int</span> d = hash[3];
+
+        <span style="font-weight:bold;color:#7B0052;">int</span>[] x = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">int</span>[16];
+        <span style="color:#3F7F5F">// 第5步，将512-bit (64-byte)的input数据放入到x数组中</span>
+
+        <span style="color:#3F7F5F">// 第6步，进行64次操作</span>
+
+        hash[0] += a;
+        hash[1] += b;
+        hash[2] += c;
+        hash[3] += d;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span></pre>
+
+<ol>
+    <li>将hash分配到a,b,c,d这4个变量中</li>
+    <li>将input分配到16个int的数组x中</li>
+    <li>对a,b,c,d,x这些数据进行64次操作</li>
+    <li>将a,b,c,d这4个变量加回hash当中</li>
+</ol>
+
+<h2>第5步，将input数据转换成int数组</h2>
+
+<p>
+    Splits the input into 16 32-bit chunks.
+</p>
+
+<p>
+    在Java语言中，int占用32-bit(4 byte)。因此，对于512-bit(64-byte)的数据，可以使用长度为16的int数组来装载。
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">        <span style="font-weight:bold;color:#7B0052;">int</span>[] x = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">int</span>[16];
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i = 0; i &lt; 16; i++) <span style="font-weight:bold;color:#D3171B">{</span>
+            <span style="color:#3F7F5F">// NOTE: 这里是容易出错的地方，如果省略了"& 0xFF"操作，计算结果就会不正确</span>
+            x[i] = (input[(i * 4 + 3)] & 0xFF) &lt;&lt; 24 |
+                    (input[(i * 4 + 2)] & 0xFF) &lt;&lt; 16 |
+                    (input[(i * 4 + 1)] & 0xFF) &lt;&lt; 8 |
+                    (input[(i * 4)] & 0xFF);
+        <span style="font-weight:bold;color:#D3171B">}</span></pre>
+
+<p>
+    Note that MD5, unlike any of the other cryptographic algorithms, operates
+    on <span style="color:red">little-endian</span> numbers.
+</p>
+
+<h2>第6步，进行64次操作</h2>
+
+<p>
+    Unlike cryptographic algorithms, though, message digests do not have to be
+    reversible — in fact, this irreversibility is the whole point. Therefore, algorithm
+    designers do not have to be nearly as cautious with the number and type of
+    operations they apply to the input. The more operations, in fact, the better; this
+    is because operations make it more difficult for an attacker to work backward
+    from a hash to a message.
+</p>
+
+<p>
+    The 64 operations themselves consist of 16 repetitions of the four bit
+    flipping functions F, G, H, and I.
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> F(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> y, <span style="font-weight:bold;color:#7B0052;">int</span> z) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> (x & y) | (~x & z);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> G(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> y, <span style="font-weight:bold;color:#7B0052;">int</span> z) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> (x & z) | (y & ~z);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> H(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> y, <span style="font-weight:bold;color:#7B0052;">int</span> z) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> (x ^ y ^ z);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> I(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> y, <span style="font-weight:bold;color:#7B0052;">int</span> z) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> y ^ (x | ~z);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<p>
+    The purpose of these functions is simply to shuffle bits in an unpredictable
+    way; don’t look for any deep meaning here.
+</p>
+
+<p>
+    So, what are the inputs to F, G, H, and I?
+    They’re actually permutations<sub class="my_note" style="color:green">排列（方式）；组合（方式） any of the different ways in which a set of things can be ordered</sub> of A, B, C, and D — remember that the
+    hash was referred to as A, B, C, and D.<sub class="my_note" style="color:blue">笔记：这是在探讨方法的输入</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    The results of F, G, H, and I are added to
+    A, B, C, and D along with each of the input blocks, as well as a set of constants,
+    shifted, and added again. In all cases, adds are performed modulo 32 — that is,
+    they’re allowed to silently overflow in a 32-bit register.<sub class="my_note" style="color:blue">笔记：这是在探讨方法的输出</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">@FunctionalInterface
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">interface</span> TriFunction&lt;S, T, U, R&gt; <span style="font-weight:bold;color:#D3171B">{</span>
+    R apply(S s, T t, U u);
+<span style="font-weight:bold;color:#D3171B">}</span></pre>
+
+<p>
+    More specifically, each of the 64 transformations on A, B, C, and D involve
+    applying one of the four functions F, G, H, or I to some permutation of A, B, C,
+    or D, adding it to the other, adding the value of input block (i % 4), adding the
+    value of <code>4294967296 * abs(sin(i))</code>, rotating by a per-round amount, and adding
+    the whole mess to yet one more of the A, B, C, or D hash blocks.
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">private</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> rotate_left(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> n) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> (x &lt;&lt; n) | (x &gt;&gt;&gt; (32 - n));
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> round(TriFunction&lt;Integer, Integer, Integer, Integer&gt; f,
+                            <span style="font-weight:bold;color:#7B0052;">int</span> a, <span style="font-weight:bold;color:#7B0052;">int</span> b, <span style="font-weight:bold;color:#7B0052;">int</span> c, <span style="font-weight:bold;color:#7B0052;">int</span> d,
+                            <span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> s, <span style="font-weight:bold;color:#7B0052;">int</span> ac) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> result1 = f.apply(b, c, d);
+        <span style="font-weight:bold;color:#7B0052;">int</span> result2 = a + result1 + x + ac;
+        <span style="font-weight:bold;color:#7B0052;">int</span> result3 = rotate_left(result2, s);
+        <span style="font-weight:bold;color:#7B0052;">int</span> result4 = result3 + b;
+        <span style="font-weight:bold;color:#7B0052;">return</span> result4;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<p>
+    The function F is invoked 16 times — once for each input block — and then
+    G is invoked 16 times, and then H, and then I.
+</p>
+
+
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">        <span style="color:#3F7F5F">/* Round 1 */</span>
+        a = round(MD5Utils::F, a, b, c, d, x[0], 7, 0xd76aa478); <span style="color:#3F7F5F">/* 1 */</span>
+        d = round(MD5Utils::F, d, a, b, c, x[1], 12, 0xe8c7b756); <span style="color:#3F7F5F">/* 2 */</span>
+        c = round(MD5Utils::F, c, d, a, b, x[2], 17, 0x242070db); <span style="color:#3F7F5F">/* 3 */</span>
+        b = round(MD5Utils::F, b, c, d, a, x[3], 22, 0xc1bdceee); <span style="color:#3F7F5F">/* 4 */</span>
+        a = round(MD5Utils::F, a, b, c, d, x[4], 7, 0xf57c0faf); <span style="color:#3F7F5F">/* 5 */</span>
+        d = round(MD5Utils::F, d, a, b, c, x[5], 12, 0x4787c62a); <span style="color:#3F7F5F">/* 6 */</span>
+        c = round(MD5Utils::F, c, d, a, b, x[6], 17, 0xa8304613); <span style="color:#3F7F5F">/* 7 */</span>
+        b = round(MD5Utils::F, b, c, d, a, x[7], 22, 0xfd469501); <span style="color:#3F7F5F">/* 8 */</span>
+        a = round(MD5Utils::F, a, b, c, d, x[8], 7, 0x698098d8); <span style="color:#3F7F5F">/* 9 */</span>
+        d = round(MD5Utils::F, d, a, b, c, x[9], 12, 0x8b44f7af); <span style="color:#3F7F5F">/* 10 */</span>
+        c = round(MD5Utils::F, c, d, a, b, x[10], 17, 0xffff5bb1); <span style="color:#3F7F5F">/* 11 */</span>
+        b = round(MD5Utils::F, b, c, d, a, x[11], 22, 0x895cd7be); <span style="color:#3F7F5F">/* 12 */</span>
+        a = round(MD5Utils::F, a, b, c, d, x[12], 7, 0x6b901122); <span style="color:#3F7F5F">/* 13 */</span>
+        d = round(MD5Utils::F, d, a, b, c, x[13], 12, 0xfd987193); <span style="color:#3F7F5F">/* 14 */</span>
+        c = round(MD5Utils::F, c, d, a, b, x[14], 17, 0xa679438e); <span style="color:#3F7F5F">/* 15 */</span>
+        b = round(MD5Utils::F, b, c, d, a, x[15], 22, 0x49b40821); <span style="color:#3F7F5F">/* 16 */</span>
+
+        <span style="color:#3F7F5F">/* Round 2 */</span>
+        a = round(MD5Utils::G, a, b, c, d, x[1], 5, 0xf61e2562); <span style="color:#3F7F5F">/* 17 */</span>
+        d = round(MD5Utils::G, d, a, b, c, x[6], 9, 0xc040b340); <span style="color:#3F7F5F">/* 18 */</span>
+        c = round(MD5Utils::G, c, d, a, b, x[11], 14, 0x265e5a51); <span style="color:#3F7F5F">/* 19 */</span>
+        b = round(MD5Utils::G, b, c, d, a, x[0], 20, 0xe9b6c7aa); <span style="color:#3F7F5F">/* 20 */</span>
+        a = round(MD5Utils::G, a, b, c, d, x[5], 5, 0xd62f105d); <span style="color:#3F7F5F">/* 21 */</span>
+        d = round(MD5Utils::G, d, a, b, c, x[10], 9, 0x2441453); <span style="color:#3F7F5F">/* 22 */</span>
+        c = round(MD5Utils::G, c, d, a, b, x[15], 14, 0xd8a1e681); <span style="color:#3F7F5F">/* 23 */</span>
+        b = round(MD5Utils::G, b, c, d, a, x[4], 20, 0xe7d3fbc8); <span style="color:#3F7F5F">/* 24 */</span>
+        a = round(MD5Utils::G, a, b, c, d, x[9], 5, 0x21e1cde6); <span style="color:#3F7F5F">/* 25 */</span>
+        d = round(MD5Utils::G, d, a, b, c, x[14], 9, 0xc33707d6); <span style="color:#3F7F5F">/* 26 */</span>
+        c = round(MD5Utils::G, c, d, a, b, x[3], 14, 0xf4d50d87); <span style="color:#3F7F5F">/* 27 */</span>
+        b = round(MD5Utils::G, b, c, d, a, x[8], 20, 0x455a14ed); <span style="color:#3F7F5F">/* 28 */</span>
+        a = round(MD5Utils::G, a, b, c, d, x[13], 5, 0xa9e3e905); <span style="color:#3F7F5F">/* 29 */</span>
+        d = round(MD5Utils::G, d, a, b, c, x[2], 9, 0xfcefa3f8); <span style="color:#3F7F5F">/* 30 */</span>
+        c = round(MD5Utils::G, c, d, a, b, x[7], 14, 0x676f02d9); <span style="color:#3F7F5F">/* 31 */</span>
+        b = round(MD5Utils::G, b, c, d, a, x[12], 20, 0x8d2a4c8a); <span style="color:#3F7F5F">/* 32 */</span>
+
+        <span style="color:#3F7F5F">/* Round 3 */</span>
+        a = round(MD5Utils::H, a, b, c, d, x[5], 4, 0xfffa3942); <span style="color:#3F7F5F">/* 33 */</span>
+        d = round(MD5Utils::H, d, a, b, c, x[8], 11, 0x8771f681); <span style="color:#3F7F5F">/* 34 */</span>
+        c = round(MD5Utils::H, c, d, a, b, x[11], 16, 0x6d9d6122); <span style="color:#3F7F5F">/* 35 */</span>
+        b = round(MD5Utils::H, b, c, d, a, x[14], 23, 0xfde5380c); <span style="color:#3F7F5F">/* 36 */</span>
+        a = round(MD5Utils::H, a, b, c, d, x[1], 4, 0xa4beea44); <span style="color:#3F7F5F">/* 37 */</span>
+        d = round(MD5Utils::H, d, a, b, c, x[4], 11, 0x4bdecfa9); <span style="color:#3F7F5F">/* 38 */</span>
+        c = round(MD5Utils::H, c, d, a, b, x[7], 16, 0xf6bb4b60); <span style="color:#3F7F5F">/* 39 */</span>
+        b = round(MD5Utils::H, b, c, d, a, x[10], 23, 0xbebfbc70); <span style="color:#3F7F5F">/* 40 */</span>
+        a = round(MD5Utils::H, a, b, c, d, x[13], 4, 0x289b7ec6); <span style="color:#3F7F5F">/* 41 */</span>
+        d = round(MD5Utils::H, d, a, b, c, x[0], 11, 0xeaa127fa); <span style="color:#3F7F5F">/* 42 */</span>
+        c = round(MD5Utils::H, c, d, a, b, x[3], 16, 0xd4ef3085); <span style="color:#3F7F5F">/* 43 */</span>
+        b = round(MD5Utils::H, b, c, d, a, x[6], 23, 0x4881d05); <span style="color:#3F7F5F">/* 44 */</span>
+        a = round(MD5Utils::H, a, b, c, d, x[9], 4, 0xd9d4d039); <span style="color:#3F7F5F">/* 45 */</span>
+        d = round(MD5Utils::H, d, a, b, c, x[12], 11, 0xe6db99e5); <span style="color:#3F7F5F">/* 46 */</span>
+        c = round(MD5Utils::H, c, d, a, b, x[15], 16, 0x1fa27cf8); <span style="color:#3F7F5F">/* 47 */</span>
+        b = round(MD5Utils::H, b, c, d, a, x[2], 23, 0xc4ac5665); <span style="color:#3F7F5F">/* 48 */</span>
+
+        <span style="color:#3F7F5F">/* Round 4 */</span>
+        a = round(MD5Utils::I, a, b, c, d, x[0], 6, 0xf4292244); <span style="color:#3F7F5F">/* 49 */</span>
+        d = round(MD5Utils::I, d, a, b, c, x[7], 10, 0x432aff97); <span style="color:#3F7F5F">/* 50 */</span>
+        c = round(MD5Utils::I, c, d, a, b, x[14], 15, 0xab9423a7); <span style="color:#3F7F5F">/* 51 */</span>
+        b = round(MD5Utils::I, b, c, d, a, x[5], 21, 0xfc93a039); <span style="color:#3F7F5F">/* 52 */</span>
+        a = round(MD5Utils::I, a, b, c, d, x[12], 6, 0x655b59c3); <span style="color:#3F7F5F">/* 53 */</span>
+        d = round(MD5Utils::I, d, a, b, c, x[3], 10, 0x8f0ccc92); <span style="color:#3F7F5F">/* 54 */</span>
+        c = round(MD5Utils::I, c, d, a, b, x[10], 15, 0xffeff47d); <span style="color:#3F7F5F">/* 55 */</span>
+        b = round(MD5Utils::I, b, c, d, a, x[1], 21, 0x85845dd1); <span style="color:#3F7F5F">/* 56 */</span>
+        a = round(MD5Utils::I, a, b, c, d, x[8], 6, 0x6fa87e4f); <span style="color:#3F7F5F">/* 57 */</span>
+        d = round(MD5Utils::I, d, a, b, c, x[15], 10, 0xfe2ce6e0); <span style="color:#3F7F5F">/* 58 */</span>
+        c = round(MD5Utils::I, c, d, a, b, x[6], 15, 0xa3014314); <span style="color:#3F7F5F">/* 59 */</span>
+        b = round(MD5Utils::I, b, c, d, a, x[13], 21, 0x4e0811a1); <span style="color:#3F7F5F">/* 60 */</span>
+        a = round(MD5Utils::I, a, b, c, d, x[4], 6, 0xf7537e82); <span style="color:#3F7F5F">/* 61 */</span>
+        d = round(MD5Utils::I, d, a, b, c, x[11], 10, 0xbd3af235); <span style="color:#3F7F5F">/* 62 */</span>
+        c = round(MD5Utils::I, c, d, a, b, x[2], 15, 0x2ad7d2bb); <span style="color:#3F7F5F">/* 63 */</span>
+        b = round(MD5Utils::I, b, c, d, a, x[9], 21, 0xeb86d391); <span style="color:#3F7F5F">/* 64 */</span>
+</pre>
+
+<h2>第7步，MD5 Final</h2>
+
+
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="color:#3F5FBF">/**
+     * @param input 原始输入数据，可以是任意长度
+     * @param len 输入数据的长度
+     * @return 数据的MD5 Hash值
+     */</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] md5_hash(<span style="font-weight:bold;color:#7B0052;">byte</span>[] input, <span style="font-weight:bold;color:#7B0052;">int</span> len) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="color:#3F7F5F">// (1) 初始化MD5的Hash值</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span>[] hash = Arrays.copyOf(MD5Const.MD5_INITIAL_HASH, 4);
+
+        <span style="color:#3F7F5F">// (2) 对于512-bit(64-byte)的数据进行操作</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input_block = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[MD5Const.MD5_BLOCK_SIZE];
+        <span style="font-weight:bold;color:#7B0052;">int</span> quotient = len / MD5Const.MD5_BLOCK_SIZE;
+        <span style="font-weight:bold;color:#7B0052;">int</span> remainder = len % MD5Const.MD5_BLOCK_SIZE;
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i = 0; i &lt; quotient; i++) <span style="font-weight:bold;color:#D3171B">{</span>
+            System.arraycopy(input, i * MD5Const.MD5_BLOCK_SIZE, input_block, 0, MD5Const.MD5_BLOCK_SIZE);
+            md5_block_operate(input_block, hash);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        <span style="color:#3F7F5F">// (3) 对于不够512-bit(64-byte)的数据进行操作</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> length_in_bits = len * 8;
+        <span style="font-weight:bold;color:#7B0052;">if</span> (remainder &gt;= MD5Const.MD5_PADDING_THRESHOLD) <span style="font-weight:bold;color:#D3171B">{</span>
+            Arrays.fill(input_block, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0);
+            System.arraycopy(input, quotient * MD5Const.MD5_BLOCK_SIZE, input_block, 0, remainder);
+            input_block[remainder] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x80;
+            md5_block_operate(input_block, hash);
+
+            Arrays.fill(input_block, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0);
+            fill_length_in_bits(input_block, length_in_bits);
+            md5_block_operate(input_block, hash);
+        <span style="font-weight:bold;color:#D3171B">}</span> <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#D3171B">{</span>
+            Arrays.fill(input_block, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0);
+            System.arraycopy(input, quotient * MD5Const.MD5_BLOCK_SIZE, input_block, 0, remainder);
+            input_block[remainder] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x80;
+            fill_length_in_bits(input_block, length_in_bits);
+            md5_block_operate(input_block, hash);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        <span style="color:#3F7F5F">// (4) 返回结果</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> encode(hash);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> fill_length_in_bits(<span style="font-weight:bold;color:#7B0052;">byte</span>[] input_block, <span style="font-weight:bold;color:#7B0052;">int</span> length_in_bits) <span style="font-weight:bold;color:#D3171B">{</span>
+        input_block[MD5Const.MD5_BLOCK_SIZE - 5] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits & 0xFF000000) &gt;&gt; 24);
+        input_block[MD5Const.MD5_BLOCK_SIZE - 6] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits & 0x00FF0000) &gt;&gt; 16);
+        input_block[MD5Const.MD5_BLOCK_SIZE - 7] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits & 0x0000FF00) &gt;&gt; 8);
+        input_block[MD5Const.MD5_BLOCK_SIZE - 8] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (length_in_bits & 0x000000FF);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] encode(<span style="font-weight:bold;color:#7B0052;">int</span>[] hash) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[16];
+
+        bytes[0] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (hash[0] & 0xff);
+        bytes[1] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[0] &gt;&gt;&gt; 8) & 0xff);
+        bytes[2] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[0] &gt;&gt;&gt; 16) & 0xff);
+        bytes[3] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[0] &gt;&gt;&gt; 24) & 0xff);
+
+        bytes[4] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (hash[1] & 0xff);
+        bytes[5] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[1] &gt;&gt;&gt; 8) & 0xff);
+        bytes[6] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[1] &gt;&gt;&gt; 16) & 0xff);
+        bytes[7] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[1] &gt;&gt;&gt; 24) & 0xff);
+
+        bytes[8] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (hash[2] & 0xff);
+        bytes[9] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[2] &gt;&gt;&gt; 8) & 0xff);
+        bytes[10] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[2] &gt;&gt;&gt; 16) & 0xff);
+        bytes[11] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[2] &gt;&gt;&gt; 24) & 0xff);
+
+        bytes[12] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (hash[3] & 0xff);
+        bytes[13] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[3] &gt;&gt;&gt; 8) & 0xff);
+        bytes[14] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[3] &gt;&gt;&gt; 16) & 0xff);
+        bytes[15] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[3] &gt;&gt;&gt; 24) & 0xff);
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> bytes;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+
