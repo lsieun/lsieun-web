@@ -1,10 +1,10 @@
 package lsieun.crypto.sha1;
 
 public class SHA1Const {
-    public static final int SHA1_PADDING_THRESHOLD = 56;
     public static final int SHA1_BLOCK_SIZE = 64;
     public static final int SHA1_OUTPUT_SIZE = 20;
     public static final int SHA1_RESULT_SIZE = 5;
+    public static final int SHA1_PADDING_THRESHOLD = 56;
 
     public static int SHA1_INITIAL_HASH[] = {
             0x67452301,

@@ -35,6 +35,24 @@ function toggle_all_sub_note() {
 </div>
 ```
 
+```html
+<div id="form" style="width:350px;">
+    <fieldset>
+        <legend style="color:blue;font-weight:bold;">General Information</legend>
+        <table>
+            <tr>
+                <td><span style="text-decoration:underline">C</span>hange Password To:</td>
+                <td><input type="text"/></td>
+            </tr>
+            <tr>
+                <td><span style="text-decoration:underline">C</span>onfirm Password:</td>
+                <td><input type="text"/></td>
+            </tr>
+        </table>
+    </fieldset>
+</div>
+```
+
 ## Image
 
 图片居中显示
@@ -43,6 +61,8 @@ function toggle_all_sub_note() {
 <div style="text-align: center">
     <img src="/images/usa/statue_of_liberty.jpeg" alt="the Statue of Liberty"/>
 </div>
+
+<img width="800" src="/images/crypto/rsa/rsa_padding.png" alt="RSA Padding"/>
 ```
 
 ## Color
@@ -54,6 +74,21 @@ function toggle_all_sub_note() {
 <sub class="my_note" style="color:green"></sub>
 In the same vein<sub class="my_note" style="color:green">以同样的方式</sub>
 <code style="color:blue"></code>
+<code class="w3-codespan"></code>
+```
+
+Code
+
+```html
+<div class="w3-panel w3-card w3-light-grey">
+  <h3>Example</h3>
+  <div class="w3-code notranslate">
+    fruits[0] = "Banana";<br>
+    fruits[1] = "Apple";<br>
+    fruits[2] = "Mango";<br>
+    fruits[3] = "Plum";<br>
+  </div>
+</div>
 ```
 
 选用颜色的原则：

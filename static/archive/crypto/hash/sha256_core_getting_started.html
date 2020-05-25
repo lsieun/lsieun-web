@@ -1,0 +1,257 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">SHA256 Core: (2) Getting Started</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>SHA256Const.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> SHA256Const <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA256_BLOCK_SIZE = 64;
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA256_OUTPUT_SIZE = 32;
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA256_RESULT_SIZE = 8;
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA256_PADDING_THRESHOLD = 56;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA256_INITIAL_HASH[] = <span style="font-weight:bold;color:#D3171B">{</span>
+            0x6a09e667,
+            0xbb67ae85,
+            0x3c6ef372,
+            0xa54ff53a,
+            0x510e527f,
+            0x9b05688c,
+            0x1f83d9ab,
+            0x5be0cd19
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span>[] k = <span style="font-weight:bold;color:#D3171B">{</span>
+            0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
+            0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+            0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
+            0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+            0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147,
+            0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+            0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b,
+            0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+            0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a,
+            0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+            0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<h2>SHA256Utils.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.util.Arrays;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> SHA256Utils <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] sha256_padding(<span style="font-weight:bold;color:#7B0052;">long</span> input_length) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">long</span> length_in_bits = input_length * 8;
+        <span style="font-weight:bold;color:#7B0052;">int</span> remainder = (<span style="font-weight:bold;color:#7B0052;">int</span>) (input_length % SHA256Const.SHA256_BLOCK_SIZE);
+
+        <span style="font-weight:bold;color:#7B0052;">int</span> size = (remainder &gt;= SHA256Const.SHA256_PADDING_THRESHOLD) ?
+                (2 * SHA256Const.SHA256_BLOCK_SIZE - remainder) :
+                (SHA256Const.SHA256_BLOCK_SIZE - remainder);
+
+
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] padding_bytes = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[size];
+        <span style="color:#3F7F5F">// (1) 设置第1个bit为1</span>
+        padding_bytes[0] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x80;
+
+        <span style="color:#3F7F5F">// (2) 中间的bit默认为0,不需要设置</span>
+
+        <span style="color:#3F7F5F">// (3)设置最后64 bit为原始输入数据的长度 big-endian</span>
+        padding_bytes[size - 8] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 56) & 0xFF);
+        padding_bytes[size - 7] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 48) & 0xFF);
+        padding_bytes[size - 6] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 40) & 0xFF);
+        padding_bytes[size - 5] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 32) & 0xFF);
+        padding_bytes[size - 4] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 24) & 0xFF);
+        padding_bytes[size - 3] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 16) & 0xFF);
+        padding_bytes[size - 2] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((length_in_bits &gt;&gt;&gt; 8) & 0xFF);
+        padding_bytes[size - 1] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (length_in_bits & 0xFF);
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> padding_bytes;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] sha256_hash(<span style="font-weight:bold;color:#7B0052;">byte</span>[] input, <span style="font-weight:bold;color:#7B0052;">int</span> input_length) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="color:#3F7F5F">// (1) 初始化SHA256的Hash值</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span>[] hash = Arrays.copyOf(SHA256Const.SHA256_INITIAL_HASH, SHA256Const.SHA256_RESULT_SIZE);
+
+        <span style="color:#3F7F5F">// (2) 对input进行padding</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] padding_bytes = sha256_padding(input_length);
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] all_bytes = concatenate(input, padding_bytes);
+
+        <span style="color:#3F7F5F">// (3) 对于512-bit(64-byte)的数据进行操作</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input_block = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[SHA256Const.SHA256_BLOCK_SIZE];
+        <span style="font-weight:bold;color:#7B0052;">int</span> quotient = all_bytes.length / SHA256Const.SHA256_BLOCK_SIZE;
+
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i = 0; i &lt; quotient; i++) <span style="font-weight:bold;color:#D3171B">{</span>
+            Arrays.fill(input_block, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0);
+            System.arraycopy(all_bytes, i * SHA256Const.SHA256_BLOCK_SIZE, input_block, 0, SHA256Const.SHA256_BLOCK_SIZE);
+            sha256_block_operate(input_block, hash);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        <span style="color:#3F7F5F">// (4) 返回结果</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> encode(hash);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] concatenate(<span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes1, <span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes2) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> len1 = bytes1.length;
+        <span style="font-weight:bold;color:#7B0052;">int</span> len2 = bytes2.length;
+
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] result_bytes = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[len1 + len2];
+
+        System.arraycopy(bytes1, 0, result_bytes, 0, len1);
+        System.arraycopy(bytes2, 0, result_bytes, len1, len2);
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> result_bytes;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] encode(<span style="font-weight:bold;color:#7B0052;">int</span>[] hash) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[SHA256Const.SHA256_OUTPUT_SIZE];
+
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i = 0; i &lt; SHA256Const.SHA256_OUTPUT_SIZE; i+=4) <span style="font-weight:bold;color:#D3171B">{</span>
+            <span style="font-weight:bold;color:#7B0052;">int</span> quotient = i / 4;
+            bytes[i + 0] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[quotient] &gt;&gt;&gt; 24) & 0xFF);
+            bytes[i + 1] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[quotient] &gt;&gt;&gt; 16) & 0xFF);
+            bytes[i + 2] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) ((hash[quotient] &gt;&gt;&gt; 8) & 0xFF);
+            bytes[i + 3] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) (hash[quotient] & 0xFF);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> bytes;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> sha256_block_operate(<span style="font-weight:bold;color:#7B0052;">byte</span>[] input_block, <span style="font-weight:bold;color:#7B0052;">int</span>[] hash) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span>[] W = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">int</span>[64];
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> t = 0; t &lt; 64; t++) <span style="font-weight:bold;color:#D3171B">{</span>
+            <span style="font-weight:bold;color:#7B0052;">if</span> (t &lt; 16) <span style="font-weight:bold;color:#D3171B">{</span>
+                W[t] = ((input_block[(t * 4)] & 0xFF) &lt;&lt; 24) |
+                        ((input_block[(t * 4) + 1] & 0xFF) &lt;&lt; 16) |
+                        ((input_block[(t * 4) + 2] & 0xFF) &lt;&lt; 8) |
+                        (input_block[(t * 4) + 3] & 0xFF);
+            <span style="font-weight:bold;color:#D3171B">}</span> <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#D3171B">{</span>
+                W[t] = sigma_shr(W[t - 2], 1) +
+                        W[t - 7] +
+                        sigma_shr(W[t - 15], 0) +
+                        W[t - 16];
+            <span style="font-weight:bold;color:#D3171B">}</span>
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        <span style="font-weight:bold;color:#7B0052;">int</span> a = hash[0];
+        <span style="font-weight:bold;color:#7B0052;">int</span> b = hash[1];
+        <span style="font-weight:bold;color:#7B0052;">int</span> c = hash[2];
+        <span style="font-weight:bold;color:#7B0052;">int</span> d = hash[3];
+        <span style="font-weight:bold;color:#7B0052;">int</span> e = hash[4];
+        <span style="font-weight:bold;color:#7B0052;">int</span> f = hash[5];
+        <span style="font-weight:bold;color:#7B0052;">int</span> g = hash[6];
+        <span style="font-weight:bold;color:#7B0052;">int</span> h = hash[7];
+
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> t = 0; t &lt; 64; t++) <span style="font-weight:bold;color:#D3171B">{</span>
+            <span style="font-weight:bold;color:#7B0052;">int</span> temp1 = h + sigma_rot(e, 1) + ch(e, f, g) + SHA256Const.k[t] + W[t];
+            <span style="font-weight:bold;color:#7B0052;">int</span> temp2 = sigma_rot(a, 0) + maj(a, b, c);
+
+            h = g;
+            g = f;
+            f = e;
+            e = d + temp1;
+            d = c;
+            c = b;
+            b = a;
+            a = temp1 + temp2;
+
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        hash[0] += a;
+        hash[1] += b;
+        hash[2] += c;
+        hash[3] += d;
+        hash[4] += e;
+        hash[5] += f;
+        hash[6] += g;
+        hash[7] += h;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> ch(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> y, <span style="font-weight:bold;color:#7B0052;">int</span> z) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> (x & y) ^ (~x & z);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> maj(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> y, <span style="font-weight:bold;color:#7B0052;">int</span> z) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> (x & y) ^ (x & z) ^ (y & z);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> rotr(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> n) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> (x &gt;&gt;&gt; n) | ((x) &lt;&lt; (32 - n));
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> shr(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> n) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> x &gt;&gt;&gt; n;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> sigma_rot(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> i) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> rotr(x, i != 0 ? 6 : 2) ^ rotr(x, i != 0 ? 11 : 13) ^ rotr(x, i != 0 ? 25 : 22);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> sigma_shr(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> i) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> rotr(x, i != 0 ? 17 : 7) ^ rotr(x, i != 0 ? 19 : 18) ^ shr(x, i != 0 ? 10 : 3);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<h2>SHA256Test.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.nio.charset.StandardCharsets;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.util.Formatter;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> SHA256Test <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#D3171B">{</span>
+        String example_str = <span style="color:#2A00FF">"The quick brown fox jumps over the lazy dog"</span>;
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input = example_str.getBytes(StandardCharsets.UTF_8);
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] digest = SHA256Utils.sha256_hash(input, input.length);
+
+        String hex_str = toHex(digest);
+        System.out.println(hex_str);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> String toHex(<span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+        StringBuilder sb = <span style="font-weight:bold;color:#7B0052;">new</span> StringBuilder();
+        Formatter fm = <span style="font-weight:bold;color:#7B0052;">new</span> Formatter(sb);
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">byte</span> b : bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+            fm.format(<span style="color:#2A00FF">"%02X "</span>, (b & 0xFF));
+        <span style="font-weight:bold;color:#D3171B">}</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> sb.toString();
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<h2>JDK_SHA256.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.nio.charset.StandardCharsets;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.security.MessageDigest;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.security.NoSuchAlgorithmException;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.util.Formatter;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> JDK_SHA256 <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#7B0052;">throws</span> NoSuchAlgorithmException <span style="font-weight:bold;color:#D3171B">{</span>
+        String example_str = <span style="color:#2A00FF">"The quick brown fox jumps over the lazy dog"</span>;
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input = example_str.getBytes(StandardCharsets.UTF_8);
+
+        MessageDigest md = MessageDigest.getInstance(<span style="color:#2A00FF">"SHA-256"</span>);
+        md.update(input);
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] digest = md.digest();
+
+        String hex_str = toHex(digest);
+        System.out.println(hex_str);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> String toHex(<span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+        StringBuilder sb = <span style="font-weight:bold;color:#7B0052;">new</span> StringBuilder();
+        Formatter fm = <span style="font-weight:bold;color:#7B0052;">new</span> Formatter(sb);
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">byte</span> b : bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+            fm.format(<span style="color:#2A00FF">"%02X "</span>, (b & 0xFF));
+        <span style="font-weight:bold;color:#D3171B">}</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> sb.toString();
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>

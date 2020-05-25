@@ -1,0 +1,61 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">SHA256 Core: (1) Brief Introduction</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>1. Goal</h2>
+
+<p>
+    The goal of SHA256 or any secure hashing algorithm, is to
+    reduce <strong>an arbitrarily sized input</strong> into <strong>an n-bit hash</strong>. For SHA256, n = 256 bits.
+    <sub class="my_note" style="color:blue">笔记：这里从<b>目标</b>的角度来讲SHA256，同时也适用于其他的secure hash算法。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+
+
+<h2>2. Input and Output Data</h2>
+
+<p>
+    SHA256 operates on 512-bit (64-byte) blocks of input. Each block is reduced to a 256-bit (32-byte) hash.
+    <sub class="my_note" style="color:blue">笔记：这里是从<b>输入</b>和<b>输出</b>的角度来讲SHA256。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<table border="1" width="100%" style="text-align: center; border-collapse: collapse;">
+    <caption>SHA256输入数据和输出数据</caption>
+    <thead>
+    <tr>
+        <th>Hash</th>
+        <th>Input Block Size</th>
+        <th>Output Size</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>SHA1</td>
+        <td>512-bit (64-byte)</td>
+        <td>256-bit (32-byte)</td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>3. Procedure</h2>
+
+<ul>
+    <li>第一步，对输入数据进行padding。输入数据是任意长度的，经过padding之后的数据长度是512-bit (64-byte)的倍数。</li>
+    <li>第二步，每次取出512-bit (64-byte)的数据，进行block operation操作。</li>
+    <li>第三步，生成256-bit (32-byte)的输出结果。</li>
+</ul>
+
+<h2>4. SHA256 VS SHA1</h2>
+
+<p>
+    Everything about SHA-256 is identical to SHA-1 except for the block processing
+    itself and the output length. The block size, padding, and so on are all the
+    same.
+</p>

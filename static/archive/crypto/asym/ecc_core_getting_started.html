@@ -1,0 +1,107 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ECC: (3) Getting Started</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>Point.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> Point <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">final</span> BigInteger x;
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">final</span> BigInteger y;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> Point(BigInteger x, BigInteger y) <span style="font-weight:bold;color:#D3171B">{</span>
+        this.x = x;
+        this.y = y;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    @Override
+    <span style="font-weight:bold;color:#7B0052;">public</span> String toString() <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> <span style="color:#2A00FF">"Point {"</span> +
+                <span style="color:#2A00FF">"x="</span> + x +
+                <span style="color:#2A00FF">", y="</span> + y +
+                <span style="color:#2A00FF">'}'</span>;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+    </div>
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>ECCUtils.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> ECCUtils <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> Point add_points(Point p1, Point p2, BigInteger p) <span style="font-weight:bold;color:#D3171B">{</span>
+        BigInteger x1 = p1.x;
+        BigInteger y1 = p1.y;
+        BigInteger x2 = p2.x;
+        BigInteger y2 = p2.y;
+
+        BigInteger numerator = y2.subtract(y1); <span style="color:#3F7F5F">// 分子</span>
+        BigInteger denominator = x2.subtract(x1); <span style="color:#3F7F5F">// 分母</span>
+        BigInteger lambda = denominator.modInverse(p).multiply(numerator).mod(p);
+
+        BigInteger x3 = lambda.multiply(lambda).subtract(x1).subtract(x2).mod(p);
+        BigInteger y3 = x1.subtract(x3).multiply(lambda).subtract(y1).mod(p);
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> <span style="font-weight:bold;color:#7B0052;">new</span> Point(x3, y3);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> Point double_point(Point p1, BigInteger a, BigInteger p) <span style="font-weight:bold;color:#D3171B">{</span>
+        BigInteger x1 = p1.x;
+        BigInteger y1 = p1.y;
+
+        BigInteger cst_2 = BigInteger.valueOf(2);
+        BigInteger cst_3 = BigInteger.valueOf(3);
+
+        BigInteger numerator = x1.multiply(x1).multiply(cst_3).add(a); <span style="color:#3F7F5F">// 分子</span>
+        BigInteger denominator = y1.multiply(cst_2); <span style="color:#3F7F5F">// 分母</span>
+        BigInteger lambda = denominator.modInverse(p).multiply(numerator).mod(p);
+
+        BigInteger x3 = lambda.multiply(lambda).subtract(x1).subtract(x1).mod(p);
+        BigInteger y3 = x1.subtract(x3).multiply(lambda).subtract(y1).mod(p);
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> <span style="font-weight:bold;color:#7B0052;">new</span> Point(x3, y3);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="color:#3F5FBF">/**
+     * 将一个点（Point）和一个标量（scalar）相乘
+     * @param p1 表示一个坐标点（Point）
+     * @param k 表示一个标量（scalar）
+     * @param a 表示elliptic-curve（y&lt;sup&gt;2&lt;/sup&gt; = x&lt;sup&gt;3&lt;/sup&gt; + ax + b）中的参数a。
+     * @param p 表示一个prime finite field，将计算结果控制在一定范围内。
+     * @return 在elliptic-curve上一个新的点（Point）
+     */</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> Point multiply_point(Point p1, BigInteger k, BigInteger a, BigInteger p) <span style="font-weight:bold;color:#D3171B">{</span>
+        Point p3 = <span style="font-weight:bold;color:#7B0052;">null</span>;
+        Point dp = p1;
+
+        <span style="font-weight:bold;color:#7B0052;">int</span> bit_length = k.bitLength();
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i = 0; i &lt; bit_length; i++) <span style="font-weight:bold;color:#D3171B">{</span>
+            <span style="font-weight:bold;color:#7B0052;">if</span>(k.testBit(i)) <span style="font-weight:bold;color:#D3171B">{</span>
+                <span style="font-weight:bold;color:#7B0052;">if</span>(p3 == <span style="font-weight:bold;color:#7B0052;">null</span>) <span style="font-weight:bold;color:#D3171B">{</span>
+                    p3 = dp;
+                <span style="font-weight:bold;color:#D3171B">}</span>
+                <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#D3171B">{</span>
+                    p3 = add_points(p3, dp, p);
+                <span style="font-weight:bold;color:#D3171B">}</span>
+            <span style="font-weight:bold;color:#D3171B">}</span>
+
+            <span style="color:#3F7F5F">// double dp</span>
+            dp = double_point(dp, a, p);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> p3;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+    </div>
+</div>

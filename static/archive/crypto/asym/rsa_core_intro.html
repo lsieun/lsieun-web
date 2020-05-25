@@ -1,0 +1,78 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">RSA Core: (1) Introduction</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    By far the most common public-key algorithm
+    is the <strong>RSA</strong> algorithm, named after its inventors <strong>Ron Rivest</strong>, <strong>Adi Shamir</strong>, and
+    <strong>Leonard Adleman</strong>.
+</p>
+
+<p>
+    The theory behind RSA public-key cryptosystems is actually very simple. The
+    core is <strong>modulus arithmetic</strong>. Specifically, RSA relies on three numbers
+    <code style="color:blue">e</code>, <code style="color:blue">d</code>, and <code style="color:blue">n</code> such that <code style="color:blue">(m<sup>e</sup>)<sup>d</sup> % n = m</code> — here <code style="color:blue">m</code> is the message to be encrypted and
+    converted to a number.
+</p>
+
+<p>
+    Not all numbers work this way; in fact, finding three numbers <code style="color:blue">e</code>, <code style="color:blue">d</code>, and <code style="color:blue">n</code> that
+    satisfy this property is complex, and forms the core of the RSA specification. After
+    you’ve found them, though, using them to encrypt is fairly straightforward. The
+    number <code style="color:blue">d</code> is called the <strong>private key</strong>, and you should never share it with anybody.
+    <code style="color:blue">e</code> and <code style="color:blue">n</code> together make up the <strong>public key</strong>, and you can make them available to
+    anybody who cares to send you an encoded message. When the sender is ready
+    to send you something that should remain private, he first converts the message
+    into a number <code style="color:blue">m</code> and then computes m<sup>e</sup> % n and sends you the result <code style="color:blue">c</code>. When
+    you receive it, you then compute c<sup>d</sup> % n and, by the property stated above, you
+    get back the original message <code style="color:blue">m</code>.
+</p>
+
+<p>
+    The security of the system relies on the fact that even if an attacker has access to
+    <code style="color:blue">e</code> and <code style="color:blue">n</code> — which he does because they’re public — it’s computationally infeasible
+    for him to compute <code style="color:blue">d</code>. For this to be true, <code style="color:blue">d</code> and <code style="color:blue">n</code> have to be enormous — at least
+    512 bit numbers (which is on the order of 10<sup>154</sup>) — but most public key cryptosystems
+    use even larger numbers. 1,024- or even 2,048-bit numbers are common.
+</p>
+
+<p>
+    RSA works on blocks of data. Each block includes <strong>a header</strong> and <strong>some padding</strong> (of at least 11 bytes), so
+    the resulting input blocks are <strong>modulus_length - 11</strong> bytes minimum. The header is
+    pretty simple: It’s a <code style="color:blue">0</code> byte, followed by a padding identifier of <code style="color:blue">0</code>, <code style="color:blue">1</code>, or <code style="color:blue">2</code>.
+</p>
+
+<div class="w3-panel w3-leftbar w3-light-grey">
+    <p>
+        block of data = header + padding + data
+    </p>
+</div>
+
+<p>
+    For <strong>RSA encryption</strong>, always
+    use padding identifier <code style="color:blue">2</code>, which indicates that the following bytes, up to the first
+    <code style="color:blue">0</code> byte, are <strong>padding</strong> and should be discarded. Everything following the first <code style="color:blue">0</code> byte,
+    up to the length of the modulus <code style="color:blue">n</code> byte in bytes, is data.
+</p>
+
+<div style="text-align: center">
+    <img width="800" src="/images/crypto/rsa/rsa_padding.png" alt="RSA Padding"/>
+</div>
+
+<div class="w3-panel w3-leftbar w3-light-grey">
+    <p>
+        Unlike the symmetric algorithms, RSA pads at the beginning of its block.
+    </p>
+</div>
+
+<p>
+    The only difference between an <strong>RSA digital signature</strong> and an <strong>RSA encryption</strong>
+    (other than the fact that encryption is done with a public key and signing is done
+    with a private key) is that the padding type is <code style="color:blue">0x01</code>, instead of
+    <code style="color:blue">0x02</code>, and the padding bytes are all <code style="color:blue">1</code>s instead of random bytes.
+</p>

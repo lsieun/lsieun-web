@@ -1,0 +1,234 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">DSA: (2) Getting Started</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>DsaParams.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> DsaParams <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger g;
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger p;
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger q;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> DsaParams(BigInteger g, BigInteger p, BigInteger q) <span style="font-weight:bold;color:#D3171B">{</span>
+        this.g = g;
+        this.p = p;
+        this.q = q;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<h2>DsaSignature.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> DsaSignature <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger r;
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger s;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> DsaSignature(BigInteger r, BigInteger s) <span style="font-weight:bold;color:#D3171B">{</span>
+        this.r = r;
+        this.s = s;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<h2>DsaUtils.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.security.SecureRandom;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.util.Arrays;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> DsaUtils <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> DsaSignature dsa_sign(DsaParams params, BigInteger private_key, <span style="font-weight:bold;color:#7B0052;">byte</span>[] hash_bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+        BigInteger g = params.g;
+        BigInteger p = params.p;
+        BigInteger q = params.q;
+
+        BigInteger k = generate_message_secret(params);
+
+        <span style="color:#3F7F5F">// r = ( g ^ k % p ) % q</span>
+        BigInteger r = g.modPow(k, p).mod(q);
+
+        <span style="color:#3F7F5F">// z = hash(message), only approved with SHA</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> nBytes = q.bitLength() / 8;
+        <span style="font-weight:bold;color:#7B0052;">if</span> (nBytes &lt; hash_bytes.length) <span style="font-weight:bold;color:#D3171B">{</span>
+            hash_bytes = Arrays.copyOfRange(hash_bytes, 0, nBytes);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+        BigInteger z = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, hash_bytes);
+
+        <span style="color:#3F7F5F">// s = ( inv(k) * ( z + xr ) ) % q</span>
+        BigInteger inv_k = k.modInverse(q);
+        BigInteger s = private_key.multiply(r).add(z).multiply(inv_k).mod(q);
+
+        DsaSignature signature = <span style="font-weight:bold;color:#7B0052;">new</span> DsaSignature(r, s);
+        <span style="font-weight:bold;color:#7B0052;">return</span> signature;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> BigInteger generate_message_secret(DsaParams params) <span style="font-weight:bold;color:#D3171B">{</span>
+        BigInteger q = params.q;
+        <span style="font-weight:bold;color:#7B0052;">int</span> bitLength = q.bitLength();
+        BigInteger q_minus_1 = q.subtract(BigInteger.ONE);
+
+        BigInteger c = BigInteger.probablePrime(bitLength, <span style="font-weight:bold;color:#7B0052;">new</span> SecureRandom());
+        BigInteger k = c.mod(q_minus_1).add(BigInteger.ONE);
+        <span style="font-weight:bold;color:#7B0052;">return</span> k;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">boolean</span> dsa_verify(
+            DsaParams params,
+            BigInteger public_key,
+            <span style="font-weight:bold;color:#7B0052;">byte</span>[] hash_bytes,
+            DsaSignature signature) <span style="font-weight:bold;color:#D3171B">{</span>
+        BigInteger g = params.g;
+        BigInteger p = params.p;
+        BigInteger q = params.q;
+
+        BigInteger r = signature.r;
+        BigInteger s = signature.s;
+
+        <span style="color:#3F7F5F">// w = inv(s) % q</span>
+        BigInteger w = s.modInverse(q);
+
+        <span style="color:#3F7F5F">// z = hash(message), truncated to sizeof(q)</span>
+        <span style="color:#3F7F5F">// get the leftmost min(N, outLen) bits of the digest value</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> nBytes = q.bitLength() / 8;
+        <span style="font-weight:bold;color:#7B0052;">if</span> (nBytes &lt; hash_bytes.length) <span style="font-weight:bold;color:#D3171B">{</span>
+            hash_bytes = Arrays.copyOfRange(hash_bytes, 0, nBytes);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+        BigInteger z = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, hash_bytes);
+
+        <span style="color:#3F7F5F">// u1 = (zw) % q</span>
+        BigInteger u1 = z.multiply(w).mod(q);
+
+        <span style="color:#3F7F5F">// u2 = (rw) % q</span>
+        BigInteger u2 = (r.multiply(w)).mod(q);
+
+        <span style="color:#3F7F5F">// v = ( ( ( g^u1) % p * (y^u2) %p ) % p ) % q</span>
+        BigInteger t1 = g.modPow(u1, p);
+        BigInteger t2 = public_key.modPow(u2, p);
+        BigInteger t3 = t1.multiply(t2).mod(p);
+        BigInteger v = t3.mod(q);
+
+        <span style="color:#3F7F5F">// Check to see if v & s match</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> r.equals(v);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<h2>DsaTest.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> crypto.sha256.SHA256Utils;
+
+<span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.nio.charset.StandardCharsets;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> DsaTest <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] G = <span style="font-weight:bold;color:#D3171B">{</span>
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x7d, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xcd, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x66, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x81,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x61, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x52, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x21, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x10,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xf7, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xa0, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x83, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x4c,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x5f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xc8, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x84, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xca,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xe8, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x8a, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x9b, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x9f,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x19, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x14, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x8c, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x7d,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xd0, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xee, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x33, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xce,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xb4, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x57, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x2d, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x5e,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x78, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x3f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x06, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xd7,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xb3, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xd6, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x40, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x70,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x2e, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xb6, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x12, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x3f,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x4a, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x61, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x38, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xae,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x72, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x12, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xfb, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x77,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xde, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x53, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xb3, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xa1,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x99, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xd8, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xa8, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x19,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x96, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xf7, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x7f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x99
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] P = <span style="font-weight:bold;color:#D3171B">{</span>
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x9c, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x4c, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xaa,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x76, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x31, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x2e, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x71,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x4d, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x31, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xd6, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xe4,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xd7, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xe9, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xa7, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x29,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x7b, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x7f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x05, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xee,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xfd, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xca, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x35, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x14,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x1e, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x9f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xe5, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xc0,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x2a, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xe0, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x12, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xd9,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xc4, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xc0, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xde, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xcc,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x66, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x96, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x2f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xf1,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x8f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x1a, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xe1, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xe8,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xbf, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xc2, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x29, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x0d,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x27, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x07, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x48, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xb9,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x71, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x04, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xec, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xc7,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xf4, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x16, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x2e, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x50,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x8d, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x67, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x14, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x84,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x7b
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] Q = <span style="font-weight:bold;color:#D3171B">{</span>
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xac, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x6f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xc1,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x37, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xef, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x16, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x74,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x52, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x6a, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xeb, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xc5,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xf8, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xf2, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x1f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x53,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xf4, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x0f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xe0, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x51,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x5f
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] private_key = <span style="font-weight:bold;color:#D3171B">{</span>
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x53, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x61, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xae, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x4f,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x6f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x25, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x98, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xde,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xc4, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xbf, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x0b, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xbe,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x09, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x5f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xdf, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x90,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x2f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x4c, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x8e, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x09
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] public_key = <span style="font-weight:bold;color:#D3171B">{</span>
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x1b, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x91, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x4c, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xa9,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x73, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xdc, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x06, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x0d,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x21, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xc6, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xff, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xab,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xf6, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xad, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xf4, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x11,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x97, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xaf, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x23, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x48,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x50, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xa8, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xf3, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xdb,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x2e, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xe6, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x27, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x8c,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x40, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x4c, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xb3, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xc8,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xfe, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x79, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x7e, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x89,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x48, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x90, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x27, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x92,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x6f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x5b, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xc5, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xe6,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x8f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x91, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x4c, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xe9,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x4f, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xed, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x0d, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x3c,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x17, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x09, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xeb, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x97,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xac, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x29, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x77, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xd5,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x19, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0xe7, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x4d, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x17
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#D3171B">{</span>
+        String msg = <span style="color:#2A00FF">"the quick brown fox jumps over a lazy dog"</span>;
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input = msg.getBytes(StandardCharsets.UTF_8);
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] hash_bytes = SHA256Utils.sha256_hash(input, input.length);
+
+
+        BigInteger g = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, G);
+        BigInteger p = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, P);
+        BigInteger q = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, Q);
+
+        DsaParams params = <span style="font-weight:bold;color:#7B0052;">new</span> DsaParams(g, p, q);
+
+        BigInteger x = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, private_key);
+        BigInteger y = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, public_key);
+
+        DsaSignature signature = DsaUtils.dsa_sign(params, x, hash_bytes);
+
+        System.out.println(signature.r);
+        System.out.println(signature.s);
+
+        <span style="font-weight:bold;color:#7B0052;">boolean</span> flag = DsaUtils.dsa_verify(params, y, hash_bytes, signature);
+        System.out.println(flag);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>

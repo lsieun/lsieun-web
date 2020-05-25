@@ -1,0 +1,50 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">RSA Core: (2) Math</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>RSAKey.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> RSAKey <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger modulus;
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger exponent;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> RSAKey(BigInteger modulus, BigInteger exponent) <span style="font-weight:bold;color:#D3171B">{</span>
+        this.modulus = modulus;
+        this.exponent = exponent;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<h2>RSAMath.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> RSAMath <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> BigInteger rsa_compute(BigInteger m, RSAKey rsa_key) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> m.modPow(rsa_key.exponent, rsa_key.modulus);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#D3171B">{</span>
+        BigInteger e = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(<span style="color:#2A00FF">"79"</span>);
+        BigInteger d = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(<span style="color:#2A00FF">"1019"</span>);
+        BigInteger n = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(<span style="color:#2A00FF">"3337"</span>);
+
+        RSAKey public_key = <span style="font-weight:bold;color:#7B0052;">new</span> RSAKey(n, e);
+        RSAKey private_key = <span style="font-weight:bold;color:#7B0052;">new</span> RSAKey(n, d);
+
+        BigInteger m = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(<span style="color:#2A00FF">"688"</span>);
+        BigInteger c = rsa_compute(m, public_key);
+        System.out.println(c); <span style="color:#3F7F5F">// 1570</span>
+
+        BigInteger m2 = rsa_compute(c, private_key);
+        System.out.println(m2); <span style="color:#3F7F5F">// 688</span>
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>

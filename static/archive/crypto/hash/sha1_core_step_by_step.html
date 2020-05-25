@@ -9,7 +9,43 @@
 
 <h2>第一步，定义常量</h2>
 
-<p>SHA1Const.java: SHA1_XXX_SIZE</p>
+<table border="1" width="100%" style="text-align: center; border-collapse: collapse;">
+    <caption>SHA1输入数据和输出数据</caption>
+    <thead>
+    <tr>
+        <th>Hash</th>
+        <th>Input Block Size</th>
+        <th>Output Size</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>SHA1</td>
+        <td>512-bit (64-byte)</td>
+        <td>160-bit (20-byte)</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    从整个数据处理的流程来说，它是这样的：输入数据 --&gt; SHA1算法 --&gt; 输出数据。
+</p>
+
+<p>
+    从输入数据的角度来说，它的长度是任意的。
+</p>
+
+<p>
+    从SHA1算法的角度来说，它每次处理的数据量是512-bit (64-byte)。
+</p>
+
+<p>
+    从输出数据的角度来说，它的长度是固定的，是160-bit (20-byte)。
+</p>
+
+<p>
+    在<code style="color:blue">SHA1Const.java</code>文件中，定义如下变量:
+</p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="color:#3F7F5F">// File SHA1Const.java</span>
 <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA1_BLOCK_SIZE = 64;
@@ -17,10 +53,32 @@
 <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA1_RESULT_SIZE = 5;
 <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA1_PADDING_THRESHOLD = 56;</pre>
 
+<p>
+    对于各个变量的解释如下：
+</p>
+
+<ul>
+    <li><code style="color:blue">SHA1_BLOCK_SIZE</code>：它对应于SHA1每次处理的数据量512-bit (64-byte)。</li>
+    <li><code style="color:blue">SHA1_OUTPUT_SIZE</code>：它对应于输出数据160-bit (20-byte)。</li>
+    <li>
+        <code style="color:blue">SHA1_RESULT_SIZE</code>：它是<code style="color:blue">SHA1_OUTPUT_SIZE</code>另外一种表现形式。<sub class="my_note" style="color:green">笔记：两者本质上是同一个事物，它是将原来的20-byte数据表示成5个int(4-byte)数据。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        <code style="color:blue">SHA1_PADDING_THRESHOLD</code>：这个常量的作用就是为了判断要padding多少数据。<sub class="my_note" style="color:green">笔记：这个常量表示一个“阈值”，而所谓的“阈值”就是对事物进行评判的一个标准，一个量化的值。在进行SHA1算法时，很可能输入数据并不是512-bit (64-byte)的整数倍，这个时候就要进行padding（补充数据），经过padding之后的数据，将会是512-bit (64-byte)的整数倍，这样才能让SHA1算法进行处理。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ul>
 
 <h2>第二步，准备初始Hash值</h2>
 
-<p>SHA1Const.java: SHA1_INITIAL_HASH</p>
+<p>
+    从整个数据处理的流程来说，是这样的一个过程：输入数据 --&gt; SHA1算法 --&gt; 输出数据。但是换一个角度，从Hash值的变化过程来说，它又是这样的：初始Hash值 --&gt; SHA1算法 --&gt; 最终Hash值。
+</p>
+
+<p>
+    在<code style="color:blue">SHA1Const.java</code>文件中，定义<code style="color:blue">SHA1_INITIAL_HASH</code>变量，表示最初Hash值：
+</p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="color:#3F7F5F">// File SHA1Const.java</span>
 <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> SHA1_INITIAL_HASH[] = <span style="font-weight:bold;color:#D3171B">{</span>
@@ -33,7 +91,21 @@
 
 <h2>第三步，输入数据padding</h2>
 
-<p>SHA1 Padding</p>
+<p>
+    SHA1算法在进行处理的时候是以512-bit (64-byte)为单元进行处理数据。但输入数据是任意长度的，它就有不同的情况需要进行处理：
+</p>
+
+<p>
+    第一种情况，如果输入数据小于512-bit (64-byte)，那就补充数据（padding），让补充后的数据是512-bit (64-byte)倍数。
+</p>
+
+<p>
+    第二种情况，如果输入数据大于512-bit (64-byte)，那就分多次进行处理，每一次处理512-bit (64-byte)。如果还有多余的数据，那就补充数据（padding），让补充后的数据是512-bit (64-byte)倍数，再进行处理。
+</p>
+
+<p>
+    当然，上面两种情况只是说了一个大概的padding规则。关于具体的padding细节（补充什么样的数据）是如下这样的：
+</p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] sha1_padding(<span style="font-weight:bold;color:#7B0052;">long</span> input_length) <span style="font-weight:bold;color:#D3171B">{</span>
         <span style="font-weight:bold;color:#7B0052;">long</span> length_in_bits = input_length * 8;

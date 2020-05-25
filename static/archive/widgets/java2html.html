@@ -15,7 +15,8 @@ public class HelloWorld {
 </textarea>
 
 <div style="text-align: center;">
-    <input style="height: 50px;" type="button" value="Click Me to Convert !" onclick="java2html();"/>
+    <input style="height: 50px;" type="button" value="Click Me to Convert !" onclick="toStyle1();"/>
+    <input style="height: 50px;" type="button" value="W3CSS Style!" onclick="toStyle2();"/>
 </div>
 
 <br/><br/>
@@ -318,7 +319,24 @@ public class HelloWorld {
 
         }
 
+        return finalText;
+    }
+
+    function toStyle1() {
+        java2html();
         document.getElementById("html_code").value = preStartTag + finalText + preEndTag;
-        document.getElementById("output").innerHTML = preStartTag + finalText + preEndTag
+        document.getElementById("output").innerHTML = preStartTag + finalText + preEndTag;
+    }
+
+    const w3_div_tag = '<div class="w3-panel w3-card w3-light-grey">\n' +
+        '    <h3>Example</h3>\n' +
+        '    <div class="w3-code notranslate">\n';
+    const div_end_tag = '\n    </div>\n</div>';
+    const new_pre_tag = '<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:\'Courier New\', Courier, monospace; overflow: auto;">';
+
+    function toStyle2() {
+        java2html();
+        document.getElementById("html_code").value = w3_div_tag + new_pre_tag + finalText + preEndTag + div_end_tag;
+        document.getElementById("output").innerHTML = w3_div_tag + new_pre_tag + finalText + preEndTag + div_end_tag;
     }
 </script>

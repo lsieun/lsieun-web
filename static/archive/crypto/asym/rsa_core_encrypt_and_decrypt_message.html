@@ -1,0 +1,191 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">RSA Core: (3) Encrypt and Decrypt Message</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>RSAKey.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> RSAKey <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger modulus;
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger exponent;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> RSAKey(BigInteger modulus, BigInteger exponent) <span style="font-weight:bold;color:#D3171B">{</span>
+        this.modulus = modulus;
+        this.exponent = exponent;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<h2>BigUtils.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> BigUtils <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] toByteArray(BigInteger val) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes = val.toByteArray();
+
+        <span style="font-weight:bold;color:#7B0052;">int</span> length = val.bitLength();
+        <span style="font-weight:bold;color:#7B0052;">int</span> quotient = length / 8;
+        <span style="font-weight:bold;color:#7B0052;">int</span> remainder = length % 8;
+
+        <span style="font-weight:bold;color:#7B0052;">if</span> (remainder == 0) <span style="font-weight:bold;color:#D3171B">{</span>
+            <span style="font-weight:bold;color:#7B0052;">byte</span>[] reduced_bytes = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[quotient];
+            System.arraycopy(bytes, 1, reduced_bytes, 0, bytes.length - 1);
+            <span style="font-weight:bold;color:#7B0052;">return</span> reduced_bytes;
+        <span style="font-weight:bold;color:#D3171B">}</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> bytes;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> toByteSize(BigInteger val) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> length = val.bitLength();
+        <span style="font-weight:bold;color:#7B0052;">int</span> quotient = length / 8;
+        <span style="font-weight:bold;color:#7B0052;">int</span> remainder = length % 8;
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> remainder == 0 ? quotient : quotient + 1;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<h2>RSAUtils.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.io.ByteArrayOutputStream;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.util.Arrays;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> RSAUtils <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] rsa_encrypt(<span style="font-weight:bold;color:#7B0052;">byte</span>[] input, RSAKey rsa_key) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> modulus_length = BigUtils.toByteSize(rsa_key.modulus);
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] padded_block = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[modulus_length];
+
+        <span style="font-weight:bold;color:#7B0052;">int</span> index = 0;
+        <span style="font-weight:bold;color:#7B0052;">int</span> remaining = input.length;
+
+        ByteArrayOutputStream bao = <span style="font-weight:bold;color:#7B0052;">new</span> ByteArrayOutputStream();
+        <span style="font-weight:bold;color:#7B0052;">while</span> (remaining &gt; 0) <span style="font-weight:bold;color:#D3171B">{</span>
+            <span style="color:#3F7F5F">// 第一步：添加header和padding</span>
+            <span style="font-weight:bold;color:#7B0052;">int</span> block_size = Math.min(remaining, modulus_length - 11);
+
+            Arrays.fill(padded_block, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0);
+            System.arraycopy(input, index, padded_block, modulus_length - block_size, block_size);
+            padded_block[1] = 0x02; <span style="color:#3F7F5F">// set block type</span>
+
+            <span style="font-weight:bold;color:#7B0052;">int</span> first_zero_index = modulus_length - block_size - 1;
+            <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i = 2; i &lt; first_zero_index; i++) <span style="font-weight:bold;color:#D3171B">{</span>
+                <span style="color:#3F7F5F">// TODO make these random</span>
+                padded_block[i] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) i;
+            <span style="font-weight:bold;color:#D3171B">}</span>
+
+            <span style="color:#3F7F5F">// 第二步：核心计算</span>
+            BigInteger m = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, padded_block);
+            BigInteger c = m.modPow(rsa_key.exponent, rsa_key.modulus);
+            <span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes = BigUtils.toByteArray(c);
+
+            <span style="color:#3F7F5F">// 第三步：保存临时结果</span>
+            Arrays.fill(padded_block, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0);
+            copy_to_right(padded_block, bytes, bytes.length);
+            <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">byte</span> b : padded_block) <span style="font-weight:bold;color:#D3171B">{</span>
+                bao.write(b);
+            <span style="font-weight:bold;color:#D3171B">}</span>
+
+            index += block_size;
+            remaining -= block_size;
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> bao.toByteArray();
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] rsa_decrypt(<span style="font-weight:bold;color:#7B0052;">byte</span>[] input, RSAKey rsa_key) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> modulus_length = BigUtils.toByteSize(rsa_key.modulus);
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] padded_block = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[modulus_length];
+
+        <span style="font-weight:bold;color:#7B0052;">int</span> length = input.length;
+        <span style="font-weight:bold;color:#7B0052;">int</span> remainder = length % modulus_length;
+        <span style="font-weight:bold;color:#7B0052;">if</span> (remainder != 0) <span style="font-weight:bold;color:#D3171B">{</span>
+            <span style="font-weight:bold;color:#7B0052;">throw</span> <span style="font-weight:bold;color:#7B0052;">new</span> RuntimeException(<span style="color:#2A00FF">"Error - input must be an even multiple of key modulus"</span>);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        <span style="font-weight:bold;color:#7B0052;">int</span> index = 0;
+        <span style="font-weight:bold;color:#7B0052;">int</span> remaining = input.length;
+
+        ByteArrayOutputStream bao = <span style="font-weight:bold;color:#7B0052;">new</span> ByteArrayOutputStream();
+        <span style="font-weight:bold;color:#7B0052;">while</span> (remaining &gt; 0) <span style="font-weight:bold;color:#D3171B">{</span>
+            <span style="color:#3F7F5F">// 第一步：准备数据</span>
+            System.arraycopy(input, index, padded_block, 0, modulus_length);
+
+            <span style="color:#3F7F5F">// 第二步：核心计算</span>
+            BigInteger c = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, padded_block);
+            BigInteger m = c.modPow(rsa_key.exponent, rsa_key.modulus);
+            <span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes = BigUtils.toByteArray(m);
+
+            <span style="color:#3F7F5F">// 第三步：保存临时结果</span>
+            Arrays.fill(padded_block, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0);
+            copy_to_right(padded_block, bytes, bytes.length);
+
+            <span style="font-weight:bold;color:#7B0052;">if</span> (padded_block[1] &gt; 0x02) <span style="font-weight:bold;color:#D3171B">{</span>
+                <span style="font-weight:bold;color:#7B0052;">throw</span> <span style="font-weight:bold;color:#7B0052;">new</span> RuntimeException(<span style="color:#2A00FF">"Decryption error or unrecognized block type: "</span> + padded_block[1]);
+            <span style="font-weight:bold;color:#D3171B">}</span>
+            <span style="font-weight:bold;color:#7B0052;">int</span> i = 2;
+            <span style="font-weight:bold;color:#7B0052;">for</span> (; padded_block[i] != 0; i++)<span style="font-weight:bold;color:#D3171B">{</span>
+                <span style="color:#3F7F5F">// skip padding bytes</span>
+            <span style="font-weight:bold;color:#D3171B">}</span>
+            i++; <span style="color:#3F7F5F">// skip the first zero byte</span>
+            <span style="font-weight:bold;color:#7B0052;">for</span> (; i &lt; modulus_length; i++) <span style="font-weight:bold;color:#D3171B">{</span>
+                bao.write(padded_block[i]);
+            <span style="font-weight:bold;color:#D3171B">}</span>
+
+            index += modulus_length;
+            remaining -= modulus_length;
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> bao.toByteArray();
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> copy_to_right(<span style="font-weight:bold;color:#7B0052;">byte</span>[] dest_bytes, <span style="font-weight:bold;color:#7B0052;">byte</span>[] src_bytes, <span style="font-weight:bold;color:#7B0052;">int</span> count) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> dest_length = dest_bytes.length;
+        <span style="font-weight:bold;color:#7B0052;">int</span> src_length = src_bytes.length;
+
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i = 1; i &lt;= count; i++) <span style="font-weight:bold;color:#D3171B">{</span>
+            dest_bytes[dest_length - i] = src_bytes[src_length - i];
+        <span style="font-weight:bold;color:#D3171B">}</span>
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<h2>RSATest.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.nio.charset.StandardCharsets;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.util.Arrays;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> RSATest <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> BigInteger MODULUS = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(<span style="color:#2A00FF">"96165402670130"</span> +
+            <span style="color:#2A00FF">"584772537629772934250633792434584735938169004540197211175700032488"</span> +
+            <span style="color:#2A00FF">"081139926528368575296586755703568350671847152012305199073616537953"</span> +
+            <span style="color:#2A00FF">"28462699"</span>);
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> BigInteger PUBLIC_EXPONENT = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(<span style="color:#2A00FF">"65537"</span>);
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> BigInteger PRIVATE_EXPONENT = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(<span style="color:#2A00FF">"480203"</span> +
+            <span style="color:#2A00FF">"3916387221748426181350914821072434641827090144975386182740274856853"</span> +
+            <span style="color:#2A00FF">"3182765184465218446422755398180921866504253848268275145521223183085"</span> +
+            <span style="color:#2A00FF">"90929813048801"</span>);
+
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#D3171B">{</span>
+        RSAKey private_key = <span style="font-weight:bold;color:#7B0052;">new</span> RSAKey(MODULUS, PRIVATE_EXPONENT);
+        RSAKey public_key = <span style="font-weight:bold;color:#7B0052;">new</span> RSAKey(MODULUS, PUBLIC_EXPONENT);
+
+        String msg = <span style="color:#2A00FF">"the quick brown fox jumps over a lazy dog"</span>;
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input = msg.getBytes(StandardCharsets.UTF_8);
+
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] encrypted_bytes = RSAUtils.rsa_encrypt(input, public_key);
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] decrypted_bytes = RSAUtils.rsa_decrypt(encrypted_bytes, private_key);
+        System.out.println(Arrays.equals(input, decrypted_bytes)); <span style="color:#3F7F5F">// true</span>
+
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>

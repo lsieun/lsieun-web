@@ -1,0 +1,71 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">DH: (1) Introduction</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Diffie-Hellman key agreement relies on the fact that
+</p>
+
+<div class="w3-panel w3-leftbar w3-light-grey">
+    <p>
+        g<sup>ab</sup> % p = g<sup>ba</sup> % p = (g<sup>a</sup> % p)<sup>b</sup> % p = (g<sup>b</sup> % p)<sup>a</sup> % p
+    </p>
+</div>
+
+<p>
+    <code style="color:blue">g</code> and <code style="color:blue">p</code> are agreed on by both sides, either offline or as part of the key exchange.
+</p>
+
+<p>
+    The <strong>server</strong> chooses a value <code style="color:blue">a</code> at random and the <strong>client</strong> chooses a value <code style="color:blue">b</code> at random.
+</p>
+
+<p>
+    Then the <strong>server</strong> computes
+</p>
+
+<div class="w3-panel w3-leftbar w3-light-grey">
+    <p>
+        Ys = (g<sup>a</sup> % p)
+    </p>
+</div>
+
+<p>
+    And the <strong>client</strong> computes
+</p>
+
+<div class="w3-panel w3-leftbar w3-light-grey">
+    <p>
+        Yc = (g<sup>b</sup> % p)
+    </p>
+</div>
+
+<p>
+    The <strong>server</strong> transmits <code style="color:blue">Ys</code> to the <strong>client</strong> and the <strong>client</strong> transmits <code style="color:blue">Yc</code> to the <strong>server</strong>.
+</p>
+
+<p>
+    At this point, they each have enough to compute the final value <code style="color:blue">Z = g<sup>ab</sup> % p</code>:
+</p>
+
+<ul>
+    <li>Client: <code style="color:blue">(g<sup>a</sup> % p)<sup>b</sup> % p = (Ys)<sup>b</sup> % p = Z</code></li>
+    <li>Server: <code style="color:blue">(g<sup>b</sup> % p)<sup>a</sup> % p = (Yc)<sup>a</sup> % p = Z</code></li>
+</ul>
+
+<p>
+    And <code style="color:blue">Z</code> is the key that both sides use as the symmetric key. The server knows
+    the value <code style="color:blue">a</code> (because it chose it), and the client knows the value <code style="color:blue">b</code> (because,
+    again, it chose it). Neither knows the other’s value, but they don’t need to. Nor
+    can an eavesdropper glean the value of <code style="color:blue">Z</code> without either <code style="color:blue">a</code> or <code style="color:blue">b</code>, neither of which
+    has been shared. You can think of each side as computing one-half of an exponentiation
+    and sharing that half with the other side, which then completes the
+    exponentiation. Because the exponentiation operation is done mod <code style="color:blue">p</code>, it can’t
+    be feasibly inverted by an attacker, unless the attacker has solved the discrete
+    logarithm problem.
+</p>

@@ -1,0 +1,137 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">HMAC: (3) Use JDK</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>JDK_MAC_MD5.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> javax.crypto.Mac;
+<span style="font-weight:bold;color:#7B0052;">import</span> javax.crypto.spec.SecretKeySpec;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.nio.charset.StandardCharsets;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.security.InvalidKeyException;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.security.NoSuchAlgorithmException;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.util.Formatter;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> JDK_MAC_MD5 <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#7B0052;">throws</span> NoSuchAlgorithmException, InvalidKeyException <span style="font-weight:bold;color:#D3171B">{</span>
+        String example_str = <span style="color:#2A00FF">"The quick brown fox jumps over the lazy dog"</span>;
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input = example_str.getBytes(StandardCharsets.UTF_8);
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] key_bytes = <span style="color:#2A00FF">"shared secret"</span>.getBytes(StandardCharsets.UTF_8);
+
+        Mac mac = Mac.getInstance(<span style="color:#2A00FF">"HmacMD5"</span>);
+
+        String algorithm  = <span style="color:#2A00FF">"RawBytes"</span>;
+        SecretKeySpec key = <span style="font-weight:bold;color:#7B0052;">new</span> SecretKeySpec(key_bytes, algorithm);
+        mac.init(key);
+
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] mac_bytes = mac.doFinal(input);
+        String hex_str = toHex(mac_bytes);
+        System.out.println(hex_str);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> String toHex(<span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+        StringBuilder sb = <span style="font-weight:bold;color:#7B0052;">new</span> StringBuilder();
+        Formatter fm = <span style="font-weight:bold;color:#7B0052;">new</span> Formatter(sb);
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">byte</span> b : bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+            fm.format(<span style="color:#2A00FF">"%02X "</span>, (b & 0xFF));
+        <span style="font-weight:bold;color:#D3171B">}</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> sb.toString();
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<p>
+    输出结果是：
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">0E BD B4 8B 20 7D 37 79 FC F4 3A E1 8D DC F7 E6</pre>
+
+<h2>JDK_MAC_SHA1.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> javax.crypto.Mac;
+<span style="font-weight:bold;color:#7B0052;">import</span> javax.crypto.spec.SecretKeySpec;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.nio.charset.StandardCharsets;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.security.InvalidKeyException;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.security.NoSuchAlgorithmException;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.util.Formatter;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> JDK_MAC_SHA1 <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#7B0052;">throws</span> NoSuchAlgorithmException, InvalidKeyException <span style="font-weight:bold;color:#D3171B">{</span>
+        String example_str = <span style="color:#2A00FF">"The quick brown fox jumps over the lazy dog"</span>;
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input = example_str.getBytes(StandardCharsets.UTF_8);
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] key_bytes = <span style="color:#2A00FF">"shared secret"</span>.getBytes(StandardCharsets.UTF_8);
+
+        Mac mac = Mac.getInstance(<span style="color:#2A00FF">"HmacSHA1"</span>);
+
+        String algorithm  = <span style="color:#2A00FF">"RawBytes"</span>;
+        SecretKeySpec key = <span style="font-weight:bold;color:#7B0052;">new</span> SecretKeySpec(key_bytes, algorithm);
+        mac.init(key);
+
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] mac_bytes = mac.doFinal(input);
+        String hex_str = toHex(mac_bytes);
+        System.out.println(hex_str);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> String toHex(<span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+        StringBuilder sb = <span style="font-weight:bold;color:#7B0052;">new</span> StringBuilder();
+        Formatter fm = <span style="font-weight:bold;color:#7B0052;">new</span> Formatter(sb);
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">byte</span> b : bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+            fm.format(<span style="color:#2A00FF">"%02X "</span>, (b & 0xFF));
+        <span style="font-weight:bold;color:#D3171B">}</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> sb.toString();
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<p>
+    输出结果是：
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">BE 15 35 2D D8 0B 1E C0 CE 93 89 8F 22 EA 6A CB EB B0 FD 81</pre>
+
+<h2>JDK_MAC_SHA256.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> javax.crypto.Mac;
+<span style="font-weight:bold;color:#7B0052;">import</span> javax.crypto.spec.SecretKeySpec;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.nio.charset.StandardCharsets;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.security.InvalidKeyException;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.security.NoSuchAlgorithmException;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.util.Formatter;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> JDK_MAC_SHA256 <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#7B0052;">throws</span> NoSuchAlgorithmException, InvalidKeyException <span style="font-weight:bold;color:#D3171B">{</span>
+        String example_str = <span style="color:#2A00FF">"The quick brown fox jumps over the lazy dog"</span>;
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input = example_str.getBytes(StandardCharsets.UTF_8);
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] key_bytes = <span style="color:#2A00FF">"shared secret"</span>.getBytes(StandardCharsets.UTF_8);
+
+        Mac mac = Mac.getInstance(<span style="color:#2A00FF">"HmacSHA256"</span>);
+
+        String algorithm  = <span style="color:#2A00FF">"RawBytes"</span>;
+        SecretKeySpec key = <span style="font-weight:bold;color:#7B0052;">new</span> SecretKeySpec(key_bytes, algorithm);
+        mac.init(key);
+
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] mac_bytes = mac.doFinal(input);
+        String hex_str = toHex(mac_bytes);
+        System.out.println(hex_str);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> String toHex(<span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+        StringBuilder sb = <span style="font-weight:bold;color:#7B0052;">new</span> StringBuilder();
+        Formatter fm = <span style="font-weight:bold;color:#7B0052;">new</span> Formatter(sb);
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">byte</span> b : bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+            fm.format(<span style="color:#2A00FF">"%02X "</span>, (b & 0xFF));
+        <span style="font-weight:bold;color:#D3171B">}</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> sb.toString();
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<p>
+    输出结果是：
+</p>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">E9 7E 97 C3 FA 49 78 2F 3F C2 CA 0C 14 97 DF E9 48 FB 02 9F DC 21 61 3E 07 77 E0 FF 9C DD 89 1B</pre>

@@ -1,0 +1,69 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">DH: (2) Getting Started</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>DHKey.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> DHKey <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">final</span> BigInteger g;
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">final</span> BigInteger p;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> DHKey(BigInteger g, BigInteger p) <span style="font-weight:bold;color:#D3171B">{</span>
+        this.g = g;
+        this.p = p;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<h2>DHUtils.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> DHUtils <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> BigInteger dh_agree(DHKey dh_key, BigInteger e) <span style="font-weight:bold;color:#D3171B">{</span>
+        BigInteger g = dh_key.g;
+        BigInteger p = dh_key.p;
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> g.modPow(e, p);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> BigInteger dh_finalize(DHKey dh_key, BigInteger Y, BigInteger e) <span style="font-weight:bold;color:#D3171B">{</span>
+        BigInteger p = dh_key.p;
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> Y.modPow(e, p);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+
+<h2>DHTest.java</h2>
+
+<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> DHTest <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#D3171B">{</span>
+        BigInteger g = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(<span style="color:#2A00FF">"2"</span>);
+        BigInteger p = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(<span style="color:#2A00FF">"17"</span>);
+
+        DHKey dh_key = <span style="font-weight:bold;color:#7B0052;">new</span> DHKey(g,p);
+
+        BigInteger a = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(<span style="color:#2A00FF">"5"</span>);
+        BigInteger b = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(<span style="color:#2A00FF">"7"</span>);
+
+        BigInteger Ys = DHUtils.dh_agree(dh_key, a);
+        BigInteger Yc = DHUtils.dh_agree(dh_key, b);
+
+        BigInteger Zs = DHUtils.dh_finalize(dh_key, Yc, a);
+        BigInteger Zc = DHUtils.dh_finalize(dh_key, Ys, b);
+
+        System.out.println(Zs);
+        System.out.println(Zc);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
