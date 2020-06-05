@@ -9,7 +9,10 @@
 
 <h2>DsaParams.java</h2>
 
-<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>DsaParams.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
 
 <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> DsaParams <span style="font-weight:bold;color:#D3171B">{</span>
     <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger g;
@@ -23,10 +26,15 @@
     <span style="font-weight:bold;color:#D3171B">}</span>
 <span style="font-weight:bold;color:#D3171B">}</span>
 </pre>
+    </div>
+</div>
 
 <h2>DsaSignature.java</h2>
 
-<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>DsaSignature.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
 
 <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> DsaSignature <span style="font-weight:bold;color:#D3171B">{</span>
     <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger r;
@@ -38,15 +46,23 @@
     <span style="font-weight:bold;color:#D3171B">}</span>
 <span style="font-weight:bold;color:#D3171B">}</span>
 </pre>
+    </div>
+</div>
 
 <h2>DsaUtils.java</h2>
 
-<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>DsaUtils.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
 <span style="font-weight:bold;color:#7B0052;">import</span> java.security.SecureRandom;
 <span style="font-weight:bold;color:#7B0052;">import</span> java.util.Arrays;
 
 <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> DsaUtils <span style="font-weight:bold;color:#D3171B">{</span>
-    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> DsaSignature dsa_sign(DsaParams params, BigInteger private_key, <span style="font-weight:bold;color:#7B0052;">byte</span>[] hash_bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> DsaSignature dsa_sign(
+            DsaParams params,
+            BigInteger private_key,
+            <span style="font-weight:bold;color:#7B0052;">byte</span>[] hash_bytes) <span style="font-weight:bold;color:#D3171B">{</span>
         BigInteger g = params.g;
         BigInteger p = params.p;
         BigInteger q = params.q;
@@ -121,10 +137,15 @@
     <span style="font-weight:bold;color:#D3171B">}</span>
 <span style="font-weight:bold;color:#D3171B">}</span>
 </pre>
+    </div>
+</div>
 
 <h2>DsaTest.java</h2>
 
-<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> crypto.sha256.SHA256Utils;
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>DsaTest.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> crypto.sha256.SHA256Utils;
 
 <span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
 <span style="font-weight:bold;color:#7B0052;">import</span> java.nio.charset.StandardCharsets;
@@ -232,3 +253,5 @@
 
 <span style="font-weight:bold;color:#D3171B">}</span>
 </pre>
+    </div>
+</div>

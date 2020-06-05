@@ -1,0 +1,342 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ECC Extension: (2) DSA Using ECC</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div class="w3-panel w3-leftbar w3-light-grey">
+    <p>
+        提示：ECDSA算法是结合了DSA算法和ECC算法，因此要理解ECDSA算法，就需要分别理解DSA算法和ECC算法。在学习的过程中，需要不断的对比DSA算法和ECDSA算法之间的差异，才能更好的掌握。
+    </p>
+</div>
+
+<p>
+    DSA has been defined using ECC primitives, just like DH was. For the most
+    part, ECDSA works like DSA, but it uses <strong>elliptic-curve keypairs</strong> instead of
+    <strong>public/private keypairs</strong>.
+    <sub class="my_note" style="color:blue">笔记：DSA算法和ECDSA算法，这两者之间，有相同的地方，也有不同的地方：处理的大体思路是相同的，但具体的实现细节是不同的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    Recall that DSA <strong>signature generation</strong> involved the computation of two numbers
+    <code class="w3-codespan">r</code> and <code class="w3-codespan">s</code> from the parameters <code class="w3-codespan">g</code>, <code class="w3-codespan">p</code>, and <code class="w3-codespan">q</code>. ECDSA signatures are similar.
+    In essence, the <strong>modular exponentiation</strong> are replaced by <strong>point multiplications</strong>.
+    The generator <code class="w3-codespan">G</code>
+    is a point on an elliptic curve; <code class="w3-codespan">r</code> is just <code class="w3-codespan">G</code> point multiplied by a random integer <code class="w3-codespan">k</code>;
+    and <code class="w3-codespan">s</code> is computed exactly the same way as in DSA. The only elliptic-curve function involved is in the computation of <code class="w3-codespan">r</code>.
+    <sub class="my_note" style="color:blue">笔记：这里是从Signature Generation的角度，来讲DSA算法和ECDSA算法之间的不同。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    <strong>Signature verification</strong> is also almost identical up until the
+    computation of <code class="w3-codespan">v</code> (which is compared to <code class="w3-codespan">r</code> and, if they’re identical, indicates that
+    the signature is verified). Even this computation is similar; you just replace the
+    <code class="w3-codespan">mod_pow</code> operations with <strong>ECC point-multiplication operations</strong>.
+    <sub class="my_note" style="color:blue">笔记：这里是从Signature Verification的角度，来讲DSA算法和ECDSA算法之间的不同。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    In fact, ECDSA is only defined
+    for an SHA-256 hash, unlike “regular” DSA, which used a plain-old 160-bit
+    SHA-1 hash.
+    <sub class="my_note" style="color:blue">笔记：普通的DSA算法，不支持MD5算法，但支持SHA1和SHA256两种Hash算法。而ECDSA只支持SHA256算法。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>EllipticCurve.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> crypto.ecc.Point;
+
+<span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> EllipticCurve <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">final</span> BigInteger p;
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">final</span> BigInteger a;
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">final</span> BigInteger b;
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">final</span> Point G;
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">final</span> BigInteger n;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> EllipticCurve(BigInteger p, BigInteger a, BigInteger b, Point g, BigInteger n) <span style="font-weight:bold;color:#D3171B">{</span>
+        this.p = p;
+        this.a = a;
+        this.b = b;
+        this.G = g;
+        this.n = n;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+    </div>
+</div>
+
+
+
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>ECDSAUtils.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> crypto.dsa.DsaSignature;
+<span style="font-weight:bold;color:#7B0052;">import</span> crypto.ecc.ECCUtils;
+<span style="font-weight:bold;color:#7B0052;">import</span> crypto.ecc.Point;
+
+<span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.util.Arrays;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> ECDSAUtils <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> DsaSignature ecdsa_sign(EllipticCurve params,
+                                          BigInteger private_key,
+                                          <span style="font-weight:bold;color:#7B0052;">byte</span>[] hash_bytes) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="color:#3F7F5F">// This should be a random number between 0 and n-1</span>
+        BigInteger k = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, ECDSASample.K);
+
+        Point X = ECCUtils.multiply_point(params.G, k, params.a, params.p);
+        BigInteger r = X.x.mod(params.n);
+
+        <span style="color:#3F7F5F">// z is the L_n leftmost bits of hash - cannot be longer than n</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> nBytes = params.n.bitLength() / 8;
+        <span style="font-weight:bold;color:#7B0052;">if</span> (nBytes &lt; hash_bytes.length) <span style="font-weight:bold;color:#D3171B">{</span>
+            hash_bytes = Arrays.copyOfRange(hash_bytes, 0, nBytes);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+        BigInteger z = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, hash_bytes);
+
+        <span style="color:#3F7F5F">// s = k^-1 ( z + r d_a ) % n</span>
+        BigInteger inv_k = k.modInverse(params.n);
+        BigInteger s = private_key.multiply(r).add(z).multiply(inv_k).mod(params.n);
+
+        DsaSignature signature = <span style="font-weight:bold;color:#7B0052;">new</span> DsaSignature(r, s);
+        <span style="font-weight:bold;color:#7B0052;">return</span> signature;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">boolean</span> ecdsa_verify(EllipticCurve params,
+                                       Point public_key,
+                                       <span style="font-weight:bold;color:#7B0052;">byte</span>[] hash_bytes,
+                                       DsaSignature signature) <span style="font-weight:bold;color:#D3171B">{</span>
+
+        BigInteger r = signature.r;
+        BigInteger s = signature.s;
+
+        <span style="color:#3F7F5F">// w = s^-1 % n</span>
+        BigInteger w = s.modInverse(params.n);
+
+        <span style="color:#3F7F5F">// z is the L_n leftmost bits of hash - cannot be longer than n</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> nBytes = params.n.bitLength() / 8;
+        <span style="font-weight:bold;color:#7B0052;">if</span> (nBytes &lt; hash_bytes.length) <span style="font-weight:bold;color:#D3171B">{</span>
+            hash_bytes = Arrays.copyOfRange(hash_bytes, 0, nBytes);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+        BigInteger z = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, hash_bytes);
+
+        <span style="color:#3F7F5F">// u1 = zw % n</span>
+        BigInteger u1 = z.multiply(w).mod(params.n);
+
+        <span style="color:#3F7F5F">// u2 = (rw) % q</span>
+        BigInteger u2 = r.multiply(w).mod(params.n);
+
+        <span style="color:#3F7F5F">// (x1,y1) = u1 * G + u2 * Q</span>
+        Point G = params.G;
+        Point Q = <span style="font-weight:bold;color:#7B0052;">new</span> Point(public_key.x, public_key.y);
+
+        Point p1 = ECCUtils.multiply_point(G, u1, params.a, params.p);
+        Point p2 = ECCUtils.multiply_point(Q, u2, params.a, params.p);
+        Point p3 = ECCUtils.add_points(p1, p2, params.p);
+
+        <span style="color:#3F7F5F">// r = x1 % n</span>
+        BigInteger v = p3.x.mod(params.n);
+        <span style="font-weight:bold;color:#7B0052;">return</span> r.equals(v);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+    </div>
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>ECDSASample.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="color:#3F5FBF">/**
+ * &lt;p&gt;ECC parameters&lt;/p&gt;
+ * &lt;p&gt;数据URL：https://tools.ietf.org/html/rfc4754#section-8.1&lt;/p&gt;
+ */</span>
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> ECDSASample <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="color:#3F5FBF">/**
+     * FFFFFFFF 00000001 00000000 00000000
+     * 00000000 FFFFFFFF FFFFFFFF FFFFFFFF
+     */</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] P = <span style="font-weight:bold;color:#D3171B">{</span>
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x01,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+
+    <span style="color:#3F5FBF">/**
+     * 5AC635D8 AA3A93E7 B3EBBD55 769886BC
+     * 651D06B0 CC53B0F6 3BCE3C3E 27D2604B
+     */</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] b = <span style="font-weight:bold;color:#D3171B">{</span>
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x5A, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xC6, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x35, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xD8,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xAA, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x3A, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x93, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xE7,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xB3, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xEB, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xBD, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x55,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x76, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x98, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x86, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xBC,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x65, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x1D, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x06, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xB0,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xCC, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x53, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xB0, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xF6,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x3B, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xCE, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x3C, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x3E,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x27, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xD2, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x60, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x4B
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+
+    <span style="color:#3F5FBF">/**
+     * FFFFFFFF 00000000 FFFFFFFF FFFFFFFF
+     * BCE6FAAD A7179E84 F3B9CAC2 FC632551
+     */</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] q = <span style="font-weight:bold;color:#D3171B">{</span>
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x00,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFF,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xBC, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xE6, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFA, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xAD,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xA7, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x17, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x9E, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x84,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xF3, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xB9, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xCA, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xC2,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFC, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x63, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x25, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x51
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+
+    <span style="color:#3F5FBF">/**
+     * 6B17D1F2 E12C4247 F8BCE6E5 63A440F2
+     * 77037D81 2DEB33A0 F4A13945 D898C296
+     */</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] gx = <span style="font-weight:bold;color:#D3171B">{</span>
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x6B, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x17, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xD1, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xF2,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xE1, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x2C, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x42, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x47,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xF8, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xBC, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xE6, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xE5,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x63, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xA4, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x40, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xF2,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x77, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x03, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x7D, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x81,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x2D, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xEB, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x33, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xA0,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xF4, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xA1, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x39, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x45,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xD8, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x98, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xC2, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x96
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+
+    <span style="color:#3F5FBF">/**
+     * 4FE342E2 FE1A7F9B 8EE7EB4A 7C0F9E16
+     * 2BCE3357 6B315ECE CBB64068 37BF51F5
+     */</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] gy = <span style="font-weight:bold;color:#D3171B">{</span>
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x4F, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xE3, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x42, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xE2,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFE, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x1A, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x7F, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x9B,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x8E, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xE7, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xEB, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x4A,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x7C, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x0F, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x9E, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x16,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x2B, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xCE, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x33, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x57,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x6B, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x31, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x5E, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xCE,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xCB, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xB6, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x40, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x68,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x37, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xBF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x51, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xF5
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+
+    <span style="color:#3F5FBF">/**
+     * &lt;p&gt;key&lt;/p&gt;
+     * DC51D386 6A15BACD E33D96F9 92FCA99D
+     * A7E6EF09 34E70975 59C27F16 14C88A7F
+     */</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] w = <span style="font-weight:bold;color:#D3171B">{</span>
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xDC, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x51, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xD3, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x86,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x6A, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x15, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xBA, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xCD,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xE3, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x3D, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x96, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xF9,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x92, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xFC, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xA9, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x9D,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xA7, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xE6, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xEF, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x09,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x34, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xE7, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x09, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x75,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x59, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xC2, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x7F, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x16,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x14, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xC8, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x8A, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x7F
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] K = <span style="font-weight:bold;color:#D3171B">{</span>
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x9E, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x56, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xF5, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x09,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x19, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x67, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x84, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xD9,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x63, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xD1, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xC0, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xA4,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x01, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x51, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x0E, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xE7,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xAD, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xA3, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xDC, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xC5,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xDE, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xE0, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x4B, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x15,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x4B, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xF6, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0x1A, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xF1,
+            (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xD5, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xA6, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xDE, (<span style="font-weight:bold;color:#7B0052;">byte</span>)0xCE
+    <span style="font-weight:bold;color:#D3171B">}</span>;
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+    </div>
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>ECCKey.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> crypto.ecc.Point;
+
+<span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> ECCKey <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger d; <span style="color:#3F7F5F">// random integer &lt; n; this is the private key</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> Point Q; <span style="color:#3F7F5F">// Q = d * G; this is the public key</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+    </div>
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>ECDSATest.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> crypto.dsa.DsaSignature;
+<span style="font-weight:bold;color:#7B0052;">import</span> crypto.ecc.ECCUtils;
+<span style="font-weight:bold;color:#7B0052;">import</span> crypto.ecc.Point;
+<span style="font-weight:bold;color:#7B0052;">import</span> crypto.sha256.SHA256Utils;
+
+<span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+<span style="font-weight:bold;color:#7B0052;">import</span> java.nio.charset.StandardCharsets;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> ECDSATest <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#D3171B">{</span>
+        BigInteger p = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, ECDSASample.P);
+        BigInteger a = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(<span style="color:#2A00FF">"-3"</span>);
+        BigInteger b = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, ECDSASample.b);
+        BigInteger q = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, ECDSASample.q);
+        BigInteger gx = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, ECDSASample.gx);
+        BigInteger gy = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, ECDSASample.gy);
+
+        Point G = <span style="font-weight:bold;color:#7B0052;">new</span> Point(gx, gy);
+        EllipticCurve curve = <span style="font-weight:bold;color:#7B0052;">new</span> EllipticCurve(p, a, b, G, q);
+
+        <span style="color:#3F7F5F">// Generate new public key from private key “w” and point “G”</span>
+        ECCKey ecc_key = <span style="font-weight:bold;color:#7B0052;">new</span> ECCKey();
+        ecc_key.d = <span style="font-weight:bold;color:#7B0052;">new</span> BigInteger(1, ECDSASample.w);
+        ecc_key.Q = ECCUtils.multiply_point(G, ecc_key.d, a, p);
+
+
+        String msg = <span style="color:#2A00FF">"abc"</span>;
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input = msg.getBytes(StandardCharsets.UTF_8);
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] hash_bytes = SHA256Utils.sha256_hash(input, input.length);
+
+        DsaSignature signature = ECDSAUtils.ecdsa_sign(curve, ecc_key.d, hash_bytes);
+        System.out.println(<span style="color:#2A00FF">"R: "</span> + signature.r.toString(16));
+        System.out.println(<span style="color:#2A00FF">"S: "</span> + signature.s.toString(16));
+
+        <span style="font-weight:bold;color:#7B0052;">boolean</span> flag = ECDSAUtils.ecdsa_verify(curve, ecc_key.Q, hash_bytes, signature);
+        <span style="font-weight:bold;color:#7B0052;">if</span> (flag) <span style="font-weight:bold;color:#D3171B">{</span>
+            System.out.println(<span style="color:#2A00FF">"Signature verified."</span>);
+        <span style="font-weight:bold;color:#D3171B">}</span> <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#D3171B">{</span>
+            System.out.println(<span style="color:#2A00FF">"Signature Not verified."</span>);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+    </div>
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>Run Output</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">R: cb28e0999b9c7715fd0a80d8e47a77079716cbbf917dd72e97566ea1c066957c
+S: 86fa3bb4e26cad5bf90b7f81899256ce7594bb1ea0c89212748bff3b3d5b0315
+Signature verified.
+</pre>
+    </div>
+</div>

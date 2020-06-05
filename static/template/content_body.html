@@ -46,6 +46,13 @@ __NAVIGATION_BAR__
     <p class="w3-tangerine">Powered by <a href="javascript:void(0)">lsieun.cn</a></p>
 </footer>
 
+<div id="img_modal" class="w3-modal" onclick="document.getElementById('img_modal').style.display='none'" style="display: none;">
+    <span class="w3-button w3-hover-red w3-xxlarge w3-display-topright">×</span>
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom">
+        <img id="img_container" src="/images/mountains.jpg" alt="mountains" style="width:100%">
+    </div>
+</div>
+
 <!--
 Try putting script-Tags over the closing body-Tag,
 this will prevent that the page is loading endless
@@ -58,21 +65,16 @@ for the Javascript file, before the page is actually loaded.
         $('#main_content sub.my_note').toggle();
     }
 
+    function display_img(img) {
+        document.getElementById('img_container').src=img.src;
+        document.getElementById('img_modal').style.display='block'
+    }
+
     function toggle_paragraph_sub_note(obj) {
         $(obj).parent().find("sub.my_note").toggle();
     }
     $(function() {
         toggle_all_sub_note();
-
-        $('table>tbody>tr').mouseover(function() {
-            $(this).css('backgroundColor','lightgray');
-        }).mouseout(function() {
-            $(this).css('backgroundColor','');
-        }).click(function() {
-            $(this).prevAll().css('backgroundColor','yellow');
-            $(this).css('backgroundColor','violet');
-            $(this).nextAll().css('backgroundColor','yellow');
-        });
     });
 </script>
 

@@ -5,7 +5,10 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 
 public class DsaUtils {
-    public static DsaSignature dsa_sign(DsaParams params, BigInteger private_key, byte[] hash_bytes) {
+    public static DsaSignature dsa_sign(
+            DsaParams params,
+            BigInteger private_key,
+            byte[] hash_bytes) {
         BigInteger g = params.g;
         BigInteger p = params.p;
         BigInteger q = params.q;

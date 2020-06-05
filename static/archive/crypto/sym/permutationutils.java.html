@@ -1,0 +1,56 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">PermutationUtils.java</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>PermutationUtils.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> PermutationUtils <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="color:#3F5FBF">/**
+     * This does not return a 1 for a 1 bit; it just returns non-zero
+     */</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> get_bit(<span style="font-weight:bold;color:#7B0052;">byte</span>[] array, <span style="font-weight:bold;color:#7B0052;">int</span> bit) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> (array[bit / 8] & 0xFF) & (0x80 &gt;&gt; (bit % 8));
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> set_bit(<span style="font-weight:bold;color:#7B0052;">byte</span>[] array, <span style="font-weight:bold;color:#7B0052;">int</span> bit) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> val = (array[bit / 8] & 0xFF) | (0x80 &gt;&gt; (bit % 8));
+        array[bit / 8] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) val;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> clear_bit(<span style="font-weight:bold;color:#7B0052;">byte</span>[] array, <span style="font-weight:bold;color:#7B0052;">int</span> bit) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> val = (array[bit / 8] & 0xFF) & ~(0x80 &gt;&gt; (bit % 8));
+        array[bit / 8] = (<span style="font-weight:bold;color:#7B0052;">byte</span>) val;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="color:#3F5FBF">/**
+     * &lt;p&gt;Implement the permutation functions.&lt;/p&gt;
+     * NOTE: this assumes that the permutation tables are defined as one-based
+     * rather than 0-based arrays, since they’re given that way in the
+     * specification.
+     */</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] permute(<span style="font-weight:bold;color:#7B0052;">byte</span>[] src, <span style="font-weight:bold;color:#7B0052;">int</span>[] permute_table) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="font-weight:bold;color:#7B0052;">int</span> bit_size = permute_table.length;
+        <span style="font-weight:bold;color:#7B0052;">int</span> byte_size = bit_size / 8;
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] target = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[byte_size];
+
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i = 0; i &lt; bit_size; i++) <span style="font-weight:bold;color:#D3171B">{</span>
+            <span style="font-weight:bold;color:#7B0052;">int</span> pos = permute_table[i] - 1;
+
+            <span style="font-weight:bold;color:#7B0052;">if</span> (get_bit(src, pos) == 0) <span style="font-weight:bold;color:#D3171B">{</span>
+                clear_bit(target, i);
+            <span style="font-weight:bold;color:#D3171B">}</span> <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#D3171B">{</span>
+                set_bit(target, i);
+            <span style="font-weight:bold;color:#D3171B">}</span>
+        <span style="font-weight:bold;color:#D3171B">}</span>
+        <span style="font-weight:bold;color:#7B0052;">return</span> target;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+    </div>
+</div>

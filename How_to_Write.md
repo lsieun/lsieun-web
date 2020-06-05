@@ -58,9 +58,7 @@ function toggle_all_sub_note() {
 图片居中显示
 
 ```html
-<div style="text-align: center">
-    <img src="/images/usa/statue_of_liberty.jpeg" alt="the Statue of Liberty"/>
-</div>
+<img class="w3-image" src="/images/mountains.jpg" alt="the Statue of Liberty" onclick="display_img(this)"/>
 
 <img width="800" src="/images/crypto/rsa/rsa_padding.png" alt="RSA Padding"/>
 ```
@@ -75,6 +73,7 @@ function toggle_all_sub_note() {
 In the same vein<sub class="my_note" style="color:green">以同样的方式</sub>
 <code style="color:blue"></code>
 <code class="w3-codespan"></code>
+<img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 ```
 
 Code
@@ -102,6 +101,23 @@ Code
 - 蓝色：天空是蓝色的。蓝色是高高的天空所展现出的颜色，所以我想用“蓝色”表示“格调较高”的文字，可能是名人说意味深远的话，也可以作为提醒。有人说，蓝色有助於加强记忆力。蓝色用来做比较重要的。
 - 绿色：大地上的树木是绿色的。绿色，是树木的颜色，更加接近于大地，所以我想用绿色来表示自己的观点。
 - 红色：红色一般用来标注重要的知识点，以及容易遗漏，容易出错的地方。因为红色较为醒目，所以我不太常使用红色，以免对红色产生视觉疲劳。
+
+## Table
+
+```html
+<table class="w3-table-all w3-hoverable w3-centered">
+<tr class="w3-green">
+  <th>First Name</th>
+  <th>Last Name</th>
+  <th>Points</th>
+</tr>
+<tr class="w3-hover-blue">
+  <td>Jill</td>
+  <td>Smith</td>
+  <td>50</td>
+</tr>
+</table>
+```
 
 ## Reference
 

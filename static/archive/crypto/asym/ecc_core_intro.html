@@ -103,6 +103,10 @@ double_val = multiplicand
     not a surprise to you at this point, is to define everything modulo a prime number.
 </p>
 
+<h2>
+    Making ECC Work with Whole Integers: Elliptic-Curve Cryptography over F<sub>p</sub>
+</h2>
+
 <p>
     You can’t really call it division, but you do need an operation referred to as
     the <strong>modular inverse</strong> to complete elliptic-curve operations. This is an operation
@@ -139,5 +143,16 @@ double_val = multiplicand
 
 <p>
     <strong>Point multiplication</strong> (by a scalar) is still defined in terms of “double-and-add.”
+</p>
+
+<p>
+    TODO: 需要进一步说明，这些“概念”的定义，还需要映射到“编程”领域（Java语言）中的BigInteger来解决。
+</p>
+
+<p>
+    For elliptic curves, there’s an O(n) algorithm to multiply a <strong>point</strong> by a scalar <code class="w3-codespan">n</code> but no feasible inverse operation.
+    You can’t “divide” a point by a scalar and find the original point. This property
+    of being able to perform an operation in one direction in a reasonable amount of
+    time, but not invert it, makes it usable as a public-key cryptosystem.
 </p>
 

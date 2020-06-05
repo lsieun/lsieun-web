@@ -1,0 +1,149 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ECC Extension: (1) Diffie-Hellman Using ECC</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Diffie-Hellman key agreement relies on the fact that
+</p>
+
+<div class="w3-panel w3-leftbar w3-light-grey">
+    <p>
+        g<sup>ab</sup> % p = g<sup>ba</sup> % p = (g<sup>a</sup> % p)<sup>b</sup> % p = (g<sup>b</sup> % p)<sup>a</sup> % p
+    </p>
+</div>
+
+<p>
+    <code class="w3-codespan">g</code> and <code class="w3-codespan">p</code> are agreed on by both sides.
+    <sub class="my_note" style="color:green">笔记：我对于g的理解是generator，它是一个“发电机、生成器”，它是一个起点，由它来产生许多不同的事物。而p表示prime，是一个质数，它可以将计算结果收缩到一定的范围内。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-leftbar w3-light-grey">
+    <p>
+        思维转换：在原始的DH算法中，g和p是共享的公开参数，而a和b则分别是两方各自的私有参数。在原始的DH算法中，g是一个“数值”，在ECC的DH算法中，它就变换成了G，表示一个点坐标(x,y)；在原始的DH算法中，核心的方法是“求一个数的指数”，而在ECC的DH算法中，核心的方法是“求一个点(x,y)与一个标量的乘积”；在原始的DH算法中和ECC的DH算法中，p都表示一个质数，它表示的含义没有发生变化，都是将计算结果收缩到一定的范围之内。在原始的DH算法中，a和b是两方各自的私有参数，这两个概念，在ECC的DH算法中，变换成双方的private key的概念。在原始的DH算法中，Ys和Yc是双方根据g计算出的“数值”，这两个概念，在ECC的DH算法中，变换成双方的public key的概念，它们不再是“数值”，而是表示由G点和private key计算的一个新的坐标点。
+    </p>
+</div>
+
+<p>
+    Diffie-Hellman can be redefined in terms of elliptic-curve operations. The
+    <strong>private key</strong> is a scalar, and the <strong>public key</strong> is that scalar, multiplied by another
+    shared point <code class="w3-codespan">G</code>.
+</p>
+
+<div class="w3-panel w3-leftbar w3-light-grey">
+    <ul>
+        <li>private key = scalar</li>
+        <li>public key = private key * shared Point(<code class="w3-codespan">G</code>)</li>
+    </ul>
+</div>
+
+<p>
+    The two entities, A and B, which want to perform a secure key
+    exchange, each have a <strong>private scalar</strong> and a <strong>public point</strong>, plus another <strong>shared point</strong>
+    and, of course, the <code class="w3-codespan">a</code>, <code class="w3-codespan">b</code>, and <code class="w3-codespan">p</code> that define an elliptic-curve and its prime field. If
+    A multiplies his private key by B’s public-key and B multiplies his private key
+    by A’s public key, they both arrive at the same point <code class="w3-codespan">Z</code> because they started at
+    the same shared point <code class="w3-codespan">G</code>. <code class="w3-codespan">Z</code> can’t be computed by anybody else without access
+    to one of the private keys, so <code class="w3-codespan">Z</code> can be used as a shared secret. Typically the
+    <strong>x-coordinate</strong> of <code class="w3-codespan">Z</code> is used and the y-coordinate is discarded.
+</p>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>KeyPair.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> KeyPair <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger private_key;
+    <span style="font-weight:bold;color:#7B0052;">public</span> Point public_key;
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+    </div>
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>DomainParameters.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="color:#3F5FBF">/**
+ * Describe y^2 = (x^3 + ax + b) % p
+ */</span>
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> DomainParameters <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger p;
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger a;
+    <span style="font-weight:bold;color:#7B0052;">public</span> BigInteger b;
+    <span style="font-weight:bold;color:#7B0052;">public</span> Point G; <span style="color:#3F7F5F">// base point</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+    </div>
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>DHECCUtils.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> crypto.ecc.ECCUtils;
+<span style="font-weight:bold;color:#7B0052;">import</span> crypto.ecc.Point;
+
+<span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> DHECCUtils <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> Point dh_agree(DomainParameters domain_parameters,
+                                 BigInteger private_key) <span style="font-weight:bold;color:#D3171B">{</span>
+        Point G = domain_parameters.G;
+        BigInteger a = domain_parameters.a;
+        BigInteger p = domain_parameters.p;
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> ECCUtils.multiply_point(G, private_key, a, p);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> Point dh_finalize(DomainParameters domain_parameters,
+                                    Point public_key, BigInteger private_key) <span style="font-weight:bold;color:#D3171B">{</span>
+        BigInteger a = domain_parameters.a;
+        BigInteger p = domain_parameters.p;
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> ECCUtils.multiply_point(public_key, private_key, a, p);
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+    </div>
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <h3>DHECCTest.java</h3>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> crypto.ecc.Point;
+
+<span style="font-weight:bold;color:#7B0052;">import</span> java.math.BigInteger;
+
+<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> DHECCTest <span style="font-weight:bold;color:#D3171B">{</span>
+    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#D3171B">{</span>
+        DomainParameters T = <span style="font-weight:bold;color:#7B0052;">new</span> DomainParameters();
+        T.a = BigInteger.valueOf(1);
+        T.b = BigInteger.valueOf(1);
+        T.p = BigInteger.valueOf(23);
+        T.G = <span style="font-weight:bold;color:#7B0052;">new</span> Point(BigInteger.valueOf(5), BigInteger.valueOf(19));
+
+        KeyPair A = <span style="font-weight:bold;color:#7B0052;">new</span> KeyPair();
+        A.private_key = BigInteger.valueOf(4);
+        A.public_key = DHECCUtils.dh_agree(T, A.private_key);
+
+        KeyPair B = <span style="font-weight:bold;color:#7B0052;">new</span> KeyPair();
+        B.private_key = BigInteger.valueOf(2);
+        B.public_key = DHECCUtils.dh_agree(T, B.private_key);
+
+        Point Za = DHECCUtils.dh_finalize(T, B.public_key, A.private_key);
+        System.out.println(Za); <span style="color:#3F7F5F">// Point {x=5, y=19}</span>
+
+        Point Zb = DHECCUtils.dh_finalize(T, A.public_key, B.private_key);
+        System.out.println(Zb); <span style="color:#3F7F5F">// Point {x=5, y=19}</span>
+    <span style="font-weight:bold;color:#D3171B">}</span>
+<span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+    </div>
+</div>

@@ -1,0 +1,35 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ECC Extension: (3) ECC Advantages</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>
+    Why Elliptic-Curve Cryptography?
+</h2>
+
+<p>
+    As you can see, ECC is quite a bit more complex than “modulus” cryptography
+    such as RSA or classic Diffie-Hellman. So, why bother with it? Speed.
+    <sub class="my_note" style="color:blue">笔记：既然有了RSA这样的算法，为什么要研究ECC这类算法呢？原因是使用ECC算法的计算速度快。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    ECC can provide the same security with an 80-bit private key as RSA can provide with a
+    512-bit private key because every single bit (provably) contributes to the security
+    of the cryptosystem.
+    <sub class="my_note" style="color:blue">笔记：从安全性的角度来说，ECC的80-bit private key和RSA的512-bit private key提供的安全性是一样的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    Remember that the public-key operations are O(n), where
+    n is the number of bits in the private key. ECC is fast enough, and has a small
+    enough operating footprint<sub class="my_note" style="color:green">占用空间 the amount of space that sth fills, for example the amount of space that a computer takes up on a desk</sub>, that it can be used in smartcard implementations.
+    <sub class="my_note" style="color:blue">笔记：ECC运行快，占用内存空间小，在微型的设备上也能运行。而RSA的计算，特别是private key比较大的情况下，微型设备运算起来就很艰难，或者花费时间很长。对微型设备来说，产生大量热量、花费时间很长的功能，就很不适用。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>

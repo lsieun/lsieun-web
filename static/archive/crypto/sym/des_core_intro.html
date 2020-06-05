@@ -1,0 +1,117 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Data Encryption Standard</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    The <strong>Data Encryption Standard</strong> (<strong>DES</strong>) algorithm, implemented and specified by IBM
+    at the behest<sub class="my_note" style="color:green">命令；紧急指示；有关国家政府的紧急要求
+    an order or request</sub> of the NSA<sub class="my_note" style="color:green">美国国家安全局(National Security Agency)</sub> in 1974, was the first publicly available computer-ready
+    encryption algorithm. Although for reasons you see later, DES is not considered
+    particularly secure any more, it’s still in widespread use (!) and serves as a good
+    starting point for the study of symmetric cryptography algorithms in general.
+    Most of the concepts that made DES work when it was first introduced appear
+    in other cryptographic algorithms. DES is specified at the following web site:
+    https://csrc.nist.gov/csrc/media/publications/fips/46/3/archive/1999-10-25/documents/fips46-3.pdf.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    DES breaks its input up into <strong>eight-byte blocks</strong> and scrambles them using
+    an <strong>eight-byte key</strong>. This scrambling process involves a series of fixed <strong>permutations</strong> — swapping bit 34 with bit 28, bit 28 with bit 17, and so on — <strong>rotations</strong>,
+    and <strong>XORs</strong>. The core of DES, though, and where it gets its security, is from what
+    the standard calls <strong>S boxes</strong> where six bits of input become four bits of output in
+    a fixed, but non-reversible (except with the key) way.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>Like any modern symmetric cryptographic algorithm, DES relies heavily on the XOR operation.</p>
+</div>
+
+<h2>DES Initial Permutation</h2>
+
+<p>
+    DES specifies that the input should undergo an initial permutation. The purpose
+    of this permutation is unclear, as it serves no cryptographic purpose (the output
+    would be just as secure without this). It may have been added for optimization
+    for certain hardware types. Nevertheless, if you don’t include it, your output
+    will be wrong, and you won’t be able to interoperate with other implementations.
+</p>
+
+<p>
+    The specification describes this permutation in terms of the input bits
+    and the output bits, but it works out to copying the second bit of the last byte
+    into the first bit of the first byte of the output, followed by the second bit of the
+    next-to-last byte into the second bit of the first byte of the output, and so on, so
+    that the first byte of output consists of the second bits of all of the input bytes,
+    “backward.” (Remember that the input is exactly eight-bytes long, so given an
+    8-bit byte, taking the second bit of each input byte yields one byte of output.)
+</p>
+
+<div class="w3-display-container w3-text-white">
+    <img class="w3-image" src="/images/crypto/des/first_byte_of_output.png" alt="First byte of output"/>
+    <div class="w3-display-bottomright w3-container w3-text-black"><p>First byte of output</p></div>
+</div>
+
+<p>
+    The second byte of the output is the fourth bit of each of the input bytes, again
+    backward.
+</p>
+
+<div class="w3-display-container w3-text-white">
+    <img class="w3-image" src="/images/crypto/des/second_byte_of_output.png" alt="Second byte of output"/>
+    <div class="w3-display-bottomright w3-container w3-text-black"><p>Second byte of output</p></div>
+</div>
+<p>
+    The third is built from the sixth bits, the fourth from the eighth bits,
+    and the fifth comes from the first bits, and so on.
+</p>
+
+<div class="w3-display-container w3-text-white">
+    <img class="w3-image" src="/images/crypto/des/five_permuted_bytes.png" alt="Fifth permuted bytes"/>
+    <div class="w3-display-bottomright w3-container w3-text-black"><p>Fifth byte of output</p></div>
+</div>
+
+<ul>
+    <li><a href="/archive/crypto/sym/basic_permutation.html">Basic Permutation</a></li>
+</ul>
+
+<ul>
+    <li><a href="/archive/crypto/sym/DESConst.java.html">DESConst.java</a></li>
+    <li><a href="/archive/crypto/sym/PermutationUtils.java.html">PermutationUtils.java</a></li>
+</ul>
+
+<p>
+    After the input has been so permuted, it is combined with the key in a series
+    of 16 rounds, each of which consists of the following:
+</p>
+
+<ul>
+    <li>Expand bits 32~64 of the input to 48 bits</li>
+    <li>XOR the expanded right half of the input with the key.</li>
+    <li>Use the output of this XOR to look up eight entries in the <code class="w3-codespan">s-box</code> table and
+        overwrite the input with these contents.</li>
+    <li>Permute this output according to a specific <code class="w3-codespan">p-table</code>.</li>
+    <li>XOR this output with the left half of the input (bits 1~32) and swap sides so
+        that the XORed left half becomes the right half, and the (as of yet untouched)
+        right-half becomes the left half. On the next round, the same series of operations
+        are applied again, but this time on what used to be the right half.</li>
+    <li></li>
+</ul>
+
+<strong></strong>
+<sub class="my_note" style="color:red">笔记：</sub>
+<sub class="my_note" style="color:blue">笔记：</sub>
+<sub class="my_note" style="color:green">笔记：</sub>
+<sub class="my_note" style="color:green"></sub>
+<img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+
+<h2>6. References</h2>
+
+<ul>
+    <li><a href="http://page.math.tu-berlin.de/~kant/teaching/hess/krypto-ws2006/des.htm" target="_blank">math.tu: The DES Algorithm Illustrated</a> 这个网站提供对DES算法进行了详细的解释。</li>
+</ul>

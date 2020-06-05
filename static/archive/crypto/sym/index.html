@@ -1,0 +1,106 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Symmetric Cryptography</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Encryption refers to the practice of scrambling<sub class="my_note" style="color:green">扰码，倒频（改变电话或无线电信号，听众只有通过专门设备才能收听）to change the way that a telephone or radio message sounds so that only people with special equipment can understand it</sub> a message such that it can only
+    be read (descrambled) by the intended recipient. To make this possible, you must
+    scramble the message in <strong>a reversible way</strong><sub class="my_note" style="color:red">笔记：我觉得，这里指出了对称加密的本质，其本质就是“加密过程”必须“可逆”，这样才能“解密”。</sub>, but in such a way that only somebody
+    with a special piece of knowledge can descramble<sub class="my_note" style="color:green">解扰；解波 to make intelligible a message transmitted in code form</sub> it correctly. This special piece
+    of knowledge is referred to as the <strong>key</strong>. Anybody who has the
+    key can descramble — <strong>decrypt</strong>, in crypto-speak — the scrambled message.<sub class="my_note" style="color:green">笔记：拥有key的人，可以解密。</sub> In
+    theory, at least, no one without the key can decrypt the message.<sub class="my_note" style="color:green">笔记：没有key的人，不能解密。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    When computers are used for cryptography, <strong>messages</strong> and <strong>keys</strong> are actually
+    numbers. The <strong>messages</strong> is converted to (or at least treated as) a number, which is
+    numerically combined with the <strong>keys</strong> (also a number) in a specified way according to a cryptographic algorithm.
+    <sub class="my_note" style="color:blue">笔记：这里讲到了两个概念范畴，即cryptography和computer。在cryptography的概念范畴内，有message和key，两者结合之后会生成scrambled message；但是在computer的概念范畴内，它会将message和key都转换成number。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    There are two very broad categories of cryptographic algorithms — <strong>symmetric</strong>
+    and <strong>public</strong>. The difference between the two is in <strong>key management:</strong>
+</p>
+
+<p>
+    With <strong>symmetric cryptography algorithms</strong>, the same key is used both for
+    encryption and decryption. In some cases, the algorithm is different, with
+    decryption “undoing” what encryption did. In other cases, the algorithm is
+    designed so that the same set of operations, applied twice successively, cycle
+    back to produce the same result; encryption and decryption are actually the
+    same algorithms. In all cases, though, both the sender and the receiver must
+    both agree what the key is before they can perform any encrypted communication.
+    This <strong>key management</strong> turns out to be the most difficult part of encryption
+    operations and is where <strong>public-key cryptography</strong> enters.
+    <sub class="my_note" style="color:blue">笔记：对于symmetric cryptography来说，加密和解密的过程中只有一个key，所以要保证这个key不能让别人知道（安全性）；对于public-key cryptography来说，加密和解密的过程中需要两个key，一个key可以向外公开，另一个key需要保密。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    Julius Caesar is credited with perhaps the oldest known symmetric cipher algorithm.
+    The so-called <strong>Caesar cipher</strong><sub class="my_note" style="color:green">笔记：最早的加密，要追溯到凯撒密码。</sub> — a variant of which you can probably find
+    as a diversion in your local newspaper — assigns each letter, at random, to a
+    number. This mapping of letters to numbers is the key in this simple algorithm.
+    Modern cipher algorithms must be much more sophisticated than Caesar’s in
+    order to withstand automated attacks by computers.<sub class="my_note" style="color:green">笔记：当代的加密算法，要比凯撒密码更加复杂。</sub> Although the basic premise
+    remains — substituting one letter or symbol for another, and keeping track of
+    that substitution for later<sub class="my_note" style="color:green">笔记：不管的最早的加密算法，还是当代的加密算法，它们的本质没有发生变化。</sub> — further elements of confusion and diffusion were
+    added over the centuries to create modern cryptography algorithms.<sub class="my_note" style="color:green">笔记：当代的加密算法，为了增加复杂性，采用了不同的具体方法。</sub> One such
+    hardening technique is to operate on several characters at a time, rather than
+    just one.<sub class="my_note" style="color:green">笔记：其中一个方法，就是同时对多个字符进行加密，而不是只针对一个字符进行加密。</sub> By far the most common category of symmetric encryption algorithm
+    is the <strong>block cipher algorithm</strong>, which operates on a fixed range of bytes rather than
+    on a single character at a time.
+    <sub class="my_note" style="color:blue">笔记：在对称加密算法（symmetric encryption algorithm）中，最常用的就是block cipher algorithm。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    Changes in cryptographic standards come very slowly, and only
+    after much analysis by cryptographers and cryptanalysts.
+</p>
+
+<table class="w3-table-all w3-hoverable">
+    <caption>Symmetric Cryptography Algorithm</caption>
+    <thead>
+    <tr class="w3-green">
+        <th>Algorithm</th>
+        <th>Input Size</th>
+        <th>Input Block Size</th>
+        <th>Key Size</th>
+        <th>Rounds</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>DES</td>
+        <td>arbitrary</td>
+        <td>64-bit (8-byte)</td>
+        <td>64-bit (8-byte)</td>
+        <td>16</td>
+    </tr>
+    <tr>
+        <td>Triple-DES</td>
+        <td>arbitrary</td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>AES</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+
