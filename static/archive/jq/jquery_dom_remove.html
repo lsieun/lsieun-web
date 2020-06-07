@@ -1,0 +1,61 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery - Remove Elements</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div>
+    <hr>
+    <p class="intro">With jQuery, it is easy to remove existing HTML elements.</p>
+    <hr>
+
+    <h2>Remove Elements/Content</h2>
+    <p>To remove elements and content, there are mainly two jQuery methods:</p>
+    <ul>
+        <li><code class="w3-codespan">remove()</code> - Removes the selected element (and its child elements)</li>
+        <li><code class="w3-codespan">empty()</code> - Removes the child elements from the selected element</li>
+    </ul>
+
+    <hr>
+    <h2>jQuery remove() Method</h2>
+    <p>The jQuery <code class="w3-codespan">remove()</code> method removes the selected element(s) and its child
+        elements.</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">remove</span>();<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+    <h2>jQuery empty() Method</h2>
+
+    <p>The jQuery <code class="w3-codespan">empty()</code> method removes the child elements of the selected element(s).</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">empty</span>(); </span></div>
+    </div>
+    <hr>
+
+    <h2>Filter the Elements to be Removed</h2>
+    <p>The jQuery <code class="w3-codespan">remove()</code> method also accepts one parameter, which allows you to
+        filter the elements to be removed.</p>
+    <p>The parameter can be any of the jQuery selector syntaxes.</p>
+    <p>The following example removes all <code class="w3-codespan">&lt;p&gt;</code> elements with <code class="w3-codespan">class="test"</code>:&nbsp;&nbsp; </p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">remove</span>(<span class="jsstringcolor" style="color:brown">".test"</span>); </span></div>
+    </div>
+    <p>This example removes all <code class="w3-codespan">&lt;p&gt;</code> elements with <code class="w3-codespan">class="test"</code> or
+        <code class="w3-codespan">class="demo"</code>:&nbsp;&nbsp;</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">remove</span>(<span class="jsstringcolor" style="color:brown">".test, .demo"</span>); </span></div>
+    </div>
+    <hr>
+</div>

@@ -1,0 +1,134 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery - Dimensions</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div>
+    <hr>
+    <p class="intro">With jQuery, it is easy to work with the dimensions of elements and browser window.</p>
+    <hr>
+    <h2>jQuery Dimension Methods</h2>
+    <p>jQuery has several important methods for working with dimensions:</p>
+    <ul>
+        <li><code class="w3-codespan">width()</code></li>
+        <li><code class="w3-codespan">height()</code></li>
+        <li><code class="w3-codespan">innerWidth()</code></li>
+        <li><code class="w3-codespan">innerHeight()</code></li>
+        <li><code class="w3-codespan">outerWidth()</code></li>
+        <li><code class="w3-codespan">outerHeight()</code></li>
+    </ul>
+    <hr>
+
+    <h2>jQuery Dimensions</h2>
+    <p style="text-align:center;">
+        <img alt="jQuery Dimensions" class="w3-image" src="/images/jq/img_jquerydim.gif"></p>
+
+    <hr>
+    <h2>jQuery width() and height() Methods</h2>
+
+    <p>The <code class="w3-codespan">width()</code> method sets or returns the width of an element (excludes
+        padding, border and margin).</p>
+
+    <p>The <code class="w3-codespan">height()</code> method sets or returns the height of an element (excludes padding, border
+        and margin).</p>
+    <p>The following example returns the width and height of a specified <code class="w3-codespan">&lt;div&gt;</code>
+        element:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;<span class="jskeywordcolor" style="color:mediumblue">var</span> txt = <span class="jsstringcolor" style="color:brown">""</span>;<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;txt += <span class="jsstringcolor" style="color:brown">"Width: "</span> + $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">width</span>() + <span class="jsstringcolor" style="color:brown">"&lt;/br&gt;"</span>;<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;txt += <span class="jsstringcolor" style="color:brown">"Height: "</span> + $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">height</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">html</span>(txt);<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+    <hr>
+
+    <h2>jQuery innerWidth() and innerHeight() Methods</h2>
+
+    <p>The <code class="w3-codespan">innerWidth()</code> method returns the width of an element (includes padding).</p>
+
+    <p>The <code class="w3-codespan">innerHeight()</code> method returns the height of an element (includes padding).</p>
+    <p>The following example returns the inner-width/height of a specified <code class="w3-codespan">&lt;div&gt;</code>
+        element:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; <span class="jskeywordcolor" style="color:mediumblue">var</span> txt = <span class="jsstringcolor" style="color:brown">""</span>;<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; txt += <span class="jsstringcolor" style="color:brown">"Inner width: "</span> + $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">innerWidth</span>() + <span class="jsstringcolor" style="color:brown">"&lt;/br&gt;"</span>;<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; txt += <span class="jsstringcolor" style="color:brown">"Inner height: "</span> + $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">innerHeight</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">html</span>(txt);<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+    <hr>
+
+    <h2>jQuery outerWidth() and outerHeight() Methods</h2>
+
+    <p>The <code class="w3-codespan">outerWidth()</code> method returns the width of an element (includes padding and
+        border).</p>
+
+    <p>The <code class="w3-codespan">outerHeight()</code> method returns the height of an element (includes padding
+        and border).</p>
+    <p>The following example returns the outer-width/height of a specified <code class="w3-codespan">&lt;div&gt;</code>
+        element:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; <span class="jskeywordcolor" style="color:mediumblue">var</span> txt = <span class="jsstringcolor" style="color:brown">""</span>;<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;txt += <span class="jsstringcolor" style="color:brown">"Outer width: "</span> + $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">outerWidth</span>() + <span class="jsstringcolor" style="color:brown">"&lt;/br&gt;"</span>;<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;txt += <span class="jsstringcolor" style="color:brown">"Outer height: "</span> + $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">outerHeight</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">html</span>(txt);<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+
+    <p>The <code class="w3-codespan">outerWidth(true)</code> method returns the width of an element (includes
+        padding, border, and margin).</p>
+
+    <p>The <code class="w3-codespan">outerHeight(true)</code> method returns the height of an element (includes
+        padding, border, and margin).</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; <span class="jskeywordcolor" style="color:mediumblue">var</span> txt = <span class="jsstringcolor" style="color:brown">""</span>;<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; txt += <span class="jsstringcolor" style="color:brown">"Outer width (+margin): "</span> + $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">outerWidth</span>(<span class="jskeywordcolor" style="color:mediumblue">true</span>) + <span class="jsstringcolor" style="color:brown">"&lt;/br&gt;"</span>;<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; txt += <span class="jsstringcolor" style="color:brown">"Outer height (+margin): "</span> + $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">outerHeight</span>(<span class="jskeywordcolor" style="color:mediumblue">true</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">html</span>(txt);<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+    <hr>
+
+    <h2>jQuery More width() and height()</h2>
+
+    <p>The following example returns the width and height of the document (the HTML
+        document) and window (the browser viewport):</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; <span class="jskeywordcolor" style="color:mediumblue">var</span> txt = <span class="jsstringcolor" style="color:brown">""</span>;<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; txt += <span class="jsstringcolor" style="color:brown">"Document width/height: "</span> + $(document).<span class="jspropertycolor" style="color:black">width</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; txt += <span class="jsstringcolor" style="color:brown">"x"</span> + $(document).<span class="jspropertycolor" style="color:black">height</span>() + <span class="jsstringcolor" style="color:brown">"\n"</span>;<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;txt += <span class="jsstringcolor" style="color:brown">"Window width/height: "</span> + $(window).<span class="jspropertycolor" style="color:black">width</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; txt += <span class="jsstringcolor" style="color:brown">"x"</span> + $(window).<span class="jspropertycolor" style="color:black">height</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; alert(txt);<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+    <p>The following example sets the width and height of a specified <code class="w3-codespan">&lt;div&gt;</code>
+        element:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">width</span>(<span class="jsnumbercolor" style="color:red">500</span>).<span class="jspropertycolor" style="color:black">height</span>(<span class="jsnumbercolor" style="color:red">500</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+    <hr>
+</div>

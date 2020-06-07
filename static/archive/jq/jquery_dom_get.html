@@ -1,0 +1,74 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery - Get Content and Attributes</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div>
+    <hr>
+    <p class="intro">jQuery contains powerful methods for changing and manipulating HTML elements and attributes.</p>
+    <hr>
+    <h2>jQuery DOM Manipulation</h2>
+    <p>One very important part of jQuery is the possibility to manipulate the DOM.</p>
+    <p>jQuery comes with a bunch of DOM related methods that make it easy to
+        access and manipulate elements and attributes.</p>
+
+
+    <div class="w3-panel w3-pale-yellow">
+        <p><b>DOM = Document Object Model</b><br><br>
+            The DOM defines a standard for accessing HTML and XML documents:<br><br>
+            <i>"The W3C Document Object Model (DOM) is a platform and language-neutral
+                interface that allows programs and scripts to dynamically access and update the
+                content, structure, and style of a document."</i></p>
+    </div>
+
+    <hr>
+
+    <h2>Get Content - text(), html(), and val()</h2>
+    <p>Three simple, but useful, jQuery methods for DOM manipulation are:</p>
+    <ul>
+        <li><code class="w3-codespan">text()</code> - Sets or returns the text content of selected elements</li>
+        <li><code class="w3-codespan">html()</code> - Sets or returns the content of selected elements (including HTML markup)</li>
+        <li><code class="w3-codespan">val()</code> - Sets or returns the value of form fields</li>
+    </ul>
+    <p>The following example demonstrates how to get content with the jQuery <code class="w3-codespan">text()</code> and <code class="w3-codespan">html()</code> methods:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#btn1"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;alert(<span class="jsstringcolor" style="color:brown">"Text: "</span> + $(<span class="jsstringcolor" style="color:brown">"#test"</span>).<span class="jspropertycolor" style="color:black">text</span>());<br><span class="jsnumbercolor" style="color:red">
+</span>});<br>
+$(<span class="jsstringcolor" style="color:brown">"#btn2"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;alert(<span class="jsstringcolor" style="color:brown">"HTML: "</span> + $(<span class="jsstringcolor" style="color:brown">"#test"</span>).<span class="jspropertycolor" style="color:black">html</span>());<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <p>The following example demonstrates how to get the value of an input field with the jQuery <code class="w3-codespan">val()</code> method:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#btn1"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;alert(<span class="jsstringcolor" style="color:brown">"Value: "</span> + $(<span class="jsstringcolor" style="color:brown">"#test"</span>).<span class="jspropertycolor" style="color:black">val</span>());<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+    
+    <h2>Get Attributes - attr()</h2>
+    <p>The jQuery <code class="w3-codespan">attr()</code> method is used to get attribute values.</p>
+    <p>The following example demonstrates how to get the value of the href attribute
+        in a link:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;alert($(<span class="jsstringcolor" style="color:brown">"#w3s"</span>).<span class="jspropertycolor" style="color:black">attr</span>(<span class="jsstringcolor" style="color:brown">"href"</span>));<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <p>The next chapter explains how to set (change) content and attribute values.</p>
+    <hr>
+</div>

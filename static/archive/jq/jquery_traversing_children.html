@@ -1,0 +1,62 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery children() Method</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div>
+    <hr/>
+
+    <h2>Definition and Usage</h2>
+    <p>The children() method returns all direct children of the selected element.</p>
+    <p><strong>The DOM tree:</strong> This method only traverse a single level down
+        the DOM tree. To traverse down multiple levels (to
+        return grandchildren or other descendants), use the <a href="/archive/jq/jquery_traversing_find.html">
+            find()</a> method.</p>
+    <p><strong>Tip:</strong> To traverse a single level up the DOM tree, or all the way up
+        to the document's root element (to return parents or other ancestors), use the
+        <a href="traversing_parent.asp">parent()</a> or <a href="traversing_parents.asp">
+            parents()</a> method.</p>
+    <p><strong>Note:</strong> This method does not return text nodes. To return all
+        children including text nodes, use the <a href="traversing_contents.asp">contents()</a> method.</p>
+    <hr>
+
+    <h2>Syntax</h2>
+    <div class="w3-code w3-border notranslate"><div>
+        $(<i>selector</i>).children(<em>filter</em>)</div></div>
+    <br>
+    <table class="w3-table-all notranslate">
+        <tbody><tr>
+            <th style="width:20%">Parameter</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><i>filter</i></td>
+            <td>Optional. Specifies a selector expression to narrow down the search for children</td>
+        </tr>
+        </tbody></table>
+    <hr>
+
+    <h2>Examples</h2>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Return elements that are direct children of &lt;ul&gt;:</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black"><span class="jsnumbercolor" style="color:red">
+</span>  <span class="jsnumbercolor" style="color:red">
+</span>    $(document).<span class="jspropertycolor" style="color:black">ready</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"ul"</span>).<span class="jspropertycolor" style="color:black">children</span>().<span class="jspropertycolor" style="color:black">css</span>({<span class="jsstringcolor" style="color:brown">"color"</span>: <span class="jsstringcolor" style="color:brown">"red"</span>, <span class="jsstringcolor" style="color:brown">"border"</span>: <span class="jsstringcolor" style="color:brown">"2px solid red"</span>});<br>});<br> </span></div>
+        <p>Result:</p>
+        <div class="w3-code notranslate descendants">body (great-grandparent)
+            <div>div (grandparent)
+                <ul class="red">ul (parent)
+                    <li style="color: red; border: 2px solid red;">li (child)
+                        <span>span (grandchild)</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <hr>
+
+</div>

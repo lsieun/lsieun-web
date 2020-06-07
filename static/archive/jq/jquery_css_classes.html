@@ -1,0 +1,94 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery - Get and Set CSS Classes</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div class="w3-col l10 m12" id="main">
+    <hr>
+    <p id="test">With jQuery, it is easy to manipulate the style of elements.</p>
+    <hr>
+    <h2>jQuery Manipulating CSS</h2>
+    <p>jQuery has several methods for CSS manipulation. We will look at the
+        following methods:</p>
+    <ul>
+        <li><code class="w3-codespan">addClass()</code> - Adds one or more classes to the selected elements</li>
+        <li><code class="w3-codespan">removeClass()</code> - Removes one or more classes from the selected elements</li>
+        <li><code class="w3-codespan">toggleClass()</code> - Toggles between adding/removing classes from the selected elements</li>
+        <li><code class="w3-codespan">css()</code> - Sets or returns the <strong>style</strong> attribute</li>
+    </ul>
+    <hr>
+
+    <h2>Example Stylesheet</h2>
+    <p>The following stylesheet will be used for all the examples on this page:</p>
+    <div class="w3-code w3-border notranslate cssHigh"><span class="cssselectorcolor" style="color:brown"><div>
+.important
+<span class="cssdelimitercolor" style="color:black">{</span><span class="csspropertycolor" style="color:red"><br>
+  &nbsp;
+font-weight<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> bold<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+  &nbsp;
+font-size<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> xx-large<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+</span><span class="cssdelimitercolor" style="color:black">}</span><br>
+<br>
+.blue
+<span class="cssdelimitercolor" style="color:black">{</span><span class="csspropertycolor" style="color:red"><br>
+  &nbsp;
+color<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> blue<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+</span><span class="cssdelimitercolor" style="color:black">}</span></div> </span></div>
+    <hr>
+
+    <h2>jQuery addClass() Method</h2>
+    <p>The following example shows how to add class attributes to different
+        elements. Of course you can select multiple elements, when adding classes:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"h1, h2, p"</span>).<span class="jspropertycolor" style="color:black">addClass</span>(<span class="jsstringcolor" style="color:brown">"blue"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"div"</span>).<span class="jspropertycolor" style="color:black">addClass</span>(<span class="jsstringcolor" style="color:brown">"important"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <p>You can also specify multiple classes within the <code class="w3-codespan">addClass()</code> method:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">addClass</span>(<span class="jsstringcolor" style="color:brown">"important blue"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+
+    <h2>jQuery removeClass() Method</h2>
+    <p>The following example shows how to remove a specific class attribute from different
+        elements:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"h1, h2, p"</span>).<span class="jspropertycolor" style="color:black">removeClass</span>(<span class="jsstringcolor" style="color:brown">"blue"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+
+    <h2>jQuery toggleClass() Method</h2>
+    <p>The following example will show how to use the jQuery <code class="w3-codespan">toggleClass()</code> method.
+        This method toggles between adding/removing classes from the selected elements:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"h1, h2, p"</span>).<span class="jspropertycolor" style="color:black">toggleClass</span>(<span class="jsstringcolor" style="color:brown">"blue"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+    <h2>jQuery css() Method</h2>
+    <p>The jQuery <code class="w3-codespan">css()</code> method will be explained in the next chapter.</p>
+    <hr>
+</div>

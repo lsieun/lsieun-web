@@ -1,0 +1,174 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Feistel Ciphers</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+
+
+<h2>A Brief History</h2>
+
+<p class="indented">
+    The <strong>Feistel cipher</strong> or <strong>Feistel Network</strong> is named after Horst Feistel, who developed it while working at IBM. He and a colleague, Don Coppersmith, published a cipher called <strong>Lucifer</strong> in 1973 that was the first public example of a cipher using a Feistel structure. Due to the benefits of the Feistel structure, other encryption algorithms based upon the structure and upon Lucifer have been created and adopted for common use.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p><strong>Note</strong>: Please don't be confused by the name <strong>Feistel cipher</strong>. <strong>Feistel cipher is not one particular cipher</strong>. It is a structure on which many ciphers such as the Lucifer cipher are based.</p>
+</div>
+
+<h2>Overview of the Feistel Network</h2>
+
+<p class="indented">
+    A Feistel cipher is a multi-round cipher<sub class="my_note" style="color:green">笔记：Feistel cipher有多个round组成</sub> that divides the current internal state of the cipher into two parts and operates only on a single part in each round of encryption or decryption.<sub class="my_note" style="color:green">笔记：在每一个round当中，分成Left和Right两个部分，只对其中一部分进行操作，</sub> Between rounds, the left and right sides of the internal states switch sides.<sub class="my_note" style="color:green">笔记：在当前Round到下一个Round切换之前，进行left和right两边的互换。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The image below shows a notional Feistel cipher with two rounds:
+</p>
+
+<div class="w3-display-container w3-text-white w3-center">
+    <img class="w3-image" src="/images/crypto/des/feistel_cipher.png" alt="Feistel cipher"/>
+</div>
+
+<p class="indented">
+    The left side of the image shows the encryption of the plaintext to the ciphertext and the right side shows the creation of round keys via a <strong>key scheduling</strong> algorithm, <strong>K</strong>.
+</p>
+
+<h2>Encryption in a Feistel Network</h2>
+
+<p>
+    The steps for encrypting with the example Feistel network are as follows:
+</p>
+
+<ol>
+    <li>Alice and Bob exchange a secret key, <strong>S</strong>, through a secure channel</li>
+    <li>Alice selects a plaintext, <strong>P</strong>, to send to Bob and breaks it into blocks of the length that the cipher accepts. For each block, the following steps are followed.</li>
+    <li>Alice splits the plaintext into a left piece and a right piece, <strong>L<sub>0</sub></strong> and <strong>R<sub>0</sub></strong></li>
+    <li>Alice sets the value of round key zero to the initial secret key. That is, <strong>RK<sub>0</sub> = S</strong>. Here, <strong>RK</strong> stands for <strong>Round Key</strong>.</li>
+    <li>The left side of round <strong>i+1</strong> is set as the right side of round <strong>i</strong>. That is, <strong>L<sub>i+1</sub> = R<sub>i</sub></strong></li>
+    <li>Alice evaluates the function <strong>F(R<sub>i</sub>, RK<sub>i</sub>)</strong>, where <strong>R<sub>i</sub></strong> is the right side of the current round. The result is exclusive-ored with <strong>L<sub>i</sub></strong> and stored as the right side of round <strong>i+1</strong>. That is, <strong>R<sub>i+1</sub> = L<sub>i</sub> ⊕ F(R<sub>i</sub>, RK<sub>i</sub>)</strong></li>
+    <li>If not the last round, Alice evaluates the function <strong>K(RK<sub>i</sub>)</strong> and stores the result as round key <strong>i+1</strong>. That is, <strong>RK<sub>i+1</sub> = K(RK<sub>i</sub>)</strong>.</li>
+    <li>Alice repeats steps 5~7 for n rounds (one in the case of the diagram above)</li>
+    <li><strong>L<sub>n</sub></strong> and <strong>R<sub>n</sub></strong> are combined to create the ciphertext block for this plaintext block.</li>
+    <li>All ciphertext blocks are combined to a single ciphertext <strong>C</strong>. Alice sends the result <strong>C</strong> to Bob.</li>
+</ol>
+
+<h3>The Encryption Phase</h3>
+
+<p class="indented">
+    As shown, the plaintext is split into two pieces. The right piece of one round becomes the left piece of the next. The left piece is exclusive-ored with the result of performing the function <strong>F</strong> on the right piece. The result of this is placed on the right side for the next round. This means that the two pieces of the original plaintext will be transformed in alternate rounds (since whatever is in the right side during a round moves on to the next round unchanged).
+</p>
+
+<p class="indented">
+    The <strong>F</strong> function is what makes a Feistel cipher unique from other Feistel ciphers.<sub class="my_note" style="color:green">笔记：我觉得后面的“from other Feistel ciphers”有问题，感觉语义上不对，感觉应该是其他非Feistel类型的ciphers。</sub> The <strong>F</strong> function is where the "encryption" happens and its security is vital to the security of the cipher. For example, an <strong>F</strong> function that completely discards the round key input and operates only on the plaintext can be trivially broken since all an attacker has to do is guess the plaintext and confirm that the ciphertext matches.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Key Scheduling</h2>
+
+<p class="indented">
+    Feistel ciphers also have what is called a <strong>key schedule</strong> that acts as an input to each round of the cipher. There are two possible options for a key schedule.
+</p>
+
+<p class="indented">
+    The first is that the key for each round of the cipher (or "round key") is included in the <strong>secret key</strong> shared by the two parties (resulting in a long shared secret key).
+    <sub class="my_note" style="color:blue">笔记：这里的意思应该是说，多次使用的round key，拼接到一起，这样就形成了一个很长的secret key。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The other option is that the <strong>shared secret key</strong> is used as an input to a "key expansion" function (shown in the diagram as <strong>K</strong>), which performs some operation on the previous round key or the current internal state of the key generation algorithm to generate the next round key.
+    <sub class="my_note" style="color:blue">笔记：这里的意思是说，下一次的round key是由本次round key通过函数来生成。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The <strong>K</strong> function transforms the <strong>initial secret key</strong> into <strong>round keys</strong> for each round of encryption. This function must be selected to maintain the key space of the encryption function. If a 64-bit secret key is required, but at some point the effective key space shrinks to 32 bits, then an attacker only has to search a space of 32-bit keys in order to decrypt the ciphertext.
+</p>
+
+<h2>Decryption in a Feistel Network</h2>
+
+<p class="indented">
+    The major benefit of the Feistel network is that <strong>the same structure can be used for encryption and decryption</strong>. For a ciphertext encrypted with the Feistel network shown in the diagram, we can use the exact same structure to decrypt. <strong>The only difference is that, in decryption, we use the round keys in reverse.</strong>
+</p>
+
+<p>
+    The steps for decryption in a Feistel network are as follows:
+</p>
+
+<ol>
+    <li>Alice and Bob exchange a secret key, <strong>S</strong>, through a secure channel and Alice sends Bob a ciphertext, <strong>C</strong>.</li>
+    <li>Bob calculates the round keys for all rounds using the key scheduling functions <strong>K</strong>, i.e. <strong>RK<sub>i+1</sub> = K(RK<sub>i</sub>)</strong></li>
+    <li>Bob breaks <strong>C</strong> into blocks of the length that the cipher accepts. For each block, the following steps are followed.</li>
+    <li>Bob splits the ciphertext block into a left piece and a right piece. These are L<sub>n</sub> and R<sub>n</sub>.</li>
+    <li>The right side of round <strong>i</strong> is simply the left side of round <strong>i+1</strong>. That is, <strong>R<sub>i</sub> = L<sub>i+1</sub></strong></li>
+    <li><strong>L<sub>i</sub></strong> is calculated as follows. <strong>L<sub>i</sub> = R<sub>i+1</sub> ⊕ F(R<sub>i</sub>, RK<sub>i</sub>)</strong>. This works because the xor-function (⊕) has the property that <strong>A = B ⊕ C</strong> implies <strong>B = A ⊕ C</strong>.</li>
+    <li>Alice repeats steps 5~6 for n rounds.</li>
+    <li><strong>L<sub>0</sub></strong> and <strong>R<sub>0</sub></strong> are combined to create the plaintext block for this ciphertext block.</li>
+    <li>All plaintext blocks are combined to a single plaintext <strong>P</strong>!</li>
+</ol>
+
+<h3>Why decryption works</h3>
+
+<p class="indented">
+    It may seem odd that the same operation can be used to perform and undo itself. To understand this, we need to take another look at the diagram of the Feistel cipher shown above.
+</p>
+
+<ol>
+    <li>
+        Seeing how the right half undoes itself is easy, all that happens is that something switches sides.
+        <sub class="my_note" style="color:blue">笔记：对于right部分，只要switch一下就可以了</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        Undoing the left half depends on two crucial things.
+        <ol>
+            <li>First, we have all the information that was available to the function <strong>F</strong> during the encryption phase, i.e. <strong>R<sub>i</sub></strong> and <strong>RK<sub>i</sub></strong></li>
+            <li>Second, the xor-function (⊕) has the property that B ⊕ B = 0 for all values of B. This implies that if A = B ⊕ C, then A ⊕ C = B ⊕ C ⊕ C = B ⊕ 0 = B. That is, the xor-function, A = B ⊕ C implies A ⊕ C = B. Hence, we have <strong>L<sub>i</sub> = R<sub>i+1</sub> ⊕ F(R<sub>i</sub>, RK<sub>i</sub>)</strong>.</li>
+        </ol>
+    </li>
+</ol>
+
+<p class="indented">
+    Notice that this will only work for an operation that is its own inverse (like exclusive-or), which is why Feistel networks always use exclusive-or for changing the transformed half of the state in a round.
+</p>
+
+<h2>Making strong Feistel ciphers</h2>
+
+<p class="indented">
+    The Feistel structure does not clearly map to the cryptographic principles of <strong>confusion</strong> and <strong>diffusion</strong>. <strong>Confusion</strong> requires that each bit of the ciphertext is based upon several bits of the shared secret key.<sub class="my_note" style="color:green">笔记：Confusion是说secret key对ciphertext的影响。</sub> <strong>Diffusion</strong> means that a change of a single bit of the plaintext should change roughly half of the bits of the bits of the ciphertext after encryption (and vice versa after decryption).<sub class="my_note" style="color:green">笔记：Diffusion是说input对ciphertext的影响。</sub> All of these properties must be handled within the round function, F, which is not specified as part of the Feistel structure.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Advantages and Disadvantages</h2>
+
+<h3>Advantages of Feistel Ciphers</h3>
+
+<p class="indented">Feistel ciphers have two main advantages:</p>
+
+<ul>
+    <li>
+        <strong>Structural reusability</strong>: As we discussed previously, the same structure can be used for encryption and decryption as long as the key schedule is reversed for decryption. This is extremely useful for hardware implementations of ciphers since all of the encryption logic does not have to be reimplemented in reverse for decryption.
+    </li>
+    <li>
+        <strong>Ability to use one-way round functions</strong>: The other major advantage of Feistel ciphers is that the round function, F, does not have to be reversible. Most ciphers require that every transformation of the plaintext performed in encryption be reversible so that they can be undone in decryption. Since this is not a requirement for ciphers using the Feistel structure, it opens up new possibilities for round functions.
+    </li>
+</ul>
+
+<h3>Disadvantages of Feistel Ciphers</h3>
+
+<p class="indented">
+    One disadvantage of Feistel ciphers is that they are limited in their ability to be parallelized as compared to other ciphers. In other ciphers, the entire internal state of the cipher changes with each round, while Feistel ciphers only change part of the internal state each round.
+    <sub class="my_note" style="color:blue">笔记：这里可能是说Feistel Ciphers是“并行”是难实现的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a href="https://www.commonlounge.com/discussion/df78c412191849029996f37b1089f3a4" target="_blank">CommonLounge: Feistel Ciphers (or Feistel Network)</a></li>
+</ul>

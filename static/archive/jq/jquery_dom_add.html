@@ -1,0 +1,111 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery - Add Elements</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div>
+    <hr>
+    <p class="intro">With jQuery, it is easy to add new elements/content.</p>
+
+    <hr>
+    <h2>Add New HTML Content</h2>
+    <p>We will look at four jQuery methods that are used to add new content:</p>
+    <ul>
+        <li><code class="w3-codespan">append()</code> - Inserts content at the end of the selected elements</li>
+        <li><code class="w3-codespan">prepend()</code> - Inserts content at the beginning of the selected elements</li>
+        <li><code class="w3-codespan">after()</code> - Inserts content after the selected elements</li>
+        <li><code class="w3-codespan">before()</code> - Inserts content before the selected elements</li>
+    </ul>
+
+    <hr>
+    <h2>jQuery append() Method</h2>
+    <p>The jQuery <code class="w3-codespan">append()</code> method inserts content AT THE END of the selected HTML elements.</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">append</span>(<span class="jsstringcolor" style="color:brown">"Some appended text."</span>);<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+    <h2>jQuery prepend() Method</h2>
+
+    <p>The jQuery <code class="w3-codespan">prepend()</code> method inserts content AT THE BEGINNING of the selected HTML elements.</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">prepend</span>(<span class="jsstringcolor" style="color:brown">"Some prepended text."</span>);<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+
+    <h2>Add Several New Elements With append() and prepend()</h2>
+    <p>In both examples above, we have only inserted some text/HTML at the
+        beginning/end of the selected HTML elements.</p>
+    <p>However, both the <code class="w3-codespan">append()</code> and <code class="w3-codespan">prepend()</code> methods can take an infinite number of new
+        elements as parameters. The new elements can be generated with text/HTML (like
+        we have done in the examples above), with jQuery, or with
+        JavaScript code and DOM elements.</p>
+    <p>In the following example, we create several new elements. The elements are
+        created with text/HTML, jQuery, and JavaScript/DOM. Then we append the new
+        elements to the text with the <code class="w3-codespan">append()</code> method (this would have worked for
+        <code class="w3-codespan">prepend()</code> too) :</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+<span class="jskeywordcolor" style="color:mediumblue">function</span> appendText()<span class="jsnumbercolor" style="color:red">
+</span>{<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;<span class="jskeywordcolor" style="color:mediumblue">var</span> txt1 = <span class="jsstringcolor" style="color:brown">"&lt;p&gt;Text.&lt;/p&gt;"</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="jsnumbercolor" style="color:red">
+</span><span class="commentcolor" style="color:green">// Create element with HTML&nbsp; <br></span><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;<span class="jskeywordcolor" style="color:mediumblue">var</span> txt2 = $(<span class="jsstringcolor" style="color:brown">"&lt;p&gt;&lt;/p&gt;"</span>).<span class="jspropertycolor" style="color:black">text</span>(<span class="jsstringcolor" style="color:brown">"Text."</span>);&nbsp;&nbsp; <span class="commentcolor" style="color:green">// Create with jQuery<br></span><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;<span class="jskeywordcolor" style="color:mediumblue">var</span> txt3 = document.<span class="jspropertycolor" style="color:black">createElement</span>(<span class="jsstringcolor" style="color:brown">"p"</span>);&nbsp; <span class="commentcolor" style="color:green">// Create with DOM<br></span><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;txt3.<span class="jspropertycolor" style="color:black">innerHTML</span> = <span class="jsstringcolor" style="color:brown">"Text."</span>;<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp;
+$(<span class="jsstringcolor" style="color:brown">"body"</span>).<span class="jspropertycolor" style="color:black">append</span>(txt1, txt2, txt3);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="commentcolor" style="color:green">// Append the new elements <br></span><span class="jsnumbercolor" style="color:red">
+</span>} </span></div>
+    </div>
+    <hr>
+    <h2>jQuery after() and before() Methods</h2>
+
+    <p>The jQuery <code class="w3-codespan">after()</code> method inserts content AFTER the selected HTML elements.</p>
+
+    <p>The jQuery <code class="w3-codespan">before()</code> method inserts content BEFORE the selected HTML elements.</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"img"</span>).<span class="jspropertycolor" style="color:black">after</span>(<span class="jsstringcolor" style="color:brown">"Some text after"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span><br>
+$(<span class="jsstringcolor" style="color:brown">"img"</span>).<span class="jspropertycolor" style="color:black">before</span>(<span class="jsstringcolor" style="color:brown">"Some text before"</span>);<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+
+    <hr>
+    <h2>Add Several New Elements With after() and before()</h2>
+    <p>Also, both the <code class="w3-codespan">after()</code> and <code class="w3-codespan">before()</code> methods can take an infinite number of new
+        elements as parameters. The new elements can be generated with text/HTML (like
+        we have done in the example above), with jQuery, or with
+        JavaScript code and DOM elements.</p>
+    <p>In the following example, we create several new elements. The elements are
+        created with text/HTML, jQuery, and JavaScript/DOM. Then we insert the new
+        elements to the text with the <code class="w3-codespan">after()</code> method (this would have worked for
+        <code class="w3-codespan">before()</code> too) :</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+<span class="jskeywordcolor" style="color:mediumblue">function</span> afterText()<span class="jsnumbercolor" style="color:red">
+</span>{<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;<span class="jskeywordcolor" style="color:mediumblue">var</span> txt1 = <span class="jsstringcolor" style="color:brown">"&lt;b&gt;I &lt;/b&gt;"</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="jsnumbercolor" style="color:red">
+</span><span class="commentcolor" style="color:green">// Create element with HTML&nbsp; <br></span><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;<span class="jskeywordcolor" style="color:mediumblue">var</span> txt2 = $(<span class="jsstringcolor" style="color:brown">"&lt;i&gt;&lt;/i&gt;"</span>).<span class="jspropertycolor" style="color:black">text</span>(<span class="jsstringcolor" style="color:brown">"love "</span>);&nbsp;&nbsp;&nbsp;&nbsp; <span class="commentcolor" style="color:green">// Create with jQuery<br></span><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;<span class="jskeywordcolor" style="color:mediumblue">var</span> txt3 = document.<span class="jspropertycolor" style="color:black">createElement</span>(<span class="jsstringcolor" style="color:brown">"b"</span>);&nbsp;&nbsp;&nbsp; <span class="commentcolor" style="color:green">// Create with DOM<br></span><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;txt3.<span class="jspropertycolor" style="color:black">innerHTML</span> = <span class="jsstringcolor" style="color:brown">"jQuery!"</span>;<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"img"</span>).<span class="jspropertycolor" style="color:black">after</span>(txt1, txt2, txt3);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="jsnumbercolor" style="color:red">
+</span><span class="commentcolor" style="color:green">// Insert new elements after &lt;img&gt;<br></span><span class="jsnumbercolor" style="color:red">
+</span>} </span></div>
+    </div>
+    <hr>
+
+</div>

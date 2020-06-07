@@ -1,0 +1,63 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery find() Method</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div class="w3-col l10 m12" id="main">
+<hr/>
+<h2>Definition and Usage</h2>
+<p>The find() method returns descendant elements of the selected element.</p>
+<p>A descendant is a child, grandchild, great-grandchild, and so on.</p>
+<p><strong>The DOM tree:</strong> This method traverse downwards along
+    descendants of DOM elements, all the way down to the last descendant. To only
+    traverse a single level down the DOM tree (to return direct children), use the <a href="/archive/jq/jq_traversing_children.html">
+        children()</a> method.</p>
+<p><strong>Note:</strong> The <em>filter</em> parameter is required for the
+    find() method, unlike the rest of the tree traversal methods.</p>
+<p><strong>Tip:</strong> To return all of the descendant elements, use the "*"
+    selector.</p>
+<hr>
+
+<h2>Syntax</h2>
+<div class="w3-code w3-border notranslate"><div>
+    $(<i>selector</i>).find(<em>filter</em>)</div></div>
+<br>
+<table class="w3-table-all notranslate">
+    <tbody><tr>
+        <th style="width:20%">Parameter</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><i>filter</i></td>
+        <td>Required. A selector expression, element or jQuery object to filter the search for descendants<br><br><strong>Note:</strong> To return multiple descendants, separate each expression with a comma.</td>
+    </tr>
+    </tbody></table>
+<br>
+
+    <h2>Examples</h2>
+
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Return all &lt;span&gt; elements that are descendants of &lt;ul&gt;:</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black"><span class="jsnumbercolor" style="color:red">
+</span>  <span class="jsnumbercolor" style="color:red">
+</span>    $(document).<span class="jspropertycolor" style="color:black">ready</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br>&nbsp; $(<span class="jsstringcolor" style="color:brown">"ul"</span>).<span class="jspropertycolor" style="color:black">find</span>(<span class="jsstringcolor" style="color:brown">"span"</span>).<span class="jspropertycolor" style="color:black">css</span>({<span class="jsstringcolor" style="color:brown">"color"</span>: <span class="jsstringcolor" style="color:brown">"red"</span>, <span class="jsstringcolor" style="color:brown">"border"</span>: <span class="jsstringcolor" style="color:brown">"2px solid red"</span>});<br>});<br> </span></div>
+        <p>Result:</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">body (great-grandparent)<span class="jsnumbercolor" style="color:red">
+</span>  <div class="jskeywordcolor" style="color:mediumblue">class=<span class="jsstringcolor" style="color:brown">"descendants"</span>&gt;
+  <div>div (grandparent)<span class="jsnumbercolor" style="color:red">
+</span>    <ul>ul (parent)  <span class="jsnumbercolor" style="color: red; border: 2px solid red;">
+</span>      <li>li (child)<span class="jsnumbercolor" style="color: red; border: 2px solid red;">
+</span>        <span style="color: red; border: 2px solid red;">span (grandchild)</span>
+      </li>
+    </ul>   <span class="jsnumbercolor" style="color:red">
+</span>  </div>
+        </div>
+        </span></div>
+    </div>
+    <hr>
+</div>
+

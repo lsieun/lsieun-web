@@ -1,0 +1,236 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery Event Methods</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div>
+    <hr>
+    <p class="intro">jQuery is tailor-made to respond to events in an HTML page.</p>
+    <hr>
+
+    <h2>What are Events?</h2>
+    <p>All the different visitors' actions that a web page can respond to are called events.</p>
+    <p>An event represents the precise moment when something happens.</p>
+    <p>Examples:</p>
+    <ul>
+        <li>moving a mouse over an element</li>
+        <li>selecting a radio button</li>
+        <li>clicking on an element</li>
+    </ul>
+    <p>The term <b>"fires/fired"</b> is often used with events. Example:
+        "The keypress event is fired, the moment you press a key".</p>
+    <p>Here are some common DOM events:</p>
+    <div class="w3-responsive">
+        <table class="w3-table-all notranslate">
+            <tbody><tr>
+                <th style="width:23%">Mouse Events</th>
+                <th style="width:25%">Keyboard Events</th>
+                <th style="width:22%">Form Events</th>
+                <th>Document/Window Events</th>
+            </tr>
+            <tr>
+                <td>click</td>
+                <td>keypress</td>
+                <td>submit</td>
+                <td>load</td>
+            </tr>
+            <tr>
+                <td>dblclick</td>
+                <td>keydown</td>
+                <td>change</td>
+                <td>resize</td>
+            </tr>
+            <tr>
+                <td>mouseenter</td>
+                <td>keyup</td>
+                <td>focus</td>
+                <td>scroll</td>
+            </tr>
+            <tr>
+                <td>mouseleave</td>
+                <td>&nbsp;</td>
+                <td>blur</td>
+                <td>unload</td>
+            </tr>
+            </tbody></table>
+    </div>
+    <hr>
+
+    <h2>jQuery Syntax For Event Methods</h2>
+    <p>In jQuery, most DOM events have an equivalent jQuery method.</p>
+    <p>To assign a click event to all paragraphs on a page, you can do this: </p>
+    <div class="w3-code w3-border notranslate jsHigh"><span class="jscolor" style="color:black">
+<div>
+$(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">click</span>();
+</div>
+ </span></div>
+    <p>The next step is to define what should happen when the event fires. You must
+        pass a function to the event:</p>
+    <div class="w3-code w3-border notranslate jsHigh"><span class="jscolor" style="color:black">
+<div>
+$(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp; <span class="commentcolor" style="color:green">// action goes here!!<br></span><span class="jsnumbercolor" style="color:red">
+</span>});
+</div>
+ </span></div>
+    <hr>
+
+    <h2>Commonly Used jQuery Event Methods</h2>
+    <hr/>
+    <h3><b>$(document).ready()</b></h3>
+    <p>The <code class="w3-codespan">$(document).ready()</code> method allows us to execute a function when the
+        document is fully loaded. This event is already explained in the
+        <a href="/archive/jq/jquery_syntax.html">jQuery Syntax</a> chapter. </p>
+    <hr/>
+
+    <h3><b>click()</b></h3>
+    <p>The <code class="w3-codespan">click()</code> method attaches an event handler function to an HTML element.</p>
+    <p>The
+        function is executed when the user clicks on the HTML element.</p>
+    <p>The following example says: When a click event fires on a <code class="w3-codespan">&lt;p&gt;</code> element; hide
+        the current <code class="w3-codespan">&lt;p&gt;</code> element:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jskeywordcolor" style="color:mediumblue">this</span>).<span class="jspropertycolor" style="color:black">hide</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr/>
+
+    <h3><b>dblclick()</b></h3>
+    <p>The <code class="w3-codespan">dblclick()</code> method attaches an event handler function to an HTML element.</p>
+    <p>The function is executed when the user double-clicks on the HTML element:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">dblclick</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jskeywordcolor" style="color:mediumblue">this</span>).<span class="jspropertycolor" style="color:black">hide</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr/>
+
+    <h3><b>mouseenter()</b></h3>
+    <p>The <code class="w3-codespan">mouseenter()</code> method attaches an event handler function to an HTML
+        element.</p>
+    <p>The function is executed when the mouse pointer enters the HTML element:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#p1"</span>).<span class="jspropertycolor" style="color:black">mouseenter</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; alert(<span class="jsstringcolor" style="color:brown">"You entered p1!"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div><hr/>
+
+    <h3><b>mouseleave()</b></h3>
+    <p>The <code class="w3-codespan">mouseleave()</code> method attaches an event handler function to an HTML
+        element.</p>
+    <p>The function is executed when the mouse pointer leaves the HTML element:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#p1"</span>).<span class="jspropertycolor" style="color:black">mouseleave</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; alert(<span class="jsstringcolor" style="color:brown">"Bye! You now leave p1!"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div><hr/>
+
+    <h3><b>mousedown()</b></h3>
+    <p>The <code class="w3-codespan">mousedown()</code> method attaches an event handler function to an HTML
+        element.</p>
+    <p>The function is executed, when the left, middle or right mouse button is pressed down, while the
+        mouse is over the HTML element:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#p1"</span>).<span class="jspropertycolor" style="color:black">mousedown</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;alert(<span class="jsstringcolor" style="color:brown">"Mouse down over p1!"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div><hr/>
+
+    <h3><b>mouseup()</b></h3>
+    <p>The <code class="w3-codespan">mouseup()</code> method attaches an event handler function to an HTML
+        element.</p>
+    <p>The function is executed, when the left, middle or right mouse button is released, while the
+        mouse is over the HTML element:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#p1"</span>).<span class="jspropertycolor" style="color:black">mouseup</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; alert(<span class="jsstringcolor" style="color:brown">"Mouse up over p1!"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div><hr/>
+
+    <h3><b>hover()</b></h3>
+    <p>The <code class="w3-codespan">hover()</code> method takes two functions and is a combination of the <code class="w3-codespan">mouseenter()</code> and <code class="w3-codespan">mouseleave()</code>
+        methods.</p>
+    <p>The first
+        function is executed when the mouse enters the HTML element, and the second
+        function is
+        executed when the mouse leaves the HTML element:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#p1"</span>).<span class="jspropertycolor" style="color:black">hover</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;alert(<span class="jsstringcolor" style="color:brown">"You entered p1!"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span> },<br><span class="jsnumbercolor" style="color:red">
+</span> <span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;alert(<span class="jsstringcolor" style="color:brown">"Bye! You now leave p1!"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div><hr/>
+
+    <h3><b>focus()</b></h3>
+    <p>The <code class="w3-codespan">focus()</code> method attaches an event handler function to an HTML form field.</p>
+    <p>The function is executed when the form field gets focus:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"input"</span>).<span class="jspropertycolor" style="color:black">focus</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jskeywordcolor" style="color:mediumblue">this</span>).<span class="jspropertycolor" style="color:black">css</span>(<span class="jsstringcolor" style="color:brown">"background-color"</span>, <span class="jsstringcolor" style="color:brown">"#cccccc"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div><hr/>
+
+    <h3><b>blur()</b></h3>
+    <p>The <code class="w3-codespan">blur()</code> method attaches an event handler function to an HTML form field.</p>
+    <p>The function
+        is executed when the form field loses focus:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"input"</span>).<span class="jspropertycolor" style="color:black">blur</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jskeywordcolor" style="color:mediumblue">this</span>).<span class="jspropertycolor" style="color:black">css</span>(<span class="jsstringcolor" style="color:brown">"background-color"</span>, <span class="jsstringcolor" style="color:brown">"#ffffff"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+
+    <h2>The on() Method</h2>
+    <p>The <code class="w3-codespan">on()</code> method attaches one or more event handlers for the selected elements.</p>
+    <p>Attach a click event to a <code class="w3-codespan">&lt;p&gt;</code> element:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black"><span class="jsnumbercolor" style="color:red">
+</span> $(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">on</span>(<span class="jsstringcolor" style="color:brown">"click"</span>, <span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br>&nbsp; $(<span class="jskeywordcolor" style="color:mediumblue">this</span>).<span class="jspropertycolor" style="color:black">hide</span>();<br>}); </span></div>
+    </div>
+    <p>Attach multiple event handlers to a <code class="w3-codespan">&lt;p&gt;</code> element:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black"><span class="jsnumbercolor" style="color:red">
+</span> $(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">on</span>({<br>&nbsp; mouseenter: <span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br>&nbsp;&nbsp;&nbsp;&nbsp;$(<span class="jskeywordcolor" style="color:mediumblue">this</span>).<span class="jspropertycolor" style="color:black">css</span>(<span class="jsstringcolor" style="color:brown">"background-color"</span>, <span class="jsstringcolor" style="color:brown">"lightgray"</span>);<br>&nbsp;&nbsp;}, <br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; mouseleave: <span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br>&nbsp;&nbsp;&nbsp; $(<span class="jskeywordcolor" style="color:mediumblue">this</span>).<span class="jspropertycolor" style="color:black">css</span>(<span class="jsstringcolor" style="color:brown">"background-color"</span>, <span class="jsstringcolor" style="color:brown">"lightblue"</span>);<br>&nbsp;&nbsp;}, <br>&nbsp;&nbsp;click: <span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br>&nbsp;&nbsp;&nbsp; $(<span class="jskeywordcolor" style="color:mediumblue">this</span>).<span class="jspropertycolor" style="color:black">css</span>(<span class="jsstringcolor" style="color:brown">"background-color"</span>, <span class="jsstringcolor" style="color:brown">"yellow"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp;&nbsp;} <br>}); </span></div>
+    </div>
+    <hr>
+
+</div>

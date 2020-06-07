@@ -65,7 +65,10 @@
 
 ## HTML
 
-- [首页模板](https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_templates_blog&stacked=h)
+- [首页模板（可编辑）](https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_templates_blog&stacked=h)
+- [首页模板（展示）](https://www.w3schools.com/w3css/tryw3css_templates_blog.htm)
+- [About Me的理想界面（展示）](https://www.w3schools.com/w3css/tryw3css_templates_cv.htm)
+- [About Me的理想界面（可编辑）](https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_templates_cv&stacked=h)
 - [fontawesome](https://fontawesome.com/) 这里的CSS样式很不错，将来可能会用到
 
 ## Banner

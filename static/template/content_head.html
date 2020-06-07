@@ -14,22 +14,55 @@
         }
         h2 {
             font-size:24px;
+            font-weight: bolder;
         }
         h3 {
             font-size:18px;
+            font-weight: bold;
         }
         .indented {
             text-indent:2em;
         }
         .bgimg {
             background-position: center;
-            background-size: auto;
-            background-image: url("/images/mountains.jpg");
-            min-height: 20.8%;
+            background-size: cover;
+            background-image: url("/images/sun_rise.jpg");
+            min-height: 38.2%;/*0.618是黄金分割点*/
         }
         .w3-tangerine {
             font-size:36px;
             font-family: "Tangerine", serif;
+        }
+
+
+        .auto-toc {
+            /*background: #f2f2f2;*/
+            padding: 5px;
+            margin: 15px;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .auto-toc ul{
+            padding: 5px;
+        }
+        .auto-toc ul li{
+            margin-left: 10px;
+            padding: 0px;
+            box-sizing: border-box;
+        }
+        .auto-toc ul li a{
+            text-decoration: none;
+            color: #348781;
+            display: block;
+            border-bottom: 1px dotted rgba(0, 0, 0, 0.1);
+            padding: 3px;
+        }
+        .auto-toc ul li a:hover{
+            background: rgba(0, 0, 0, 0.095);
+        }
+        .auto-toc h4 {
+            font-size: 15pt;
+            text-align: center;
         }
     </style>
 </head>

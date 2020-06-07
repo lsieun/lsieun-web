@@ -1,0 +1,44 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery Callback Functions</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div>
+    <p class="intro">A callback function is executed after the current effect is 100% finished.</p>
+    <hr>
+
+    <h2>jQuery Callback Functions</h2>
+    <p>JavaScript statements are executed line by line. However, with effects,
+        the next line of code can be run even though the effect is not finished. This
+        can create errors.</p>
+    <p>To prevent this, you can create a callback function.</p>
+    <p>A callback function is executed after the current effect is finished.</p>
+    <p>Typical syntax: <b>$(<i>selector</i>).hide(<i>speed,callback</i>);</b></p>
+
+    <p><b>Examples</b></p>
+    <p>The example below has a callback parameter that is a function that will be executed after the hide effect is completed:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example with Callback</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">hide</span>(<span class="jsstringcolor" style="color:brown">"slow"</span>, <span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp;&nbsp;&nbsp; alert(<span class="jsstringcolor" style="color:brown">"The paragraph is now hidden"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; });<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+
+    <p>The example below has no callback parameter, and the alert box will be displayed before the hide effect is completed:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example without Callback</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">hide</span>(<span class="jsnumbercolor" style="color:red">1000</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;alert(<span class="jsstringcolor" style="color:brown">"The paragraph is now hidden"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+    <br>
+</div>

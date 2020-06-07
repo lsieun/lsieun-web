@@ -1,0 +1,131 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery Effects - Fading</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div class="w3-col l10 m12" id="main">
+    <hr>
+    <p class="intro">With jQuery you can fade elements in and out of visibility.</p>
+    <hr>
+
+    <h2>jQuery Fading Methods</h2>
+    <p>With jQuery you can fade an element in and out of visibility.</p>
+    <p>jQuery has the following fade methods:</p>
+    <ul>
+        <li><code class="w3-codespan">fadeIn()</code></li>
+        <li><code class="w3-codespan">fadeOut()</code></li>
+        <li><code class="w3-codespan">fadeToggle()</code></li>
+        <li><code class="w3-codespan">fadeTo()</code></li>
+    </ul>
+
+    <hr>
+
+    <h2>jQuery fadeIn() Method</h2>
+    <p>The jQuery <code class="w3-codespan">fadeIn()</code> method is used to fade in a hidden element.</p>
+    <p><b>Syntax:</b></p>
+    <div class="w3-code w3-border notranslate jsHigh"><span class="jscolor" style="color:black"><div>
+$(<i>selector</i>).<span class="jspropertycolor" style="color:black">fadeIn</span>(<i>speed,callback</i>);</div> </span></div>
+    <p>The optional <code class="w3-codespan">speed</code> parameter specifies the duration of the effect. It can take the following values: "slow", "fast", or
+        milliseconds.</p>
+    <p>The optional <code class="w3-codespan">callback</code> parameter is a function to be executed after the
+        fading completes.</p>
+    <p>The following example demonstrates the <code class="w3-codespan">fadeIn()</code> method with different
+        parameters:</p>
+
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">fadeIn</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#div2"</span>).<span class="jspropertycolor" style="color:black">fadeIn</span>(<span class="jsstringcolor" style="color:brown">"slow"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#div3"</span>).<span class="jspropertycolor" style="color:black">fadeIn</span>(<span class="jsnumbercolor" style="color:red">3000</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+    <hr>
+    <div id="midcontentadcontainer" style="overflow:auto;text-align:center">
+        <!-- MidContent -->
+
+        <!--<pre>mid_content, all: [300,250][336,280][728,90][970,250][970,90][320,50][468,60]</pre>-->
+        <div id="snhb-mid_content-0"></div>
+
+    </div>
+    <hr>
+
+    <h2>jQuery fadeOut() Method</h2>
+    <p>The jQuery <code class="w3-codespan">fadeOut()</code> method is used to fade out a visible element.</p>
+    <p><b>Syntax:</b></p>
+    <div class="w3-code w3-border notranslate"><div>
+        $(<i>selector</i>).fadeOut(<i>speed,callback</i>);</div></div>
+    <p>The optional <code class="w3-codespan">speed</code> parameter specifies the duration of the effect. It can take the following values: "slow", "fast", or
+        milliseconds.</p>
+    <p>The optional <code class="w3-codespan">callback</code> parameter is a function to be executed after the
+        fading completes.</p>
+    <p>The following example demonstrates the <code class="w3-codespan">fadeOut()</code> method with different
+        parameters:</p>
+
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">fadeOut</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#div2"</span>).<span class="jspropertycolor" style="color:black">fadeOut</span>(<span class="jsstringcolor" style="color:brown">"slow"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#div3"</span>).<span class="jspropertycolor" style="color:black">fadeOut</span>(<span class="jsnumbercolor" style="color:red">3000</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+    <hr>
+
+    <h2>jQuery fadeToggle() Method</h2>
+    <p>The jQuery <code class="w3-codespan">fadeToggle()</code> method toggles between the <code class="w3-codespan">fadeIn()</code> and <code class="w3-codespan">fadeOut()</code>
+        methods.</p>
+    <p>If the elements are faded out, <code class="w3-codespan">fadeToggle()</code> will fade them in.</p>
+    <p>If the elements are faded in, <code class="w3-codespan">fadeToggle()</code> will fade them out. </p>
+    <p><b>Syntax:</b></p>
+    <div class="w3-code w3-border notranslate"><div>
+        $(<i>selector</i>).fadeToggle(<i>speed,callback</i>);</div></div>
+    <p>The optional <code class="w3-codespan">speed</code> parameter specifies the duration of the effect. It can take the following values: "slow", "fast", or
+        milliseconds.</p>
+    <p>The optional <code class="w3-codespan">callback</code> parameter is a function to be executed after the
+        fading completes.</p>
+    <p>The following example demonstrates the <code class="w3-codespan">fadeToggle()</code> method with different
+        parameters:</p>
+
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">fadeToggle</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"#div2"</span>).<span class="jspropertycolor" style="color:black">fadeToggle</span>(<span class="jsstringcolor" style="color:brown">"slow"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"#div3"</span>).<span class="jspropertycolor" style="color:black">fadeToggle</span>(<span class="jsnumbercolor" style="color:red">3000</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+    <hr>
+
+    <h2>jQuery fadeTo() Method</h2>
+    <p>The jQuery <code class="w3-codespan">fadeTo()</code> method allows fading to a given opacity (value between 0 and 1).</p>
+    <p><b>Syntax:</b></p>
+    <div class="w3-code w3-border notranslate jsHigh"><span class="jscolor" style="color:black"><div>
+$(<i>selector</i>).<span class="jspropertycolor" style="color:black">fadeTo</span>(<i>speed,opacity,callback</i>);</div> </span></div>
+    <p>The required <code class="w3-codespan">speed</code> parameter specifies the duration of the effect. It can take the following values: "slow", "fast", or
+        milliseconds.</p>
+    <p>The required <code class="w3-codespan">opacity</code> parameter in the <code class="w3-codespan">fadeTo()</code> method specifies fading to a given opacity (value between 0 and 1).</p>
+
+    <p>The optional <code class="w3-codespan">callback</code> parameter is a function to be executed after the function completes.</p>
+    <p>The following example demonstrates the <code class="w3-codespan">fadeTo()</code> method with different
+        parameters:</p>
+
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#div1"</span>).<span class="jspropertycolor" style="color:black">fadeTo</span>(<span class="jsstringcolor" style="color:brown">"slow"</span>, <span class="jsnumbercolor" style="color:red">0.15</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#div2"</span>).<span class="jspropertycolor" style="color:black">fadeTo</span>(<span class="jsstringcolor" style="color:brown">"slow"</span>, <span class="jsnumbercolor" style="color:red">0.4</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"#div3"</span>).<span class="jspropertycolor" style="color:black">fadeTo</span>(<span class="jsstringcolor" style="color:brown">"slow"</span>, <span class="jsnumbercolor" style="color:red">0.7</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+    <hr>
+
+</div>

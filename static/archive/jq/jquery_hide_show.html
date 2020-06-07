@@ -1,0 +1,65 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery Effects - Hide and Show</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div class="w3-col l10 m12" id="main">
+
+    <h2>jQuery hide() and show()</h2>
+    <p>With jQuery, you can hide and show HTML elements with the <code class="w3-codespan">hide()</code> and <code class="w3-codespan">show()</code> methods:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#hide"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">hide</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>});<br><span class="jsnumbercolor" style="color:red">
+</span><br>
+$(<span class="jsstringcolor" style="color:brown">"#show"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">show</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+    <p><b>Syntax:</b></p>
+    <div class="w3-code w3-border notranslate jsHigh"><span class="jscolor" style="color:black"><div>
+$(<i>selector</i>).<span class="jspropertycolor" style="color:black">hide</span>(<i>speed,callback</i>);<br><span class="jsnumbercolor" style="color:red">
+</span><br>
+$(<i>selector</i>).<span class="jspropertycolor" style="color:black">show</span>(<i>speed,callback</i>);
+</div> </span></div>
+    <p>The optional <code class="w3-codespan">speed</code> parameter specifies the speed of the hiding/showing, and
+        can take the following values: "slow", "fast", or milliseconds.</p>
+    <p>The optional <code class="w3-codespan">callback</code> parameter is a function to be executed after
+        the <code class="w3-codespan">hide()</code> or <code class="w3-codespan">show()</code> method completes.</p>
+    <p>The following example demonstrates the speed parameter with <code class="w3-codespan">hide()</code>:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">hide</span>(<span class="jsnumbercolor" style="color:red">1000</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+    <hr>
+
+    <h2>jQuery toggle()</h2>
+    <p>You can also toggle between hiding and showing an element with the <code class="w3-codespan">toggle()</code> method.</p>
+    <p>Shown elements are hidden and hidden elements are shown:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">toggle</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>}); </span></div>
+    </div>
+
+    <p><b>Syntax:</b></p>
+    <div class="w3-code w3-border notranslate jsHigh"><span class="jscolor" style="color:black"><div>
+$(<i>selector</i>).<span class="jspropertycolor" style="color:black">toggle</span>(<i>speed,callback</i>);
+</div> </span></div>
+    <p>The optional <code class="w3-codespan">speed</code> parameter can take the following values: "slow", "fast", or milliseconds.</p>
+    <p>The optional <code class="w3-codespan">callback</code> parameter is a function to be executed after
+        <code class="w3-codespan">toggle()</code> completes.</p>
+    <hr>
+
+</div>

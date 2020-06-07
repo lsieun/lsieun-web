@@ -7,7 +7,9 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<p>
+
+
+<p class="indented">
     The <strong>Data Encryption Standard</strong> (<strong>DES</strong>) algorithm, implemented and specified by IBM
     at the behest<sub class="my_note" style="color:green">命令；紧急指示；有关国家政府的紧急要求
     an order or request</sub> of the NSA<sub class="my_note" style="color:green">美国国家安全局(National Security Agency)</sub> in 1974, was the first publicly available computer-ready
@@ -20,7 +22,7 @@
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<p>
+<p class="indented">
     DES breaks its input up into <strong>eight-byte blocks</strong> and scrambles them using
     an <strong>eight-byte key</strong>. This scrambling process involves a series of fixed <strong>permutations</strong> — swapping bit 34 with bit 28, bit 28 with bit 17, and so on — <strong>rotations</strong>,
     and <strong>XORs</strong>. The core of DES, though, and where it gets its security, is from what
@@ -34,7 +36,7 @@
 
 <h2>DES Initial Permutation</h2>
 
-<p>
+<p class="indented">
     DES specifies that the input should undergo an initial permutation. The purpose
     of this permutation is unclear, as it serves no cryptographic purpose (the output
     would be just as secure without this). It may have been added for optimization
@@ -42,7 +44,7 @@
     will be wrong, and you won’t be able to interoperate with other implementations.
 </p>
 
-<p>
+<p class="indented">
     The specification describes this permutation in terms of the input bits
     and the output bits, but it works out to copying the second bit of the last byte
     into the first bit of the first byte of the output, followed by the second bit of the
@@ -52,7 +54,7 @@
     8-bit byte, taking the second bit of each input byte yields one byte of output.)
 </p>
 
-<div class="w3-display-container w3-text-white">
+<div class="w3-display-container w3-text-white w3-right-align">
     <img class="w3-image" src="/images/crypto/des/first_byte_of_output.png" alt="First byte of output"/>
     <div class="w3-display-bottomright w3-container w3-text-black"><p>First byte of output</p></div>
 </div>
@@ -62,7 +64,7 @@
     backward.
 </p>
 
-<div class="w3-display-container w3-text-white">
+<div class="w3-display-container w3-text-white w3-right-align">
     <img class="w3-image" src="/images/crypto/des/second_byte_of_output.png" alt="Second byte of output"/>
     <div class="w3-display-bottomright w3-container w3-text-black"><p>Second byte of output</p></div>
 </div>
@@ -71,7 +73,7 @@
     and the fifth comes from the first bits, and so on.
 </p>
 
-<div class="w3-display-container w3-text-white">
+<div class="w3-display-container w3-text-white w3-right-align">
     <img class="w3-image" src="/images/crypto/des/five_permuted_bytes.png" alt="Fifth permuted bytes"/>
     <div class="w3-display-bottomright w3-container w3-text-black"><p>Fifth byte of output</p></div>
 </div>
@@ -85,12 +87,12 @@
     <li><a href="/archive/crypto/sym/PermutationUtils.java.html">PermutationUtils.java</a></li>
 </ul>
 
-<p>
+<p class="indented">
     After the input has been so permuted, it is combined with the key in a series
     of 16 rounds, each of which consists of the following:
 </p>
 
-<ul>
+<ol>
     <li>Expand bits 32~64 of the input to 48 bits</li>
     <li>XOR the expanded right half of the input with the key.</li>
     <li>Use the output of this XOR to look up eight entries in the <code class="w3-codespan">s-box</code> table and
@@ -100,8 +102,74 @@
         that the XORed left half becomes the right half, and the (as of yet untouched)
         right-half becomes the left half. On the next round, the same series of operations
         are applied again, but this time on what used to be the right half.</li>
-    <li></li>
-</ul>
+</ol>
+
+<div class="w3-panel w3-yellow">
+    <p>这5个步骤，需要对照“代码”和“示意图”，才能更好的理解。</p>
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p>这5个步骤的参照代码</p>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] des_block_operate(<span style="font-weight:bold;color:#7B0052;">byte</span>[] plain_text_64_bit_bytes, <span style="font-weight:bold;color:#7B0052;">byte</span>[] key_64_bit_bytes, CipherType type) <span style="font-weight:bold;color:#D3171B">{</span>
+        <span style="color:#3F7F5F">// Initial permutation</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] content_64_bit_bytes = DESUtils.permute(plain_text_64_bit_bytes, DESConst.ip_table);
+
+        <span style="color:#3F7F5F">// Key schedule computation</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] key_56_bit_bytes = DESUtils.permute(key_64_bit_bytes, DESConst.pc1_table);
+
+        <span style="color:#3F7F5F">// (1) 16 rounds</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] current_56_bit_key_bytes = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[7];
+        System.arraycopy(key_56_bit_bytes, 0, current_56_bit_key_bytes, 0, 7);
+
+        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i = 1; i &lt;= 16; i++) <span style="font-weight:bold;color:#D3171B">{</span>
+
+            <span style="color:#3F7F5F">// key</span>
+            <span style="font-weight:bold;color:#7B0052;">if</span> (type == CipherType.ENCRYPT) <span style="font-weight:bold;color:#D3171B">{</span>
+                <span style="font-weight:bold;color:#7B0052;">if</span> (i == 1 || i == 2 || i == 9 || i == 16) <span style="font-weight:bold;color:#D3171B">{</span>
+                    DESUtils.rotate_left(current_56_bit_key_bytes);
+                <span style="font-weight:bold;color:#D3171B">}</span> <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#D3171B">{</span>
+                    DESUtils.rotate_left_twice(current_56_bit_key_bytes);
+                <span style="font-weight:bold;color:#D3171B">}</span>
+            <span style="font-weight:bold;color:#D3171B">}</span>
+            <span style="font-weight:bold;color:#7B0052;">byte</span>[] current_48_bit_sub_key_bytes = DESUtils.permute(current_56_bit_key_bytes, DESConst.pc2_table);
+            <span style="font-weight:bold;color:#7B0052;">if</span> (type == CipherType.DECRYPT) <span style="font-weight:bold;color:#D3171B">{</span>
+                <span style="font-weight:bold;color:#7B0052;">if</span> (i == 16 || i == 15 || i == 8 || i == 1) <span style="font-weight:bold;color:#D3171B">{</span>
+                    DESUtils.rotate_right(current_56_bit_key_bytes);
+                <span style="font-weight:bold;color:#D3171B">}</span> <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#D3171B">{</span>
+                    DESUtils.rotate_right_twice(current_56_bit_key_bytes);
+                <span style="font-weight:bold;color:#D3171B">}</span>
+            <span style="font-weight:bold;color:#D3171B">}</span>
+
+            <span style="color:#3F7F5F">// msg</span>
+            <span style="font-weight:bold;color:#7B0052;">byte</span>[] left_32_bit_bytes = Arrays.copyOfRange(content_64_bit_bytes, 0, 4);
+            <span style="font-weight:bold;color:#7B0052;">byte</span>[] right_32_bit_bytes = Arrays.copyOfRange(content_64_bit_bytes, 4, 8);
+
+            <span style="font-weight:bold;color:#7B0052;">byte</span>[] expansion_48_bit_bytes = DESUtils.permute(right_32_bit_bytes, DESConst.expansion_table);
+            <span style="font-weight:bold;color:#7B0052;">byte</span>[] xor_48_bit_bytes = DESUtils.xor(expansion_48_bit_bytes, current_48_bit_sub_key_bytes, 6);
+            <span style="font-weight:bold;color:#7B0052;">byte</span>[] substitution_32_bit_bytes = DESUtils.get_substitution(xor_48_bit_bytes);
+            <span style="font-weight:bold;color:#7B0052;">byte</span>[] permutation_32_bit_bytes = DESUtils.permute(substitution_32_bit_bytes, DESConst.p_table);
+            <span style="font-weight:bold;color:#7B0052;">byte</span>[] xor_32_bit_bytes = DESUtils.xor(permutation_32_bit_bytes, left_32_bit_bytes, 4);
+
+            <span style="color:#3F7F5F">// copy</span>
+            System.arraycopy(right_32_bit_bytes, 0, content_64_bit_bytes, 0, 4);
+            System.arraycopy(xor_32_bit_bytes, 0, content_64_bit_bytes, 4, 4);
+        <span style="font-weight:bold;color:#D3171B">}</span>
+
+
+        <span style="color:#3F7F5F">// (2) Swap one last time</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] swap_bytes = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[8];
+        System.arraycopy(content_64_bit_bytes, 4, swap_bytes, 0, 4);
+        System.arraycopy(content_64_bit_bytes, 0, swap_bytes, 4, 4);
+
+        <span style="color:#3F7F5F">// (3) Final permutation (undo initial permutation)</span>
+        <span style="font-weight:bold;color:#7B0052;">byte</span>[] encrypted_64_bit_bytes = DESUtils.permute(swap_bytes, DESConst.fp_table);
+
+        <span style="font-weight:bold;color:#7B0052;">return</span> encrypted_64_bit_bytes;
+    <span style="font-weight:bold;color:#D3171B">}</span>
+</pre>
+    </div>
+</div>
 
 <strong></strong>
 <sub class="my_note" style="color:red">笔记：</sub>
@@ -110,7 +178,7 @@
 <sub class="my_note" style="color:green"></sub>
 <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 
-<h2>6. References</h2>
+<h2>References</h2>
 
 <ul>
     <li><a href="http://page.math.tu-berlin.de/~kant/teaching/hess/krypto-ws2006/des.htm" target="_blank">math.tu: The DES Algorithm Illustrated</a> 这个网站提供对DES算法进行了详细的解释。</li>

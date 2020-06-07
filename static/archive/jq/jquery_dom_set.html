@@ -1,0 +1,113 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery - Set Content and Attributes</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div>
+    <h2>Set Content - text(), html(), and val()</h2>
+    <p>We will use the same three methods from the previous page to <b>set content</b>:</p>
+    <ul>
+        <li><code class="w3-codespan">text()</code> - Sets or returns the text content of selected elements</li>
+        <li><code class="w3-codespan">html()</code> - Sets or returns the content of selected elements (including HTML markup)</li>
+        <li><code class="w3-codespan">val()</code> - Sets or returns the value of form fields</li>
+    </ul>
+    <p>The following example demonstrates how to set content with the jQuery <code class="w3-codespan">text()</code>, <code class="w3-codespan">html()</code>,
+        and <code class="w3-codespan">val()</code> methods:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#btn1"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#test1"</span>).<span class="jspropertycolor" style="color:black">text</span>(<span class="jsstringcolor" style="color:brown">"Hello world!"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<br>
+$(<span class="jsstringcolor" style="color:brown">"#btn2"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#test2"</span>).<span class="jspropertycolor" style="color:black">html</span>(<span class="jsstringcolor" style="color:brown">"&lt;b&gt;Hello world!&lt;/b&gt;"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<br>
+$(<span class="jsstringcolor" style="color:brown">"#btn3"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"#test3"</span>).<span class="jspropertycolor" style="color:black">val</span>(<span class="jsstringcolor" style="color:brown">"Dolly Duck"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+
+    <h2>A Callback Function for text(), html(), and val()</h2>
+    <p>All of the three jQuery methods above: <code class="w3-codespan">text()</code>, <code class="w3-codespan">html()</code>,
+        and <code class="w3-codespan">val()</code>, also come with a callback function. The callback function has two
+        parameters: the index of the current element in the list of elements selected
+        and the original (old) value. You then return the string you wish to use as the
+        new value from the function.</p>
+    <p>The following example demonstrates <code class="w3-codespan">text()</code> and <code class="w3-codespan">html()</code> with a callback
+        function:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#btn1"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#test1"</span>).<span class="jspropertycolor" style="color:black">text</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(i, origText){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp;&nbsp;&nbsp; <span class="jskeywordcolor" style="color:mediumblue">return</span> <span class="jsstringcolor" style="color:brown">"Old text: "</span> + origText + <span class="jsstringcolor" style="color:brown">" New text: Hello world!<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(index: "</span> + i + <span class="jsstringcolor" style="color:brown">")"</span>; <br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;});<br><span class="jsnumbercolor" style="color:red">
+</span>});<br><span class="jsnumbercolor" style="color:red">
+</span><br>
+$(<span class="jsstringcolor" style="color:brown">"#btn2"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#test2"</span>).<span class="jspropertycolor" style="color:black">html</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(i, origText){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp;&nbsp;&nbsp; <span class="jskeywordcolor" style="color:mediumblue">return</span> <span class="jsstringcolor" style="color:brown">"Old html: "</span> + origText + <span class="jsstringcolor" style="color:brown">" New html: Hello
+&lt;b&gt;world!&lt;/b&gt;<br>
+&nbsp;&nbsp;&nbsp; (index: "</span> + i + <span class="jsstringcolor" style="color:brown">")"</span>; <br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;});<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+
+    <h2>Set Attributes - attr()</h2>
+    <p>The jQuery <code class="w3-codespan">attr()</code> method is also used to set/change attribute values.</p>
+    <p>The following example demonstrates how to change (set) the value of the href attribute
+        in a link:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#w3s"</span>).<span class="jspropertycolor" style="color:black">attr</span>(<span class="jsstringcolor" style="color:brown">"href"</span>, <span class="jsstringcolor" style="color:brown">"https://www.w3schools.com/jquery/"</span>);<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <p>The <code class="w3-codespan">attr()</code> method also allows you to set multiple attributes at the same
+        time.</p>
+    <p>The following example demonstrates how to set both the href and title attributes
+        at the same time:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#w3s"</span>).<span class="jspropertycolor" style="color:black">attr</span>({<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="jsstringcolor" style="color:brown">"href"</span> : <span class="jsstringcolor" style="color:brown">"https://www.w3schools.com/jquery/"</span>,<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp;&nbsp;&nbsp; <span class="jsstringcolor" style="color:brown">"title"</span> : <span class="jsstringcolor" style="color:brown">"W3Schools jQuery Tutorial"</span><br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;});<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+
+    <h2>A Callback Function for attr()</h2>
+    <p>The jQuery method <code class="w3-codespan">attr()</code>, also comes with a callback function. The callback function has two
+        parameters: the index of the current element in the list of elements selected
+        and the original (old) attribute value. You then return the string you wish to use as the
+        new attribute value from the function.</p>
+    <p>The following example demonstrates <code class="w3-codespan">attr()</code> with a callback
+        function:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"#w3s"</span>).<span class="jspropertycolor" style="color:black">attr</span>(<span class="jsstringcolor" style="color:brown">"href"</span>, <span class="jskeywordcolor" style="color:mediumblue">function</span>(i, origValue){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="jskeywordcolor" style="color:mediumblue">return</span> origValue + <span class="jsstringcolor" style="color:brown">"/jquery/"</span>; <br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;});<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+
+</div>

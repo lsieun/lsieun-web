@@ -1,5 +1,5 @@
 2020-04-30 20:14#Convert Java To Html#Widgets##/archive/widgets/java2html.html#Convert Java Source Code To Html.
 2020-04-30 15:53#Cryptography#Crypto##/archive/crypto/index.html#Symmetric Cryptography(DES, Triple-DES, AES), Public Key Cryptography(RSA, DH, ECC), Secure Hash Algorithm(MD5, SHA1, SHA256).
 2020-06-05 16:01#W3CSS#CSS##/archive/w3css/index.html#W3.CSS is a CSS Framework.
-2020-06-05 20:40#jQuery#CSS##/archive/jq/index.html#jQuery.
-2020-06-05 20:39#Javascript#CSS##/archive/js/index.html#Javascript.
+2020-06-05 20:40#jQuery#jQuery##/archive/jq/index.html#The Write Less, Do More, JavaScript Library.
+2020-06-05 20:39#Javascript#Javascript##/archive/js/index.html#JavaScript是一种即时编译型的高级编程语言。

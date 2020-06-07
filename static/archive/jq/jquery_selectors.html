@@ -1,0 +1,173 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery Selectors</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div class="w3-col l10 m12" id="main">
+    <hr>
+    <p class="intro">jQuery selectors are one of the most important parts of the jQuery library.</p>
+    <hr>
+
+    <h2>jQuery Selectors</h2>
+    <p>jQuery selectors allow you to select and manipulate HTML element(s).</p>
+    <p>jQuery selectors are used to "find" (or select) HTML elements based on their
+        name, id, classes, types, attributes, values of attributes and much more.
+        It's based on the existing <a href="https://www.w3schools.com/cssref/css_selectors.asp">CSS Selectors</a>, and in addition, it has
+        some own custom selectors.</p>
+    <p>All selectors in jQuery start with the dollar sign and parentheses: <code class="w3-codespan">$()</code>.</p>
+    <hr>
+
+    <h2>The element Selector</h2>
+    <p>The jQuery element selector selects elements based on the element name.</p>
+    <p>You can select all <code class="w3-codespan">&lt;p&gt;</code> elements on a page like this:</p>
+    <div class="w3-code w3-border notranslate jsHigh"><span class="jscolor" style="color:black">
+<div>
+$(<span class="jsstringcolor" style="color:brown">"p"</span>)
+</div>
+ </span></div>
+    <p><b>Example</b></p>
+    <p>When a user clicks on a button, all <code class="w3-codespan">&lt;p&gt;</code> elements will be hidden:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(document).<span class="jspropertycolor" style="color:black">ready</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp;&nbsp;&nbsp; $(<span class="jsstringcolor" style="color:brown">"p"</span>).<span class="jspropertycolor" style="color:black">hide</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;});<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+
+    <h2>The #id Selector</h2>
+    <p>The jQuery <code class="w3-codespan">#<em>id</em></code> selector uses the id attribute of an HTML tag to find the specific element.</p>
+    <p>An id should be unique within a page, so you should use the #id selector when you want to find a single, unique element.</p>
+    <p>To find an element with a specific id, write a hash character, followed by the id of the
+        HTML element:</p>
+    <div class="w3-code w3-border notranslate jsHigh"><span class="jscolor" style="color:black">
+<div>
+$(<span class="jsstringcolor" style="color:brown">"#test"</span>)
+</div>
+ </span></div>
+    <p><b>Example</b></p>
+    <p>When a user clicks on a button, the element with id="test" will be hidden:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(document).<span class="jspropertycolor" style="color:black">ready</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;$(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;&nbsp; $(<span class="jsstringcolor" style="color:brown">"#test"</span>).<span class="jspropertycolor" style="color:black">hide</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; });<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+
+
+    <h2>The .class Selector</h2>
+    <p>The jQuery <code class="w3-codespan"><em>.class</em></code> selector finds elements with a specific class.</p>
+    <p>To find elements with a specific class, write a period character, followed by the name of the class:</p>
+    <div class="w3-code w3-border notranslate jsHigh"><span class="jscolor" style="color:black">
+<div>
+$(<span class="jsstringcolor" style="color:brown">".test"</span>)
+</div>
+ </span></div>
+
+    <p><b>Example</b></p>
+    <p>When a user clicks on a button, the elements with class="test" will be hidden:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(document).<span class="jspropertycolor" style="color:black">ready</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>  &nbsp; $(<span class="jsstringcolor" style="color:brown">"button"</span>).<span class="jspropertycolor" style="color:black">click</span>(<span class="jskeywordcolor" style="color:mediumblue">function</span>(){<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;&nbsp; $(<span class="jsstringcolor" style="color:brown">".test"</span>).<span class="jspropertycolor" style="color:black">hide</span>();<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp;&nbsp;});<br><span class="jsnumbercolor" style="color:red">
+</span>});<span class="jsnumbercolor" style="color:red">
+</span> </span></div>
+    </div>
+    <hr>
+
+    <h2>More Examples of jQuery Selectors</h2>
+    <div class="w3-responsive">
+        <table class="w3-table-all notranslate">
+            <tbody><tr>
+                <th style="width:25%">Syntax</th>
+                <th style="width:65%">Description</th>
+            </tr>
+            <tr>
+                <td>$("*")</td>
+                <td>Selects all elements</td>
+            </tr>
+            <tr>
+                <td>$(this)</td>
+                <td>Selects the current HTML element</td>
+            </tr>
+            <tr>
+                <td>$("p.intro")</td>
+                <td>Selects all &lt;p&gt; elements with class="intro"</td>
+            </tr>
+            <tr>
+                <td>$("p:first")</td>
+                <td>Selects the first &lt;p&gt; element</td>
+            </tr>
+            <tr>
+                <td>$("ul li:first")</td>
+                <td>Selects the first &lt;li&gt; element of the first &lt;ul&gt;</td>
+            </tr>
+            <tr>
+                <td>$("ul li:first-child")</td>
+                <td>Selects the first &lt;li&gt; element of every &lt;ul&gt;</td>
+            </tr>
+            <tr>
+                <td>$("[href]")</td>
+                <td>Selects all elements with an href attribute</td>
+            </tr>
+            <tr>
+                <td>$("a[target='_blank']")</td>
+                <td>Selects all &lt;a&gt; elements with a target attribute value equal to "_blank"</td>
+            </tr>
+            <tr>
+                <td>$("a[target!='_blank']")</td>
+                <td>Selects all &lt;a&gt; elements with a target attribute value NOT equal to "_blank"</td>
+            </tr>
+            <tr>
+                <td>$(":button")</td>
+                <td>Selects all &lt;button&gt; elements and &lt;input&gt; elements of type="button"</td>
+            </tr>
+            <tr>
+                <td>$("tr:even")</td>
+                <td>Selects all even &lt;tr&gt; elements</td>
+            </tr>
+            <tr>
+                <td>$("tr:odd")</td>
+                <td>Selects all odd &lt;tr&gt; elements</td>
+            </tr>
+            </tbody></table>
+    </div>
+    <p>For a complete reference of all the jQuery selectors, please go to our <a href="/archive/jq/jquery_ref_selectors.html">jQuery Selectors Reference</a>.</p>
+    <hr>
+
+    <h2>Functions In a Separate File</h2>
+    <p>If your website contains a lot of pages, and you want your jQuery functions to be easy
+        to maintain, you can put your jQuery functions in a separate .js file.</p>
+    <p>When we demonstrate jQuery in this tutorial, the functions are added directly into the <code class="w3-codespan">&lt;head&gt;</code>
+        section. However, sometimes it is preferable to place them in a separate file, like this (use
+        the src attribute to refer
+        to the .js file): </p>
+
+    <div class="w3-panel w3-card w3-light-grey">
+        
+        <div class="w3-code notranslate htmlHigh">
+            <span class="tagnamecolor" style="color:brown"><span class="tagcolor" style="color:mediumblue">&lt;</span>head<span class="tagcolor" style="color:mediumblue">&gt;</span></span><br>
+            <span class="tagnamecolor" style="color:brown"><span class="tagcolor" style="color:mediumblue">&lt;</span>script<span class="attributecolor" style="color:red">
+src<span class="attributevaluecolor" style="color:mediumblue">="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"</span></span><span class="tagcolor" style="color:mediumblue">&gt;</span></span><span class="jscolor" style="color:black"></span><span class="tagnamecolor" style="color:brown"><span class="tagcolor" style="color:mediumblue">&lt;</span>/script<span class="tagcolor" style="color:mediumblue">&gt;</span></span><br>
+            <span class="marked"><span class="tagnamecolor" style="color:brown"><span class="tagcolor" style="color:mediumblue">&lt;</span>script<span class="attributecolor" style="color:red"> src<span class="attributevaluecolor" style="color:mediumblue">="my_jquery_functions.js"</span></span><span class="tagcolor" style="color:mediumblue">&gt;</span></span><span class="jscolor" style="color:black"></span><span class="tagnamecolor" style="color:brown"><span class="tagcolor" style="color:mediumblue">&lt;</span>/script<span class="tagcolor" style="color:mediumblue">&gt;</span></span></span><br>
+            <span class="tagnamecolor" style="color:brown"><span class="tagcolor" style="color:mediumblue">&lt;</span>/head<span class="tagcolor" style="color:mediumblue">&gt;</span></span>
+        </div>
+        <br>
+    </div>
+    <hr>
+
+</div>

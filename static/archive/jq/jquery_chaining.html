@@ -1,0 +1,46 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">jQuery - Chaining</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div>
+    <p class="intro">With jQuery, you can chain together actions/methods.</p>
+    <p class="intro">Chaining allows us to run multiple jQuery methods (on the same
+        element) within a single statement.</p>
+    <hr>
+
+    <h2>jQuery Method Chaining</h2>
+    <p>Until now we have been writing jQuery statements one at a time (one after the
+        other).</p>
+    <p>However, there is a technique called chaining, that
+        allows us to run multiple jQuery commands, one after the other, on the same
+        element(s).</p>
+    <p><b>Tip:</b> This way, browsers do not have to find the same element(s) more than once.</p>
+    <p>To chain
+        an action, you simply append the action to the previous action. </p>
+    <p>The following example chains together the <code class="w3-codespan">css()</code>, <code class="w3-codespan">slideUp()</code>, and <code class="w3-codespan">slideDown()</code>
+        methods. The "p1" element first changes to red, then it slides up, and then it
+        slides down: </p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#p1"</span>).<span class="jspropertycolor" style="color:black">css</span>(<span class="jsstringcolor" style="color:brown">"color"</span>, <span class="jsstringcolor" style="color:brown">"red"</span>).<span class="jspropertycolor" style="color:black">slideUp</span>(<span class="jsnumbercolor" style="color:red">2000</span>).<span class="jspropertycolor" style="color:black">slideDown</span>(<span class="jsnumbercolor" style="color:red">2000</span>); </span></div>
+    </div>
+    <p>We could also have added more method calls if needed.</p>
+    <p><b>Tip</b>: When chaining, the line of code
+        could become quite long. However, jQuery is not very strict on the syntax; you can format it like you want, including line breaks and indentations. </p>
+    <p>This also works just fine:</p>
+    <div class="w3-panel w3-card w3-light-grey">
+        <p>Example</p>
+        <div class="w3-code notranslate jsHigh"><span class="jscolor" style="color:black">
+$(<span class="jsstringcolor" style="color:brown">"#p1"</span>).<span class="jspropertycolor" style="color:black">css</span>(<span class="jsstringcolor" style="color:brown">"color"</span>, <span class="jsstringcolor" style="color:brown">"red"</span>)<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp; .<span class="jspropertycolor" style="color:black">slideUp</span>(<span class="jsnumbercolor" style="color:red">2000</span>)<br><span class="jsnumbercolor" style="color:red">
+</span>&nbsp; .<span class="jspropertycolor" style="color:black">slideDown</span>(<span class="jsnumbercolor" style="color:red">2000</span>); </span></div>
+    </div>
+    <p>jQuery throws away extra whitespace and executes the lines above as one long line of code.</p>
+    <br>
+</div>
