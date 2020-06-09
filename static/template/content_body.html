@@ -4,8 +4,9 @@ __NAVIGATION_BAR__
 
 <!-- Header with image -->
 <header class="bgimg w3-display-container w3-grayscale-min">
-    <div class="w3-display-bottomleft w3-center w3-padding-large w3-hide-small">
+    <div class="w3-display-bottomright w3-center w3-padding-large w3-hide-small">
 <!--        <span class="w3-tag">峰峦如聚 &nbsp; 晨光熹微</span>-->
+        <span class="w3-tag w3-text-white">日拱一卒 &nbsp; 功不唐捐</span>
     </div>
     <div class="w3-display-middle w3-center">
         <span class="w3-text-white" style="font-size:90px"><br></span>
@@ -20,7 +21,7 @@ __NAVIGATION_BAR__
 
     <!-- About Content(文章) -->
     <div class="w3-container" id="main_content">
-        <div class="w3-content">
+        <div class="w3-content" style="max-width: 1024px;">
             <article>
             __PAGE_CONTENT__
             </article>
@@ -45,7 +46,7 @@ __NAVIGATION_BAR__
 
     <div id="toc_div" class="w3-card" style="position:fixed;padding:7px;bottom:50px;left:0;max-width:450px;z-index:999;display:none;">
         <span onclick="document.getElementById('toc_div').style.display='none'"
-              class="w3-button w3-black w3-display-topright">&times;</span>
+              class="w3-button w3-display-topright">&times;</span>
         <div class="at">
             <!-- at == auto table of content -->
             <!-- https://www.jqueryscript.net/menu/TOC-Generator-Smooth-Scroll-autoToc.html -->
@@ -80,6 +81,7 @@ for the Javascript file, before the page is actually loaded.
 <script type="text/javascript" src="/js/jquery-3.4.1.js"></script>
 <script type="text/javascript" src="/js/w3codecolor.js"></script>
 <script type="text/javascript" src="/js/auto-toc.js"></script>
+<script type="text/javascript" src="/js/auto-code.js"></script>
 <script>
     // Javascript inside this file
     function toggle_all_sub_note() {
@@ -98,6 +100,7 @@ for the Javascript file, before the page is actually loaded.
     $(function() {
         toggle_all_sub_note();
         $(".at").autoToc();
+        $(".javacode, .jscode, .plaintext").autoCode();
     });
 </script>
 

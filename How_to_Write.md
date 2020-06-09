@@ -60,6 +60,8 @@ function toggle_all_sub_note() {
 ```html
 <img class="w3-image" src="/images/mountains.jpg" alt="the Statue of Liberty" onclick="display_img(this)"/>
 
+<img class="w3-image" src="/images/mountains.jpg" alt="the Statue of Liberty"/>
+
 <img width="800" src="/images/crypto/rsa/rsa_padding.png" alt="RSA Padding"/>
 ```
 
@@ -74,6 +76,10 @@ In the same vein<sub class="my_note" style="color:green">以同样的方式</sub
 <code style="color:blue"></code>
 <code class="w3-codespan"></code>
 <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+
+<div title="HelloWorld.java" class="javacode">
+
+</div>
 ```
 
 Code
@@ -122,11 +128,9 @@ Code
 ## Reference
 
 ```html
-<p>
-    参考
-</p>
+<h2>References</h2>
 
 <ul>
-    <li><a href="https://en.wikipedia.org/wiki/American_Dream">Wiki: American Dream</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/American_Dream" target="_blank">Wiki: American Dream</a></li>
 </ul>
 ```

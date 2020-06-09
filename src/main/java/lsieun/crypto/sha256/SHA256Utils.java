@@ -1,5 +1,7 @@
 package lsieun.crypto.sha256;
 
+import lsieun.crypto.utils.ByteUtils;
+
 import java.util.Arrays;
 
 public class SHA256Utils {
@@ -37,7 +39,7 @@ public class SHA256Utils {
 
         // (2) 对input进行padding
         byte[] padding_bytes = sha256_padding(input_length);
-        byte[] all_bytes = concatenate(input, padding_bytes);
+        byte[] all_bytes = ByteUtils.concatenate(input, padding_bytes);
 
         // (3) 对于512-bit(64-byte)的数据进行操作
         byte[] input_block = new byte[SHA256Const.SHA256_BLOCK_SIZE];
@@ -51,18 +53,6 @@ public class SHA256Utils {
 
         // (4) 返回结果
         return encode(hash);
-    }
-
-    public static byte[] concatenate(byte[] bytes1, byte[] bytes2) {
-        int len1 = bytes1.length;
-        int len2 = bytes2.length;
-
-        byte[] result_bytes = new byte[len1 + len2];
-
-        System.arraycopy(bytes1, 0, result_bytes, 0, len1);
-        System.arraycopy(bytes2, 0, result_bytes, len1, len2);
-
-        return result_bytes;
     }
 
     public static byte[] encode(int[] hash) {

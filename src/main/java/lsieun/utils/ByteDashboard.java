@@ -105,12 +105,12 @@ public class ByteDashboard {
 
     public int readInt() {
         byte[] bytes = nextN(4);
-        return ByteUtils.toInt(bytes);
+        return NumberUtils.toInt(bytes);
     }
 
     public long readLong() {
         byte[] bytes = nextN(8);
-        return ByteUtils.toLong(bytes);
+        return NumberUtils.toLong(bytes);
     }
     // endregion
 

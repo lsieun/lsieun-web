@@ -10,4 +10,9 @@ public class DESSample {
             (byte) 0x0E, (byte) 0x32, (byte) 0x92, (byte) 0x32,
             (byte) 0xEA, (byte) 0x6D, (byte) 0x0D, (byte) 0x73
     };
+
+    public static final byte[] cipher_text_bytes = {
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00
+    };
 }

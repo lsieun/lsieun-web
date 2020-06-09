@@ -56,7 +56,7 @@ public class FileUtils {
 
     public static String readHtml(final String filepath) throws IOException {
         byte[] bytes = readFile(filepath);
-        return ByteUtils.toStr(bytes);
+        return StringUtils.toStr(bytes);
     }
 
     public static List<String> readLines(final String filepath) {

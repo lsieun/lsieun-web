@@ -7,18 +7,31 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-
+<h2>Introduction</h2>
 
 <p class="indented">
     The <strong>Data Encryption Standard</strong> (<strong>DES</strong>) algorithm, implemented and specified by IBM
     at the behest<sub class="my_note" style="color:green">命令；紧急指示；有关国家政府的紧急要求
     an order or request</sub> of the NSA<sub class="my_note" style="color:green">美国国家安全局(National Security Agency)</sub> in 1974, was the first publicly available computer-ready
-    encryption algorithm. Although for reasons you see later, DES is not considered
+    encryption algorithm.
+    <sub class="my_note" style="color:blue">笔记：这里讲DES出现的时代背景</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Although for reasons you see later, DES is not considered
     particularly secure any more, it’s still in widespread use (!) and serves as a good
     starting point for the study of symmetric cryptography algorithms in general.
     Most of the concepts that made DES work when it was first introduced appear
-    in other cryptographic algorithms. DES is specified at the following web site:
+    in other cryptographic algorithms.
+    <sub class="my_note" style="color:blue">笔记：这里讲学习DES的意义在哪里</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+     DES is specified at the following web site:
     https://csrc.nist.gov/csrc/media/publications/fips/46/3/archive/1999-10-25/documents/fips46-3.pdf.
+    <sub class="my_note" style="color:blue">笔记：这里讲在哪儿可以找到DES的官方文档(对于初学者，建议不要看，因为有些概念，文档中描述的非常晦涩难懂)</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
@@ -28,13 +41,77 @@
     and <strong>XORs</strong>. The core of DES, though, and where it gets its security, is from what
     the standard calls <strong>S boxes</strong> where six bits of input become four bits of output in
     a fixed, but non-reversible (except with the key) way.
+    <sub class="my_note" style="color:blue">笔记：这里才算是真正意义上介绍DES算法本身，它每次接受8-byte block，使用8-byte key，算法的计算过程中使用到了permutation、rotation、XOR和S boxes这些基本操作</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>Like any modern symmetric cryptographic algorithm, DES relies heavily on the XOR operation.</p>
 </div>
 
-<h2>DES Initial Permutation</h2>
+<hr/>
+
+<h2>Overall Structure</h2>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image" src="/images/crypto/des/des_structure.jpg" alt="DES Structure"/>
+</div>
+
+<p class="indented">
+    Though, key length is 64-bit, DES has an effective key length of 56 bits, since 8 of the 64 bits of the key are not used by the encryption algorithm (function as check bits only).
+    <sub class="my_note" style="color:blue">笔记：这里讲原本64-bit的key为什么会变成56-bit</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    If you look at the figure, you see that the subkeys is shown as K<sub>1</sub>, K<sub>2</sub>, ... , K<sub>16</sub>. As it turns out, there are
+    16 different 48-bit subkeys, which are generated deterministically from the initial
+    64-bit key input.
+    <sub class="my_note" style="color:blue">笔记：这里讲原本64-bit的key会最终演变成16个不同的48-bit subkey</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Key Schedule</h2>
+
+<p class="indented">
+    The following figure illustrates the <strong>key schedule for encryption</strong>—the algorithm which generates the <strong>subkeys</strong>. Initially, 56 bits of the key are selected from the initial 64 by <strong>Permuted Choice 1 (PC-1)</strong>—the remaining eight bits are either discarded or used as parity check bits.<sub class="my_note" style="color:green">笔记：经过PC-1，key由64-bit变成56-bit</sub> The 56 bits are then divided into two 28-bit halves; each half is thereafter treated separately. In successive rounds, both halves are rotated left by one or two bits (specified for each round),<sub class="my_note" style="color:green">笔记：在每次round中，56-bit的key要进行rotate操作</sub> and then 48-bits subkey are selected by <strong>Permuted Choice 2 (PC-2)</strong>—24 bits from the left half, and 24 from the right.<sub class="my_note" style="color:green">笔记：经过PC-2，由56-bit的key转换为48-bit的subkey</sub> The rotations (denoted by "<<<" in the diagram) mean that a different set of bits is used in each subkey; each bit is used in approximately 14 out of the 16 subkeys.
+    <sub class="my_note" style="color:blue">笔记：这里是从encryption的角度，来讲述subkey的生成过程。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image" src="/images/crypto/des/des_key_schedule.png" alt="The key-schedule of DES"/>
+    <br/>
+    <p>The key-schedule of DES</p>
+</div>
+
+<p class="indented">
+    The <strong>key schedule for decryption</strong> is similar—the subkeys are in reverse order compared to encryption. Apart from that change, the process is the same as for encryption. The same 28 bits are passed to all rotation boxes.
+    <sub class="my_note" style="color:blue">笔记：这里是从decryption的角度，来讲述subkey的生成过程。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Encryption/Decryption Process</h2>
+
+<p class="indented">
+    The algorithm's overall structure is shown in the following Figure: there are 16 identical stages of processing, termed <i>rounds</i>. There is also an initial and final permutation, termed <strong>IP</strong> and <strong>FP</strong>, which are inverses (IP "undoes" the action of FP, and vice versa). IP and FP have no cryptographic significance, but were included in order to facilitate loading blocks in and out of mid-1970s 8-bit based hardware.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image" src="/images/crypto/des/des_main_network.png" alt="The overall Feistel structure of DES"/>
+    <br/>
+    <p>The overall Feistel structure of DES</p>
+</div>
+
+<p class="indented">
+    Before the main rounds, the block is divided into two 32-bit halves and processed alternately; this criss-crossing is known as the <a href="/archive/crypto/sym/feistel_ciphers.html">Feistel scheme</a>. The Feistel structure ensures that decryption and encryption are very similar processes—the only difference is that the subkeys are applied in the reverse order when decrypting. The rest of the algorithm is identical. This greatly simplifies implementation, particularly in hardware, as there is no need for separate encryption and decryption algorithms.
+</p>
+
+<p class="indented">
+    The ⊕ symbol denotes the exclusive-OR (XOR) operation. The F-function scrambles half a block together with some of the key. The output from the F-function is then combined with the other half of the block, and the halves are swapped before the next round. After the final round, the halves are swapped; this is a feature of the Feistel structure which makes encryption and decryption similar processes.
+</p>
+
+<h3>DES Initial Permutation</h3>
 
 <p class="indented">
     DES specifies that the input should undergo an initial permutation. The purpose
@@ -78,6 +155,37 @@
     <div class="w3-display-bottomright w3-container w3-text-black"><p>Fifth byte of output</p></div>
 </div>
 
+
+<h3>The Feistel (F) function</h3>
+
+<p class="indented">
+    The F-function, depicted in the following figure, operates on half a block (32 bits) at a time and consists of four stages:
+</p>
+
+<ol>
+    <li><b>Expansion</b>: the 32-bit half-block is expanded to 48 bits using the expansion permutation, denoted E in the diagram, by duplicating half of the bits. The output consists of eight 6-bit (8 × 6 = 48 bits) pieces, each containing a copy of 4 corresponding input bits, plus a copy of the immediately adjacent bit from each of the input pieces to either side.</li>
+    <li><b>Key mixing</b>: the result is combined with a subkey using an XOR operation. Sixteen 48-bit subkeys—one for each round—are derived from the main key using the key schedule (described below).</li>
+    <li><b>Substitution</b>: after mixing in the subkey, the block is divided into eight 6-bit pieces before processing by the S-boxes, or substitution boxes. Each of the eight S-boxes replaces its six input bits with four output bits according to a non-linear transformation, provided in the form of a lookup table. The S-boxes provide the core of the security of DES—without them, the cipher would be linear, and trivially breakable.</li>
+    <li><b>Permutation</b>: finally, the 32 outputs from the S-boxes are rearranged according to a fixed permutation, the P-box. This is designed so that, after permutation, the bits from the output of each S-box in this round are spread across four different S-boxes in the next round.</li>
+</ol>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image" src="/images/crypto/des/des_f_function.png" alt="The Feistel function (F-function) of DES"/>
+    <br/>
+    <p>The Feistel function (F-function) of DES</p>
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p>Feistel function Code</p>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">byte</span>[] expansion_48_bit_bytes = DESUtils.permute(right_32_bit_bytes, DESConst.expansion_table); <span style="color:#3F7F5F">// Expansion</span>
+<span style="font-weight:bold;color:#7B0052;">byte</span>[] xor_48_bit_bytes = DESUtils.xor(expansion_48_bit_bytes, current_48_bit_sub_key_bytes, 6); <span style="color:#3F7F5F">// Key mixing</span>
+<span style="font-weight:bold;color:#7B0052;">byte</span>[] substitution_32_bit_bytes = DESUtils.get_substitution(xor_48_bit_bytes); <span style="color:#3F7F5F">// Substitution</span>
+<span style="font-weight:bold;color:#7B0052;">byte</span>[] permutation_32_bit_bytes = DESUtils.permute(substitution_32_bit_bytes, DESConst.p_table); <span style="color:#3F7F5F">// Permutation</span>
+</pre>
+    </div>
+</div>
+
 <ul>
     <li><a href="/archive/crypto/sym/basic_permutation.html">Basic Permutation</a></li>
 </ul>
@@ -104,9 +212,15 @@
         are applied again, but this time on what used to be the right half.</li>
 </ol>
 
+<p>
+    This five step procedure is referred to as the <strong>Feistel function</strong> after its originator.
+</p>
+
 <div class="w3-panel w3-yellow">
-    <p>这5个步骤，需要对照“代码”和“示意图”，才能更好的理解。</p>
+    <p>这5个步骤，需要对照“示意图”和“代码”，才能更好的理解。</p>
 </div>
+
+
 
 <div class="w3-panel w3-card w3-light-grey">
     <p>这5个步骤的参照代码</p>
@@ -178,8 +292,15 @@
 <sub class="my_note" style="color:green"></sub>
 <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 
+<h2>Summary</h2>
+
+<img class="w3-image" src="/images/crypto/des/des_overview_1.png" alt="DES overview"/>
+<img class="w3-image" src="/images/crypto/des/des_overview_2.png" alt="DES overview"/>
+
 <h2>References</h2>
 
 <ul>
     <li><a href="http://page.math.tu-berlin.de/~kant/teaching/hess/krypto-ws2006/des.htm" target="_blank">math.tu: The DES Algorithm Illustrated</a> 这个网站提供对DES算法进行了详细的解释。</li>
+    <li><a href="https://en.wikipedia.org/wiki/Data_Encryption_Standard" target="_blank">Wiki: Data Encryption Standard</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/DES_supplementary_material" target="_blank">Wiki: DES supplementary material</a></li>
 </ul>

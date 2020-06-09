@@ -26,7 +26,7 @@ public class PageListHandler extends FileHandler {
         // TODO: 这里写的不对，要进行拼接HTML才行
         HttpResource resource = null;
         if ("/".equals(uri_path)) {
-            resource = getPageList("In My Humble Opnion", "home_list.txt");
+            resource = getPageList("In My Humble Opinion", "home_list.txt");
         } else if ("/excerpt/".equals(uri_path) || "/excerpt".equals(uri_path)) {
             resource = getPageList("Excerpt", "excerpt_list.txt");
         } else if ("/whim/".equals(uri_path) || "/whim".equals(uri_path)) {
@@ -35,6 +35,8 @@ public class PageListHandler extends FileHandler {
             resource = getPageList("Life", "life_list.txt");
         } else if ("/code/".equals(uri_path) || "/code".equals(uri_path)) {
             resource = getPageList("Code", "code_list.txt");
+        } else if ("/about/".equals(uri_path) || "/about".equals(uri_path)) {
+            resource = super.getResource("/about.html", header);
         } else {
             // TODO: 这里应该怎么处理呢？
         }
@@ -70,17 +72,13 @@ public class PageListHandler extends FileHandler {
             String base_url;
             if ("excerpt_list.txt".equals(filename)) {
                 base_url = "/json/excerpt/list/";
-            }
-            else if ("whim_list.txt".equals(filename)) {
+            } else if ("whim_list.txt".equals(filename)) {
                 base_url = "/json/whim/list/";
-            }
-            else if ("life_list.txt".equals(filename)) {
+            } else if ("life_list.txt".equals(filename)) {
                 base_url = "/json/life/list/";
-            }
-            else if ("code_list.txt".equals(filename)) {
+            } else if ("code_list.txt".equals(filename)) {
                 base_url = "/json/code/list/";
-            }
-            else {
+            } else {
                 base_url = "/json/home/list/";
             }
 

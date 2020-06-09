@@ -1,6 +1,6 @@
 package lsieun.net;
 
-import lsieun.utils.ByteUtils;
+import lsieun.utils.StringUtils;
 
 public class Resource {
     private static final int ETAG_BYTES = 4;
@@ -12,6 +12,6 @@ public class Resource {
             int remainder = i % ETAG_BYTES;
             result_bytes[remainder] = (byte) (result_bytes[remainder] ^ b);
         }
-        return ByteUtils.toHex(result_bytes);
+        return StringUtils.toHex(result_bytes);
     }
 }

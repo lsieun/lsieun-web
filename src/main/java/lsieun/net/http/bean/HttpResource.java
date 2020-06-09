@@ -2,8 +2,9 @@ package lsieun.net.http.bean;
 
 import lsieun.net.Resource;
 import lsieun.utils.ByteDashboard;
-import lsieun.utils.ByteUtils;
+import lsieun.utils.NumberUtils;
 import lsieun.utils.FileUtils;
+import lsieun.utils.StringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -50,18 +51,18 @@ public class HttpResource extends Resource {
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             // path
-            out.write(ByteUtils.fromInt(path_length));
+            out.write(NumberUtils.fromInt(path_length));
             out.write(path_bytes);
 
             // content_type
-            out.write(ByteUtils.fromInt(content_type_length));
+            out.write(NumberUtils.fromInt(content_type_length));
             out.write(content_type_bytes);
 
             // lastModified
-            out.write(ByteUtils.fromLong(lastModified));
+            out.write(NumberUtils.fromLong(lastModified));
 
             // content
-            out.write(ByteUtils.fromInt(content_length));
+            out.write(NumberUtils.fromInt(content_length));
             out.write(content_bytes);
             return out.toByteArray();
         } catch (IOException e) {
@@ -75,10 +76,10 @@ public class HttpResource extends Resource {
 
         // path
         int path_length = dashboard.readInt();
-        String path = ByteUtils.toStr(dashboard.nextN(path_length));
+        String path = StringUtils.toStr(dashboard.nextN(path_length));
 
         int content_type_length = dashboard.readInt();
-        String content_type = ByteUtils.toStr(dashboard.nextN(content_type_length));
+        String content_type = StringUtils.toStr(dashboard.nextN(content_type_length));
 
 
         // lastModified
@@ -106,6 +107,6 @@ public class HttpResource extends Resource {
         System.out.println(r1);
         System.out.println(r2);
         System.out.println(data_bytes.length);
-        System.out.println(ByteUtils.toHex(data_bytes));
+        System.out.println(StringUtils.toHex(data_bytes));
     }
 }

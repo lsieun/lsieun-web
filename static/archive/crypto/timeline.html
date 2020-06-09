@@ -7,17 +7,153 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<h2>Chronology</h2>
+
+<p>Search for a algorithm name in the input field.</p>
+
+<input class="w3-input w3-border w3-padding" type="text" placeholder="Search for algorithm names.." id="myInput" onkeyup="choose_algorithm()">
+<hr/>
+<table id="myTable" class="w3-table-all w3-hoverable w3-left-align">
+    <title>Cryptography Algorithm Chronology</title>
+    <thead>
+    <tr class="w3-green">
+        <th>Year.Month.Day</th>
+        <th>Algorithm</th>
+        <th>Events</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>1976.10</td>
+        <td>DES</td>
+        <td>DES is approved as a standard</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>1977</td>
+        <td>RSA</td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>1977</td>
+        <td>DH</td>
+        <td>Diffie-Hellman</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>1985</td>
+        <td>ECC</td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>1991</td>
+        <td>MD5</td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>1993</td>
+        <td>SHA-0</td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>1993</td>
+        <td>Blowfish</td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>1995</td>
+        <td>SHA-1</td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>1995</td>
+        <td>3DES</td>
+        <td>Triple-DES</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>1998.07</td>
+        <td>DES</td>
+        <td>The EFF's DES cracker (Deep Crack) breaks a DES key in 56 hours.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>1999.01</td>
+        <td>DES</td>
+        <td>Together, Deep Crack and distributed.net break a DES key in 22 hours and 15 minutes.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>2001.11.26</td>
+        <td>AES</td>
+        <td>The Advanced Encryption Standard is published in FIPS 197</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>2001</td>
+        <td>SHA-256<br/>SHA-384<br/>SHA-512</td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Classification</h2>
+
 <ul>
-    <li>1974年，DES，对称加密。</li>
-    <li>1977年，RSA和Diffie-Hellman</li>
-    <li>1985年，ECC</li>
-    <li>1991年，MD5</li>
-    <li>1993年，SHA-0</li>
-    <li>1995年，Triple-DES</li>
-    <li>1995年，SHA-1</li>
-    <li>1998年，Rijndael是首次被提出来，到了2001年，被NIST选中后改名为AES</li>
-    <li>2001年，AES</li>
-    <li>2001年，SHA-256, SHA-384, and SHA-512.</li>
-    <li></li>
+    <li>
+        Symmetric Cryptography
+        <ul>
+            <li>Block Ciphers
+                <ul>
+                    <li>DES/3DES</li>
+                    <li>AES</li>
+                    <li>Blowfish</li>
+                    <li>Twofish</li>
+                </ul>
+            </li>
+            <li>Stream Ciphers</li>
+        </ul>
+    </li>
+    <li>Public Key Cryptography</li>
+    <li>Secure Hash Algorithm</li>
 </ul>
+
+<ul>
+    <li>
+        Symmetric Cryptography
+        <ul>
+            <li>Block Ciphers
+                <ul>
+                    <li>Feistel ciper
+                        <ul>
+                            <li>DES/3DES</li>
+                            <li>Blowfish</li>
+                        </ul>
+                    </li>
+
+                    <li>AES</li>
+
+                    <li>Twofish</li>
+                </ul>
+            </li>
+            <li>Stream Ciphers</li>
+        </ul>
+    </li>
+    <li>Public Key Cryptography</li>
+    <li>Secure Hash Algorithm</li>
+</ul>
+
+<script>
+    function choose_algorithm() {
+        let input = document.getElementById("myInput");
+        let filter = input.value.toUpperCase();
+        let table = document.getElementById("myTable");
+        let tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            let td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                let txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
 

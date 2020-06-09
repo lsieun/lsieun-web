@@ -1,0 +1,27 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Product Cipher</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Definition</h2>
+
+<p class="indented">
+    In cryptography, a <strong>product cipher</strong> combines two or more transformations in a manner intending that the resulting cipher is more secure than the individual components to make it resistant to cryptanalysis.<sub class="my_note" style="color:green">笔记：product cipher的核心思想就是，混合使用多个简单的加密方法要比使用单一的加密方法更安全。</sub> The product cipher combines a sequence of simple transformations such as <a href="/archive/crypto/sym/basic_substitution.html">substitution</a> (S-box), <a href="/archive/crypto/sym/basic_permutation.html">permutation</a> (P-box), and modular arithmetic.<sub class="my_note" style="color:green">笔记：这里列举了3个简单的加密算法。</sub> The concept of product ciphers is due to Claude Shannon, who presented the idea in his foundational paper, <i>Communication Theory of Secrecy Systems</i>.<sub class="my_note" style="color:green">笔记：product cipher的概念是由Claude Shannon提出的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    For transformation involving reasonable number of n message symbols, both of the foregoing<sub class="my_note" style="color:green">上述的；前面所提到的事物 used to refer to sth that has just been mentioned</sub> cipher systems (the S-box and P-box) are by themselves wanting<sub class="my_note" style="color:green">欠缺；不够好；不令人满意 not good enough</sub>.<sub class="my_note" style="color:blue">笔记：这里还是在说，单一的加密方法并不能够保证安全性。</sub> Shannon suggested using a combination of S-box and P-box transformation—a product cipher.<sub class="my_note" style="color:blue">笔记：Shannon建议同时使用S-box and P-box。</sub> The combination could yield a cipher system more powerful than either one alone. This approach of alternatively applying substitution and permutation transformation has been used by IBM in the Lucifer cipher system, and has become the standard for national data encryption standards such as the <strong>Data Encryption Standard</strong> and the <strong>Advanced Encryption Standard</strong>. A product cipher that uses only substitutions and permutations is called a SP-network. <strong>Feistel ciphers</strong> are an important class of product ciphers.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a href="https://en.wikipedia.org/wiki/Product_cipher">Wiki: Product cipher</a></li>
+</ul>
+

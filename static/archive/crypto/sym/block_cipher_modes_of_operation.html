@@ -1,0 +1,94 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Block Cipher Modes of Operation</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    One of the main issues with <strong>block ciphers</strong> is that they only allow you to encrypt messages the same size as their block length. If you're using TEA, which has a block size of 64 bits, to encrypt a 65 bit message, you need a way to define <span class="w3-text-red">how the second block should be encrypted</span>. The solution to this is called <strong>block cipher modes of operation</strong>.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p><b>Note:</b> In cryptography, the <strong>Tiny Encryption Algorithm</strong> (<strong>TEA</strong>) is a <strong>block cipher</strong> notable for its simplicity of description and implementation, typically a few lines of code. It was designed by David Wheeler and Roger Needham of the Cambridge Computer Laboratory; it was first presented at the Fast Software Encryption workshop in Leuven in 1994, and first published in the proceedings of that workshop.</p>
+</div>
+
+<p class="indented">
+    Several block cipher modes of operation exist with varying advantages and disadvantages. In this section, we'll provide a brief explanation of how each of them work and touch briefly on disadvantages of some.
+</p>
+
+<hr/>
+
+<h2>Electronic Code Book (ECB) Mode</h2>
+
+<p class="indented">
+    Electronic Code Book (ECB) is the simplest block cipher mode of operation. In this mode, as shown in the Figure below, each block of plaintext is encrypted separately. The "Block Cipher Encryption" in this diagram could be our TEA cipher from above or any other block cipher. The main disadvantage to this mode is that identical plaintext encrypted with the same key create identical ciphertext, which allows an attacker to learn some information about the encrypted message based solely on the ciphertext.
+</p>
+
+<img class="w3-image" src="/images/crypto/sym/ecb_mode.png" alt="Electronic Code Book"/>
+
+<hr/>
+
+<h2>Cipher Block Chaining (CBC) Mode</h2>
+
+<p class="indented">
+    In the cipher block chaining (CBC) mode of operation, an initialization vector (IV) is exclusive-ored with the plaintext prior to encryption. For the first round of encryption, this is a random, public value. For subsequent rounds, it is the ciphertext of the previous round. This is intended to fix the issue with ECB mode where identical plaintext blocks create identical ciphertext blocks.
+</p>
+
+<img class="w3-image" src="/images/crypto/sym/cbc_mode.png" alt="Cipher Block Chaining"/>
+
+<hr/>
+
+<h2>Cipher Feedback (CFB) Mode</h2>
+
+<p class="indented">
+    The cipher feedback (CFB) mode differs from the previous two in that the plaintext never passes through the encryption algorithm at all. Instead an initialization vector (IV) is encrypted and the result is exclusive-ored with the plaintext to create the ciphertext of a block. This is the equivalent of encrypting the plaintext with a one-time pad<sub class="my_note" style="color:green">笔记：one-time pad表示“只使用一次的密码”，a cryptography system in which a secret key is generated randomly and used only once to encrypt a message that is then decrypted by the receiver using a matching key</sub> generating from the encryption of the IV. Similar to CBC mode, this IV is a random value for the first block and the previous block's ciphertext.
+</p>
+
+<img class="w3-image" src="/images/crypto/sym/cfb_mode.png" alt="Cipher Feedback Mode"/>
+
+<hr/>
+
+<h2>Output Feedback (OFB) Mode</h2>
+
+<p class="indented">
+    The output feedback (OFB) mode of operation is almost identical to cipher feedback mode. The only difference is what is used as the initialization vector for every round after the first. In cipher feedback mode, the output of the encryption is exclusive-ored with the plaintext and this value is used as the next block's IV. In output feedback mode, the output of the encryption is used as the next block's IV. As a result, encryption of the same plaintext with the same key using CFB and OFB modes will produce the same ciphertext for the first block but different ones for every other block.
+</p>
+
+<img class="w3-image" src="/images/crypto/sym/ofb_mode.png" alt="Output Feedback Mode"/>
+
+<hr/>
+
+<h2>Counter (CTR) Mode</h2>
+
+<p class="indented">
+    The counter (CTR) mode of operation differs from the all of the others that we have seen so far. Similar to ECB mode, every encryption operation is completely separate, which is useful for parallelization of encryption (since each block can be encrypted simultaneously). Counter mode also uses a non-plaintext output to encryption (like the feedback modes), but, instead of an initialization vector, it uses a combination of a nonce and a counter. The nonce is a random number used for all blocks of an encryption operation and the counter is exactly what it sounds like: a value that starts at zero for block zero and increments to one for block one and so on.
+</p>
+
+<p class="indented">
+    This combination guarantees that the same values will not pass through the encryption algorithm in the same encryption session (where every block will have the same nonce but different counter values) or the same blocks in different sessions (where every block will have the same counter value but difference nonces). Similar to the feedback modes of operation (OFB and CFB), the plaintext is exclusive-ored with the output of the encryption operation to produce the ciphertext.
+</p>
+
+<img class="w3-image" src="/images/crypto/sym/ctr_mode.png" alt="Counter Mode"/>
+
+<hr/>
+
+<h2>Galois Counter Mode</h2>
+
+<p class="indented">
+    <strong>Galois Counter Mode (GCM)</strong> is a special case of <strong>counter mode</strong>. It differs in two main ways. The first is that it doesn't use a nonce (as shown in the Figure below), relying only on a counter. The second is that it calculates a message authentication code (MAC), which provides a means for ensuring that a message was not tampered with en route.<sub class="my_note" style="color:green">笔记：en route表示“在途中；在路上”，on the way; while travelling from/to a particular place</sub> The calculation of the MAC is outside the scope of this discussion of block ciphers, so only the encryption part of the GCM mode is shown.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<img class="w3-image" src="/images/crypto/sym/gcm_mode.png" alt="Galois Counter Mode"/>
+
+<hr/>
+
+<h2>References</h2>
+
+<ul>
+    <li><a href="https://www.commonlounge.com/discussion/658fe9dcc92949808b9ae25a84e1a1ee#block-cipher-modes-of-operation" target="_blank">CommonLounge: Block Ciphers and Modes of Operation</a></li>
+</ul>
+

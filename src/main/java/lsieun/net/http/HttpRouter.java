@@ -59,7 +59,8 @@ public class HttpRouter {
                         "/excerpt/".equals(uri_path) || "/excerpt".equals(uri_path) ||
                         "/whim/".equals(uri_path) || "/whim".equals(uri_path) ||
                         "/life/".equals(uri_path) || "/life".equals(uri_path) ||
-                        "/code/".equals(uri_path) || "/code".equals(uri_path)
+                        "/code/".equals(uri_path) || "/code".equals(uri_path) ||
+                        "/about/".equals(uri_path) || "/about".equals(uri_path)
         ) {
             return page_list_handler.getResource(uri_path, header);
         } else if ("/favicon.ico".equals(uri_path)) {

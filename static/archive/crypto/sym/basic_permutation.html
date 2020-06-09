@@ -7,7 +7,23 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<p>
+
+<h2>Definition</h2>
+
+<p class="indented">
+    In cryptography, a <strong>permutation</strong> is a method of encryption by which the positions held by units of plaintext (which are commonly characters or groups of characters) are shifted according to a regular system<sub class="my_note" style="color:green">笔记：这里regular system理解为“规则体系”比较合适</sub>, so that the ciphertext<sub class="my_note" style="color:green">笔记：ciphertext是加密之后的数据</sub> constitutes a permutation of the plaintext<sub class="my_note" style="color:green">笔记：plaintext是加密前的数据。</sub>. That is, the order of the units is changed (the plaintext is reordered).
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p class="indented">
+        permutation的英文解释是“the reordering or rearranging of items in a group”，本质上就是打乱一组事物的原有顺序，或者说重新排列这组事物之间的顺序。这里做一个形象的比喻：在社会上，每个人都有自己的财富和社会地位，但是，经过一个大的社会动乱之后，有人从富裕变为贫穷，有人从平民变为高官，每个人的财富和社会地位都多多少少的受到影响，社会中所有人的社会地位整体发生变化的情况就可以理解为“permutation”或者说“大洗牌”。
+    </p>
+</div>
+
+<h2>DES Permutation</h2>
+
+<p class="indented">
     Finally, you need a <strong>permute routine</strong>. The <strong>permute routine</strong> is responsible
     for putting, for instance, the 57<sup>th</sup> bit of the input into the 14<sup>th</sup> bit of the output,
     depending on the entries in a <code class="w3-codespan">permute_table</code> array. As you’ll see in the DES code,
@@ -17,3 +33,10 @@
 </p>
 
 <strong></strong>
+
+<h2>References</h2>
+
+<ul>
+    <li><a href="https://en.wikipedia.org/wiki/Transposition_cipher">Wiki: Transposition cipher</a></li>
+</ul>
+

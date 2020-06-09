@@ -6,8 +6,8 @@ import lsieun.net.http.bean.HttpResponse;
 import lsieun.net.http.utils.HttpRequestUtils;
 import lsieun.net.http.utils.HttpUtils;
 import lsieun.net.utils.BlackListUtils;
-import lsieun.utils.ByteUtils;
 import lsieun.utils.PropertyUtils;
+import lsieun.utils.StringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -46,7 +46,7 @@ public class HttpConnection extends Connection {
             current_request = HttpUtils.tryParseRequest(bytes);
         } catch (Exception ex) {
             try {
-                String input_value = ByteUtils.toStr(bytes);
+                String input_value = StringUtils.toStr(bytes);
                 audit.fine(() -> "It seems that data format is not correct: " + input_value);
             } catch (Exception t) {
                 // do nothing
