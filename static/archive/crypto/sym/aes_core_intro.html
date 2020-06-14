@@ -1,0 +1,146 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">AES: (1) Introduction</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Triple-DES is slow</h2>
+
+<p class="indented">
+    3DES works and is secure — that is, brute-force attacks against it are
+    computationally infeasible, and it has withstood decades of cryptanalysis.
+    <sub class="my_note" style="color:blue">笔记：3DES是一个安全的算法。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    However, it’s clearly slower than it needs to be. To triple the key length, you also have to
+    triple the operation time. If DES itself were redesigned from the ground up to
+    accommodate a longer key, processing time could be drastically reduced.
+    <sub class="my_note" style="color:blue">笔记：但是，3DES存在的问题是运行速度慢。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Faster Encryption with the AES Algorithm</h2>
+
+<p class="indented">
+    In 2001, the NIST announced that the <b>Rijndael</b> algorithm
+    (http://csrc.nist.gov/publications/fips/fips197/fips-197.pdf)
+    would become the official
+    replacement for DES and renamed it the <strong>Advanced Encryption Standard</strong>.
+    <sub class="my_note" style="color:blue">笔记：DES算法是在1976年成为NIST的标准，3DES是在1995年提出的，而AES是在2001年成为NIST的标准。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    If you understand the overall workings of DES, AES is easy to follow as well.
+    Like DES, it does a <strong>non-linear s-box translation</strong> of its input, followed by several
+    <strong>permutation- and shift-like operations</strong> over a series of rounds, applying a <strong>key-schedule</strong>
+    to its input at each stage. Just like DES, AES relies heavily on the <strong>XOR
+    operation</strong> — particularly the reversibility of it.
+    <sub class="my_note" style="color:blue">笔记：这里讲DES和AES的相似之处。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    However, it operates on much longer keys; <strong>AES is defined for 128-, 192-, and 256-bit keys.</strong> Note that, assuming
+    that a brute-force attack is the most efficient means of attacking a cipher, 128-bit
+    keys are less secure than 3DES, and 192-bit keys are about the same (although
+    3DES does throw away 24 bits of key security due to the parity check built into
+    DES). 256-bit keys are much more secure. Remember that every extra bit doubles
+    the time that an attacker would have to spend brute-forcing a key.
+    <sub class="my_note" style="color:blue">笔记：所不同的是，DES接受64-bit的key(实际上是56-bit，有8-bit数据被舍弃了)，AES可接受三种不同长度的key，分别是128-bit、192-bit和256-bit。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h3>AES Key Schedule Computation</h3>
+
+<p class="indented">
+    AES operates on 16-byte blocks, regardless of key length.
+    <sub class="my_note" style="color:blue">笔记：AES每一次处理128-bit(16-byte)的input block。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The number of rounds varies depending on key length. If the key is 128 bits (16 bytes) long, the number
+    of rounds is 10; if the key size is 192 bits (24 bytes) long, the number of rounds is
+    12; and if the key size is 256 bits (32 bytes), the number of rounds is 14. In general,
+    <strong>rounds = (key-size in 4-byte words) + 6</strong>.
+    <sub class="my_note" style="color:blue">笔记：由key length计算rounds。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Each round needs 16 bytes of keying material to work with, so the key schedule works out to 160 bytes (10 rounds
+    * 16 bytes per round) for a 128-bit key; 192 bytes (12 * 16) for a 192-bit key; and
+    224 bytes (14 * 16) for a 256-bit key. (Actually there’s <strong>one extra key permutation</strong> at
+    the very end, so <strong>AES requires 176, 208, and 240 bytes of keying material</strong>).
+    <sub class="my_note" style="color:blue">笔记：由rounds计算key material。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Besides <strong>the number of rounds</strong>, <strong>the key permutation</strong> is the only difference between the three algorithms.
+    <sub class="my_note" style="color:blue">笔记：AES-128、AES-192和AES-256三者之间的区别就是，rounds和key material的生成方式。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        AES支持三种不同长度的key，即分别是128-bit(16-byte)、192-bit(24-byte)和256-bit(32-byte)。由key length决定了rounds，由rounds决定了key material：
+        Key Length --&gt; Rounds --> Key Material。<br/><br/>
+        input_block = 16<br/>
+        key_length = 16/24/32<br/>
+        rounds = (key_length / 4) + 6<br/>
+        key_material_length = (rounds+1) * input_block;
+    </p>
+</div>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <tr class="w3-green">
+        <th>Algorithm</th>
+        <th>Key Length</th>
+        <th>Rounds</th>
+        <th>Input Block (byte)</th>
+        <th>Key Material (byte)</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>AES-128</td>
+        <td>128-bit(16-byte)</td>
+        <td>10</td>
+        <td>16</td>
+        <td>176</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>AES-192</td>
+        <td>192-bit(24-byte)</td>
+        <td>12</td>
+        <td>16</td>
+        <td>208</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>AES-256</td>
+        <td>256-bit(32-byte)</td>
+        <td>14</td>
+        <td>16</td>
+        <td>240</td>
+    </tr>
+</table>
+
+<p class="indented">
+    For a 128-bit(16-byte) key, the AES key schedule computation needs to produce
+    176 bytes of output. The first 16 bytes are the key itself; the remaining 160 bytes
+    are computed four at a time. Each four bytes are a permutation of the previous
+    four bytes.
+</p>
+
+<p class="indented">
+    This is repeated 44, 52 or 60 times (rounds+1) * 4 to produce as much keying
+    material as needed — 16 bytes per round, plus one extra chunk of 16 bytes.
+</p>
+
+<h3>AES Encryption</h3>
+<h3>AES Decryption</h3>

@@ -229,7 +229,7 @@ const annotation_end_tag = '</span>';
 function get_annotation_stop(src_text, start) {
     for (let i = start; i < src_text.length; i++) {
         let ch = src_text.charAt(i + 1);
-        if (ch === '(') {
+        if (ch === '(' || ch === '\n') {
             return i;
         }
     }
@@ -250,7 +250,7 @@ function process_annotation(token) {
 }
 
 const separators = [
-    '+', '-', '*', '/', // 加减乘除
+    '+', '-', '*', '/', '=', // 加减乘除
     '{', '}', '[', ']', '(', ')', '<', '>', // 括号
     '`', '~', '!', '@', '#', '$', '%', '^', '&', '_', // 数字键上的符号
     '"', "'", ',', '.', ':', ';', '?', // 标点符号
@@ -263,19 +263,24 @@ const w3_panel_end_tag = '</div>';
 const title_start_tag = '<p onclick="$(this).next().toggle()">';
 const title_end_tag = '</p>';
 
-const w3_code_start_tag = '<div class="w3-code notranslate" style="display: none;">';
+const w3_code_start_show_tag = '<div class="w3-code notranslate" style="display: block;">';
+const w3_code_start_hide_tag = '<div class="w3-code notranslate" style="display: none;">';
 const w3_code_end_tag = '</div>';
 
 const pre_start_tag = '<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:\'Courier New\', Courier, monospace; overflow: auto;">';
 const pre_end_tag = '</pre>';
 
-function toCode(src_text, title, keywords) {
+function toCode(src_text, title, keywords, display) {
     let result = "";
     let token = "";
 
     result += w3_panel_start_tag;
     result += title_start_tag + title + title_end_tag;
-    result += w3_code_start_tag;
+    if (display) {
+        result += w3_code_start_show_tag;
+    } else {
+        result += w3_code_start_hide_tag;
+    }
     result += pre_start_tag;
 
     for (let i = 0; i < src_text.length; i++) {
@@ -347,18 +352,25 @@ function toCode(src_text, title, keywords) {
     $.fn.autoCode = function () {
         return this.each(function () {
             let title = $(this).attr("title");
-            if (title == undefined || title == null) {
+            if (title == undefined || title == null || title === "") {
                 title = "Source Code";
             }
+
+            let display = true;
+            let hidden = $(this).attr("hidden");
+            if (hidden !== undefined && hidden == "hidden") {
+                display = false;
+            }
+            console.log("display: " + display);
+
             let src_text = $(this).text();
             let content = "";
             if ($(this).hasClass("javacode")) {
-                content = toCode(src_text, title, java_keywords);
+                content = toCode(src_text, title, java_keywords, display);
             } else if ($(this).hasClass("jscode")) {
-                content = toCode(src_text, title, javascript_keywords);
-            }
-            else {
-                content = toCode(src_text, title, []);
+                content = toCode(src_text, title, javascript_keywords, display);
+            } else {
+                content = toCode(src_text, title, [], display);
             }
 
 

@@ -1,5 +1,6 @@
 package lsieun.crypto.des;
 
+import lsieun.crypto.utils.CipherType;
 import lsieun.crypto.utils.ByteUtils;
 
 import java.util.Arrays;

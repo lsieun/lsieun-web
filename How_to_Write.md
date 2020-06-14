@@ -58,6 +58,11 @@ function toggle_all_sub_note() {
 图片居中显示
 
 ```html
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/crypto/aes/aes_rotation.png" alt="Rotation"/>
+    <div class="w3-display-bottomright w3-container"><p>Bottom Right</p></div>
+</div>
+
 <img class="w3-image" src="/images/mountains.jpg" alt="the Statue of Liberty" onclick="display_img(this)"/>
 
 <img class="w3-image" src="/images/mountains.jpg" alt="the Statue of Liberty"/>

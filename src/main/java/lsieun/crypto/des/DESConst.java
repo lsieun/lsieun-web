@@ -7,7 +7,7 @@ public class DESConst {
     /**
      * Initial Permutation
      */
-    public static final int ip_table[] = {
+    public static final int[] ip_table = {
             58, 50, 42, 34, 26, 18, 10, 2,
             60, 52, 44, 36, 28, 20, 12, 4,
             62, 54, 46, 38, 30, 22, 14, 6,
@@ -21,7 +21,7 @@ public class DESConst {
      * Final Permutation.
      * This just inverts ip_table.
      */
-    public static final int fp_table[] = {
+    public static final int[] fp_table = {
             40,8,48,16,56,24,64,32,
             39,7,47,15,55,23,63,31,
             38,6,46,14,54,22,62,30,
@@ -36,7 +36,7 @@ public class DESConst {
     /**
      * Permuted choice 1 (PC-1)
      */
-    public static final int pc1_table[] = {
+    public static final int[] pc1_table = {
             57, 49, 41, 33, 25, 17,  9, 1,
             58, 50, 42, 34, 26, 18, 10, 2,
             59, 51, 43, 35, 27, 19, 11, 3,
@@ -49,7 +49,7 @@ public class DESConst {
     /**
      * Permuted choice 2 (PC-2)
      */
-    public static final int pc2_table[] = {
+    public static final int[] pc2_table = {
             14, 17, 11, 24,  1,  5,
             3, 28, 15,  6, 21, 10,
             23, 19, 12,  4, 26,  8,
@@ -64,7 +64,7 @@ public class DESConst {
     /**
      * Expansion permutation
      */
-    public static final int expansion_table[] = {
+    public static final int[] expansion_table = {
             32,  1,  2,  3,  4,  5,
             4,  5,  6,  7,  8,  9,
             8,  9, 10, 11, 12, 13,
@@ -77,7 +77,7 @@ public class DESConst {
     /**
      * S boxes - S1, S2, ..., S8: 8 * 64
      */
-    public static final int[][] sbox=
+    public static final int[][] sbox =
             {
                     {
                             14, 0, 4, 15, 13, 7, 1, 4, 2, 14, 15, 2, 11, 13, 8, 1,

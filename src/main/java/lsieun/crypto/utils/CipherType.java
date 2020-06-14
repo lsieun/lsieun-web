@@ -1,4 +1,4 @@
-package lsieun.crypto.des;
+package lsieun.crypto.utils;
 
 public enum CipherType {
     ENCRYPT,

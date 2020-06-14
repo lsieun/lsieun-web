@@ -111,49 +111,7 @@
     The ⊕ symbol denotes the exclusive-OR (XOR) operation. The F-function scrambles half a block together with some of the key. The output from the F-function is then combined with the other half of the block, and the halves are swapped before the next round. After the final round, the halves are swapped; this is a feature of the Feistel structure which makes encryption and decryption similar processes.
 </p>
 
-<h3>DES Initial Permutation</h3>
 
-<p class="indented">
-    DES specifies that the input should undergo an initial permutation. The purpose
-    of this permutation is unclear, as it serves no cryptographic purpose (the output
-    would be just as secure without this). It may have been added for optimization
-    for certain hardware types. Nevertheless, if you don’t include it, your output
-    will be wrong, and you won’t be able to interoperate with other implementations.
-</p>
-
-<p class="indented">
-    The specification describes this permutation in terms of the input bits
-    and the output bits, but it works out to copying the second bit of the last byte
-    into the first bit of the first byte of the output, followed by the second bit of the
-    next-to-last byte into the second bit of the first byte of the output, and so on, so
-    that the first byte of output consists of the second bits of all of the input bytes,
-    “backward.” (Remember that the input is exactly eight-bytes long, so given an
-    8-bit byte, taking the second bit of each input byte yields one byte of output.)
-</p>
-
-<div class="w3-display-container w3-text-white w3-right-align">
-    <img class="w3-image" src="/images/crypto/des/first_byte_of_output.png" alt="First byte of output"/>
-    <div class="w3-display-bottomright w3-container w3-text-black"><p>First byte of output</p></div>
-</div>
-
-<p>
-    The second byte of the output is the fourth bit of each of the input bytes, again
-    backward.
-</p>
-
-<div class="w3-display-container w3-text-white w3-right-align">
-    <img class="w3-image" src="/images/crypto/des/second_byte_of_output.png" alt="Second byte of output"/>
-    <div class="w3-display-bottomright w3-container w3-text-black"><p>Second byte of output</p></div>
-</div>
-<p>
-    The third is built from the sixth bits, the fourth from the eighth bits,
-    and the fifth comes from the first bits, and so on.
-</p>
-
-<div class="w3-display-container w3-text-white w3-right-align">
-    <img class="w3-image" src="/images/crypto/des/five_permuted_bytes.png" alt="Fifth permuted bytes"/>
-    <div class="w3-display-bottomright w3-container w3-text-black"><p>Fifth byte of output</p></div>
-</div>
 
 
 <h3>The Feistel (F) function</h3>

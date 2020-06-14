@@ -1,0 +1,114 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Padding in Block Cipher Algorithms</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    As we know, DES operates on eight-byte input blocks. If the input is longer
+    than eight bytes, the <code class="w3-codespan">des_block_operate</code> function must be called repeatedly. If the
+    input isn’t aligned on an eight-byte boundary, it has to be padded.
+</p>
+
+<p class="indented">
+    Of course, the padding must follow a specific scheme so that the decryption routine knows
+    what to discard after decryption. If you adopt a convention of padding with 0
+    bytes, the decryptor needs to have some way of determining whether the input
+    actually ended with 0 bytes or whether these were padding bytes.
+</p>
+
+<h2>NIST 800-3A padding</h2>
+
+<p class="indented">
+    National Institute for Standards and Technology (NIST) publication 800-38A
+    (http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf) recommends that
+    a “1” bit be added to the input followed by enough zero-bits to make up eight
+    bytes. Because you’re working with byte arrays that must end on an 8-bit (one-byte) boundary,
+    this means that, if the input block is less than eight bytes, you
+    add the byte 0x80 (128), followed by zero bytes to pad. The decryption routine
+    just starts at the end of the decrypted output, removing zero bytes until 0x80 is
+    encountered, removes that, and returns the result to the caller.
+</p>
+
+<p class="indented">
+    Under this padding scheme, an input of, for example, “abcdef” (six characters)
+    needs to have two bytes added to it. Therefore, “abcdef” would become
+</p>
+
+<div title="padding example" class="plaintext">
+61 62 63 64 65 66 80 00
+ a  b  c  d  e  f
+</div>
+
+<p class="indented">
+    This would be encrypted under DES (using, say, a key of the ASCII string
+    password) to the hex string: <code class="w3-codespan">25 ac 8f c5 c4 2f 89 5d</code>. The decryption routine would
+    then decrypt it to <code class="w3-codespan">a, b, c, d, e, f, 0x80, 0x00</code>, search backward from the end for
+    the first occurrence of <code class="w3-codespan">0x80</code>, and remove everything after it. If the input string
+    happened to actually end with hex byte <code class="w3-codespan">0x80</code>, the decryptor would see <code class="w3-codespan">0x80
+    0x80 0x0 ...</code> and still correctly remove only the padding.
+</p>
+
+<p class="indented">
+    There’s one wrinkle here; if the input <b>did</b> end on an eight-byte boundary that
+    happened to contain 0 bytes following a <code class="w3-codespan">0x80</code>, the decryption routine would
+    remove legitimate input. Therefore, if the input ends on an eight-byte boundary,
+    you have to add a whole block of padding (<code class="w3-codespan">0x80 0x0 0x0 0x0 0x0 0x0 0x0 0x0</code>) so
+    that the decryptor doesn’t accidentally remove something it wasn’t supposed to.
+</p>
+
+<h2>PKCS #5 padding</h2>
+
+<p class="indented">
+    Another approach to padding, called <strong>PKCS #5 padding</strong>, is to append <strong>the
+    number of padding bytes</strong> as <strong>the padding byte</strong>. This way, the decryptor can just
+    look at the last byte of the output and then strip off that number of bytes from
+    the result (with 8 being a legitimate number of bytes to strip off). Using the
+    “abcdef” example again, the padded input now becomes
+</p>
+
+<div title="padding example" class="plaintext">
+61 62 63 64 65 66 02 02
+ a  b  c  d  e  f
+</div>
+
+<p class="indented">
+    Because two bytes of padding are added, the number 2 is added twice. If the
+    input was “abcde,” the padded result is instead.
+</p>
+
+<div title="padding example" class="plaintext">
+61 62 63 64 65 03 03 03
+ a  b  c  d  e
+</div>
+
+<p class="indented">
+    If five bytes of padding are required, the very last byte of the decrypted
+    output is 5.
+</p>
+
+<div title="padding example" class="plaintext">
+61 62 63 05 05 05 05 05
+ a  b  c
+</div>
+
+<h2>PKCS7Padding</h2>
+
+<h2>PKCS5Padding Vs PKCS7Padding</h2>
+
+<p class="indented">
+    The <strong>block size</strong> is a property of the used cipher algorithm. For AES it is always 16 bytes.
+</p>
+
+<p class="indented">
+    So strictly speaking, PKCS5Padding cannot be used with AES since it is defined only for a block size of 8 bytes. I assume, <code class="w3-codespan">AES/CBC/PKCS5Padding</code> is interpreted as <code class="w3-codespan">AES/CBC/PKCS7Padding (128)</code> internally.
+</p>
+
+<p class="indented">
+    The only difference between these padding schemes is that <strong>PKCS7Padding</strong> has the block size as a parameter, while for <strong>PKCS5Padding</strong> it is fixed at 8 bytes. When the Block size is 8 bytes they do exactly the same.
+</p>
+
+

@@ -1,0 +1,121 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Triple-DES: (2) Getting Started</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Source Code</h2>
+
+<div title="TripleDESUtils.java" class="javacode">
+ import java.util.Arrays;
+
+public class TripleDESUtils {
+    public static byte[] des_block_encrypt(byte[] input, byte[] key_192_bit_bytes) {
+        return des_block_operate(input, key_192_bit_bytes, CipherType.ENCRYPT);
+    }
+
+    public static byte[] des_block_decrypt(byte[] input, byte[] key_192_bit_bytes) {
+        return des_block_operate(input, key_192_bit_bytes, CipherType.DECRYPT);
+    }
+
+    public static byte[] des_block_operate(byte[] input_block, byte[] key_192_bit_bytes, CipherType operation) {
+        int block_size = DESConst.DES_BLOCK_SIZE;
+        byte[] key_block_1 = Arrays.copyOfRange(key_192_bit_bytes, 0, block_size);
+        byte[] key_block_2 = Arrays.copyOfRange(key_192_bit_bytes, block_size, 2 * block_size);
+        byte[] key_block_3 = Arrays.copyOfRange(key_192_bit_bytes, 2 * block_size, 3 * block_size);
+
+        byte[] current_input_block = Arrays.copyOf(input_block, block_size);
+
+        byte[] output_block;
+        switch (operation) {
+            case ENCRYPT:
+                output_block = DESUtils.des_block_operate(current_input_block, key_block_1, CipherType.ENCRYPT);
+                output_block = DESUtils.des_block_operate(output_block, key_block_2, CipherType.DECRYPT);
+                output_block = DESUtils.des_block_operate(output_block, key_block_3, CipherType.ENCRYPT);
+                break;
+            case DECRYPT:
+                output_block = DESUtils.des_block_operate(input_block, key_block_3, CipherType.DECRYPT);
+                output_block = DESUtils.des_block_operate(output_block, key_block_2, CipherType.ENCRYPT);
+                output_block = DESUtils.des_block_operate(output_block, key_block_1, CipherType.DECRYPT);
+                break;
+            default:
+                throw new RuntimeException("Illegal operation: " + operation);
+        }
+
+        return output_block;
+    }
+}
+</div>
+
+<h2>Test</h2>
+
+<h3>Sample Data</h3>
+
+<div title="TripleDESSample.java" class="javacode">
+import java.nio.charset.StandardCharsets;
+
+public class TripleDESSample {
+    public static final byte[] input = "abcdefgh".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] key = "twentyfourcharacterinput".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] iv = "initialz".getBytes(StandardCharsets.UTF_8);
+
+    public static final byte[] output_cbc = {
+            (byte)0xc0, (byte)0xc4, (byte)0x8b, (byte)0xc4,
+            (byte)0x7e, (byte)0x87, (byte)0xce, (byte)0x17
+    };
+
+    public static final byte[] output_cbc_pkcs5padding = {
+            (byte)0xc0, (byte)0xc4, (byte)0x8b, (byte)0xc4,
+            (byte)0x7e, (byte)0x87, (byte)0xce, (byte)0x17,
+            (byte)0xb0, (byte)0xa2, (byte)0xb2, (byte)0xb5,
+            (byte)0x40, (byte)0x12, (byte)0xe8, (byte)0xd5
+    };
+}
+</div>
+
+<hr/>
+
+<h3>Test Code</h3>
+
+<div title="TripleDESTest_CBC.java" class="javacode">
+import java.util.Arrays;
+
+public class TripleDESTest_CBC {
+    public static final String FORMAT = "%15s: %s";
+
+    public static void main(String[] args) {
+        byte[] input = TripleDESSample.input;
+        byte[] key = TripleDESSample.key;
+        byte[] iv = TripleDESSample.iv;
+        byte[] output = TripleDESSample.output_cbc;
+
+        int block_size = DESConst.DES_BLOCK_SIZE;
+        byte[] encrypted_bytes = CBCUtils.cbc_encrypt(input, key, iv, block_size, TripleDESUtils::des_block_encrypt);
+        byte[] decrypted_bytes = CBCUtils.cbc_decrypt(encrypted_bytes, key, iv, block_size, TripleDESUtils::des_block_decrypt);
+
+        System.out.println(Arrays.equals(output, encrypted_bytes));
+        System.out.println(String.format(FORMAT, "original bytes", ByteUtils.toHex(input)));
+        System.out.println(String.format(FORMAT, "encrypted bytes", ByteUtils.toHex(encrypted_bytes)));
+        System.out.println(String.format(FORMAT, "decrypted bytes", ByteUtils.toHex(decrypted_bytes)));
+
+    }
+}
+</div>
+
+<div title="Run Output" class="plaintext">
+true
+ original bytes: 6162636465666768
+encrypted bytes: C0C48BC47E87CE17
+decrypted bytes: 6162636465666768
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a href="/archive/crypto/byte_utils.html" target="_blank">ByteUtils.java</a></li>
+    <li><a href="/archive/crypto/sym/des_core_getting_started.html" target="_blank">DESUtils.java</a></li>
+    <li><a href="/archive/crypto/sym/cbc_utils.html" target="_blank">CBCUtils.java</a></li>
+</ul>

@@ -26,21 +26,28 @@
 
             let first_index = 0;
             let second_index = 0;
+            let third_index = 0;
 
-            $("article h2,h3").each(function () {
+            $("article h2,h3,h4").each(function () {
                 let h = $(this);
                 let text = h.text();
 
                 if (h.is("h2")) {
                     first_index += 1;
                     second_index = 0;
+                    third_index = 0;
                     text = first_index + ". " + text;
                 } else if (h.is("h3")) {
                     second_index += 1;
+                    third_index = 0;
                     text = first_index + "." + second_index + " " + text;
                 }
+                else if (h.is("h4")) {
+                    third_index += 1;
+                    text = first_index + "." + second_index + "." + third_index + " " + text;
+                }
 
-                let anchor = "mark_" + first_index + "_" + second_index;
+                let anchor = "mark_" + first_index + "_" + second_index + "_" + third_index;
                 h.text(text);
                 h.attr("id", anchor);
 
@@ -50,6 +57,9 @@
 
                 if (h.is("h3")) {
                     $li.css("margin-left", "2em");
+                }
+                else if (h.is("h4")) {
+                    $li.css("margin-left", "4em");
                 }
 
                 $ul.append($li);

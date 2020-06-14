@@ -7,7 +7,7 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<p>
+<p class="indented">
     Encryption refers to the practice of scrambling<sub class="my_note" style="color:green">扰码，倒频（改变电话或无线电信号，听众只有通过专门设备才能收听）to change the way that a telephone or radio message sounds so that only people with special equipment can understand it</sub> a message such that it can only
     be read (descrambled) by the intended recipient. To make this possible, you must
     scramble the message in <strong>a reversible way</strong><sub class="my_note" style="color:red">笔记：我觉得，这里指出了对称加密的本质，其本质就是“加密过程”必须“可逆”，这样才能“解密”。</sub>, but in such a way that only somebody
@@ -18,7 +18,7 @@
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<p>
+<p class="indented">
     When computers are used for cryptography, <strong>messages</strong> and <strong>keys</strong> are actually
     numbers. The <strong>messages</strong> is converted to (or at least treated as) a number, which is
     numerically combined with the <strong>keys</strong> (also a number) in a specified way according to a cryptographic algorithm.
@@ -26,12 +26,12 @@
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<p>
+<p class="indented">
     There are two very broad categories of cryptographic algorithms — <strong>symmetric</strong>
     and <strong>public</strong>. The difference between the two is in <strong>key management:</strong>
 </p>
 
-<p>
+<p class="indented">
     With <strong>symmetric cryptography algorithms</strong>, the same key is used both for
     encryption and decryption. In some cases, the algorithm is different, with
     decryption “undoing” what encryption did. In other cases, the algorithm is
@@ -45,7 +45,7 @@
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<p>
+<p class="indented">
     Julius Caesar is credited with perhaps the oldest known symmetric cipher algorithm.
     The so-called <strong>Caesar cipher</strong><sub class="my_note" style="color:green">笔记：最早的加密，要追溯到凯撒密码。</sub> — a variant of which you can probably find
     as a diversion in your local newspaper — assigns each letter, at random, to a
@@ -63,9 +63,11 @@
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<p>
+<p class="indented">
     Changes in cryptographic standards come very slowly, and only
     after much analysis by cryptographers and cryptanalysts.
+    <sub class="my_note" style="color:blue">笔记：算法的更新很慢。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
 <table class="w3-table-all w3-hoverable">
@@ -80,26 +82,34 @@
     </tr>
     </thead>
     <tbody>
-    <tr>
+    <tr class="w3-hover-blue">
         <td>DES</td>
         <td>arbitrary</td>
         <td>64-bit (8-byte)</td>
         <td>64-bit (8-byte)</td>
         <td>16</td>
     </tr>
-    <tr>
+    <tr class="w3-hover-blue">
         <td>Triple-DES</td>
         <td>arbitrary</td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td>64-bit (8-byte)</td>
+        <td>192-bit (24-byte)</td>
+        <td>16</td>
     </tr>
-    <tr>
+    <tr class="w3-hover-blue">
         <td>AES</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td>arbitrary</td>
+        <td>128-bit (16-byte)</td>
+        <td>
+            128-bit (16-byte)<br/>
+            192-bit (24-byte)<br/>
+            256-bit (32-byte)
+        </td>
+        <td>
+            10<br/>
+            12<br/>
+            14
+        </td>
     </tr>
     </tbody>
 </table>

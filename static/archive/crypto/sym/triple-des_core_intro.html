@@ -1,0 +1,96 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Triple-DES: (1) Introduction</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>DES is obsolete</h2>
+
+<p class="indented">
+    DES is secure. After forty years of cryptanalysis, no feasible attack has been
+    demonstrated; if anybody has cracked it, they’ve kept it a secret.
+    <sub class="my_note" style="color:blue">笔记：这里要明确区分三个概念，输入数据（input）、key和DES算法。这段的重点是说，DES算法本身是安全的，不安全的地方在key的长度比较短，只有56-bit数据。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Unfortunately, the 56-bit key length is built into the algorithm. Increasing the key length requires
+    redesigning the algorithm completely because the s-boxes and the permutations
+    are specific to a 64-bit input. 56 bits is not very many, these days. 2<sup>56</sup> possible
+    keys means that the most naive brute-force attack would need to try, on the
+    average, 2<sup>55</sup> (2<sup>56</sup> / 2), or 36,028,797,018,963,968 (about 36,000 trillion operations)
+    before it hit the right combination. This is not infeasible.
+    <sub class="my_note" style="color:blue">笔记：56-bit的key数据，在当代硬件运行速度的基础上，已经不够安全了。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    In fact, optimized, parallelized hardware has been shown to be capable of
+    cracking a DES key by brute force in just a few days. The hardware is not cheap,
+    but if the value of the data is greater than the cost of the specialized hardware,
+    alternative encryption should be considered.
+    <sub class="my_note" style="color:blue">笔记：如果数据的价值很大，就有破解的必要。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<hr/>
+
+<h2>Triple DES</h2>
+
+<p class="indented">
+    The proposed solution to increase the keyspace beyond what can feasibly be
+    brute-forced is called <strong>triple DES</strong> or <strong>3DES</strong>.
+    <sub class="my_note" style="color:blue">笔记：这里介绍了一种增加keyspace的方法就是使用Triple DES。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    3DES has a 168-bit (56 * 3) key. It’s called triple-DES because it splits
+    the 168-bit key into three 56-bit keys and repeats the DES
+    rounds three times, once with each key.
+    <sub class="my_note" style="color:blue">笔记：3DES使用168-bit的key数据，需要调用DES算法3次。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The clearest and most
+    secure way to generate the three keys that 3DES requires is to just generate 168
+    bits,<sub class="my_note" style="color:green">笔记：第一种方式</sub> split them cleanly into three 56-bit chunks, and use each independently. The
+    3DES specification actually allows the same 56-bit key to be used three times,<sub class="my_note" style="color:green">笔记：第二种方式</sub> or
+    to use a 112-bit key,<sub class="my_note" style="color:green">笔记：第三种方式</sub> split it into two, and reuse one of the two keys for one of the
+    three rounds. Presumably this is allowed for backward-compatibility reasons
+    (for example, if you have an existing DES key that you would like to or need to
+    reuse as is), but you can just assume the simplest case where you have 168 bits
+    to play with.
+    <sub class="my_note" style="color:blue">笔记：这里讲述了168-bit的key的3种生成方式。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    One important wrinkle<sub class="my_note" style="color:green">小问题 a small problem</sub> in the 3DES implementation is that you don’t encrypt
+    three times with the three keys. Instead you <b>encrypt with one key</b>, <b>decrypt that
+    with a different key</b> — remember that decrypting with a mismatched key produces garbage,
+    but reversible garbage, which is exactly what you want when
+    doing cryptographic work — and finally <b>encrypt that with yet a third key</b>.
+    Decryption, of course, is the opposite — <b>decrypt with the third key</b>, <b>encrypt
+    that with the second</b>, and finally <b>decrypt that with the first</b>. Notice that you
+    reverse the order of the keys when decrypting; this is important!
+    The Encrypt/Decrypt/Encrypt procedure makes cryptanalysis more difficult.
+    <sub class="my_note" style="color:blue">笔记：这里讲述了168-bit的key，在加密和解密的过程中，到底要如何使用它。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>Note that the “use the same key three times” option mentioned earlier is essentially useless.
+        You encrypt with a key, decrypt with the same key, and re-encrypt again with
+        the same key to produce the exact same results as encrypting one time.</p>
+</div>
+
+<p class="indented">
+    Padding and cipher-block-chaining do not change at all. 3DES works with
+    eight-byte blocks, and you need to take care with initialization vectors to ensure
+    that the same eight-byte block encrypted twice with the same key appears different in the output.
+</p>

@@ -39,6 +39,14 @@
 
 <img class="w3-image" src="/images/crypto/sym/cbc_mode.png" alt="Cipher Block Chaining"/>
 
+<p class="indented">
+    This initialization vector doesn’t necessarily have to be strongly protected or strongly
+    randomly generated. It just has to be different every time so that encrypting a
+    certain string with a certain password produces different output every time.
+    <sub class="my_note" style="color:blue">笔记：initialization vector对“安全性”的要求并不是很高，它更注重“每一次都使用不同的值”。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
 <hr/>
 
 <h2>Cipher Feedback (CFB) Mode</h2>

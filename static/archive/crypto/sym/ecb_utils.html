@@ -1,0 +1,49 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ECBUtils.java</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>ECBUtils.java</h2>
+
+<div title="ECBUtils.java" class="javacode">
+public class ECBUtils {
+    public static byte[] ecb_encrypt(byte[] input, byte[] key, int block_size, BlockOperation block_encrypt_algorithm) {
+        return ecb_operate(input, key, block_size, block_encrypt_algorithm);
+    }
+
+    public static byte[] ecb_decrypt(byte[] input, byte[] key, int block_size, BlockOperation block_decrypt_algorithm) {
+        return ecb_operate(input, key, block_size, block_decrypt_algorithm);
+    }
+
+    public static byte[] ecb_operate(byte[] input, byte[] key, int block_size, BlockOperation block_algorithm) {
+        int input_length = input.length;
+        if (input_length % block_size != 0) {
+            throw new IllegalArgumentException("input's length is not valid");
+        }
+
+        byte[] output = new byte[input_length];
+        byte[] input_block = new byte[block_size];
+        int times = input_length / block_size;
+        for (int i = 0; i < times; i++) {
+            System.arraycopy(input, i * block_size, input_block, 0, block_size);
+            byte[] encrypted_bytes = block_algorithm.block_operate(input_block, key);
+            System.arraycopy(encrypted_bytes, 0, output, i * block_size, block_size);
+        }
+        return output;
+    }
+}
+</div>
+
+<hr/>
+
+<h2>References</h2>
+
+<p>对比</p>
+
+<ul>
+    <li><a href="/archive/crypto/sym/cbc_utils.html" target="_blank">CBCUtils.java</a></li>
+</ul>

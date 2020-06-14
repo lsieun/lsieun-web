@@ -1,0 +1,363 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">DES Core: (3) Details</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Overview</h2>
+
+<img class="w3-image" src="/images/crypto/des/des_overview_1.png" alt="DES overview"/>
+<img class="w3-image" src="/images/crypto/des/des_overview_2.png" alt="DES overview"/>
+
+<hr/>
+
+<h2>Key Schedule</h2>
+
+<p class="indented">
+    If you look at the diagram, you see that the subkeys are shown as K1, K2, K3, ... K15, K16. As it turns out, there are
+    16 different 48-bit keys, which are generated deterministically from the initial 64-bit key input.
+</p>
+
+<h3>PC-1: key from 64-bit to 56-bit</h3>
+
+<p class="indented">
+    The 64-bit initial key undergoes an permutation: the first byte of the output is equal to the first bits of each input byte (backward); the second
+    byte is equal to the second bit of each input byte; and so on.
+    However, the 56-bit key itself is specified as two 28-bit halves — the second half works backward
+    through the input bytes so that the first byte of the second half is the seventh
+    bit of each input byte; the second byte is the sixth bit; and so on. Also, because
+    the key halves are 28 bits each, there are only three and a half bytes; the last
+    half byte follows the pattern but stops after four bits.
+</p>
+
+<div class="w3-panel w3-pale-red w3-leftbar w3-rightbar w3-border-red">
+    <p>TODO： 上面的这段话，如果用图来表示就更形象了。</p>
+</div>
+
+
+
+<div title="pc1_table" class="javacode">
+/**
+ * Permuted choice 1 (PC-1)
+ */
+public static final int[] pc1_table = {
+    57, 49, 41, 33, 25, 17,  9, 1,
+    58, 50, 42, 34, 26, 18, 10, 2,
+    59, 51, 43, 35, 27, 19, 11, 3,
+    60, 52, 44, 36,
+    63, 55, 47, 39, 31, 23, 15, 7,
+    62, 54, 46, 38, 30, 22, 14, 6,
+    61, 53, 45, 37, 29, 21, 13, 5,
+    28, 20, 12, 4};
+</div>
+
+<p class="indented">
+    If you look carefully at this table, you see that bits 8, 16, 24, 32, 40, 48, 56, and
+    64 — the LSBs of each input byte — never appear. Early DES implementations
+    used more fault-prone hardware than you are probably used to — the LSBs of
+    the keys were used as <strong>parity bits</strong> to ensure that the key was transmitted correctly.
+    Strictly speaking, you should ensure that the LSB of each byte is the sum
+    (modulo 2) of the other seven bits. Most implementers don’t bother, as you can
+    probably trust your hardware to hang on to the key you loaded into it correctly.
+</p>
+
+<p class="indented">
+    Although the key input is 8 bytes (64 bits), the output of two 28-bit halves is only 56 bits.
+    Eight of the key bits (the least-significant-bit of each input byte) are discarded
+    and not used by DES.
+    <sub class="my_note" style="color:blue">笔记：这样也导致一个问题，如果key1和key2在只在最后1-bit不同的话，那么由key1加密的数据，可以由key2进行解密。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="Problems_With_56bit_Key.java" class="javacode">
+public class Problems_With_56bit_Key {
+    public static void main(String[] args) {
+        byte[] msg_64_bit_bytes = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+
+        // 两个密码的最后1-bit数据不同
+        byte[] key_64_bit_bytes1 = {'p', 'a', 's', 's', 'w', 'o', 'r', 'd'};
+        byte[] key_64_bit_bytes2 = {'q', '`', 'r', 'r', 'v', 'n', 's', 'e'};
+
+        // 注意：使用key1进行加密，使用了key2进行解密
+        byte[] encrypted_bytes = DESUtils.des_block_operate(msg_64_bit_bytes, key_64_bit_bytes1, CipherType.ENCRYPT);
+        byte[] decrypted_bytes = DESUtils.des_block_operate(encrypted_bytes, key_64_bit_bytes2, CipherType.DECRYPT);
+
+        // 验证：由key1加密的数据，可以由key2进行解密
+        System.out.println("          message: " + ByteUtils.toHex(msg_64_bit_bytes));
+        System.out.println("             key1: " + ByteUtils.toHex(key_64_bit_bytes1));
+        System.out.println("             key2: " + ByteUtils.toHex(key_64_bit_bytes2));
+        System.out.println("encrypted message: " + ByteUtils.toHex(encrypted_bytes));
+        System.out.println("decrypted message: " + ByteUtils.toHex(decrypted_bytes));
+
+    }
+}
+</div>
+
+<div title="Run Output" class="plaintext">
+          message: 6162636465666768
+             key1: 70617373776F7264 // key1和key2只是在最后1-bit不同
+             key2: 71607272766E7365
+encrypted message: EA85650AD8EB6C08
+decrypted message: 6162636465666768
+</div>
+
+<h3>56-bit key rotation</h3>
+
+<h4>Encryption: rotate left</h4>
+
+<p class="indented">
+    At each round, each of the two 28-bit halves of this 56-bit key are rotated left
+    once or twice — once in rounds 1, 2, 9, and 16, twice otherwise.
+</p>
+
+<p class="indented">
+    Perform the left rotation operation on the key. This is made fairly
+    complex by the fact that the key is split into two 28-bit halves, each
+    of which has to be rotated independently (so the second rotation operation
+    starts in the middle of byte 3).
+</p>
+
+<h4>Decryption: rotate right</h4>
+
+<p class="indented">
+    One of the nice things about the way DES was specified is that decryption
+    is the exact same as encryption, except that the <strong>key schedule</strong> is inverted.
+    Instead of the original key being rotated left at each round, it’s rotated right.
+    Otherwise, the routines are identical.
+</p>
+
+<h3>PC-2: key from 56-bit to 48-bit</h3>
+
+<p class="indented">
+    These rotated halves are then permuted (surprise) according to the second permutation table.
+</p>
+
+<div title="pc2_table" class="javacode">
+/**
+ * Permuted choice 2 (PC-2)
+ */
+public static final int[] pc2_table = {
+    14, 17, 11, 24,  1,  5,
+     3, 28, 15,  6, 21, 10,
+    23, 19, 12,  4, 26,  8,
+    16,  7, 27, 20, 13,  2,
+    41, 52, 31, 37, 47, 55,
+    30, 40, 51, 45, 33, 48,
+    44, 49, 39, 56, 34, 53,
+    46, 42, 50, 36, 29, 32};
+</div>
+
+<p class="indented">
+    This produces a 48-bit subkey from the 56-bit (rotated) key. Due to the rotation,
+    this means that each round has a unique key K1, K2, K3, ..., K15, K16. These
+    subkeys are referred to as the <strong>key schedule</strong>.
+</p>
+
+<p class="indented">
+    Notice that the <strong>key schedule</strong> is independent of the encryption operations and
+    can be precomputed and stored before encryption or decryption even begins.
+    Most DES implementations do this as a performance optimization.
+</p>
+
+<h2>Encryption/Decryption Operation</h2>
+
+<h3>DES Initial Permutation</h3>
+
+<p class="indented">
+    DES specifies that the input should undergo an initial permutation. The purpose
+    of this permutation is unclear, as it serves no cryptographic purpose (the output
+    would be just as secure without this). It may have been added for optimization
+    for certain hardware types. Nevertheless, if you don’t include it, your output
+    will be wrong, and you won’t be able to interoperate with other implementations.
+</p>
+
+<p class="indented">
+    The specification describes this permutation in terms of the input bits
+    and the output bits, but it works out to copying the second bit of the last byte
+    into the first bit of the first byte of the output, followed by the second bit of the
+    next-to-last byte into the second bit of the first byte of the output, and so on, so
+    that the first byte of output consists of the second bits of all of the input bytes,
+    “backward.” (Remember that the input is exactly eight-bytes long, so given an
+    8-bit byte, taking the second bit of each input byte yields one byte of output.)
+</p>
+
+<div class="w3-display-container w3-text-white w3-right-align">
+    <img class="w3-image" src="/images/crypto/des/first_byte_of_output.png" alt="First byte of output"/>
+    <div class="w3-display-bottomright w3-container w3-text-black"><p>First byte of output</p></div>
+</div>
+
+<p>
+    The second byte of the output is the fourth bit of each of the input bytes, again
+    backward.
+</p>
+
+<div class="w3-display-container w3-text-white w3-right-align">
+    <img class="w3-image" src="/images/crypto/des/second_byte_of_output.png" alt="Second byte of output"/>
+    <div class="w3-display-bottomright w3-container w3-text-black"><p>Second byte of output</p></div>
+</div>
+
+<p>
+    The third is built from the sixth bits, the fourth from the eighth bits,
+    and the fifth comes from the first bits, and so on.
+</p>
+
+<div class="w3-display-container w3-text-white w3-right-align">
+    <img class="w3-image" src="/images/crypto/des/five_permuted_bytes.png" alt="Fifth permuted bytes"/>
+    <div class="w3-display-bottomright w3-container w3-text-black"><p>Fifth byte of output</p></div>
+</div>
+
+<hr/>
+
+<h3>DES Feistel Function</h3>
+
+<h4>DES Expansion</h4>
+
+<p class="indented">
+    Notice in the previous section that the subkeys are 48-bits long, but the input
+    halves that are to be XORed are 32 bits long. Now, you can’t properly XOR
+    a 32-bit input with a 48-bit key, so the input is expanded — some bits are
+    duplicated — before being XORed. The output of the expansion function is
+    illustrated in the following figure.
+</p>
+
+<img class="w3-image" src="/images/crypto/des/des_expansion_function.png" alt="DES expansion function"/>
+
+<div title="expansion_table" class="javacode">
+/**
+ * Expansion permutation
+ */
+public static final int[] expansion_table = {
+    32,  1,  2,  3,  4,  5,
+     4,  5,  6,  7,  8,  9,
+     8,  9, 10, 11, 12, 13,
+    12, 13, 14, 15, 16, 17,
+    16, 17, 18, 19, 20, 21,
+    20, 21, 22, 23, 24, 25,
+    24, 25, 26, 27, 28, 29,
+    28, 29, 30, 31, 32, 1};
+</div>
+
+<h4>DES Substitution</h4>
+
+<p class="indented">
+    After this has been XORed with the correct subkey for this round, it is fed
+    into the s-box lookup. The s-boxes are what makes DES secure. It’s important
+    that the output not be a linear function of the input; if it was, a simple statistical
+    analysis would reveal the key. An attacker knows, for example, that the letter
+    “E” is the most common letter in the English language — if he knew that the
+    plaintext was ASCII-encoded English, he could look for the most frequently
+    occurring byte of output, assume that was an “E”, and work backward from
+    there (actually, in ASCII-encoded English text, the space character 32 is more
+    common than the “E”). If he was wrong, he could find the second-most occurring
+    character, and try again. This sort of cryptanalysis has been perfected to
+    the point where it can be performed by a computer in seconds. <strong>Therefore, the
+    s-boxes are not permutations, rotations or XORs but are lookups into a set of
+    completely random tables.</strong>
+</p>
+
+<p class="indented">
+    Each six-bits of the input — the expanded right-half XORed with the subkey — correspond
+    to four bits of table output. In other words, each six bits of input
+    is used as an index into a table of four-bit outputs. In this way, the expanded,
+    XORed right half is reduced from 48-bits to 32. The s-boxes are described in a
+    particularly confusing way by the DES specification. Instead, I present them
+    here as simple lookup tables. Note that each six-bit block has its own unique s-box.
+</p>
+
+<div title="sbox" class="javacode">
+/**
+ * S boxes - S1, S2, ..., S8: 8 * 64
+ */
+public static final int[][] sbox =
+    {
+        {
+            14, 0, 4, 15, 13, 7, 1, 4, 2, 14, 15, 2, 11, 13, 8, 1,
+            3, 10, 10, 6, 6, 12, 12, 11, 5, 9, 9, 5, 0, 3, 7, 8,
+            4, 15, 1, 12, 14, 8, 8, 2, 13, 4, 6, 9, 2, 1, 11, 7,
+            15, 5, 12, 11, 9, 3, 7, 14, 3, 10, 10, 0, 5, 6, 0, 13
+        },
+        {
+            15, 3, 1, 13, 8, 4, 14, 7, 6, 15, 11, 2, 3, 8, 4, 14,
+            9, 12, 7, 0, 2, 1, 13, 10, 12, 6, 0, 9, 5, 11, 10, 5,
+            0, 13, 14, 8, 7, 10, 11, 1, 10, 3, 4, 15, 13, 4, 1, 2,
+            5, 11, 8, 6, 12, 7, 6, 12, 9, 0, 3, 5, 2, 14, 15, 9
+        },
+        {
+            10, 13, 0, 7, 9, 0, 14, 9, 6, 3, 3, 4, 15, 6, 5, 10,
+            1, 2, 13, 8, 12, 5, 7, 14, 11, 12, 4, 11, 2, 15, 8, 1,
+            13, 1, 6, 10, 4, 13, 9, 0, 8, 6, 15, 9, 3, 8, 0, 7,
+            11, 4, 1, 15, 2, 14, 12, 3, 5, 11, 10, 5, 14, 2, 7, 12
+        },
+        {
+            7, 13, 13, 8, 14, 11, 3, 5, 0, 6, 6, 15, 9, 0, 10, 3,
+            1, 4, 2, 7, 8, 2, 5, 12, 11, 1, 12, 10, 4, 14, 15, 9,
+            10, 3, 6, 15, 9, 0, 0, 6, 12, 10, 11, 1, 7, 13, 13, 8,
+            15, 9, 1, 4, 3, 5, 14, 11, 5, 12, 2, 7, 8, 2, 4, 14
+        },
+        {
+            2, 14, 12, 11, 4, 2, 1, 12, 7, 4, 10, 7, 11, 13, 6, 1,
+            8, 5, 5, 0, 3, 15, 15, 10, 13, 3, 0, 9, 14, 8, 9, 6,
+            4, 11, 2, 8, 1, 12, 11, 7, 10, 1, 13, 14, 7, 2, 8, 13,
+            15, 6, 9, 15, 12, 0, 5, 9, 6, 10, 3, 4, 0, 5, 14, 3
+        },
+        {
+            12, 10, 1, 15, 10, 4, 15, 2, 9, 7, 2, 12, 6, 9, 8, 5,
+            0, 6, 13, 1, 3, 13, 4, 14, 14, 0, 7, 11, 5, 3, 11, 8,
+            9, 4, 14, 3, 15, 2, 5, 12, 2, 9, 8, 5, 12, 15, 3, 10,
+            7, 11, 0, 14, 4, 1, 10, 7, 1, 6, 13, 0, 11, 8, 6, 13
+        },
+        {
+            4, 13, 11, 0, 2, 11, 14, 7, 15, 4, 0, 9, 8, 1, 13, 10,
+            3, 14, 12, 3, 9, 5, 7, 12, 5, 2, 10, 15, 6, 8, 1, 6,
+            1, 6, 4, 11, 11, 13, 13, 8, 12, 1, 3, 4, 7, 10, 14, 7,
+            10, 9, 15, 5, 6, 0, 8, 15, 0, 14, 5, 2, 9, 3, 2, 12
+        },
+        {
+            13, 1, 2, 15, 8, 13, 4, 8, 6, 10, 15, 3, 11, 7, 1, 4,
+            10, 12, 9, 5, 3, 6, 14, 11, 5, 0, 0, 14, 12, 9, 7, 2,
+            7, 2, 11, 1, 4, 14, 1, 7, 9, 4, 12, 10, 14, 8, 2, 13,
+            0, 15, 6, 12, 10, 9, 13, 0, 15, 3, 3, 5, 5, 6, 8, 11
+        }
+    };
+</div>
+
+<hr/>
+
+<h4>DES Round Permutation</h4>
+
+<p>
+    After substitution, the input block undergoes a another permutation.
+</p>
+
+<div title="p_table" class="javacode">
+/**
+ * Round permutation: 4 * 8
+ */
+public static final int p_table[] = {
+    16,  7, 20, 21,
+    29, 12, 28, 17,
+     1, 15, 23, 26,
+     5, 18, 31, 10,
+     2,  8, 24, 14,
+    32, 27,  3,  9,
+    19, 13, 30,  6,
+    22, 11,  4, 25 };
+</div>
+
+<p class="indented">
+    All of this is performed on the right-half of the input, which is then XORed
+    with the left half, becoming the <strong>new right-half</strong>, and the old right-half, before
+    any transformation, becomes the <strong>new left half</strong>.
+</p>
+
+<h3>DES Final Permutation</h3>
+
+<h2>References</h2>
+
+<ul>
+    <li><a href="/archive/crypto/byte_utils.html" target="_blank">ByteUtils.java</a></li>
+    <li><a href="https://www.amazon.com/Implementing-SSL-TLS-Joshua-Davies/dp/0470920416/ref=sr_1_1" target="_blank">Implementing SSL/TLS Using Cryptography and PKI</a></li>
+</ul>

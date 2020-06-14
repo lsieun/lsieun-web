@@ -1,0 +1,24 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">From bytes To Hex</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_radix.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>&gt;&gt;</h2>
+
+<div title="方法1" class="javacode">
+public static String toBinary(byte[] bytes) {
+    StringBuilder sb = new StringBuilder();
+    for (byte b : bytes) {
+        for (int i = 7; i >= 0; i--) {
+            int val = (b >> i) & 0x01;
+            sb.append(val == 0 ? "0" : "1");
+        }
+        sb.append(" ");
+    }
+    return sb.toString();
+}
+</div>
