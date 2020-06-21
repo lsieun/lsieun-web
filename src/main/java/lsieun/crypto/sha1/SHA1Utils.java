@@ -33,11 +33,12 @@ public class SHA1Utils {
         return padding_bytes;
     }
 
-    public static byte[] sha1_hash(byte[] input, int input_length) {
+    public static byte[] sha1_hash(byte[] input) {
         // (1) 初始化SHA1的Hash值
         int[] hash = Arrays.copyOf(SHA1Const.SHA1_INITIAL_HASH, SHA1Const.SHA1_RESULT_SIZE);
 
         // (2) 对input进行padding
+        int input_length = input.length;
         byte[] padding_bytes = sha1_padding(input_length);
         byte[] all_bytes = ByteUtils.concatenate(input, padding_bytes);
 

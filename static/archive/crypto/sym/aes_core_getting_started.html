@@ -70,6 +70,10 @@ public class AESKeyUtils {
         word[2] = word[3];
         word[3] = tmp;
     }
+
+    public static byte shift_left(byte x) {
+        return (byte) (((x & 0xFF) << 1) ^ (((x & 0x80) != 0) ? 0x1b : 0x00));
+    }
     // endregion
 
     // region substitution
@@ -112,7 +116,7 @@ public class AESKeyUtils {
         System.arraycopy(key, 0, key_schedule, 0, key_length);
 
         // calculate remaining values in key_schedule
-        int round_constant = 0x01;
+        byte round_constant = 0x01;
         int total_count = size / word_size;
         for (int i = word_count; i < total_count; i++) {
             byte[] last_word = get_word(key_schedule, i - 1);
@@ -120,13 +124,11 @@ public class AESKeyUtils {
             if (i % word_count == 0) {
                 rotate_word(last_word);
                 substitute_word(last_word);
-                if ((round_constant & 0xFF) == 0) {
-                    round_constant = 0x1b;
-                }
+                last_word[0] ^= round_constant;
 
-                last_word[0] = (byte) ((last_word[0] & 0xFF) ^ round_constant);
-                round_constant <<= 1;
-            } else if ((word_count > 6) && (i % word_count == 4)) {
+                round_constant = shift_left(round_constant);
+            }
+            else if ((word_count > 6) && (i % word_count == 4)) {
                 substitute_word(last_word);
             }
 

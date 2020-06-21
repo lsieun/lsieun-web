@@ -1,0 +1,63 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Object Identifier</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>What is OID</h2>
+
+<h2>OID Lookup</h2>
+
+<p class="indented">
+    关于OID的含义，可以从这两个网站进行查询：
+    <a class="external" href="http://www.oid-info.com/" target="_blank">OID Repository</a>
+    <a class="external" href="http://oidref.com/" target="_blank">Global OID reference database</a>
+</p>
+
+<h2>Parse</h2>
+
+<p class="indented">
+    Diffie-Hellman OID解析: <code>2A 86 48 CE 3E 02 01</code>, Ephemeral-Static Diffie-Hellman (DH) key agreement algorithm
+</p>
+
+<ul>
+    <li><code>2A</code>: 转换为<code>1.2</code>, 表示iso/memberBody</li>
+    <li><code>86 48</code>: 转换为<code>840</code>, 表示usa</li>
+    <li><code>CE 3E</code>: 转换为<code>10046</code>, 表示ansi-x942</li>
+    <li><code>02 01</code>: 转换为<code>2.1</code>, 表示number-types/dhpublicnumber</li>
+</ul>
+
+
+<p class="indented">
+MD5WithRSA OID解析: <code>2A 86 48 86 F7 0D 01 01 04</code>, Rivest, Shamir and Adleman (RSA) encryption with Message Digest 5 (MD5) signature
+</p>
+
+<ul>
+    <li><code>2A</code>: 转换为<code>1.2</code>, 表示iso/memberBody</li>
+    <li><code>86 48</code>: 转换为<code>840</code>, 表示usa</li>
+    <li><code>86 F7 0D</code>: 转换为<code>113549</code>, 表示rsadsi</li>
+    <li><code>01 01 04</code>: 转换为<code>1.1.4</code>, 表示pkcs/pkcs1/MD5</li>
+</ul>
+
+<p class="indented">
+DSA OID解析: <code>2A 86 48 CE 38 04 01</code>, Digital Signature Algorithm (DSA) subject public key
+</p>
+
+<ul>
+    <li><code>2A</code>: 转换为<code>1.2</code>, 表示iso/memberBody</li>
+    <li><code>86 48</code>: 转换为<code>840</code>, 表示usa</li>
+    <li><code>CE 38</code>: 转换为<code>10040</code>, 表示x9-57</li>
+    <li><code>04 01</code>: 转换为<code>4.1</code>, 表示x9algorithm/dsa</li>
+</ul>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="http://www.oid-info.com/" target="_blank">OID Repository</a></li>
+    <li><a class="external" href="http://oidref.com/" target="_blank">Global OID reference database</a></li>
+</ul>
+
+

@@ -6,3 +6,108 @@
     <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
+
+<h2>HMAC Intro</h2>
+
+<p class="indented">
+    Providing a way to check the integrity of information transmitted
+    over or stored in an unreliable medium is a prime necessity in the
+    world of open computing and communications.
+    <sub class="my_note" style="color:blue">笔记：在unreliable medium上传输message，保证message的integrity是非常重要的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Mechanisms that provide such integrity check based on a secret key are usually called
+    "message authentication codes" (MAC). Typically, message
+    authentication codes are used between two parties that share a secret
+    key in order to validate information transmitted between these parties.
+    <sub class="my_note" style="color:blue">笔记：由integrity check引出的MAC的概念，MAC是基于secret key的</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        MAC = secret key + algorithm --&gt; integrity check
+    </p>
+</div>
+
+<p class="indented">
+    A HMAC algorithm is specified in <a  class="external" href="https://tools.ietf.org/html/rfc2104" target="_blank">RFC 2104</a> and is the standard for combining
+    shared secrets with secure hash algorithms.
+    <sub class="my_note" style="color:blue">笔记：这段话有两点，第一点，HMAC算法的文档在哪里；第二点，HMAC的本质就是secret key和secure hash algorithm进行结合。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        HMAC = secret key + Hash Function --&gt; integrity check
+    </p>
+</div>
+
+<p class="indented">
+    HMAC can be used in combination with any iterated cryptographic hash
+    function. MD5 and SHA-1 are examples of such hash functions; the resulting HMAC algorithm is termed HMAC-MD5 or HMAC-SHA1 accordingly.
+    <sub class="my_note" style="color:blue">笔记：这里讲了HMAC对于Hash function的要求</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    HMAC uses a secret key for calculation and verification of the
+    message authentication values.
+    <sub class="my_note" style="color:blue">笔记：HMAC使用secret key的作用</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>HMAC Construction</h2>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/crypto/hash/hmac_sha1.png" alt="HMAC-SHA1"/>
+</div>
+
+
+<p class="indented">
+    The main goals behind HMAC construction are
+</p>
+
+<ul>
+    <li>
+        To use, without modifications, available hash functions.
+        In particular, hash functions that perform well in software,
+        and for which code is freely and widely available.
+        <sub class="my_note" style="color:blue">笔记：能够使用已有的hash function</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        To preserve the original performance of the hash function without
+        incurring a significant degradation.
+        <sub class="my_note" style="color:blue">笔记：在hash function的基础上，不会增加过多的性能消耗</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        To allow for easy replaceability of the underlying hash function in
+        case that faster or more secure hash functions are found or required.
+        <sub class="my_note" style="color:blue">笔记：能够在不同的hash function之间进行切换</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ul>
+
+<h2>HMAC Security</h2>
+
+<p class="indented">
+    In cryptography, a <strong>keyed hash message authentication code (HMAC)</strong> is a specific type of <strong>message authentication code (MAC)</strong> involving a cryptographic hash function(hence the ‘H’) in combination with a secret cryptographic key. As with any MAC, it may be used to simultaneously verify both the data integrity and the authentication of a message.
+    <sub class="my_note" style="color:blue">笔记：HMAC可以保证信息的integrity和authentication</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The cryptographic strength of the HMAC depends upon the cryptographic strength of the underlying hash function, the size of its hash output, and on the size and quality of the key.
+    <sub class="my_note" style="color:blue">笔记：这里讲HMAC的安全性</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://tools.ietf.org/html/rfc2104" target="_blank">RFC 2104 - HMAC: Keyed-Hashing for Message Authentication</a></li>
+</ul>

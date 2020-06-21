@@ -1,20 +1,16 @@
 package lsieun.crypto.md5;
 
-import java.util.Arrays;
-import java.util.Random;
+import lsieun.crypto.utils.ByteUtils;
+
+import java.nio.charset.StandardCharsets;
 
 public class MD5Test {
     public static void main(String[] args) {
-        long timestamp = System.currentTimeMillis();
-        Random rand = new Random(timestamp);
-        int size = 200 + rand.nextInt(100);
-        byte[] input = new byte[size];
-        for (int i = 0; i < size; i++) {
-            input[i] = (byte) rand.nextInt();
-        }
+        String str = "The quick brown fox jumps over the lazy dog";
+        byte[] input = str.getBytes(StandardCharsets.UTF_8);
+        byte[] digest = MD5Utils.md5_hash(input);
 
-        byte[] md5_bytes = MD5Utils.md5_hash(input, input.length);
-        byte[] digest = MD5InJdk.md5(input);
-        System.out.println(Arrays.equals(md5_bytes, digest));
+        String hex_str = ByteUtils.toHex(digest);
+        System.out.println(hex_str); // 9E107D9D372BB6826BD81D3542A419D6
     }
 }

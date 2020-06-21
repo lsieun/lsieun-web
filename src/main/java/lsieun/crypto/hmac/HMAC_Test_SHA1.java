@@ -1,9 +1,9 @@
 package lsieun.crypto.hmac;
 
 import lsieun.crypto.sha1.SHA1Utils;
+import lsieun.crypto.utils.ByteUtils;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Formatter;
 
 public class HMAC_Test_SHA1 {
     public static void main(String[] args) {
@@ -12,16 +12,7 @@ public class HMAC_Test_SHA1 {
         byte[] key_bytes = "shared secret".getBytes(StandardCharsets.UTF_8);
 
         byte[] hmac_bytes = HMACUtils.hmac(key_bytes, input, SHA1Utils::sha1_hash);
-        String hex_str = toHex(hmac_bytes);
-        System.out.println(hex_str);
-    }
-
-    public static String toHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        Formatter fm = new Formatter(sb);
-        for (byte b : bytes) {
-            fm.format("%02X ", (b & 0xFF));
-        }
-        return sb.toString();
+        String hex_str = ByteUtils.toHex(hmac_bytes);
+        System.out.println(hex_str); // BE15352DD80B1EC0CE93898F22EA6ACBEBB0FD81
     }
 }

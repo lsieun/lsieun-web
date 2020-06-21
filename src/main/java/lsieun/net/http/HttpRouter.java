@@ -34,6 +34,7 @@ public class HttpRouter {
     private static final FontHandler font_handler = new FontHandler();
     private static final ContentHandler content_handler = new ContentHandler();
     private static final JsonHandler json_handler = new JsonHandler();
+    private static final HTMLHandler html_handler = new HTMLHandler();
 
 
     static {
@@ -47,7 +48,8 @@ public class HttpRouter {
     public static void register(final String uri) {
         if (uri_set.contains(uri)) {
             audit.log(Level.WARNING, "already contains " + uri);
-        } else {
+        }
+        else {
             uri_set.add(uri);
         }
     }
@@ -63,20 +65,30 @@ public class HttpRouter {
                         "/about/".equals(uri_path) || "/about".equals(uri_path)
         ) {
             return page_list_handler.getResource(uri_path, header);
-        } else if ("/favicon.ico".equals(uri_path)) {
+        }
+        else if ("/favicon.ico".equals(uri_path)) {
             return image_handler.getResource("/images/favicon.ico", header);
-        } else if ("/images/404.png".equals(uri_path)) {
+        }
+        else if ("/images/404.png".equals(uri_path)) {
             return image_handler.getResource("/images/image_not_found.png", header);
-        } else if (uri_path.startsWith("/archive/")) {
+        }
+        else if (uri_path.startsWith("/archive/")) {
             return content_handler.getResource(uri_path, header);
-        } else if (uri_path.startsWith("/css/")) {
+        }
+        else if (uri_path.startsWith("/css/")) {
             return css_handler.getResource(uri_path, header);
-        } else if (uri_path.startsWith("/js/")) {
+        }
+        else if (uri_path.startsWith("/js/")) {
             return js_handler.getResource(uri_path, header);
-        } else if (uri_path.startsWith("/fonts/")) {
+        }
+        else if (uri_path.startsWith("/fonts/")) {
             return font_handler.getResource(uri_path, header);
-        } else if (uri_path.startsWith("/images/")) {
+        }
+        else if (uri_path.startsWith("/images/")) {
             return image_handler.getResource(uri_path, header);
+        }
+        else if (uri_path.startsWith("/doc/")) {
+            return html_handler.getResource(uri_path, header);
         }
         else if (uri_path.startsWith("/json/")) {
             return json_handler.getResource(uri_path, header);

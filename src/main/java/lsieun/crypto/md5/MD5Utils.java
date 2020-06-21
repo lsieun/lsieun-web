@@ -179,14 +179,14 @@ public class MD5Utils {
 
     /**
      * @param input 原始输入数据，可以是任意长度
-     * @param input_length   输入数据的长度
      * @return 数据的MD5 Hash值
      */
-    public static byte[] md5_hash(byte[] input, int input_length) {
+    public static byte[] md5_hash(byte[] input) {
         // (1) 初始化MD5的Hash值
         int[] hash = Arrays.copyOf(MD5Const.MD5_INITIAL_HASH, MD5Const.MD5_RESULT_SIZE);
 
         // (2) 对input进行padding
+        int input_length = input.length;
         byte[] padding_bytes = md5_padding(input_length);
         byte[] all_bytes = ByteUtils.concatenate(input, padding_bytes);
 

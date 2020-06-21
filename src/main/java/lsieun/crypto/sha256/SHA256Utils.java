@@ -33,11 +33,12 @@ public class SHA256Utils {
         return padding_bytes;
     }
 
-    public static byte[] sha256_hash(byte[] input, int input_length) {
+    public static byte[] sha256_hash(byte[] input) {
         // (1) 初始化SHA256的Hash值
         int[] hash = Arrays.copyOf(SHA256Const.SHA256_INITIAL_HASH, SHA256Const.SHA256_RESULT_SIZE);
 
         // (2) 对input进行padding
+        int input_length = input.length;
         byte[] padding_bytes = sha256_padding(input_length);
         byte[] all_bytes = ByteUtils.concatenate(input, padding_bytes);
 

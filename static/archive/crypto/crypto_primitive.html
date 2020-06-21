@@ -1,0 +1,112 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Cryptographic primitive</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    <strong>Cryptographic primitives</strong> are well-established, low-level cryptographic algorithms that are frequently used to build
+    cryptographic protocols for computer security systems. These routines include, but are not limited to, one-way hash
+    functions and encryption functions.
+    <sub class="my_note" style="color:blue">笔记：Cryptographic primitives就是low-level cryptographic algorithms。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Rationale</h2>
+
+<p class="indented">
+    When creating cryptographic systems, designers use cryptographic primitives as their most basic building blocks. Because of this, cryptographic primitives are designed to do one very specific task in a precisely defined and highly reliable fashion.
+    <sub class="my_note" style="color:blue">笔记：可以使用cryptographic primitives来构建cryptographic systems。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Since cryptographic primitives are used as building blocks, they must be very reliable, i.e. perform according to their specification. For example, if an encryption routine claims to be only breakable with X number of computer operations, and it is broken with significantly fewer than X operations, then that cryptographic primitive has failed. If a cryptographic primitive is found to fail, almost every protocol that uses it becomes vulnerable.
+    <sub class="my_note" style="color:blue">笔记：cryptographic primitives必须是安全可靠的</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Since creating cryptographic routines is very hard, and testing them to be reliable takes a long time, it is essentially never sensible (nor secure) to design a new cryptographic primitive to suit the needs of a new cryptographic system. The reasons include:
+    <sub class="my_note" style="color:blue">笔记：从重设置新的cryptographic primitives是不明智的，原因有如下三方面</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<ol>
+    <li>
+        The designer might not be competent in the mathematical and practical considerations involved in cryptographic primitives.
+        <sub class="my_note" style="color:blue">笔记：从人的角度来说，能力可能不够</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        Designing a new cryptographic primitive is very time-consuming and very error-prone, even for experts in the field.
+        <sub class="my_note" style="color:blue">笔记：从算法的角度来说，需要很大的时间投入，而且容易出错</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        Since algorithms in this field are not only required to be designed well but also need to be tested well by the cryptologist community, even if a cryptographic routine looks good from a design point of view it might still contain errors. Successfully withstanding such scrutiny gives some confidence (in fact, so far, the only confidence) that the algorithm is indeed secure enough to use; security proofs for cryptographic primitives are generally not available.
+        <sub class="my_note" style="color:blue">笔记：从算法测试的角度来说，需要很长的时间来验证其安全性</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ol>
+
+<p class="indented">
+    Cryptographic primitives are similar in some ways to programming languages. A computer programmer rarely invents a new programming language while writing a new program; instead, they will use one of the already established programming languages to program in.
+    <sub class="my_note" style="color:blue">笔记：这里做了一个对比，人们很少去创造一个新的编程语言，而是利用现有的编程语言去编程；同样，人们很少去创造一个新的加密算法，而是利用已有的、安全的加密算法。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Cryptographic primitives are one of the building blocks of every crypto system, e.g., <strong>TLS</strong>, <strong>SSL</strong>, <strong>SSH</strong>, etc.<sub class="my_note" style="color:green">笔记：这里说明一个问题，TLS、SSL和SSH这三者，都不是一个的简单算法（cryptographic primitive），而是一个crypto system，它们都是由一系列的cryptographic primitive组成。</sub> Crypto system designers, not being in a position to definitively prove their security, must take the primitives they use as secure.<sub class="my_note" style="color:green">笔记：作为crypto system designers，需要选择使用安全的cryptographic primitive，但并不需要亲自去证明cryptographic primitive是安全的</sub> Choosing the best primitive available for use in a protocol usually provides the best available security. However, compositional weaknesses are possible in any crypto system and it is the responsibility of the designer(s) to avoid them.
+    <sub class="my_note" style="color:blue">笔记：crypto system是由多个cryptographic primitives组成，但是，单个cryptographic primitive是安全的，并不能保证整个crypto system也是绝对安全的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Commonly used primitives</h2>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>我熟悉下面这四个</p>
+</div>
+
+<ul>
+    <li><span style="color:green;">One-way hash function</span>, sometimes also called as one-way compression function—compute a reduced hash value for a message (e.g., SHA-256)</li>
+    <li><span style="color:green;">Symmetric key cryptography</span>—compute a ciphertext decodable with the same key used to encode (e.g., AES)</li>
+    <li><span style="color:green;">Public-key cryptography</span>—compute a ciphertext decodable with a different key used to encode (e.g., RSA)</li>
+    <li><span style="color:green;">Digital signatures</span>—confirm the author of a message</li>
+</ul>
+
+<div class="w3-panel w3-pale-red w3-leftbar w3-rightbar w3-border-red">
+    <p>不了解下面这四个</p>
+</div>
+
+<ul>
+    <li><span style="color:green;">Mix network</span>—pool communications from many users to anonymize what came from whom</li>
+    <li><span style="color:green;">Private information retrieval</span>—get database information without server knowing which item was requested</li>
+    <li><span style="color:green;">Commitment scheme</span>—allows one to commit to a chosen value while keeping it hidden to others, with the ability to reveal it later</li>
+    <li><span style="color:green;">Cryptographically secure pseudorandom number generator</span></li>
+</ul>
+
+<h2>Combining cryptographic primitives</h2>
+
+<p class="indented">
+    <strong>Cryptographic primitives, on their own, are quite limited. They cannot be considered, properly, to be a cryptographic system.</strong> For instance, a bare encryption algorithm will provide no authentication mechanism, nor any explicit message integrity checking. Only when combined in security protocols, can more than one security requirement be addressed. For example, to transmit a message that is not only encoded but also protected from tinkering (i.e. it is confidential and integrity-protected), an encoding routine, such as DES, and a hash-routine such as SHA-1 can be used in combination. If the attacker does not know the encryption key, he can not modify the message such that message digest value(s) would be valid.
+    <sub class="my_note" style="color:blue">笔记：单个cryptographic primitive能做的事情是很有限的，需要不同的cryptographic primitive来共同组合成一个完整的crypto system，以此来保证message在传输过程中的authentication、integrity和confidentiality。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Combining cryptographic primitives to make a security protocol is itself an entire specialization. Most exploitable errors (i.e., insecurities in crypto systems) are due not to design errors in the primitives (assuming always that they were chosen with care), but to the way they are used, i.e. bad protocol design and buggy or not careful enough implementation. Mathematical analysis of protocols is, at the time of this writing, not mature. There are some basic properties that can be verified with automated methods, such as BAN logic. There are even methods for full verification (e.g. the SPI calculus) but they are extremely cumbersome and cannot be automated. Protocol design is an art requiring deep knowledge and much practice; even then mistakes are common.
+    <sub class="my_note" style="color:blue">笔记：crypto system所面临的安全隐患，大部分的情况下，并不是来自于单个的cryptographic primitive，而是来自于crypto system的设计方案（bad protocol design）和在编写代码时的粗心大意（not careful enough implementation）</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented"></p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a href="https://en.wikipedia.org/wiki/Cryptographic_primitive" target="_blank">Wiki: Cryptographic primitive</a></li>
+</ul>

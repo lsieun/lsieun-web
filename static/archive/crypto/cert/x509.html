@@ -1,0 +1,223 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">X.509 Certificate</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Signed Certificate Structure</h2>
+
+<h3>Certificate</h3>
+
+<div title="Certificate" class="plaintext">
+Certificate  ::=  SEQUENCE  {
+    tbsCertificate       TBSCertificate,
+    signatureAlgorithm   AlgorithmIdentifier,
+    signatureValue       BIT STRING  }
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        Note that each type (such as <code style="color:blue">Certificate</code>) in ASN.1 must begin with an uppercase letter. Items that are components of a message (such as <code style="color:blue">tbsCertificate</code>, <code style="color:blue">signatureAlgorithm</code> and <code style="color:blue">signatureValue</code>) are called identifiers and must begin with a lowercase letter.
+    </p>
+</div>
+
+<h3>TBSCertificate</h3>
+
+<p class="indented">
+    <code>TBS</code> stands for <b>To Be Signed</b>.
+</p>
+
+<div title="TBSCertificate" class="plaintext">
+TBSCertificate  ::=  SEQUENCE  {
+    version         [0]  EXPLICIT Version DEFAULT v1,
+    serialNumber         CertificateSerialNumber,
+    signature            AlgorithmIdentifier,
+    issuer               Name,
+    validity             Validity,
+    subject              Name,
+    subjectPublicKeyInfo SubjectPublicKeyInfo,
+    issuerUniqueID  [1]  IMPLICIT UniqueIdentifier OPTIONAL,
+                         -- If present, version shall be v2 or v3
+    subjectUniqueID [2]  IMPLICIT UniqueIdentifier OPTIONAL,
+                         -- If present, version shall be v2 or v3
+    extensions      [3]  EXPLICIT Extensions OPTIONAL
+                         -- If present, version shall be v3
+    }
+</div>
+
+<h3>AlgorithmIdentifier</h3>
+
+<div title="AlgorithmIdentifier" class="plaintext">
+AlgorithmIdentifier  ::=  SEQUENCE  {
+    algorithm               OBJECT IDENTIFIER,
+    parameters              ANY DEFINED BY algorithm OPTIONAL  }
+</div>
+
+<h2>To Be Signed Certificate Structure</h2>
+
+<div title="TBSCertificate" class="plaintext">
+TBSCertificate  ::=  SEQUENCE  {
+    version         [0]  EXPLICIT Version DEFAULT v1,
+    serialNumber         CertificateSerialNumber,
+    signature            AlgorithmIdentifier,
+    issuer               Name,
+    validity             Validity,
+    subject              Name,
+    subjectPublicKeyInfo SubjectPublicKeyInfo,
+    issuerUniqueID  [1]  IMPLICIT UniqueIdentifier OPTIONAL,
+                         -- If present, version shall be v2 or v3
+    subjectUniqueID [2]  IMPLICIT UniqueIdentifier OPTIONAL,
+                         -- If present, version shall be v2 or v3
+    extensions      [3]  EXPLICIT Extensions OPTIONAL
+                         -- If present, version shall be v3
+    }
+</div>
+
+<h3>Version</h3>
+
+<div title="Version" class="plaintext">
+Version  ::=  INTEGER  {  v1(0), v2(1), v3(2)  }
+</div>
+
+<h3>CertificateSerialNumber</h3>
+
+<div title="CertificateSerialNumber" class="plaintext">
+CertificateSerialNumber  ::=  INTEGER
+</div>
+
+<h3>Name</h3>
+
+<div title="" class="plaintext">
+Name ::= CHOICE { RDNSequence }
+
+RDNSequence ::= SEQUENCE OF RelativeDistinguishedName
+
+RelativeDistinguishedName ::= SET OF AttributeTypeAndValue
+
+AttributeTypeAndValue ::= SEQUENCE {
+ type     AttributeType,
+ value    AttributeValue }
+
+AttributeType ::= OBJECT IDENTIFIER
+
+AttributeValue ::= ANY DEFINED BY AttributeType
+
+DirectoryString ::= CHOICE {
+     teletexString           TeletexString (SIZE (1..MAX)),
+     printableString         PrintableString (SIZE (1..MAX)),
+     universalString         UniversalString (SIZE (1..MAX)),
+     utf8String              UTF8String (SIZE (1.. MAX)),
+     bmpString               BMPString (SIZE (1..MAX)) }
+</div>
+
+<h3>Validity</h3>
+
+<div title="Validity" class="plaintext">
+Validity ::= SEQUENCE {
+    notBefore      Time,
+    notAfter       Time }
+
+Time ::= CHOICE {
+    utcTime        UTCTime,
+    generalTime    GeneralizedTime }
+</div>
+
+
+<h3>SubjectPublicKeyInfo</h3>
+
+<div title="SubjectPublicKeyInfo" class="plaintext">
+SubjectPublicKeyInfo  ::=  SEQUENCE  {
+    algorithm            AlgorithmIdentifier,
+    subjectPublicKey     BIT STRING  }
+</div>
+
+<h3>Extensions</h3>
+
+<div title="Extensions" class="plaintext">
+Extensions  ::=  SEQUENCE SIZE (1..MAX) OF Extension
+
+Extension  ::=  SEQUENCE  {
+    extnID      OBJECT IDENTIFIER,
+    critical    BOOLEAN DEFAULT FALSE,
+    extnValue   OCTET STRING  }
+</div>
+
+<p class="indented">
+    Each extension has a unique object identifier(<code class="w3-codespan">extnID</code>); this object identifier determines
+    how the <code class="w3-codespan">extnValue</code> is parsed, or if it’s even present. Additionally, there’s a <code class="w3-codespan">critical</code>
+    field. If an extension is marked critical, and the reader doesn’t recognize it,
+    it must reject the entire certificate; otherwise, unrecognized extensions can be
+    ignored. Most extensions are not marked critical.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>An Expanded X.509 Distinguished Name</caption>
+    <tr class="w3-green">
+        <th>TWO-LETTER CODE</th>
+        <th>LONG NAME</th>
+        <th>VALUE</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>CN</td>
+        <td>Common Name</td>
+        <td>Joshua Davies</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>OU</td>
+        <td>Organizational Unit</td>
+        <td>Architecture</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>O</td>
+        <td>Organization</td>
+        <td>Travelocity</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>L</td>
+        <td>Locality, usually a city name</td>
+        <td>Southlake</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>ST</td>
+        <td>State</td>
+        <td>Texas</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>C</td>
+        <td>Country</td>
+        <td>USA</td>
+    </tr>
+</table>
+
+<h2>Subject Public Key Algorithms</h2>
+
+<h3>RSA Keys</h3>
+
+<div title="RSAPublicKey" class="plaintext">
+RSAPublicKey ::= SEQUENCE {
+    modulus            INTEGER, -- n
+    publicExponent     INTEGER  -- e -- }
+</div>
+
+<h3>Diffie-Hellman Key Exchange Key</h3>
+
+<div title="DHPublicKey" class="plaintext">
+DHPublicKey ::= INTEGER -- public key, y = g^x mod p
+</div>
+
+<div title="DomainParameters" class="plaintext">
+DomainParameters ::= SEQUENCE {
+      p       INTEGER, -- odd prime, p=jq +1
+      g       INTEGER, -- generator, g
+      q       INTEGER, -- factor of p-1
+      j       INTEGER OPTIONAL, -- subgroup factor
+      validationParms  ValidationParms OPTIONAL }
+
+ValidationParms ::= SEQUENCE {
+      seed             BIT STRING,
+      pgenCounter      INTEGER }
+</div>
+

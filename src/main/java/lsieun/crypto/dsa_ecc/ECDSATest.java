@@ -28,7 +28,7 @@ public class ECDSATest {
 
         String msg = "abc";
         byte[] input = msg.getBytes(StandardCharsets.UTF_8);
-        byte[] hash_bytes = SHA256Utils.sha256_hash(input, input.length);
+        byte[] hash_bytes = SHA256Utils.sha256_hash(input);
 
         DsaSignature signature = ECDSAUtils.ecdsa_sign(curve, ecc_key.d, hash_bytes);
         System.out.println("R: " + signature.r.toString(16));

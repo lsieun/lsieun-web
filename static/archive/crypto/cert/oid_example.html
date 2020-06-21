@@ -1,0 +1,134 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Object Identifier Examples</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Algorithm</h2>
+
+<input class="w3-input w3-border w3-padding" type="text" placeholder="Search for names.." onkeyup="choose_items(this, 'algorithm_table')">
+<hr/>
+
+<table id="algorithm_table" class="w3-table-all w3-hoverable  w3-left-align">
+    <tr class="w3-green">
+        <th>Name</th>
+        <th>Hex Notation</th>
+        <th>Dot Notation</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>RSA</td>
+        <td>2A 86 48 86 F7 0D 01 01 01</td>
+        <td>1.2.840.113549.1.1.1</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>MD5WithRSA</td>
+        <td>2A 86 48 86 F7 0D 01 01 04</td>
+        <td>1.2.840.113549.1.1.4</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>SHA1WithRSA</td>
+        <td>2A 86 48 86 F7 0D 01 01 05</td>
+        <td>1.2.840.113549.1.1.5</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>SHA256WithRSA</td>
+        <td>2A 86 48 86 F7 0D 01 01 0B</td>
+        <td>1.2.840.113549.1.1.11</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>DSA</td>
+        <td>2A 86 48 CE 38 04 01</td>
+        <td>1.2.840.10040.4.1</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>SHA1WithDSA</td>
+        <td>2A 86 48 CE 38 04 03</td>
+        <td>1.2.840.10040.4.3</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Diffie-Hellman</td>
+        <td>2A 86 48 CE 3E 02 01</td>
+        <td>1.2.840.10046.2.1</td>
+    </tr>
+</table>
+
+<h2>Extensions</h2>
+
+<input class="w3-input w3-border w3-padding" type="text" placeholder="Search for names.." onkeyup="choose_items(this, 'extension_table')">
+<hr/>
+
+<table id="extension_table" class="w3-table-all w3-hoverable  w3-left-align">
+    <tr class="w3-green">
+        <th>Name</th>
+        <th>Hex Notation</th>
+        <th>Dot Notation</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>subjectKeyIdentifier</td>
+        <td>55 1D 0E</td>
+        <td>2.5.29.14</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>keyUsage</td>
+        <td>55 1D 0F</td>
+        <td>2.5.29.15</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>subjectAltName</td>
+        <td>55 1D 11</td>
+        <td>2.5.29.17</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>basicConstraints</td>
+        <td>55 1D 13</td>
+        <td>2.5.29.19</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>cRLDistributionPoints</td>
+        <td>55 1D 1F</td>
+        <td>2.5.29.31</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>certificatePolicies</td>
+        <td>55 1D 20</td>
+        <td>2.5.29.32</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>authorityKeyIdentifier</td>
+        <td>55 1D 23</td>
+        <td>2.5.29.35</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>extKeyUsage</td>
+        <td>55 1D 25</td>
+        <td>2.5.29.37</td>
+    </tr>
+</table>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        All of the extension OIDs start with <code>55 1D</code>.
+    </p>
+</div>
+
+<script>
+function choose_items(input, table_id) {
+    let filter = input.value.toUpperCase();
+    let table = document.getElementById(table_id);
+    let tr = table.getElementsByTagName("tr");
+    for (let i = 0; i < tr.length; i++) {
+        let td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+            let txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+</script>

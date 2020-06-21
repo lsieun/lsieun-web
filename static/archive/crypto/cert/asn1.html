@@ -1,0 +1,134 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASN.1</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    Communication protocols describe <b>the sequence, the content, and the encoding</b> of messages exchanged between computers communicating with each other. ASN.1 is a language for describing <b>the content and the encoding</b> of such messages.
+    <sub class="my_note" style="color:blue">笔记：这里描述了ASN.1与Communication protocols之间的区别，ASN.1只注重于message的content和encoding，而Communication protocols在ASN.1的基础上添加了message的sequence。换句话说，ASN.1是更基础的东西，而Communication protocols是相对更高一些的东西。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h3>What is ASN.1?</h3>
+
+<p class="indented">
+    ASN.1 is the acronym for <strong>Abstract Syntax Notation One</strong>.
+</p>
+
+<p class="indented">
+    ASN.1 is a <b>mature</b> core technology that is widely used in infrastructures that require robust communication. ASN.1 is <b>precise</b>, with explicit instructions on exactly how any given type of information must be represented when transferred. ASN.1 is <b>independent of the programming languages</b> used to implement communications. Whether you prefer to work in C, C++, Java, C#, or even COBOL, you can still transfer information. One end of transfer could be written in Java while the other end is written in C, and they will still be able to exchange information using ASN.1 with its encoding rules.
+</p>
+
+<p class="indented">
+    ASN.1 is also <b>independent of any hardware or operating system</b> you might choose to use. This allows exchange of information whether one end is a cell phone and the other end is a super computer, or anything in between. ASN.1 is <b>flexible</b>, allowing simple easily understood descriptions, yet has the power, for those who need it, to enforce complex constraints in which the type of information in one component of a message could be determined by the value of another component in the message.
+</p>
+
+<p class="indented">
+    So ASN.1 is robust, precise, programming language independent, hardware independent, operating-system independent, flexible, and powerful.
+</p>
+
+<h3>Why ASN.1?</h3>
+
+<p class="indented">
+    Whether you're an experienced user or just starting, it may be hard to pick the right schema technology out of many popular alternatives such as ASN.1, JSON Schema, and Google Protocol Buffers. There are the two important factors that may help you with your decision - <b>schema expressivity</b> and <b>schema authority</b>.
+</p>
+
+<h4>Schema Expressivity</h4>
+
+<p class="indented">
+    Writing a schema requires a good balance between being under- and over-expressive. An <b>under-expressive schema</b> is close to no schema at all, it lacks the structural integrity of the data it's meant to validate. An <b>over-expressive schema</b> may be hard to interpret and prone to human errors, e.g. its semantics can be easily "lost in translation". An <b>ASN.1 schema</b> offers a middle ground. It requires a complete definition of every field in the message and it is easily read by a human/designer.
+</p>
+
+<h4>Schema Authority</h4>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        这里的Schema Authority，是指面对不断变化的市场需求，它本身是否具有“以不变应万变”的能力。
+    </p>
+</div>
+
+<p class="indented">
+    Schema evolution is a boon<sub class="my_note" style="color:green">非常有用的东西；益处 something that is very helpful and makes life easier for you</sub>. However, technologies that are too permissive, i.e. offer too much backward and forward compatibility, are prone to spill<sub class="my_note" style="color:green">涌出；蜂拥而出 to come out of a place in large numbers and spread out</sub> the data validation throughout the entire application code base. In the end, whether you want it or not, when you choose to communicate with Protobuf or JSON Schema, you have to utilize more developers<sub class="my_note" style="color:green">笔记：投入更多的人力</sub> and spend more time<sub class="my_note" style="color:green">笔记：投入更多的时间</sub> to ensure the sanity<sub class="my_note" style="color:green">笔记：这里的sanity应该是指“符合实际使用场景的需求” the state of being sensible and reasonable</sub> of your data.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    An <b>ASN.1 schema</b> allows extensibility (an evolution) as well, but it does this in a predictable way, at compile-time (as in strongly-typed data), ensuring schema authority and a well-defined boundary for the validation logic. ASN.1 technology offers a "right time, right place" solution for scaling larger applications without compromising data integrity.
+</p>
+
+<h2>Two Parts</h2>
+
+<p class="indented">
+    ASN.1 is divided into two parts: (1) <b>the rules of syntax</b> for describing the contents of a message in terms of <i>data type</i> and <i>content structure</i> and (2) <b>how you actually encode each data item in a message</b>.
+</p>
+
+<p class="indented">
+    ASN.1 is a formal notation<sub class="my_note" style="color:green">标记法 a system of signs or symbols used to represent information, especially in mathematics, science and music</sub> used for describing data transmitted by telecommunications protocols, regardless of language implementation and physical representation of these data, whatever the application, whether complex or very simple.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Abstract Syntax Notation number One
+    is a standard that defines a formalism
+    for the specification of abstract data types.
+</p>
+
+<p class="indented">
+    The notation provides a certain number of <strong>pre-defined basic types</strong> such as:
+</p>
+
+<ul>
+    <li>integers (INTEGER),</li>
+    <li>booleans (BOOLEAN),</li>
+    <li>character strings (IA5String, UniversalString...),</li>
+    <li>bit strings (BIT STRING),</li>
+    <li>etc.,</li>
+</ul>
+
+<p>and makes it possible to define <strong>constructed types</strong> such as: </p>
+
+<ul>
+    <li>structures (SEQUENCE),</li>
+    <li>lists (SEQUENCE OF),</li>
+    <li>choice between types (CHOICE),</li>
+    <li>etc.</li>
+</ul>
+
+<h2>pre-defined basic types</h2>
+
+
+<h2>constructed types</h2>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+<div title="" class="plaintext">
+
+</div>
+
+<div title="" class="plaintext">
+
+</div>
+
+<div title="" class="plaintext">
+
+</div>
+
+<div title="" class="plaintext">
+
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://www.oss.com/asn1/resources/asn1-made-simple/introduction.html" target="_blank">ASN.1 Made Simple</a></li>
+</ul>

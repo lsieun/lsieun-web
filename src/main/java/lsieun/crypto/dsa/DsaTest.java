@@ -85,7 +85,7 @@ public class DsaTest {
     public static void main(String[] args) {
         String msg = "the quick brown fox jumps over a lazy dog";
         byte[] input = msg.getBytes(StandardCharsets.UTF_8);
-        byte[] hash_bytes = SHA256Utils.sha256_hash(input, input.length);
+        byte[] hash_bytes = SHA256Utils.sha256_hash(input);
 
 
         BigInteger g = new BigInteger(1, G);

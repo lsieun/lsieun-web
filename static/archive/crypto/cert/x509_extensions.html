@@ -1,0 +1,94 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">X.509 Certificate Extensions</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>K</h2>
+
+<h3>Key Usage</h3>
+
+<div title="KeyUsage" class="plaintext">
+KeyUsage ::= BIT STRING {
+    digitalSignature        (0),
+    nonRepudiation          (1), -- recent editions of X.509 have
+                         -- renamed this bit to contentCommitment
+    keyEncipherment         (2),
+    dataEncipherment        (3),
+    keyAgreement            (4),
+    keyCertSign             (5),
+    cRLSign                 (6),
+    encipherOnly            (7),
+    decipherOnly            (8) }
+</div>
+
+<p class="indented">
+    The Key Usage certificate extension — OID <code>55 1D 0F</code> — defines the purpose (e.g., encipherment,
+    signature, certificate signing) of the key contained in the certificate.
+    It encodes a bit string, each of whose eight bits is either set or unset to identify
+    that the public-key contained in this certificate may or may not be used for a particular purpose.
+    <sub class="my_note" style="color:blue">笔记：KeyUsage是为了确定key的具体用途。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Of course, there’s nothing stopping an unscrupulous<sub class="my_note" style="color:green">不道德的；无道德原则的；不诚实的；不公正的 without moral principles; not honest or fair</sub>
+    user from using the key for a non-specified purpose anyway, but the receiver
+    can check the key usage bit and determine whether to allow the sender to do so.
+    <sub class="my_note" style="color:blue">笔记：KeyUsage只是提供了“保证安全的机制”，但这并不能阻止坏人做坏事，仍然需要receiver来配合检查，才能保证“安全性”。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The most important bit is bit 5, which, if set, identifies this certificate as a
+    legitimate signing authority. Presumably, the issuing CA only allows this bit
+    to be set if it trusts the requester to be responsible and sign other certificates
+    on behalf of the CA itself.
+    <sub class="my_note" style="color:blue">笔记：这里着重讲解了keyCertSign的用途。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>S</h2>
+
+<h3>Subject Alternative Name</h3>
+
+<div title="SubjectAltName" class="plaintext">
+SubjectAltName ::= GeneralNames
+
+GeneralNames ::= SEQUENCE SIZE (1..MAX) OF GeneralName
+
+GeneralName ::= CHOICE {
+    otherName                       [0]     OtherName,
+    rfc822Name                      [1]     IA5String,
+    dNSName                         [2]     IA5String,
+    x400Address                     [3]     ORAddress,
+    directoryName                   [4]     Name,
+    ediPartyName                    [5]     EDIPartyName,
+    uniformResourceIdentifier       [6]     IA5String,
+    iPAddress                       [7]     OCTET STRING,
+    registeredID                    [8]     OBJECT IDENTIFIER }
+
+OtherName ::= SEQUENCE {
+    type-id    OBJECT IDENTIFIER,
+    value      [0] EXPLICIT ANY DEFINED BY type-id }
+
+EDIPartyName ::= SEQUENCE {
+    nameAssigner            [0]     DirectoryString OPTIONAL,
+    partyName               [1]     DirectoryString }
+</div>
+
+<p class="indented">
+    The Subject Alternative Name extension (OID <code class="w3-codespan">55 1D 11</code>) is a useful, but not
+    widely used, extension. This extension offers a place to specifically identify a
+    server’s domain name; it also supports e-mail addresses, IP addresses, other directory
+    names, and so on. Because the domain name is explicit, the common-name
+    field no longer needs to be assumed to be the domain name. Unfortunately, this
+    extension has failed to catch on, chiefly for the same reason the DC component
+    in the subject name failed to catch on; to support older clients, servers must
+    continue to set the common name to be the same as domain name. (In fact,
+    it’s unclear what, if anything, ought to be in the CN component of a certifi cate’s
+    subject when the certifi cate identifi es a web site, if not the domain name.)
+</p>

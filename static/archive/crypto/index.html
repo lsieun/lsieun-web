@@ -6,10 +6,19 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<ul>
+    <li>message origin authentication</li>
+    <li>message confidentiality</li>
+    <li>message integrity</li>
+</ul>
+
+
+
 <p>准备工作</p>
 
 <ul>
     <li><a href="/archive/crypto/byte_utils.html">ByteUtils.java</a></li>
+    <li><a href="/archive/crypto/integrity_authentication_confidentiality.html">Integrity/Authentication/Confidentiality</a></li>
 </ul>
 
 <h2>Symmetric Cryptography</h2>
@@ -82,6 +91,8 @@
     <li><a href="/archive/crypto/sym/aes_core_intro.html">AES: (1) Introduction</a></li>
     <li><a href="/archive/crypto/sym/aes_core_getting_started.html">AES: (2) Getting Started</a></li>
     <li><a href="/archive/crypto/sym/aes_core_key_schedule.html">AES: (3) Key Schedule</a></li>
+    <li><a href="/archive/crypto/sym/aes_core_encryption.html">AES: (4) Encryption</a></li>
+    <li><a href="/archive/crypto/sym/aes_core_decryption.html">AES: (5) Decryption</a></li>
 </ul>
 
 <h2>Public Key Cryptography</h2>
@@ -128,15 +139,7 @@
 <ul>
     <li><a href="/archive/crypto/hash/md5_core_intro.html">MD5 Core: (1) Brief Introduction</a></li>
     <li><a href="/archive/crypto/hash/md5_core_getting_started.html">MD5 Core: (2) Getting Started</a></li>
-    <li><a href="/archive/crypto/hash/md5_core_step_by_step.html">MD5 Core: (3) Step By Step</a>
-        <ul>
-            <li><a href="/archive/crypto/hash/MD5Const.java.html">MD5Const.java</a></li>
-            <li><a href="/archive/crypto/hash/TriFunction.java.html">TriFunction.java</a></li>
-            <li><a href="/archive/crypto/hash/MD5Utils.java.html">MD5Utils.java</a></li>
-            <li><a href="/archive/crypto/hash/MD5InJdk.java.html">MD5InJdk.java</a></li>
-            <li><a href="/archive/crypto/hash/MD5Test.java.html">MD5Test.java</a></li>
-        </ul>
-    </li>
+    <li><a href="/archive/crypto/hash/md5_core_step_by_step.html">MD5 Core: (3) Step By Step</a></li>
     <li>MD5 Extension: Security</li>
     <li>MD5 Sample Data</li>
 </ul>
@@ -165,6 +168,10 @@
     <li><a href="/archive/crypto/hash/hmac_use_jdk.html">HMAC: (3) Use JDK</a></li>
 </ul>
 
+<p>
+    TODO: 这里还缺少使用RSA算法进行Signature的内容
+</p>
+
 <h3>Digital Signature Algorithm</h3>
 
 <ul>
@@ -175,7 +182,17 @@
 <h2>X.509 Certificate</h2>
 
 <ul>
-    <li>ASN.1</li>
+    <li><a href="/archive/crypto/cert/asn1.html">ASN.1</a></li>
+    <li><a href="/archive/crypto/cert/x509.html">X.509</a></li>
+    <li><a href="/archive/crypto/cert/x509_sorted.html">X.509 Sorted</a></li>
+    <li><a href="/archive/crypto/cert/x509_extensions.html">X.509 Extensions</a></li>
+    <li><a href="/archive/crypto/cert/oid.html">Object Identifier</a></li>
+    <li><a href="/archive/crypto/cert/oid_example.html">Object Identifier Example</a></li>
+</ul>
+
+<ul>
+    <li><a href="/archive/crypto/cert/cert_intro.html">Certificate: (1) Introduction</a></li>
+    <li><a href="/archive/crypto/cert/cert_getting_started.html">Certificate: (2) Getting Started</a></li>
 </ul>
 
 <h2>Wrap Up</h2>
@@ -184,13 +201,17 @@
     <li><a href="/archive/crypto/crypto_timeline.html">Cryptography Timeline</a> 在这篇文章，我记录了各种不同的算法的时间线，主要是对比各种算法都是在什么时间出现的。</li>
     <li><a href="/archive/crypto/humble_opinion.html">In My Humble Opinion</a></li>
     <li><a href="/archive/crypto/crypto_glossary.html">Cryptography Glossary</a></li>
+    <li><a href="/archive/crypto/crypto_rfc.html">Cryptography RFC Documentation</a></li>
+    <li><a href="/archive/crypto/crypto_primitive.html">Cryptographic primitive</a></li>
+    <li><a href="/archive/crypto/crypto_attack.html">Cryptography Attack</a></li>
 </ul>
 
 <h2>References</h2>
 
 <ul>
-    <li><a href="https://csrc.nist.gov/projects/cryptographic-standards-and-guidelines/example-values" target="_blank">NIST: Cryptographic Standards and Guidelines</a> 这个网站提供了许多算法的示例数据。</li>
-    <li><a href="https://www.commonlounge.com/discussion/4d18c0617215411d85db0cba0b96dc09" target="_blank">CommonLounge: Learn Cryptography: From Beginner to Expert</a> 这个网站对多个算法有介绍，是我学习过程中参考的东西。</li>
-    <li><a href="https://toc.cryptobook.us/" target="_blank">CryptoBook: A Graduate Course in Applied Cryptography</a> </li>
+    <li><a class="external" href="https://csrc.nist.gov/projects/cryptographic-standards-and-guidelines/example-values" target="_blank">NIST: Cryptographic Standards and Guidelines</a> 这个网站提供了许多算法的示例数据。</li>
+    <li><a class="external" href="https://www.commonlounge.com/discussion/4d18c0617215411d85db0cba0b96dc09" target="_blank">CommonLounge: Learn Cryptography: From Beginner to Expert</a> 这个网站对多个算法有介绍，是我学习过程中参考的东西。</li>
+    <li><a class="external" href="https://toc.cryptobook.us/" target="_blank">CryptoBook: A Graduate Course in Applied Cryptography</a> </li>
+    <li><a class="external" href="http://www.cs.utsa.edu/~wagner/laws/" target="_blank">utsa: The Laws of Cryptography</a> </li>
 </ul>
 

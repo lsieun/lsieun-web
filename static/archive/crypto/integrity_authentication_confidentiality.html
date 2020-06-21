@@ -1,0 +1,195 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Integrity/Authentication/Confidentiality</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Integrity</h2>
+
+<p class="indented">
+    <strong>Data integrity check</strong> is a most common application of the <strong>hash functions</strong>. It is used to generate the checksums on data files. This application provides assurance to the user about correctness of the data.
+    <sub class="my_note" style="color:blue">笔记：hash function的目的就是保证数据的完整性。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/crypto/data_integrity_check.jpg" alt="Data Integrity Check"/>
+</div>
+
+<p class="indented">
+    The integrity check helps the user to detect any changes made to original file. It however, does not provide any assurance about originality. The attacker, instead of modifying file data, can change the entire file and compute all together new hash and send to the receiver. This integrity check application is useful only if the user is sure about the originality of file.
+    <sub class="my_note" style="color:blue">笔记：hash function并不能保证originality。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Authentication</h2>
+
+<p class="indented">
+    In the last section, we discussed the <strong>data integrity threats</strong> and the use of <strong>hashing technique</strong> to detect if any modification attacks have taken place on the data.
+</p>
+
+<p class="indented">
+    Another type of threat that exist for data is the lack of <strong>message authentication</strong>. In this threat, the user is not sure about the originator of the message. Message authentication can be provided using the cryptographic techniques that use secret keys as done in case of encryption.
+</p>
+
+<h3>Message Authentication Code (MAC)</h3>
+
+<p class="indented">
+    MAC algorithm is a symmetric key cryptographic technique to provide message authentication. For establishing MAC process, the sender and receiver share a symmetric key <code class="w3-codespan">K</code>.
+</p>
+
+<p class="indented">
+    Essentially, a MAC is an encrypted checksum generated on the underlying message that is sent along with a message to ensure message authentication.
+</p>
+
+<p class="indented">
+    The process of using MAC for authentication is depicted in the following illustration
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/crypto/hash/mac.jpg" alt="MAC"/>
+</div>
+
+<p>
+    Let us now try to understand the entire process in detail −
+</p>
+
+<ol>
+    <li>The sender uses some publicly known <strong>MAC algorithm</strong>, inputs the message and the secret key <code class="w3-codespan">K</code> and produces a MAC value.</li>
+    <li>Similar to hash, MAC function also compresses an arbitrary long input into a fixed length output. The major difference between hash and MAC is that MAC uses <span style="color:blue;">secret key</span> during the compression.</li>
+    <li>The sender forwards the message along with the MAC. Here, we assume that the message is sent in the clear, as we are concerned of providing message origin authentication, not confidentiality. If confidentiality is required then the message needs encryption.</li>
+    <li>On receipt of the message and the MAC, the receiver feeds the received message and the shared secret key <code class="w3-codespan">K</code> into the MAC algorithm and re-computes the MAC value.</li>
+    <li>The receiver now checks equality of freshly computed MAC with the MAC received from the sender. If they match, then the receiver accepts the message and assures himself that the message has been sent by the intended sender.</li>
+    <li>If the computed MAC does not match the MAC sent by the sender, the receiver cannot determine whether it is the message that has been altered or it is the origin that has been falsified. As a bottom-line, a receiver safely assumes that the message is not the genuine.</li>
+</ol>
+
+<h3>Limitations of MAC</h3>
+
+<p class="indented">
+    There are two major limitations of MAC, both due to its symmetric nature of operation −
+</p>
+
+<ul>
+    <li><strong>Establishment of Shared Secret</strong>: This requires establishment of shared secret prior to use of MAC.</li>
+    <li>
+        <strong>Inability to Provide Non-Repudiation</strong>:
+        <ul>
+            <li>Non-repudiation is the assurance that a message originator cannot deny any previously sent messages and commitments or actions.</li>
+            <li>MAC technique does not provide a non-repudiation service. If the sender and receiver get involved in a dispute over message origination, MACs cannot provide a proof that a message was indeed sent by the sender.</li>
+            <li>Though no third party can compute the MAC, still sender could deny having sent the message and claim that the receiver forged it, as it is impossible to determine which of the two parties computed the MAC.</li>
+        </ul>
+    </li>
+</ul>
+
+<p class="indented">
+    Both these limitations can be overcome by using the public key based digital signatures discussed in following section.
+</p>
+
+<h2>Confidentiality</h2>
+
+<h3>Digital signatures</h3>
+
+<p class="indented">
+    Digital signature is a cryptographic value that is calculated from the data and a secret key known only by the signer.
+</p>
+
+<p class="indented">
+    In real world, the receiver of message needs assurance that the message belongs to the sender and he should not be able to repudiate the origination of that message. This requirement is very crucial in business applications, since likelihood of a dispute over exchanged data is very high.
+</p>
+
+<h3>Model of Digital Signature</h3>
+
+<p class="indented">
+    As mentioned earlier, the digital signature scheme is based on public key cryptography. The model of digital signature scheme is depicted in the following illustration −
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/crypto/hash/model_digital_signature.jpg" alt="Model of Digital Signature"/>
+</div>
+
+<p>
+    The following points explain the entire process in detail −
+</p>
+
+<ol>
+    <li>Each person adopting this scheme has a public-private key pair.</li>
+    <li>Generally, the key pairs used for encryption/decryption and signing/verifying are different. The private key used for signing is referred to as the signature key and the public key as the verification key.</li>
+    <li>Signer feeds data to the hash function and generates hash of data.</li>
+    <li>Hash value and signature key are then fed to the signature algorithm which produces the digital signature on given hash. Signature is appended to the data and then both are sent to the verifier.</li>
+    <li>Verifier feeds the digital signature and the verification key into the verification algorithm. The verification algorithm gives some value as output.</li>
+    <li>Verifier also runs same hash function on received data to generate hash value.</li>
+    <li>For verification, this hash value and output of verification algorithm are compared. Based on the comparison result, verifier decides whether the digital signature is valid.</li>
+    <li>Since digital signature is created by ‘private’ key of signer and no one else can have this key; the signer cannot repudiate signing the data in future.</li>
+</ol>
+
+<p class="indented">
+    It should be noticed that instead of signing data directly by signing algorithm, usually a hash of data is created. Since the hash of data is a unique representation of data, it is sufficient to sign the hash in place of data. The most important reason of using hash instead of data directly for signing is efficiency of the scheme.
+</p>
+
+<p class="indented">
+    Let us assume RSA is used as the signing algorithm. The encryption/signing process using RSA involves modular exponentiation.
+</p>
+
+<p class="indented">
+    Signing large data through modular exponentiation is computationally expensive and time consuming. The hash of the data is a relatively small digest of the data, hence signing a hash is more efficient than signing the entire data.
+</p>
+
+<h3>Importance of Digital Signature</h3>
+
+<p class="indented">
+    Out of all cryptographic primitives, the digital signature using public key cryptography is considered as very important and useful tool to achieve information security.
+</p>
+
+<p class="indented">
+    Apart from ability to provide <strong>non-repudiation of message</strong>, the digital signature also provides <strong>message authentication</strong> and <strong>data integrity</strong>. Let us briefly see how this is achieved by the digital signature −
+</p>
+
+<ul>
+    <li><b>Message authentication</b> − When the verifier validates the digital signature using public key of a sender, he is assured that signature has been created only by sender who possess the corresponding secret private key and no one else.</li>
+    <li><b>Data Integrity</b> − In case an attacker has access to the data and modifies it, the digital signature verification at receiver end fails. The hash of modified data and the output provided by the verification algorithm will not match. Hence, receiver can safely deny the message assuming that data integrity has been breached.</li>
+    <li><b>Non-repudiation</b> − Since it is assumed that only the signer has the knowledge of the signature key, he can only create unique signature on a given data. Thus the receiver can present data and the digital signature to a third party as evidence if any dispute arises in the future.</li>
+</ul>
+
+<p class="indented">
+    By adding public-key encryption to digital signature scheme, we can create a crypto-system that can provide the four essential elements of security namely − Privacy, Authentication, Integrity, and Non-repudiation.
+</p>
+
+<h2>Confidentiality</h2>
+
+<h3>Encryption with Digital Signature</h3>
+
+<p class="indented">
+    In many digital communications, it is desirable to exchange an encrypted messages than plaintext to achieve confidentiality. In public key encryption scheme, a public (encryption) key of sender is available in open domain, and hence anyone can spoof his identity and send any encrypted message to the receiver.
+</p>
+
+<p class="indented">
+    This makes it essential for users employing PKC(Public Key Cryptography 公钥密码学) for encryption to seek digital signatures along with encrypted data to be assured of message authentication and non-repudiation.
+</p>
+
+<p class="indented">
+    This can archived by combining digital signatures with encryption scheme. Let us briefly discuss how to achieve this requirement. There are two possibilities, <strong>sign-then-encrypt</strong> and <strong>encrypt-then-sign</strong>.
+</p>
+
+<p class="indented">
+    However, the crypto system based on <strong>sign-then-encrypt</strong> can be exploited by receiver to spoof identity of sender and sent that data to third party. Hence, this method is not preferred. The process of <strong>encrypt-then-sign</strong> is more reliable and widely adopted. This is depicted in the following illustration −
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/crypto/hash/encryption_with_digital_signature.jpg" alt="Encryption with Digital Signature"/>
+</div>
+
+<p class="indented">
+    The receiver after receiving the encrypted data and signature on it, first verifies the signature using sender’s public key. After ensuring the validity of the signature, he then retrieves the data through decryption using his private key.
+</p>
+
+
+<h2>References</h2>
+
+<ul>
+    <li><a href="https://www.tutorialspoint.com/cryptography/cryptography_hash_functions.htm" target="_blank">TutorialsPoint: Cryptography Hash functions</a></li>
+    <li><a href="https://www.tutorialspoint.com/cryptography/message_authentication.htm" target="_blank">TutorialsPoint: Message Authentication</a></li>
+    <li><a href="https://www.tutorialspoint.com/cryptography/cryptography_digital_signatures.htm" target="_blank">TutorialsPoint: Cryptography Digital signatures</a></li>
+</ul>

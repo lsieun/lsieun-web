@@ -80,9 +80,14 @@ function toggle_all_sub_note() {
 In the same vein<sub class="my_note" style="color:green">以同样的方式</sub>
 <code style="color:blue"></code>
 <code class="w3-codespan"></code>
+<sub class="my_note" style="color:blue">笔记：</sub>
 <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 
 <div title="HelloWorld.java" class="javacode">
+
+</div>
+
+<div title="" class="plaintext">
 
 </div>
 ```
@@ -136,6 +141,6 @@ Code
 <h2>References</h2>
 
 <ul>
-    <li><a href="https://en.wikipedia.org/wiki/American_Dream" target="_blank">Wiki: American Dream</a></li>
+    <li><a class="external" href="https://en.wikipedia.org/wiki/American_Dream" target="_blank">Wiki: American Dream</a></li>
 </ul>
 ```

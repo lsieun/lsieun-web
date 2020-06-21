@@ -7,17 +7,19 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<p>
+<h2>Secure Hash Algorithm</h2>
+
+<p class="indented">
     The goal of any secure hashing algorithm, is to
     reduce <strong>an arbitrarily sized input</strong> into <strong>an n-bit hash</strong>.
     <sub class="my_note" style="color:blue">笔记：我觉得，这句话就说到了所有Hash算法的本质。</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<table border="1" width="100%" style="text-align: center; border-collapse: collapse;">
+<table class="w3-table-all w3-hoverable w3-centered">
     <caption>Secure Hash Algorithm</caption>
     <thead>
-    <tr>
+    <tr class="w3-green">
         <th>Hash</th>
         <th>Input Size</th>
         <th>Input Block Size</th>
@@ -26,21 +28,21 @@
     </tr>
     </thead>
     <tbody>
-    <tr>
+    <tr class="w3-hover-blue">
         <td>MD5</td>
         <td>arbitrary</td>
         <td>512-bit (64-byte)</td>
         <td>128-bit (16-byte)</td>
         <td>64</td>
     </tr>
-    <tr>
+    <tr class="w3-hover-blue">
         <td>SHA1</td>
         <td>arbitrary</td>
         <td>512-bit (64-byte)</td>
         <td>160-bit (20-byte)</td>
         <td>80</td>
     </tr>
-    <tr>
+    <tr class="w3-hover-blue">
         <td>SHA256</td>
         <td>arbitrary</td>
         <td>512-bit (64-byte)</td>
@@ -50,14 +52,172 @@
     </tbody>
 </table>
 
-<p>
-    <span style="color:red">注意：</span><strong>Input Size</strong>和<strong>Input Block Size</strong>是两个不同的概念。其中，<strong>Input Size</strong>是指输入数据的<b>总大小</b>，对于Secure Hash Algorithm来说，可以处理任意大小的数据，所以是<b>arbitrary</b>。在处理这些输入数据的时候，Secure Hash Algorithm不是一下子就把所有的输入数据全部处理掉，而是分成多次来进行处理。Secure Hash Algorithm对于<b>每一次处理的数据量的大小</b>就称之为<strong>Input Block Size</strong>。
-</p>
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        注意：<strong>Input Size</strong>和<strong>Input Block Size</strong>是两个不同的概念。其中，<strong>Input Size</strong>是指输入数据的<b>总大小</b>，对于Secure Hash Algorithm来说，可以处理任意大小的数据，所以是<b>arbitrary</b>。在处理这些输入数据的时候，Secure Hash Algorithm不是一下子就把所有的输入数据全部处理掉，而是分成多次来进行处理。Secure Hash Algorithm对于<b>每一次处理的数据量的大小</b>就称之为<strong>Input Block Size</strong>。
+    </p>
+</div>
 
-<p>
+<p class="indented">
     举例一：假如输入的总数据量（Input Size）是800-bit(100-byte)，使MD5算法，每一次处理的数据量（Input Block Size）是512-bit (64-byte)，则需要处理两次，第一次处理输入数据的前512-bit (64-byte)，第二次处理输入数据的剩余288-bit(36-byte)。
 </p>
 
-<p>
+<p class="indented">
     举例二：假如输入的总数据量（Input Size）是256-bit(32-byte)，使MD5算法，每一次处理的数据量（Input Block Size）是512-bit (64-byte)，则需要处理一次，这一次就能处理全部的256-bit(32-byte)输入数据。
 </p>
+
+<h2>Message Authentication Code(MAC)</h2>
+
+<p class="indented">
+    In cryptography, an <strong>HMAC</strong> (known as <strong>keyed-hash message authentication code</strong>) is a specific type of <strong>Message Authentication Code (MAC)</strong> involving a cryptographic hash function and a secret cryptographic key. We can have HMAC-MD5 or HMAC-SHA1; the HMAC provides both data integrity and data authentication.
+</p>
+
+<h2>Hash, MAC and Digital Signature</h2>
+
+<p class="indented">
+    A message may be accompanied with a digital signature, a MAC or a message hash, as a proof of some kind.
+
+    Which assurances does each primitive provide to the recipient?
+
+    What kind of keys are needed?
+</p>
+
+<h3>Security Goals</h3>
+
+<p class="indented">
+    These types of cryptographic primitive can be distinguished by the <strong>security goals</strong> they fulfill:
+</p>
+
+<ul>
+    <li><b>Integrity</b>: Can the recipient be confident that the message has not been accidentally modified?</li>
+    <li><b>Authentication</b>: Can the recipient be confident that the message originates from the sender?</li>
+    <li><b>Non-repudiation</b>: If the recipient passes the message and the proof to a third party, can the third party be confident that the message originated from the sender? (Please note that I am talking about non-repudiation in the cryptographic sense, not in the legal sense.)</li>
+</ul>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Cryptographic primitive Security Goal</caption>
+    <tr class="w3-green">
+        <th>Algorithm</th>
+        <th>Integrity</th>
+        <th>Authentication</th>
+        <th>Non-repudiation</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Hash</td>
+        <td>Yes(?)</td>
+        <td>No</td>
+        <td>No</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>MAC</td>
+        <td>Yes</td>
+        <td>Yes</td>
+        <td>No</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Digital Signature</td>
+        <td>Yes</td>
+        <td>Yes</td>
+        <td>Yes</td>
+    </tr>
+</table>
+
+<div class="w3-panel w3-pale-red w3-leftbar w3-rightbar w3-border-red">
+    <p>
+        注释：对于Hash能保证message的integrity，还有其他的见解，我觉得是有道理的。
+        A hash function does not provide integrity, a MAC provides integrity.
+        Instead a cryptographic hash function provides three properties, well defined in the world of cryptography: collision resistance, pre-image resistance and second pre-image resistance. Nothing else.
+    </p>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        For digital signatures, a recipient must be confident that the verification key actually belongs to the sender.<br/>
+        For MACs, a recipient must be confident that the shared symmetric key has only been shared with the sender.
+    </p>
+</div>
+
+<p class="indented">
+    A (unkeyed) <strong>hash of the message</strong>, if appended to the message itself, only protects against accidental changes to the message (or the hash itself), as an attacker who modifies the message can simply calculate a new hash and use it instead of the original one. So this only gives integrity.
+    <sub class="my_note" style="color:blue">笔记：hash只能保证message的integrity。如果attacker能够同时修改message和hash，这样的话就检测不出message被修改过。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    If the hash is transmitted over a different, protected channel, it can also protect the message against modifications. This is sometimes be used with hashes of very big files (like ISO-images), where the hash itself is delivered over HTTPS, while the big file can be transmitted over an insecure channel.
+    <sub class="my_note" style="color:blue">笔记：这里讲了一种使用场景，message在insecure channel上传输，而hash在protected channel上传输，这样就得到一个安全可靠的hash值，再由这个安全的hash来验证message是否被修改。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    A <strong>message authentication code (MAC)</strong> (sometimes also known as <strong>keyed hash</strong>) protects against message forgery by anyone who doesn't know the secret key (shared by sender and receiver).
+</p>
+
+<p class="indented">
+    This means that the receiver can forge any message – thus we have both integrity and authentication (as long as the receiver doesn't have a split personality), but not non-repudiation.
+</p>
+
+<p class="indented">
+    Also an attacker could replay earlier messages authenticated with the same key, so a protocol should take measures against this (e.g. by including message numbers or timestamps). (Also, in case of a two-sided conversation, make sure that either both sides have different keys, or by another way make sure that messages from one side can't sent back by an attacker to this side.)
+    <sub class="my_note" style="color:blue">笔记：这里讲replay attack如何应对</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    MACs can be created from unkeyed hashes (e.g. with the HMAC construction), or created directly as MAC algorithms.
+</p>
+
+<p class="indented">
+    A digital signature is created with a private key, and verified with the corresponding public key of an asymmetric key-pair. Only the holder of the private key can create this signature, and normally anyone knowing the public key can verify it. Digital signatures don't prevent the replay attack mentioned previously.
+</p>
+
+<p class="indented">
+    So this provides all of integrity, authentication, and non-repudiation.
+</p>
+
+<p class="indented">
+    Most signature schemes actually are implemented with the help of a hash function. Also, they are usually slower than MACs, and as such used normally only when there is not yet a shared secret, or the non-repudiation property is important.
+    <sub class="my_note" style="color:blue">笔记：MAC比Digital Signature计算起来要快；而Digital Signature在安全性方面提供了non-repudiation，而MAC却不能提供non-repudiation。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h3>keys</h3>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Kind of keys</caption>
+    <tr class="w3-green">
+        <th>Algorithm</th>
+        <th>Kind of keys</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Hash</td>
+        <td>None</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>MAC</td>
+        <td>Symmetric key</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Digital Signature</td>
+        <td>Asymmetric Key</td>
+    </tr>
+</table>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        So basically, MAC is a Hash that uses a "symmetric" key, Signature is a Hash that uses an asymmetric key.
+    </p>
+</div>
+
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://crypto.stackexchange.com/questions/5646/what-are-the-differences-between-a-digital-signature-a-mac-and-a-hash" target="_blank">StackExchange: What are the differences between a digital signature, a MAC and a hash?</a></li>
+    <li><a class="external" href="https://www.cryptologie.net/article/389/a-hash-function-does-not-provide-integrity/" target="_blank">A hash function does not provide integrity!</a></li>
+</ul>

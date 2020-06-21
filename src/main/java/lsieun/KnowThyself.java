@@ -61,9 +61,11 @@ public class KnowThyself {
                     try {
                         if (key.isAcceptable()) {
                             createChannel(serverChannel, key);
-                        } else if (key.isReadable()) {
+                        }
+                        else if (key.isReadable()) {
                             doRead(key);
-                        } else if (key.isWritable()) {
+                        }
+                        else if (key.isWritable()) {
                             doWrite(key);
                         }
                     } catch (Exception ex) {
@@ -74,7 +76,8 @@ public class KnowThyself {
                                 // 单独处理SocketChannel，是为了复用doClose方法
                                 SocketChannel sc = (SocketChannel) channel;
                                 doClose(sc, ex.getMessage());
-                            } else {
+                            }
+                            else {
                                 // 如果不是SocketChannel，那就会是ServerSocketChannel，
                                 // 但是我觉得，这样的事情应该不会发生
                                 channel.close();
@@ -193,7 +196,8 @@ public class KnowThyself {
         ByteBuffer buff = conn.data();
         if (buff != null && buff.hasRemaining()) {
             response_length = socketChannel.write(buff);
-        } else {
+        }
+        else {
             // 第3步，切换状态（interest）
             response_length = 0;
             selectionKey.interestOps(SelectionKey.OP_READ); // change the key to READ

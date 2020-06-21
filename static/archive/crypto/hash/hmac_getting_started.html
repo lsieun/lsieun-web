@@ -7,148 +7,199 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<h2>Source Code</h2>
 
-<h2>HashAlgorithm.java</h2>
+<h3>HashAlgorithm.java</h3>
 
-<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">@FunctionalInterface
-<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">interface</span> HashAlgorithm <span style="font-weight:bold;color:#D3171B">{</span>
-    <span style="font-weight:bold;color:#7B0052;">byte</span>[] apply(<span style="font-weight:bold;color:#7B0052;">byte</span>[] input, <span style="font-weight:bold;color:#7B0052;">int</span> len);
-<span style="font-weight:bold;color:#D3171B">}</span>
-</pre>
+<div title="HashAlgorithm.java" class="javacode">
+@FunctionalInterface
+public interface HashAlgorithm {
+    byte[] apply(byte[] input);
+}
+</div>
 
-<h2>HMACUtils.java</h2>
+<h3>HMACUtils.java</h3>
 
-<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.util.Arrays;
+<div title="HMACUtils.java" class="javacode">
+import java.util.Arrays;
 
-<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> HMACUtils <span style="font-weight:bold;color:#D3171B">{</span>
-    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] hmac(<span style="font-weight:bold;color:#7B0052;">byte</span>[] key_bytes, <span style="font-weight:bold;color:#7B0052;">byte</span>[] message_bytes, HashAlgorithm hash_algorithm) <span style="font-weight:bold;color:#D3171B">{</span>
-        <span style="font-weight:bold;color:#7B0052;">int</span> block_size = 64;
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] standard_key_bytes = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[block_size];
+public class HMACUtils {
+    public static byte[] hmac(byte[] key_bytes, byte[] message_bytes, HashAlgorithm hash_algorithm) {
+        int block_size = 64;
+        byte[] standard_key_bytes = new byte[block_size];
 
-        <span style="font-weight:bold;color:#7B0052;">int</span> key_length = key_bytes.length;
+        int key_length = key_bytes.length;
 
-        <span style="font-weight:bold;color:#7B0052;">if</span> (key_length &gt; block_size) <span style="font-weight:bold;color:#D3171B">{</span>
-            <span style="font-weight:bold;color:#7B0052;">byte</span>[] key_hash_bytes = hash_algorithm.apply(key_bytes, key_length);
+        if (key_length > block_size) {
+            byte[] key_hash_bytes = hash_algorithm.apply(key_bytes);
             System.arraycopy(key_hash_bytes, 0, standard_key_bytes, 0, key_hash_bytes.length);
-        <span style="font-weight:bold;color:#D3171B">}</span>
-        <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#7B0052;">if</span> (key_length &lt; block_size) <span style="font-weight:bold;color:#D3171B">{</span>
+        }
+        else {
             System.arraycopy(key_bytes, 0, standard_key_bytes, 0, key_length);
-        <span style="font-weight:bold;color:#D3171B">}</span>
-        <span style="font-weight:bold;color:#7B0052;">else</span> <span style="font-weight:bold;color:#D3171B">{</span>
-            System.arraycopy(key_bytes, 0, standard_key_bytes, 0, block_size);
-        <span style="font-weight:bold;color:#D3171B">}</span>
+        }
 
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] inner_key_pad = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[block_size];
-        Arrays.fill(inner_key_pad, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x36);
-        xor(inner_key_pad, standard_key_bytes, block_size);
+        byte[] inner_key_pad = new byte[block_size];
+        Arrays.fill(inner_key_pad, (byte) 0x36);
+        byte[] first_xor_bytes = ByteUtils.xor(inner_key_pad, standard_key_bytes, block_size);
 
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] merge_bytes1 = merge_bytes(inner_key_pad, message_bytes);
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] digest_bytes1 = hash_algorithm.apply(merge_bytes1, merge_bytes1.length);
+        byte[] merge_bytes1 = ByteUtils.concatenate(first_xor_bytes, message_bytes);
+        byte[] digest_bytes1 = hash_algorithm.apply(merge_bytes1);
 
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] outer_key_pad = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[block_size];
-        Arrays.fill(outer_key_pad, (<span style="font-weight:bold;color:#7B0052;">byte</span>) 0x5c);
-        xor(outer_key_pad, standard_key_bytes, block_size);
+        byte[] outer_key_pad = new byte[block_size];
+        Arrays.fill(outer_key_pad, (byte) 0x5c);
+        byte[] second_xor_bytes = ByteUtils.xor(outer_key_pad, standard_key_bytes, block_size);
 
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] merge_bytes2 = merge_bytes(outer_key_pad, digest_bytes1);
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] digest_bytes2 = hash_algorithm.apply(merge_bytes2, merge_bytes2.length);
-        <span style="font-weight:bold;color:#7B0052;">return</span> digest_bytes2;
-    <span style="font-weight:bold;color:#D3171B">}</span>
+        byte[] merge_bytes2 = ByteUtils.concatenate(second_xor_bytes, digest_bytes1);
+        byte[] digest_bytes2 = hash_algorithm.apply(merge_bytes2);
+        return digest_bytes2;
+    }
+}
+</div>
 
-    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> xor(<span style="font-weight:bold;color:#7B0052;">byte</span>[] dest_bytes, <span style="font-weight:bold;color:#7B0052;">byte</span>[] src_bytes, <span style="font-weight:bold;color:#7B0052;">int</span> len) <span style="font-weight:bold;color:#D3171B">{</span>
-        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">int</span> i=0;i&lt;len;i++) <span style="font-weight:bold;color:#D3171B">{</span>
-            dest_bytes[i] = (<span style="font-weight:bold;color:#7B0052;">byte</span>)((dest_bytes[i] & 0xFF) ^ (src_bytes[i] & 0xFF));
-        <span style="font-weight:bold;color:#D3171B">}</span>
-    <span style="font-weight:bold;color:#D3171B">}</span>
+<h2>Test Code</h2>
 
-    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] merge_bytes(<span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes1, <span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes2) <span style="font-weight:bold;color:#D3171B">{</span>
-        <span style="font-weight:bold;color:#7B0052;">int</span> byte1_length = bytes1.length;
-        <span style="font-weight:bold;color:#7B0052;">int</span> byte2_length = bytes2.length;
-        <span style="font-weight:bold;color:#7B0052;">int</span> total_length = byte1_length + byte2_length;
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] result_bytes = <span style="font-weight:bold;color:#7B0052;">new</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[total_length];
-        System.arraycopy(bytes1, 0, result_bytes, 0, byte1_length);
-        System.arraycopy(bytes2, 0, result_bytes, byte1_length, byte2_length);
-        <span style="font-weight:bold;color:#7B0052;">return</span> result_bytes;
-    <span style="font-weight:bold;color:#D3171B">}</span>
-<span style="font-weight:bold;color:#D3171B">}</span>
-</pre>
+<h3>HMAC_Test_MD5.java</h3>
 
-<h2>HMAC_Test_MD5.java</h2>
+<div title="HMAC_Test_MD5.java" class="javacode">
+import java.nio.charset.StandardCharsets;
 
-<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.nio.charset.StandardCharsets;
-<span style="font-weight:bold;color:#7B0052;">import</span> java.util.Formatter;
+public class HMAC_Test_MD5 {
+    public static void main(String[] args) {
+        String example_str = "The quick brown fox jumps over the lazy dog";
+        byte[] input = example_str.getBytes(StandardCharsets.UTF_8);
+        byte[] key_bytes = "shared secret".getBytes(StandardCharsets.UTF_8);
 
-<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> HMAC_Test_MD5 <span style="font-weight:bold;color:#D3171B">{</span>
-    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#D3171B">{</span>
-        String example_str = <span style="color:#2A00FF">"The quick brown fox jumps over the lazy dog"</span>;
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input = example_str.getBytes(StandardCharsets.UTF_8);
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] key_bytes = <span style="color:#2A00FF">"shared secret"</span>.getBytes(StandardCharsets.UTF_8);
+        byte[] hmac_bytes = HMACUtils.hmac(key_bytes, input, MD5Utils::md5_hash);
+        String hex_str = ByteUtils.toHex(hmac_bytes);
+        System.out.println(hex_str); // 0EBDB48B207D3779FCF43AE18DDCF7E6
+    }
+}
+</div>
 
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] hmac_bytes = HMACUtils.hmac(key_bytes, input, MD5Utils::md5_hash);
-        String hex_str = toHex(hmac_bytes);
+<h3>JDK_HMAC_MD5.java</h3>
+
+<div title="JDK_HMAC_MD5.java" class="javacode">
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+public class JDK_HMAC_MD5 {
+    public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException {
+        String example_str = "The quick brown fox jumps over the lazy dog";
+        byte[] input = example_str.getBytes(StandardCharsets.UTF_8);
+        byte[] key_bytes = "shared secret".getBytes(StandardCharsets.UTF_8);
+
+        Mac mac = Mac.getInstance("HmacMD5");
+
+        String algorithm  = "RawBytes";
+        SecretKeySpec key = new SecretKeySpec(key_bytes, algorithm);
+        mac.init(key);
+
+        byte[] mac_bytes = mac.doFinal(input);
+        String hex_str = ByteUtils.toHex(mac_bytes);
+        System.out.println(hex_str); // 0EBDB48B207D3779FCF43AE18DDCF7E6
+    }
+}
+</div>
+
+<h3>HMAC_Test_SHA1.java</h3>
+
+<div title="HMAC_Test_SHA1.java" class="javacode">
+import java.nio.charset.StandardCharsets;
+
+public class HMAC_Test_SHA1 {
+    public static void main(String[] args) {
+        String example_str = "The quick brown fox jumps over the lazy dog";
+        byte[] input = example_str.getBytes(StandardCharsets.UTF_8);
+        byte[] key_bytes = "shared secret".getBytes(StandardCharsets.UTF_8);
+
+        byte[] hmac_bytes = HMACUtils.hmac(key_bytes, input, SHA1Utils::sha1_hash);
+        String hex_str = ByteUtils.toHex(hmac_bytes);
+        System.out.println(hex_str); // BE15352DD80B1EC0CE93898F22EA6ACBEBB0FD81
+    }
+}
+</div>
+
+<h3>JDK_HMAC_SHA1.java</h3>
+
+<div title="JDK_HMAC_SHA1.java" class="javacode">
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+public class JDK_HMAC_SHA1 {
+    public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException {
+        String example_str = "The quick brown fox jumps over the lazy dog";
+        byte[] input = example_str.getBytes(StandardCharsets.UTF_8);
+        byte[] key_bytes = "shared secret".getBytes(StandardCharsets.UTF_8);
+
+        Mac mac = Mac.getInstance("HmacSHA1");
+
+        String algorithm  = "RawBytes";
+        SecretKeySpec key = new SecretKeySpec(key_bytes, algorithm);
+        mac.init(key);
+
+        byte[] mac_bytes = mac.doFinal(input);
+        String hex_str = ByteUtils.toHex(mac_bytes);
+        System.out.println(hex_str); // BE15352DD80B1EC0CE93898F22EA6ACBEBB0FD81
+    }
+}
+</div>
+
+<h3>HMAC_Test_SHA256.java</h3>
+
+<div title="HMAC_Test_SHA256.java" class="javacode">
+import java.nio.charset.StandardCharsets;
+
+public class HMAC_Test_SHA256 {
+    public static void main(String[] args) {
+        String example_str = "The quick brown fox jumps over the lazy dog";
+        byte[] input = example_str.getBytes(StandardCharsets.UTF_8);
+        byte[] key_bytes = "shared secret".getBytes(StandardCharsets.UTF_8);
+
+        byte[] hmac_bytes = HMACUtils.hmac(key_bytes, input, SHA256Utils::sha256_hash);
+        String hex_str = ByteUtils.toHex(hmac_bytes);
+        // E97E97C3FA49782F3FC2CA0C1497DFE948FB029FDC21613E0777E0FF9CDD891B
         System.out.println(hex_str);
-    <span style="font-weight:bold;color:#D3171B">}</span>
+    }
+}
+</div>
 
-    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> String toHex(<span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes) <span style="font-weight:bold;color:#D3171B">{</span>
-        StringBuilder sb = <span style="font-weight:bold;color:#7B0052;">new</span> StringBuilder();
-        Formatter fm = <span style="font-weight:bold;color:#7B0052;">new</span> Formatter(sb);
-        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">byte</span> b : bytes) <span style="font-weight:bold;color:#D3171B">{</span>
-            fm.format(<span style="color:#2A00FF">"%02X "</span>, (b & 0xFF));
-        <span style="font-weight:bold;color:#D3171B">}</span>
-        <span style="font-weight:bold;color:#7B0052;">return</span> sb.toString();
-    <span style="font-weight:bold;color:#D3171B">}</span>
-<span style="font-weight:bold;color:#D3171B">}</span>
-</pre>
+<h3>JDK_HMAC_SHA256.java</h3>
 
-<h2>HMAC_Test_SHA1.java</h2>
+<div title="JDK_HMAC_SHA256.java" class="javacode">
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
-<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.nio.charset.StandardCharsets;
-<span style="font-weight:bold;color:#7B0052;">import</span> java.util.Formatter;
+public class JDK_HMAC_SHA256 {
+    public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException {
+        String example_str = "The quick brown fox jumps over the lazy dog";
+        byte[] input = example_str.getBytes(StandardCharsets.UTF_8);
+        byte[] key_bytes = "shared secret".getBytes(StandardCharsets.UTF_8);
 
-<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> HMAC_Test_SHA1 <span style="font-weight:bold;color:#D3171B">{</span>
-    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#D3171B">{</span>
-        String example_str = <span style="color:#2A00FF">"The quick brown fox jumps over the lazy dog"</span>;
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input = example_str.getBytes(StandardCharsets.UTF_8);
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] key_bytes = <span style="color:#2A00FF">"shared secret"</span>.getBytes(StandardCharsets.UTF_8);
+        Mac mac = Mac.getInstance("HmacSHA256");
 
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] hmac_bytes = HMACUtils.hmac(key_bytes, input, SHA1Utils::sha1_hash);
-        String hex_str = toHex(hmac_bytes);
+        String algorithm  = "RawBytes";
+        SecretKeySpec key = new SecretKeySpec(key_bytes, algorithm);
+        mac.init(key);
+
+        byte[] mac_bytes = mac.doFinal(input);
+        String hex_str = ByteUtils.toHex(mac_bytes);
+        // E97E97C3FA49782F3FC2CA0C1497DFE948FB029FDC21613E0777E0FF9CDD891B
         System.out.println(hex_str);
-    <span style="font-weight:bold;color:#D3171B">}</span>
+    }
+}
+</div>
 
-    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> String toHex(<span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes) <span style="font-weight:bold;color:#D3171B">{</span>
-        StringBuilder sb = <span style="font-weight:bold;color:#7B0052;">new</span> StringBuilder();
-        Formatter fm = <span style="font-weight:bold;color:#7B0052;">new</span> Formatter(sb);
-        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">byte</span> b : bytes) <span style="font-weight:bold;color:#D3171B">{</span>
-            fm.format(<span style="color:#2A00FF">"%02X "</span>, (b & 0xFF));
-        <span style="font-weight:bold;color:#D3171B">}</span>
-        <span style="font-weight:bold;color:#7B0052;">return</span> sb.toString();
-    <span style="font-weight:bold;color:#D3171B">}</span>
-<span style="font-weight:bold;color:#D3171B">}</span>
-</pre>
+<h2>References</h2>
 
-<h2>HMAC_Test_SHA256.java</h2>
-
-<pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">import</span> java.nio.charset.StandardCharsets;
-<span style="font-weight:bold;color:#7B0052;">import</span> java.util.Formatter;
-
-<span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">class</span> HMAC_Test_SHA256 <span style="font-weight:bold;color:#D3171B">{</span>
-    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">void</span> main(String[] args) <span style="font-weight:bold;color:#D3171B">{</span>
-        String example_str = <span style="color:#2A00FF">"The quick brown fox jumps over the lazy dog"</span>;
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] input = example_str.getBytes(StandardCharsets.UTF_8);
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] key_bytes = <span style="color:#2A00FF">"shared secret"</span>.getBytes(StandardCharsets.UTF_8);
-
-        <span style="font-weight:bold;color:#7B0052;">byte</span>[] hmac_bytes = HMACUtils.hmac(key_bytes, input, SHA256Utils::sha256_hash);
-        String hex_str = toHex(hmac_bytes);
-        System.out.println(hex_str);
-    <span style="font-weight:bold;color:#D3171B">}</span>
-
-    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> String toHex(<span style="font-weight:bold;color:#7B0052;">byte</span>[] bytes) <span style="font-weight:bold;color:#D3171B">{</span>
-        StringBuilder sb = <span style="font-weight:bold;color:#7B0052;">new</span> StringBuilder();
-        Formatter fm = <span style="font-weight:bold;color:#7B0052;">new</span> Formatter(sb);
-        <span style="font-weight:bold;color:#7B0052;">for</span> (<span style="font-weight:bold;color:#7B0052;">byte</span> b : bytes) <span style="font-weight:bold;color:#D3171B">{</span>
-            fm.format(<span style="color:#2A00FF">"%02X "</span>, (b & 0xFF));
-        <span style="font-weight:bold;color:#D3171B">}</span>
-        <span style="font-weight:bold;color:#7B0052;">return</span> sb.toString();
-    <span style="font-weight:bold;color:#D3171B">}</span>
-<span style="font-weight:bold;color:#D3171B">}</span>
-</pre>
+<ul>
+    <li><a href="/archive/crypto/byte_utils.html" target="_blank">ByteUtils.java</a></li>
+</ul>

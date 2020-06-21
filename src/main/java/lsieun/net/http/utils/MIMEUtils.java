@@ -13,6 +13,7 @@ public class MIMEUtils {
         mime_map.put(".ico", "image/x-icon");
         mime_map.put(".jpg", "image/jpeg");
         mime_map.put(".png", "image/png");
+        mime_map.put(".svg", "image/svg+xml");
         mime_map.put(".woff2", "font/woff2");
         mime_map.put(".mp4", "video/mp4");
 //        mime_map.put("", "");

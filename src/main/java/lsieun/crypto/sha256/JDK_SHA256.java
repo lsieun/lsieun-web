@@ -1,9 +1,10 @@
 package lsieun.crypto.sha256;
 
+import lsieun.crypto.utils.ByteUtils;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Formatter;
 
 public class JDK_SHA256 {
     public static void main(String[] args) throws NoSuchAlgorithmException {
@@ -14,16 +15,8 @@ public class JDK_SHA256 {
         md.update(input);
         byte[] digest = md.digest();
 
-        String hex_str = toHex(digest);
+        String hex_str = ByteUtils.toHex(digest);
+        // D7A8FBB307D7809469CA9ABCB0082E4F8D5651E46D3CDB762D02D0BF37C9E592
         System.out.println(hex_str);
-    }
-
-    public static String toHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        Formatter fm = new Formatter(sb);
-        for (byte b : bytes) {
-            fm.format("%02X ", (b & 0xFF));
-        }
-        return sb.toString();
     }
 }

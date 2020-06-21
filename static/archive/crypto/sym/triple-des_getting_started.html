@@ -50,7 +50,7 @@ public class TripleDESUtils {
 }
 </div>
 
-<h2>Test</h2>
+<h2>Test Code</h2>
 
 <h3>Sample Data</h3>
 
@@ -78,7 +78,7 @@ public class TripleDESSample {
 
 <hr/>
 
-<h3>Test Code</h3>
+<h3>TripleDESTest_CBC.java</h3>
 
 <div title="TripleDESTest_CBC.java" class="javacode">
 import java.util.Arrays;
@@ -94,7 +94,13 @@ public class TripleDESTest_CBC {
 
         int block_size = DESConst.DES_BLOCK_SIZE;
         byte[] encrypted_bytes = CBCUtils.cbc_encrypt(input, key, iv, block_size, TripleDESUtils::des_block_encrypt);
-        byte[] decrypted_bytes = CBCUtils.cbc_decrypt(encrypted_bytes, key, iv, block_size, TripleDESUtils::des_block_decrypt);
+        byte[] decrypted_bytes = CBCUtils.cbc_decrypt(
+                                    encrypted_bytes,                  // 加密后的数据
+                                    key,                              // 密码
+                                    iv,                               // 初始向量
+                                    block_size,                       // 每次处理的数据量
+                                    TripleDESUtils::des_block_decrypt // 解密算法
+                                );
 
         System.out.println(Arrays.equals(output, encrypted_bytes));
         System.out.println(String.format(FORMAT, "original bytes", ByteUtils.toHex(input)));
@@ -116,6 +122,6 @@ decrypted bytes: 6162636465666768
 
 <ul>
     <li><a href="/archive/crypto/byte_utils.html" target="_blank">ByteUtils.java</a></li>
-    <li><a href="/archive/crypto/sym/des_core_getting_started.html" target="_blank">DESUtils.java</a></li>
+    <li><a href="/archive/crypto/sym/des_core_getting_started.html" target="_blank">DES Getting Started</a></li>
     <li><a href="/archive/crypto/sym/cbc_utils.html" target="_blank">CBCUtils.java</a></li>
 </ul>

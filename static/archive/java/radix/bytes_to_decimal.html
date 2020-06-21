@@ -1,0 +1,92 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">From bytes To Decimal</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_radix.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>ByteBuffer</h2>
+
+<div title="使用ByteBuffer" class="javacode">
+public static byte[] fromShort(short x) {
+    ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
+    buffer.putShort(x);
+    return buffer.array();
+}
+
+public static short toShort(byte[] bytes) {
+    ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
+    buffer.put(bytes);
+    buffer.flip();//need flip
+    return buffer.getShort();
+}
+
+public static byte[] fromInt(int x) {
+    ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
+    buffer.putInt(x);
+    return buffer.array();
+}
+
+public static int toInt(byte[] bytes) {
+    ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
+    buffer.put(bytes);
+    buffer.flip();//need flip
+    return buffer.getInt();
+}
+
+public static byte[] fromLong(long x) {
+    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+    buffer.putLong(x);
+    return buffer.array();
+}
+
+public static long toLong(byte[] bytes) {
+    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+    buffer.put(bytes);
+    buffer.flip();//need flip
+    return buffer.getLong();
+}
+
+public static byte[] fromFloat(float x) {
+    ByteBuffer buffer = ByteBuffer.allocate(Float.BYTES);
+    buffer.putFloat(x);
+    return buffer.array();
+}
+
+public static float toFloat(byte[] bytes) {
+    ByteBuffer buffer = ByteBuffer.allocate(Float.BYTES);
+    buffer.put(bytes);
+    buffer.flip();//need flip
+    return buffer.getFloat();
+}
+
+public static byte[] fromDouble(double x) {
+    ByteBuffer buffer = ByteBuffer.allocate(Double.BYTES);
+    buffer.putDouble(x);
+    return buffer.array();
+}
+
+public static double toDouble(byte[] bytes) {
+    ByteBuffer buffer = ByteBuffer.allocate(Double.BYTES);
+    buffer.put(bytes);
+    buffer.flip();//need flip
+    return buffer.getDouble();
+}
+</div>
+
+<h2>&gt;&gt;</h2>
+
+<div title="shift" class="javacode">
+public static byte[] fromLong(long num) {
+    int size = Long.BYTES;
+    byte[] bytes = new byte[size];
+
+    for (int i = 0; i < size; i++) {
+        bytes[i] = (byte) ((num >> ((size - 1 - i) * 8)) & 0xFF);
+    }
+
+    return bytes;
+}
+</div>

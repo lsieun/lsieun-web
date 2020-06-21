@@ -1,0 +1,59 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Preimage Attack</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_attack.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Preimage Attack</h2>
+
+<p class="indented">
+    In cryptography, a <strong>preimage attack</strong> on cryptographic hash functions tries to find a message that has a specific hash value.
+    <sub class="my_note" style="color:blue">笔记：Hash算法的正常过程是这样的，“输入数据--&gt; Hash算法 --&gt; 输出数据”；而pre-image attack是逆向进行的，是从“输出数据”入手，希望找到相应的”输入数据“。它的着手点有两处，第一个着手点是”Hash算法“，从Hash算法的计算过程中找出破绽，从而实现逆向计算；第二个着手点是”输入数据“，分析输入数据的本身是不是有某种结构特征，从而发现规律，找到类似的输入数据。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    A cryptographic hash function should resist attacks on its preimage (set of possible inputs).
+    <sub class="my_note" style="color:blue">笔记：一个合格的Hash算法，应该具备防御pre-image attack的能力。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    In the context of attack, there are two types of preimage resistance:
+</p>
+
+<ul>
+    <li>
+        <strong>preimage resistance</strong>: for essentially all pre-specified outputs, it is computationally infeasible to find any input that hashes to that output, i.e., given y, it is difficult to find an x such that h(x) = y.
+        <sub class="my_note" style="color:blue">笔记：这里是“算法”本身的角度，其关键点是不能进行逆向运算</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        <strong>second-preimage resistance</strong>: it is computationally infeasible to find any second input which has the same output as that of a specified input, i.e., given x, it is difficult to find a second preimage x′ ≠ x such that h(x) = h(x′).
+        <sub class="my_note" style="color:blue">笔记：这里是“输入数据”的角度，其关键点是找到两个不同的输入数据，让它们有相同的输出结果。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ul>
+
+<h2>Collision Resistance</h2>
+
+<p class="indented">
+    These can be compared with a collision resistance, in which it is computationally infeasible to find any two distinct inputs x, x′ that hash to the same output, i.e., such that h(x) = h(x′).
+    <sub class="my_note" style="color:blue">笔记：与pre-image resistance和second pre-image resistance相似的一个概念是collision resistance</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The relation between <strong>collision resistance</strong>, <strong>second preimage resistance</strong> and <strong>preimage resistance</strong> is rather subtle, and it depends on the formalization of the definition: Under certain conditions, collision resistance implies <strong>second-preimage resistance</strong>, but does not guarantee <strong>preimage resistance</strong>; Conversely, a second-preimage attack implies a collision attack.
+    <sub class="my_note" style="color:blue">笔记：这三个概念的差异很微妙</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a href="https://en.wikipedia.org/wiki/Preimage_attack" target="_blank">Wiki: Preimage attack</a></li>
+</ul>

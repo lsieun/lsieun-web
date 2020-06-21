@@ -7,6 +7,10 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<h2>Normal Transformation</h2>
+
+<h2>Complex Transformation</h2>
+
 <p class="indented">
     This isn’t the whole story, though — every four iterations, there’s a complex
     transformation function applied to the previous four bytes before it is XORed
@@ -15,7 +19,7 @@
     <strong>XORing it with a <a href="/archive/crypto/sym/aes_core_round_constant.html">round constant</a></strong>.
 </p>
 
-<h2>Rotation</h2>
+<h3>Rotation</h3>
 
 <p class="indented">
     Rotation is straightforward and easy to understand. The first byte is overwritten
@@ -37,7 +41,7 @@ public static void rotate_word(byte[] word) {
 }
 </div>
 
-<h2>Substitution</h2>
+<h3>Substitution</h3>
 
 <p class="indented">
     The substitution involves looking up each byte in a translation table and then
@@ -92,11 +96,62 @@ public static int[][] sbox = {
 };
 </div>
 
-<p class="indented">
+<h3>XOR Round Constant</h3>
 
+<p class="indented">
+    Finally, the rotated, substituted value is XORed with the <strong>round constant</strong>.
+    <sub class="my_note" style="color:blue">笔记：第一步是rotation，第二步是substitution，第三步是XOR round constant。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
 <p class="indented">
-
+    <strong>The low-order three bytes of the round constant</strong> are always 0, and <strong>the high-order
+    byte</strong> starts at <code class="w3-codespan">0x01</code> and shifts left every four iterations, so that it becomes <code class="w3-codespan">0x02</code>
+    in the eighth iteration, <code class="w3-codespan">0x04</code> in the twelfth, and so on.
+    <sub class="my_note" style="color:blue">笔记：round constant由4个byte组成，后面3个byte一直是0,只有最前面的1个byte发生变化，变化的规则是shift left。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
+<p class="indented">
+    Therefore, the first round constant, applied at iteration #4 if the key length is 128 bits, iteration #6 if the
+    key length is 192 bits, and iteration #8 if the key length is 256 bits, is <code class="w3-codespan">0x01000000</code>.
+    The second round constant, applied at iteration #8, #12, or #16 depending on
+    key length, is <code class="w3-codespan">0x02000000</code>. The third at iteration #12, #18, or #24 is <code class="w3-codespan">0x04000000</code>,
+    and so on.
+    <sub class="my_note" style="color:blue">笔记：对于不同长度的key，它的运行周期是不一样的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    If you’ve been following closely, though, you may notice that for a 128-bit key,
+    the round constant is left-shifted 10 times because a 128-bit key requires 44 iterations
+    with a left-shift occurring every four iterations. However, if you left-shift a
+    single byte eight times, you end up with zeros from that point on. Instead, AES
+    mandates that, when the left-shift overflows, you XOR the result — which in this
+    case is zero — with <code class="w3-codespan">0x1B</code>. Why <code class="w3-codespan">0x1B</code>? Well, take a look at the first 51 iterations
+    of this simple operation – left shift and XOR with <code class="w3-codespan">0x1B</code> on overflow:
+</p>
+
+<div title="left shift and XOR with 0x1B on overflow" class="plaintext">
+01, 02, 04, 08, 10, 20, 40, 80, 1b, 36, 6c, d8, ab, 4d, 9a, 2f, 5e, bc, 63, c6, 97, 35, 6a,
+d4, b3, 7d, fa, ef, c5, 91, 39, 72, e4, d3, bd, 61, c2, 9f, 25, 4a, 94, 33, 66, cc, 83, 1d,
+3a, 74, e8, cb, 8d
+</div>
+
+<p class="indented">
+    After the 51<sup>st</sup> iteration, it wraps back around to 0x01 and starts repeating.
+</p>
+
+<h3>Frequency</h3>
+
+<p class="indented">
+    The 192-bit key schedule is the same, except that the rotation, substitution
+    and round-constant XOR is applied every sixth iteration instead of every fourth.
+</p>
+
+<p class="indented">
+    For a 256-bit key, rotation, substitution, and XORing happens every eighth iteration.
+    Because every eight iterations doesn’t work out to that many, a 256-bit key
+    schedule adds one small additional wrinkle — every fourth iteration, substitution
+    takes place, but rotation and XOR — only take place every eighth iteration.
+</p>

@@ -1,9 +1,9 @@
 package lsieun.crypto.hmac;
 
 import lsieun.crypto.md5.MD5Utils;
+import lsieun.crypto.utils.ByteUtils;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Formatter;
 
 public class HMAC_Test_MD5 {
     public static void main(String[] args) {
@@ -12,16 +12,7 @@ public class HMAC_Test_MD5 {
         byte[] key_bytes = "shared secret".getBytes(StandardCharsets.UTF_8);
 
         byte[] hmac_bytes = HMACUtils.hmac(key_bytes, input, MD5Utils::md5_hash);
-        String hex_str = toHex(hmac_bytes);
-        System.out.println(hex_str);
-    }
-
-    public static String toHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        Formatter fm = new Formatter(sb);
-        for (byte b : bytes) {
-            fm.format("%02X ", (b & 0xFF));
-        }
-        return sb.toString();
+        String hex_str = ByteUtils.toHex(hmac_bytes);
+        System.out.println(hex_str); // 0EBDB48B207D3779FCF43AE18DDCF7E6
     }
 }

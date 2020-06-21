@@ -1,0 +1,160 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">X.509 Certificate</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>A</h2>
+
+<h3>AlgorithmIdentifier</h3>
+
+<div title="AlgorithmIdentifier" class="plaintext">
+AlgorithmIdentifier  ::=  SEQUENCE  {
+    algorithm               OBJECT IDENTIFIER,
+    parameters              ANY DEFINED BY algorithm OPTIONAL  }
+</div>
+
+<h2>C</h2>
+
+<h3>Certificate</h3>
+
+<div title="Certificate" class="plaintext">
+Certificate  ::=  SEQUENCE  {
+    tbsCertificate       TBSCertificate,
+    signatureAlgorithm   AlgorithmIdentifier,
+    signatureValue       BIT STRING  }
+</div>
+
+<h3>CertificateSerialNumber</h3>
+
+<div title="CertificateSerialNumber" class="plaintext">
+CertificateSerialNumber  ::=  INTEGER
+</div>
+
+<h2>D</h2>
+
+<h3>DHPublicKey</h3>
+
+<div title="DHPublicKey" class="plaintext">
+DHPublicKey ::= INTEGER -- public key, y = g^x mod p
+</div>
+
+<h3>DomainParameters</h3>
+
+<div title="DomainParameters" class="plaintext">
+DomainParameters ::= SEQUENCE {
+      p       INTEGER, -- odd prime, p=jq +1
+      g       INTEGER, -- generator, g
+      q       INTEGER, -- factor of p-1
+      j       INTEGER OPTIONAL, -- subgroup factor
+      validationParms  ValidationParms OPTIONAL }
+</div>
+
+<h2>E</h2>
+
+<h3>Extension</h3>
+
+<div title="Extension" class="plaintext">
+Extension  ::=  SEQUENCE  {
+    extnID      OBJECT IDENTIFIER,
+    critical    BOOLEAN DEFAULT FALSE,
+    extnValue   OCTET STRING  }
+</div>
+
+<h3>Extensions</h3>
+
+<div title="Extensions" class="plaintext">
+Extensions  ::=  SEQUENCE SIZE (1..MAX) OF Extension
+</div>
+
+<h2>R</h2>
+
+<h3>RSAPublicKey</h3>
+
+<div title="RSAPublicKey" class="plaintext">
+RSAPublicKey ::= SEQUENCE {
+    modulus            INTEGER, -- n
+    publicExponent     INTEGER  -- e -- }
+</div>
+
+<h2>S</h2>
+
+<h3>SubjectPublicKeyInfo</h3>
+
+<div title="SubjectPublicKeyInfo" class="plaintext">
+SubjectPublicKeyInfo  ::=  SEQUENCE  {
+    algorithm            AlgorithmIdentifier,
+    subjectPublicKey     BIT STRING  }
+</div>
+
+<h2>T</h2>
+
+<h3>TBSCertificate</h3>
+
+<p class="indented">
+    <code>TBS</code> stands for <b>To Be Signed</b>.
+</p>
+
+<div title="TBSCertificate" class="plaintext">
+TBSCertificate  ::=  SEQUENCE  {
+    version         [0]  EXPLICIT Version DEFAULT v1,
+    serialNumber         CertificateSerialNumber,
+    signature            AlgorithmIdentifier,
+    issuer               Name,
+    validity             Validity,
+    subject              Name,
+    subjectPublicKeyInfo SubjectPublicKeyInfo,
+    issuerUniqueID  [1]  IMPLICIT UniqueIdentifier OPTIONAL, -- If present, version shall be v2 or v3
+    subjectUniqueID [2]  IMPLICIT UniqueIdentifier OPTIONAL, -- If present, version shall be v2 or v3
+    extensions      [3]  EXPLICIT Extensions OPTIONAL        -- If present, version shall be v3
+    }
+</div>
+
+<h3>Time</h3>
+
+<div title="Time" class="plaintext">
+Time ::= CHOICE {
+    utcTime        UTCTime,
+    generalTime    GeneralizedTime }
+</div>
+
+<h2>U</h2>
+
+<h3>UniqueIdentifier</h3>
+
+<div title="UniqueIdentifier" class="plaintext">
+UniqueIdentifier  ::=  BIT STRING
+</div>
+
+<h2>V</h2>
+
+<h3>ValidationParms</h3>
+
+<div title="ValidationParms" class="plaintext">
+ValidationParms ::= SEQUENCE {
+      seed             BIT STRING,
+      pgenCounter      INTEGER }
+</div>
+
+<h3>Validity</h3>
+
+<div title="Validity" class="plaintext">
+Validity ::= SEQUENCE {
+    notBefore      Time,
+    notAfter       Time }
+</div>
+
+<h3>Version</h3>
+
+<div title="Version" class="plaintext">
+Version  ::=  INTEGER  {  v1(0), v2(1), v3(2)  }
+</div>
+
+<h3></h3>
+
+<div title="" class="plaintext">
+</div>
+

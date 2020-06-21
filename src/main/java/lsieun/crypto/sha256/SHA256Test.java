@@ -1,24 +1,17 @@
 package lsieun.crypto.sha256;
 
+import lsieun.crypto.utils.ByteUtils;
+
 import java.nio.charset.StandardCharsets;
-import java.util.Formatter;
 
 public class SHA256Test {
     public static void main(String[] args) {
         String example_str = "The quick brown fox jumps over the lazy dog";
         byte[] input = example_str.getBytes(StandardCharsets.UTF_8);
-        byte[] digest = SHA256Utils.sha256_hash(input, input.length);
+        byte[] digest = SHA256Utils.sha256_hash(input);
 
-        String hex_str = toHex(digest);
+        String hex_str = ByteUtils.toHex(digest);
+        // D7A8FBB307D7809469CA9ABCB0082E4F8D5651E46D3CDB762D02D0BF37C9E592
         System.out.println(hex_str);
-    }
-
-    public static String toHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        Formatter fm = new Formatter(sb);
-        for (byte b : bytes) {
-            fm.format("%02X ", (b & 0xFF));
-        }
-        return sb.toString();
     }
 }
