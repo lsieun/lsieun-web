@@ -1,0 +1,279 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASN.1 Story</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>A diversity of machine architectures</h2>
+
+<p class="indented">
+    History has proved that <strong>data information is crucial</strong>, especially for cultural
+    exchanges at first and then for developing an international economy.
+    <strong>And more and more computing applications of all kinds are exchanging
+    ever more complex data.</strong> Only think about banking exchange
+    applications or airlines that have to manage bookings, staffs, routes,
+    planes, maintenance, etc. or even mail order companies, which need to
+    transfer data from their headquarters to their store houses, to make out
+    the tremendous complexity of the data structures involved.
+    <sub class="my_note" style="color:blue">笔记：data information是重要的，data exchange促进了文化和经济的发展，在现在这个时代，越来越多的计算机程序所做的事情就是exchange data。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Contrary to common belief, these exchanges, though initially sped
+    up by information technologies and then reinforced by the increase of
+    telecommunication networks, have not simplified their structures. <sub class="my_note" style="color:green">笔记：虽然information technologies和telecommunication networks让data exchange变得方便和快捷，但是data exchange使用数据结构(structure)却并没有因此而简化。</sub>
+    <strong>Indeed, networks and computers constitute a more and more heterogeneous
+    world: computers can have different internal representation modes
+    for the data they store.</strong><sub class="my_note" style="color:green">笔记：data exchange的数据结构(structure)没有简化的原因就是，networks和computer构成了一个异构的世界（heterogeneous world），data exchange需要化解heterogeneous world中的各种差异才能完成。</sub> For example, a great majority uses the ASCII
+    encoding, but some mainframes, such as IBM’s, handle EBCDIC encoding.
+    Most of PCs use 16 or 32-bit memory-word in two’s complement
+    arithmetic but some mainframes, sailing out of the mainstream, use 60-bit word in one’s complement arithmetic for instance.
+    <sub class="my_note" style="color:blue">笔记：data exchange是一个理想的目标，它需要克服现实世界中networks和computers中存在的具体差异。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    <strong>A much more insidious</strong><sub class="my_note" style="color:green">潜伏的；隐袭的；隐伏的 spreading gradually or without being noticed, but causing serious harm</sub> difference is the following: x86 Intel chips,
+    for example, order <strong>the bits of a byte</strong> from right to left whereas Motorola
+    does just the opposite.
+    <sub class="my_note" style="color:blue">笔记：还有一个差异就是字节序。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/computer/diagram-little-vs-big-endian.gif" alt="Little Endian vs. Big Endian"/>
+</div>
+
+<p class="indented">
+    This makes Danny Cohen<sub class="my_note" style="color:green">笔记：Danny Cohen，计算机科学家，1937年12月9日—2019年8月12日。Danny 最为人所知的事迹是在1980年通过其具有重大影响的论文《论圣战以及对和平的祈祷》（On holy wars and a plea for peace），为计算机科学界引入了字节序（endianness）的概念。Danny 将字节序归结为一个异常简单的问题：消息中正确的字节顺序是什么？并用外行人听得懂的浅显语言解释了这个问题，逐层解读，这一具有深远意义的贡献使他在现代计算历史长河中拥有一席之地。2012年，互联网名人堂将 Danny Cohen 列入名录，以表彰这位先驱。</sub> call Intel a ‘little Endian’
+    and Motorola a ‘big Endian’, referring to theological arguments between
+    Catholics and Protestants in Swift’s<sub class="my_note" style="color:green">笔记：乔纳森·斯威夫特 Jonathan Swift （1667年11月30日—1745年10月19日），爱尔兰作家，政论家，讽刺文学大师，以著名的《格列佛游记》和《一只桶的故事》等作品闻名于世，他曾被高尔基称为“世界文学创造者之一”。</sub> Gulliver’s Travels<sub class="my_note" style="color:green">笔记：格列佛游记</sub> as to whether
+    boiled eggs should be broken at the top or the bottom!
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/computer/cartoon_little_endian_vs_big_endian.png" alt="Little Endian vs. Big Endian"/>
+</div>
+
+<p class="indented">
+    To prevent the ‘big Endians’ manufacturers (or the ‘little Endians’
+    manufacturers if you are on the ‘big Endians’ side’) from being banished
+    to remote Blefuscu Island where communicating with the ‘little Endians’
+    is no longer possible, the latter would have to adopt the former’s convention.
+    But we know that, in order to avoid any compatibility
+    malfunctions<sub class="my_note" style="color:green">运转失常；失灵；出现故障 to fail to work correctly</sub> in their own products or even to preserve their position of
+    hegemony<sub class="my_note" style="color:green">支配权；霸权 control by one country, organization, etc. over other countries, etc. within a particular group</sub> in the market, <strong>few manufacturers would be inclined to sign
+    such an armistice</strong><sub class="my_note" style="color:green">休战；停战；休战条约；停战协定 a formal agreement during a war to stop fighting and discuss making peace</sub>. And it is highly unlikely
+    that one day some standard would define once for all<sub class="my_note" style="color:green">笔记：once for all 一劳永逸地</sub> an international internal data representation mode...
+    <sub class="my_note" style="color:blue">笔记：networks和computer构成了一个heterogeneous world，事实上，没有制造商（manufacturers）愿意签署“停战协议”，所以硬件设备（machine architecture）上的差异会一直存在下去。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>A diversity of programming languages</h2>
+
+<p class="indented">
+    This <strong>heterogeneousness of machine architectures</strong> goes along with <strong>a great
+    diversity in programming languages</strong>. For example, some data may be
+    represented by an array of integers in one language and by a list of
+    integers in another. Besides, a language may use its own representation
+    in the internal memory: in C language, for instance, the ‘\0’ character
+    is added at the end of a string and programmers are free for their own
+    defined boolean values because none exists by default.
+    <sub class="my_note" style="color:blue">笔记：现实生活当中，一方面，不同的machine architecture存在差异，另一方面，同一种machine architecture上的不同programming language也存在差异。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    For example, a data structure including a <code>name</code> declared as a 30-character string,
+    a positive integer for the <code>age</code>, and the <code>gender</code> (male, female or unknown) may be
+    represented as in the following figure, in two very different ways in C and Objective Caml.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/crypto/cert/data_structure_in_two_programming_language.png" alt="Data structure in two programming languages"/>
+</div>
+
+<p>
+    Note in particular that:
+</p>
+
+<ul>
+    <li>the field <code>name</code> ends with a NULL byte in C but not in Objective Caml;</li>
+    <li>the <code>name</code> field size is not limited in Objective Caml;</li>
+    <li>nothing is known about the internal representation of <code>age</code> (one’s or two’s complement?...);</li>
+    <li>the default values (provided they exist) of the enumerated type variables are unknown in Objective Caml.</li>
+</ul>
+
+<p>
+    These remarks bring up the following questions:
+</p>
+
+<ul>
+    <li>
+        do we have to keep the terminating <code>null</code> byte when transferring
+        data? Does the C program have to skip out these values? Or is it
+        up to the Objective Caml program to add it before transferring?
+    </li>
+    <li>
+        How can we transfer the <code>gender</code> of a person without one of the
+        three identifiers as a string (which can be arbitrary long) while
+        keeping the ‘semantics’ (that is, the common acceptance of the identifier)?
+    </li>
+</ul>
+
+<p class="indented">
+    The reader should now be convinced of the necessity of a <strong>transfer
+    notation</strong> together with the need of <strong>conversion programs</strong> to and from this
+    notation.
+    <sub class="my_note" style="color:blue">笔记：既有machine architecture之间的差异，又有programming language之间的差异，要实现data exchange就要有一种处于中间位置的转换程序。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Conversion programs</h2>
+
+<p class="indented">
+    Bearing in mind the variety of internal data representations we have just
+    described, how does one make <code>n</code> machines ‘converse’?
+    <sub class="my_note" style="color:blue">笔记：面对machine architecture和programming language的差异，要实现data exchange要使用什么样的程序呢？</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/crypto/cert/two_types_of_communications.png" alt="Two types of communications"/>
+</div>
+
+<p class="indented">
+    We could decide that every machine knows the internal data representation of its <code>n−1</code> neighbors so
+    that the data formats is agreed to be the receiver’s or sender’s. Should
+    the dialog take place both ways, this would require <code>n * (n − 1)</code> conversion
+    programs. This kind of communication has the undeniable advantage of
+    translating data only once during the transfer. Although it could have
+    been a decisive argument when processing time was a limiting factor, it
+    is no longer relevant for today’s data transfer.
+    <sub class="my_note" style="color:blue">笔记：共两种方法，这是第一种方法，图(a)</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    We could also make up a common transfer format that would need
+    to be agreed upon among different machines (or even better, standard-
+    ized at an international level...). From Figure (b) it follows that <code>n</code>
+    encoders and <code>n</code> decoders (<code>2 * n</code> conversion programs
+    altogether) would be needed, which is obviously smaller than <code>n * (n − 1)</code>
+    when <code>n</code>, the number of machines, is greater than 3.
+    <sub class="my_note" style="color:blue">笔记：共两种方法，这是第二种方法，图(b)</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    In addition, if these <code>2 * n</code> programs could be automatically generated,
+    a significant gain would be obtained in terms of efficiency (no specific
+    development) and reliability (no possible misinterpretation during the
+    encoder/decoder implementation).
+</p>
+
+<h2>The triad: concrete syntax, abstract syntax, transfer syntax</h2>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        triad 三人组合；三位一体；三件一套 a group of three related people or things.
+    </p>
+</div>
+
+<p class="indented">
+    Now that the problematics has been set out, let us draw up a synthesis
+    and introduce some definitions.
+</p>
+
+<p class="indented">
+    We call <strong>concrete syntax</strong>, the representation, in a given programming
+    language, of the data structures to be transferred. It is a ‘syntax’ because it
+    respects the lexical and grammatical rules of a language (C for
+    instance); it is called concrete because it is actually handled by applications
+    (implemented in this very language) and it complies with the
+    machine architectures’ restrictions. Two examples of concrete syntaxes
+    have been given in the following figure.
+    <sub class="my_note" style="color:blue">笔记：concrete syntax就是具体的编程语言的syntax，例如C语言、Objective Caml语言、Java语言</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/crypto/cert/data_structure_in_two_programming_language.png" alt="Data structure in two programming languages"/>
+</div>
+
+<p class="indented">
+    In order to break free of the diversity of <strong>concrete syntax</strong> mentioned above, the data structures to be transmitted should be described
+    regardless of the programming languages used. This description should
+    also respect the lexical and grammatical rules of a certain language
+    (guess which language) but should remain independent from programming
+    languages and never be directly implemented on a machine. For
+    these reasons, we call <strong>abstract syntax</strong> such a description and Abstract
+    Syntax Notation or ASN 7 the language whereby this abstract syntax is denoted.
+    <sub class="my_note" style="color:blue">笔记：abstract syntax是在concrete syntax基础上更高一层的抽象，因此不依赖于特定的programming language，也不依赖于特定的machine architecture。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Though independent from programming languages, the <strong>abstract syntax notation</strong>
+    should be at least as powerful as any language’s datatype
+    formalism, that is, a recursive notation that allows building complex
+    data types from basic types (equivalent to the <code>string</code>, <code>int</code>, <code>enum</code>... C
+    types for instance) and type constructors (equivalent to <code>struct</code>, <code>union</code>... in C).
+    <sub class="my_note" style="color:blue">笔记：在concrete syntax中，能够表达不同的数据类型；而在abstract syntax，也要有相应的能力去表达相应的数据类型。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    As for the data received as byte streams or bits, they comply with a syntax called <strong>transfer syntax</strong> so that these
+    streams could be properly recognized by the peer machine.
+    <sub class="my_note" style="color:blue">笔记：transfer syntax就涉及到数据传输过程中的byte stream。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Of course, this <strong>transfer syntax</strong> thoroughly depends on the <strong>abstract syntax</strong>,
+    since it sets up how the data should be transmitted according to
+    this abstract syntax. In fact, the transfer syntax structures and orders
+    the bytes (the ‘format’) that are sent to the other machine (this process
+    is sometimes called ‘marshalling’).
+    <sub class="my_note" style="color:blue">笔记：transfer syntax要依赖于abstract syntax</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Different transfer syntaxes can be associated with a single abstract syntax.
+    This is particularly interesting when the throughput increases
+    and makes more complex encoding necessary: in such a case, however, it
+    is possible to change the transfer syntax without changing the abstract syntax.
+    <sub class="my_note" style="color:blue">笔记：一个abstract syntax可以对应多个transfer syntax</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/crypto/cert/an_example_of_syntax_triad.png" alt="An example of syntax triad"/>
+</div>
+
+<p class="indented">
+    From a single ASN.1 data description, we can derive automatically
+    as many <strong>concrete syntaxes</strong> (i.e. in as many programming languages) as
+    necessary, and as many procedures implementing the <strong>transfer syntax</strong> in
+    encoders (which encode the data into a bit or byte stream) and decoders.
+</p>
+
+<p class="indented">
+    ASN.1 compiler carries out the automatic generation, thus spares considerable effort and meanwhile making it possible
+    to inter-connect any number of machines.
+    The compiler should be implemented with some <strong>encoding rules</strong>, which
+    describe the links between the <strong>abstract syntax</strong> and the <strong>transfer syntax</strong>.
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="http://www.oss.com/asn1/resources/books-whitepapers-pubs/dubuisson-asn1-book.PDF" target="_blank">ASN.1 — Communication Between Heterogeneous Systems</a></li>
+</ul>

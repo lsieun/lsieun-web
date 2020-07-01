@@ -1,0 +1,39 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">EC Key Structure</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Elliptic Curve</h2>
+
+<h3>Elliptic Curve Private Key Format</h3>
+
+<div title="ECPrivateKey" class="plaintext">
+ECPrivateKey ::= SEQUENCE {
+    version        INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
+    privateKey     OCTET STRING,
+    parameters [0] ECParameters {{ NamedCurve }} OPTIONAL,
+    publicKey  [1] BIT STRING OPTIONAL
+}
+</div>
+
+<div title="" class="plaintext">
+
+</div>
+
+<div title="" class="plaintext">
+
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li>
+        RFC 5915 - Elliptic Curve Private Key Structure
+        <a href="/doc/rfc/rfc5915.html" target="_blank">Local</a>
+        <a class="external" href="https://tools.ietf.org/html/rfc5915" target="_blank">Remote</a>
+    </li>
+</ul>

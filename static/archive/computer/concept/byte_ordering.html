@@ -1,0 +1,47 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Byte Ordering - Little Endian vs. Big Endian</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/computer/computer_conception.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Little Endian vs. Big Endian</h2>
+
+<p class="indented">
+    Computers use data structures of all configurations.
+    They range from the simple "byte" to 32-bit integers to those both complex and abstract.
+    In most cases, the data structure consists of more than one byte. These bytes must be stored in memory and, sometimes, to files.
+    However, the question remains: <strong>"When multiple bytes are used, what order are they stored in memory?"</strong>
+    This is a fundamental issue that must be know with absolute certainty,
+    or the reading and writing of binary data could be interpreted incorrectly.
+</p>
+
+<p class="indented">
+    Two different classes of byte ordering are used in computers: <strong>Big-Endian</strong> and <strong>Little-Endian</strong>. When a data structure is stored in Little Endian format, the least significant byte is stored in the lower memory address. The opposite is true for Big Endian, the most significant byte is stored in the lower memory address.
+</p>
+
+<p class="indented">
+    For instance, assume you have a 32-bit integer containing the value D7C4<sub>16</sub>. The least significant byte contains the value C4<sub>16</sub> and the most significant byte contains D7<sub>16</sub>. If the number is stored using Little Endian byte ordering, the first byte in the file will contain the value C4<sub>16</sub>; the second: D7<sub>16</sub>. This is the format used on the Intel family of processors and is the standard used by most file formats.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/computer/diagram-little-vs-big-endian.gif" alt="Little Endian vs. Big Endian"/>
+</div>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/computer/simply_little_endian_vs_big_endian.png" alt="Little Endian vs. Big Endian"/>
+</div>
+
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="http://www.goldparser.org/doc/about/byte-ordering.htm" target="_blank">Byte Ordering - Little Endian vs. Big Endian</a></li>
+</ul>

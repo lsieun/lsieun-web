@@ -1,0 +1,137 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">MathJax</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/js/js_intro.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Introduction</h2>
+
+<p class="indented">
+    MathJax is an open-source JavaScript display engine for LaTeX, MathML, and AsciiMath notation that works in all modern browsers.
+</p>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+
+
+<h2>Minimize MathJax Package</h2>
+
+<p class="indented">
+    MathJax is a pretty big javascript package, but you can make it work after you stripped off most of the files.
+    The final package size could be around <code>580KB</code>.
+</p>
+
+<h3>Download MathJax</h3>
+
+<p class="indented">
+    Download <a class="external" href="https://github.com/mathjax/MathJax/archive/2.7.7.zip" target="_blank">MathJax Version 2.7.7.zip</a>
+</p>
+
+<h3>Choose Your Configuration</h3>
+
+<p class="indented">
+    MathJax supports a very wide range of input and output methods. That is the reason that it is big package.
+    Therefore the most important thing in MathJax size reduction is to decide what input and output method you want to support.
+    In this way you only need to have those sources that implement that methods by throwing away the rest of the package.
+</p>
+
+<p class="indented">
+    In my example, I wanted to have <strong>LaTEX</strong> input and <strong>Common HTML</strong> output.
+</p>
+
+<h3>The Reducing Method</h3>
+
+<p class="indented">
+    The best way to reduce your MathJax package is to create a simple html page, that uses MathJax as you would use it anyway,
+    then remove almost every package content, and then add the ones that it tries to load but fails because the file isn’t present.
+    In this way you will end up a package that contains just the right resources to render your equations.
+</p>
+
+
+
+<p class="indented">
+    A simple html page (<b>Note</b>: make sure to specify a <code>?config=</code> option):
+</p>
+
+<div title="引用MathJax.js" class="plaintext">
+&lt;script type="text/javascript" async src="mathjax/MathJax.js?config=TeX-AMS_CHTML"&gt;&lt;/script&gt;
+</div>
+
+<div title="主体内容" class="plaintext">
+&lt;p&gt;
+    When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
+    \[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\]
+&lt;/p&gt;
+</div>
+
+<fieldset>
+    <legend>显示效果</legend>
+    <p>
+        When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
+        \[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\]
+    </p>
+</fieldset>
+
+<h3>Minimal MathJax Package</h3>
+
+<div title="Minimal MathJax" class="plaintext">
+MathJax-2.7.7
+├── MathJax.js
+├── config
+│   └── TeX-AMS_CHTML.js
+├── fonts
+│   └── HTML-CSS
+│       └── TeX
+│           └── woff
+│               ├── MathJax_AMS-Regular.woff
+│               ├── MathJax_Main-Regular.woff
+│               ├── MathJax_Math-Italic.woff
+│               ├── MathJax_Size1-Regular.woff
+│               ├── MathJax_Size2-Regular.woff
+│               ├── MathJax_Size3-Regular.woff
+│               ├── MathJax_Size4-Regular.woff
+│               └── MathJax_Vector-Regular.woff
+└── jax
+    ├── output
+    │   └── CommonHTML
+    │       ├── jax.js
+    │       ├── autoload
+    │       │   └── mtable.js
+    │       └── fonts
+    │           └── TeX
+    │               ├── fontdata.js
+    │               └── AMS-Regular.js
+    └── element
+        └── mml
+            └── optable
+                ├── Arrows.js
+                └── MathOperators.js
+</div>
+
+<h2>More Examples</h2>
+
+<div>
+    $$\begin{equation}\prod_{\substack{1\le i \le n\\ 1\le j \le m}}M_{i,j} \end{equation}$$
+    $$\begin{equation}L' = {L}{\sqrt{1-\frac{v^2}{c^2}}}\end{equation} $$
+    $$\begin{align} B'&=-\nabla \times E,\\E'&=\nabla \times B - 4\pi j,\end{align} $$
+    $$\begin{equation}x = a_0 + \frac{1}{a_1 + \frac{1}{a_2 + \frac{1}{a_3 + a_4}}}\end{equation} $$
+    $$ {J(\theta) =\frac{1}{2m} [\sum^m_{i=1}(h_\theta(x^{(i)}) - y^{(i)})2 + \lambda\sum^n_{j=1}\theta^2_j} $$
+</div>
+
+<div>
+    $$ {a = b \ast c} $$
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a href="/archive/js/MathJax_LaTex.html" target="_blank">MathJax LaTex</a></li>
+    <li><a class="external" href="https://tiborsimon.io/articles/web/minimal-mathjax/" target="_blank">Minimal MathJax package</a></li>
+    <li><a class="external" href="https://docs.mathjax.org/en/v2.7-latest/mathjax.html" target="_blank">What is MathJax?</a></li>
+</ul>

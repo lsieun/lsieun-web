@@ -3,24 +3,24 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<p>
+<p class="indented">
     By far the most common public-key algorithm
     is the <strong>RSA</strong> algorithm, named after its inventors <strong>Ron Rivest</strong>, <strong>Adi Shamir</strong>, and
     <strong>Leonard Adleman</strong>.
 </p>
 
-<p>
+<p class="indented">
     The theory behind RSA public-key cryptosystems is actually very simple. The
     core is <strong>modulus arithmetic</strong>. Specifically, RSA relies on three numbers
     <code style="color:blue">e</code>, <code style="color:blue">d</code>, and <code style="color:blue">n</code> such that <code style="color:blue">(m<sup>e</sup>)<sup>d</sup> % n = m</code> — here <code style="color:blue">m</code> is the message to be encrypted and
     converted to a number.
 </p>
 
-<p>
+<p class="indented">
     Not all numbers work this way; in fact, finding three numbers <code style="color:blue">e</code>, <code style="color:blue">d</code>, and <code style="color:blue">n</code> that
     satisfy this property is complex, and forms the core of the RSA specification. After
     you’ve found them, though, using them to encrypt is fairly straightforward. The
@@ -33,7 +33,7 @@
     get back the original message <code style="color:blue">m</code>.
 </p>
 
-<p>
+<p class="indented">
     The security of the system relies on the fact that even if an attacker has access to
     <code style="color:blue">e</code> and <code style="color:blue">n</code> — which he does because they’re public — it’s computationally infeasible
     for him to compute <code style="color:blue">d</code>. For this to be true, <code style="color:blue">d</code> and <code style="color:blue">n</code> have to be enormous — at least
@@ -41,19 +41,19 @@
     use even larger numbers. 1,024- or even 2,048-bit numbers are common.
 </p>
 
-<p>
+<p class="indented">
     RSA works on blocks of data. Each block includes <strong>a header</strong> and <strong>some padding</strong> (of at least 11 bytes), so
     the resulting input blocks are <strong>modulus_length - 11</strong> bytes minimum. The header is
     pretty simple: It’s a <code style="color:blue">0</code> byte, followed by a padding identifier of <code style="color:blue">0</code>, <code style="color:blue">1</code>, or <code style="color:blue">2</code>.
 </p>
 
-<div class="w3-panel w3-leftbar w3-light-grey">
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
         block of data = header + padding + data
     </p>
 </div>
 
-<p>
+<p class="indented">
     For <strong>RSA encryption</strong>, always
     use padding identifier <code style="color:blue">2</code>, which indicates that the following bytes, up to the first
     <code style="color:blue">0</code> byte, are <strong>padding</strong> and should be discarded. Everything following the first <code style="color:blue">0</code> byte,
@@ -64,13 +64,13 @@
     <img width="800" src="/images/crypto/rsa/rsa_padding.png" alt="RSA Padding"/>
 </div>
 
-<div class="w3-panel w3-leftbar w3-light-grey">
+<div class="w3-panel w3-pale-red w3-leftbar w3-rightbar w3-border-red">
     <p>
         Unlike the symmetric algorithms, RSA pads at the beginning of its block.
     </p>
 </div>
 
-<p>
+<p class="indented">
     The only difference between an <strong>RSA digital signature</strong> and an <strong>RSA encryption</strong>
     (other than the fact that encryption is done with a public key and signing is done
     with a private key) is that the padding type is <code style="color:blue">0x01</code>, instead of

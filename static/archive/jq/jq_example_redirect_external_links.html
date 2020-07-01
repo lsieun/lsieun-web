@@ -1,0 +1,27 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Disable right click menu in html page</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/jq/jq_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div title="Redirect external links to new tab" class="jscode">
+$('a').each(function() {
+   let a = new RegExp('/' + window.location.host + '/');
+   if(!a.test(this.href)) {
+       $(this).click(function(event) {
+           event.preventDefault();
+           event.stopPropagation();
+           window.open(this.href, '_blank');
+       });
+   }
+});
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://tiborsimon.io/articles/web/redirect-external-links-to-new-tab/" target="_blank">Redirect external links to new tab</a></li>
+</ul>

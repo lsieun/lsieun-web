@@ -3,17 +3,17 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<p>
+<p class="indented">
     RSA isn’t the only game in town, at least not when it comes to digital
     signatures. A competing standard is the U.S. government’s <strong>Digital Signature
     Algorithm</strong>, specified in FIPS 186-3.
 </p>
 
-<p>
+<p class="indented">
     A DSA signature accepts five input parameters, including the message to be
     signed, and returns two output parameters.<sub class="my_note" style="color:green">笔记：对于DSA算法来说，输入5个参数，输出2个参数</sub> The input parameters are named
     g<sub class="my_note" style="color:green">第1个参数</sub>, p<sub class="my_note" style="color:green">第2个参数</sub>, q<sub class="my_note" style="color:green">第3个参数</sub>, and x<sub class="my_note" style="color:green">第4个参数</sub> (and, of course, the message itself<sub class="my_note" style="color:green">第5个参数</sub>). g, p, and q are part of the public
@@ -21,7 +21,7 @@
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<p>
+<p class="indented">
     Like RSA, the DSA signature is performed on a secure
     hash of the message to be signed.<sub class="my_note" style="color:green">笔记：DSA算法是更高一层的算法，它是在Hash算法基础上构建起来的</sub> However, the hash algorithm is somewhat part
     of the signature, so you can’t necessarily just pick a random signature algorithm
@@ -31,45 +31,63 @@
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<p>
+<p class="indented">
     So, to generate the two-element DSA signature, whose elements are named
     <code style="color:blue">r</code><sub class="my_note" style="color:green">第1个输出参数</sub> and <code style="color:blue">s</code><sub class="my_note" style="color:green">第2个输出参数</sub> by the standard (apparently nobody ever told the FIPS people the
     general rule on using meaningful variable names), you perform the following computations:
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<h2>Implementing Sender-Side DSA Signature Generation</h2>
+<h2>Sender-Side DSA Signature Generation</h2>
 
 <div style="text-align: center">
     <img src="/images/crypto/dsa/dsa_sign.png" alt="DSA Sign"/>
 </div>
 
-<p>
+<div>
+    $$
+    \begin{align}
+    k &= (c \; \% \; (q - 1)) + 1\\
+    r &= (g^{k} \; \% \; p) \; \% \; q\\
+    z &= hash(message),\; truncated\; to\; sizeof(q)\\
+    s &= ((k^{-1} \; \% \; q) * (z \; + \; xr)) \; \% \; q
+    \end{align} $$
+</div>
+
+<p class="indented">
     What about <code style="color:blue">c</code>? <code style="color:blue">c</code> is just a random number — securely generated, of
     course — whose length in bits is the same as <code style="color:blue">q</code>.
-</p>
-
-<p>
     <code style="color:blue">(k<sup>-1</sup> % q)</code> means the inverse mod <code style="color:blue">q</code> of <code style="color:blue">k</code>.
 </p>
 
-<p>
+<p class="indented">
     After performing these operations, you’ve generated <code style="color:blue">r</code> and <code style="color:blue">s</code>, which make up the signature.
 </p>
 
-<h2>Implementing Receiver-Side DSA Signature Verification</h2>
+<h2>Receiver-Side DSA Signature Verification</h2>
 
 <div style="text-align: center">
     <img src="/images/crypto/dsa/dsa_verify.png" alt="DSA Verify"/>
 </div>
 
-<p>
+<div>
+    $$
+    \begin{align}
+    w &= s^{-1}\; \%\; q\\
+    z &= hash(message),\; truncated\; to\; sizeof(q)\\
+    u1 &= (zw)\; \%\; q\\
+    u2 &= (rw)\; \%\; q\\
+    v &= ((g^{u1}y^{u2})\; \%\; p)\; \%\; q
+    \end{align} $$
+</div>
+
+<p class="indented">
     If everything went correctly, <code style="color:blue">v</code> is equal to <code style="color:blue">r</code>. Otherwise, something went wrong
     or the signature is faked.
 </p>
 
 
-<p>
+<p class="indented">
     DSA keys consist of the parameters <code style="color:blue">p</code>, <code style="color:blue">q</code>, and <code style="color:blue">g</code>, a private key <code style="color:blue">x</code>, and a
     public key <code style="color:blue">y</code>. <code style="color:blue">q</code> must be a (random) prime number; <code style="color:blue">p – 1</code> must be a multiple of
     <code style="color:blue">q</code>; and <code style="color:blue">g</code> is a small number (usually 2). <code style="color:blue">x</code>, the private key, is random, and <code style="color:blue">y = g<sup>x</sup> % p</code>. In general, rather than compute their own <code style="color:blue">p</code>, <code style="color:blue">q</code>, and <code style="color:blue">g</code>, most implementations use standardized DSA parameters. As long as <code style="color:blue">x</code> is random, the security of

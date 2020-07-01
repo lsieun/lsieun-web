@@ -1,0 +1,28 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASN.1 Types</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>pre-defined basic types</h2>
+
+<h3>BIT STRING</h3>
+
+<p class="indented">
+    Used for bits arrays that are not necessarily multiple of 8 bits.<sub class="my_note" style="color:green">笔记：bit的数量不一定是8的倍数</sub> You can assign meanings to each bit individually. Values have 3 possible forms: <strong>binary</strong> - <code>'011'B</code>, <strong>hex</strong> - <code>'6'H</code>, and <strong>named</strong> - <code>{windowOpen, engineOn}</code>.<sub class="my_note" style="color:green">笔记：有三种不同的表示方式</sub> These are identical values for <code>myStatus</code> in the example.
+</p>
+
+<div title="BIT STRING Example" class="plaintext">
+Sensors ::= BIT STRING {
+    doorOpen(0),
+    windowOpen(1),
+    engineOn(2)
+}
+
+myStatus Sensors ::= {windowOpen, engineOn}
+</div>
+
+<h2>constructed types</h2>

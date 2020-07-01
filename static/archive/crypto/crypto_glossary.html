@@ -3,7 +3,7 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
@@ -11,11 +11,14 @@
 
 <ul>
     <li>AES: Advanced Encryption Standard</li>
+    <li>Authentication: Assurance of identity of person or originator of data</li>
+    <li>Authorization: Identity combined with an access policy grants the rights to perform some action</li>
 </ul>
 
 <h2>C</h2>
 
 <ul>
+    <li>Confidentiality: Protection from disclosure to unauthorized persons</li>
     <li>Cryptographic primitives: are well-established, low-level cryptographic algorithms that are frequently used to build cryptographic protocols for computer security systems. These routines include, but are not limited to, one-way hash functions and encryption functions.</li>
 </ul>
 
@@ -23,6 +26,24 @@
 
 <ul>
     <li>DES: Data Encryption Standard</li>
+    <li>
+        Digital Certificates: A "Certification Authority" signs a "special message" which contains the
+        name of a user and the user's public key in such a way that "anyone" can verify that the "special
+        message" was signed only by the "Certification Authority" and as a result trust the user's public
+        key. This "special message" is termed as a certificate request and it is digitally signed using a
+        "signature algorithm".
+    </li>
+    <li>
+        Digital Envelopes: The "sender" seals the "message" such that only the "receiver" can open the
+        sealed message. The message is encrypted with a secret key and the secret key is encrypted using
+        the receiver's public key.
+    </li>
+    <li>
+        Digital Signatures: The "signer" signs a "message" such that anyone can "verify" that the
+        message was signed only by the "signer" and thus not modified by anyone else. This can be
+        implemented using a message digest algorithm and a public key algorithm to encrypt the
+        message digest.
+    </li>
 </ul>
 
 <h2>F</h2>
@@ -37,9 +58,49 @@
     <li>Galois Field: Galois Field, named after Évariste Galois, also known as finite field, refers to a field in which there exists finitely many elements. It is particularly useful in translating computer data as they are represented in binary forms. In mathematics, a finite field or Galois field is a field that contains a finite number of elements. As with any field, a finite field is a set on which the operations of multiplication, addition, subtraction and division are defined and satisfy certain basic rules. </li>
 </ul>
 
+<h2>I</h2>
+
+<ul>
+    <li>Integrity: Maintaining data consistency</li>
+</ul>
+
+<h2>K</h2>
+
+<ul>
+    <li>
+        Key Agreement: Two "communicating parties" agree upon a secret key by exchanging
+        messages without any prior agreements. Typically this consists of a two-phase key agreement
+        algorithm. One party initiates the key agreement and this triggers the "first phase" of the key
+        agreement after which both parties exchange the results of the first phase. After this, both parties
+        initiate the "second phase" of the key agreement and as a result both parties arrive at the same
+        secret key.
+    </li>
+</ul>
 
 <h2>N</h2>
 
 <ul>
     <li>NIST: National Institute of Standards and Technology 美国国家标准与技术研究院 </li>
+    <li>Non-repudiation: Originator of communications can't deny it later</li>
+</ul>
+
+<h2>P</h2>
+
+<ul>
+    <li>
+        Public Key Cryptography: This crypto-system uses one key for encryption and another key for decryption (also
+        known as “asymmetric” cryptography); Each user has two keys – one public key, which is revealed to all users, and one private
+        key, which remains a secret. The private key and the public key are mathematically linked; Encryption is performed with the public key and decryption is performed with the private
+        key; Examples: RSA, Elliptic Curve Cryptography (ECC).
+    </li>
+</ul>
+
+<h2>S</h2>
+
+<ul>
+    <li>
+        Secret Key Cryptography: This crypto-system uses the same key for both encryption and decryption (this is also
+        referred to as “symmetric” cryptography). Both the sender and the receiver need to have the same key in order to communicate
+        successfully. Examples: DES, 3-DES, AES, RC4, RC5, etc.
+    </li>
 </ul>

@@ -1,0 +1,55 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASN.1 Encoding Rules</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    ASN.1 has sets of rules precisely specifying how messages must be "encoded" for communication with other machines.<sub class="my_note" style="color:green">笔记：ASN.1有不同的encoding rules。</sub> Each set of "encoding rules" has specific characteristics, such as compactness or decoding speed, which make it best suited for particular environments.<sub class="my_note" style="color:green">笔记：每一个encoding rule有自己的特点和适用场景。</sub> Note that all of the encoding rules are able to represent any messages you would like to exchange.<sub class="my_note" style="color:green">笔记：message是info的具体内容，而encoding是info的具体表现形式。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>BER, DER, CER</h2>
+
+<p class="indented">
+    The oldest encoding rules, the <strong>Basic Encoding Rules (BER)</strong>, use a <code>Tag-Length-Value (TLV)</code> format for encoding all information. BER always sends a <code>tag</code> to indicate what kind of data follows, then a <code>length</code> indicating the length of the data that follows, then the <code>value</code> which is the actual data. Two related encoding rules, the <strong>Distinguished Encoding Rules (DER)</strong> and the <strong>Canonical Encoding Rules (CER)</strong> are subsets of BER which eliminate some of the extra flexibility provided by BER. Note that DER is commonly used in security-related applications such as X.509 digital certificates.
+</p>
+
+<h2>PER</h2>
+
+<p class="indented">
+    The <strong>most compact</strong> encoding rules are the <strong>Packed Encoding Rules (PER)</strong>. PER differs from BER in that PER does not send the <code>Tag</code> of the TLV since the order in which components of the message occur is known. PER also does not send the <code>Length</code> of the TLV if the Value has a fixed length. PER also uses additional information from the ASN.1 message description to eliminate redundant information from the <code>Value</code> portion of the TLV, thus making PER messages quite compact and suitable for environments in which bandwidth conservation is important.
+    <sub class="my_note" style="color:blue">笔记：PER是占用空间最小的encoding rule。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    There are two ways to encode messages in PER-Aligned and Unaligned. With the Aligned PER, a field can be aligned to 8-bit octet boundaries by inserting padding bits. With the Unaligned PER, pad bits are never inserted between fields. Unaligned PER is commonly used in 3GPP cellular technologies such as UMTS (3G) or LTE (4G) for protocols like RANAP, NBAP or RRC.
+</p>
+
+<h2>OER</h2>
+
+<p class="indented">
+    The <strong>fastest</strong> ASN.1 encoding rules are the <strong>Octet Encoding Rules (OER)</strong>. The Octet Encoding Rules (OER), like the <strong>Packed Encoding Rules (PER)</strong>, produce compact encodings by taking advantage of information present in the ASN.1 schema to limit the amount of information included in each encoded message. However, in contrast to PER, OER favors encoding/decoding speed and ease of implementation over compactness of the encodings. Unlike PER Aligned, OER is completely octet-oriented. Whereas in PER Aligned a fixed-size encoding occupying less than 8 bits may begin at any bit position within an octet and may end at any bit position within the same or another octet, in OER the encoding of every possible value of every ASN.1 type occupies a whole number of octets, and all the fields of the encoding are octet-aligned. OER is used in Intelligent Transportation protocols and is highly suited for any protocol for which the speed of encoding/decoding is essential.
+</p>
+
+<h2>XER, E-XER</h2>
+
+<p class="indented">
+    The <strong>least compact</strong> of the encoding rules, the <strong>XML Encoding Rules (XER)</strong>, uses a textual XML format for its encodings of the form &lt;start-tag&gt; value &lt;end-tag&gt;. The XER and E-XER (Extended XER) differ in that the default encodings produced by E-XER are more suitable for exchanging information with XML Schema Definition (XSD) engines. Note that the same ASN.1 specification can be used with multiple encoding rules, which means that a PER message from a cell phone could be converted to E-XER for display and manipulation in a web browser.
+</p>
+
+<h2>JER</h2>
+
+<p class="indented">
+    The <strong>JSON encoding rules (JER)</strong>, compared to XER or E-XER, provide a more compact and easy-to-use encoding method. The encoding of ASN.1 types using JER is based on the JSON specification (RFC-7159). JER combines the advantages of the popular JSON data format and the benefits of ASN.1: ASN.1 schemas are easier to read and can be used to validate regular JSON messages, ASN.1 endpoints can communicate with JSON endpoints (the encoding of primitive types matches the encoding of JSON messages), etc. JER enables ASN.1 users to easily debug and troubleshoot ASN.1 protocols.
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://www.oss.com/asn1/resources/asn1-made-simple/encoding-rules.html" target="_blank">ASN.1 Made Simple — Encoding Rules</a></li>
+</ul>

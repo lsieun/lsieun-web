@@ -27,6 +27,9 @@ public abstract class FileHandler extends ResourceHandler {
     public static HttpResource getDiskResource(final String uri_path, final String filepath) {
         try {
             File file = new File(filepath);
+            if (!file.exists()) {
+                file = new File(filepath.toLowerCase());
+            }
 
             if (file.exists() && file.isFile()) {
                 byte[] file_bytes = FileUtils.readFile(filepath);

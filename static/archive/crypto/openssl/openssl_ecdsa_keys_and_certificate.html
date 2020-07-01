@@ -1,0 +1,246 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">openssl ECDSA Keys and Certificate</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>DSA Keys</h2>
+
+<h3>Generate ECDSA Keys</h3>
+
+<p class="indented">
+    The process is similar for ECDSA keys, except that it isn’t possible to create keys of arbitrary sizes.
+    Instead, for each key you select a named curve, which controls key size, but it controls other EC parameters as well.
+    The following example creates a 256-bit ECDSA key using the <code>secp256r1</code> named curve:
+</p>
+
+<div title="generate private keys" hidden class="plaintext">
+$ openssl ecparam -genkey -name prime256v1 | openssl ec -out ec.key
+using curve name prime256v1 instead of secp256r1
+read EC key
+writing EC key
+
+$ cat ec.key
+-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIIP2wLDro0EMl3s/9r/MC+Gv71m7JKPdFolPiWedKoJioAoGCCqGSM49
+AwEHoUQDQgAEejOOzlGieLyPgl0YuP4tG/u3g7pHifv/JJfzRIX0+9zy9Yx2Dt+w
+XMPVvarjNIdZ7evX2XtycMicCDUYnNE7/w==
+-----END EC PRIVATE KEY-----
+</div>
+
+<h3>Examine Private Key</h3>
+
+<div title="examine private key" hidden class="plaintext">
+$ openssl ec -text -in ec.key -noout
+read EC key
+Private-Key: (256 bit)
+priv:
+    00:83:f6:c0:b0:eb:a3:41:0c:97:7b:3f:f6:bf:cc:
+    0b:e1:af:ef:59:bb:24:a3:dd:16:89:4f:89:67:9d:
+    2a:82:62
+pub:
+    04:7a:33:8e:ce:51:a2:78:bc:8f:82:5d:18:b8:fe:
+    2d:1b:fb:b7:83:ba:47:89:fb:ff:24:97:f3:44:85:
+    f4:fb:dc:f2:f5:8c:76:0e:df:b0:5c:c3:d5:bd:aa:
+    e3:34:87:59:ed:eb:d7:d9:7b:72:70:c8:9c:08:35:
+    18:9c:d1:3b:ff
+ASN1 OID: prime256v1
+NIST CURVE: P-256
+</div>
+
+<h3>Export Public key</h3>
+
+<div title="export public key" hidden class="plaintext">
+$ openssl ec -in ec.key -pubout -out ec-public.key
+read EC key
+writing EC key
+
+$ cat ec-public.key
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEejOOzlGieLyPgl0YuP4tG/u3g7pH
+ifv/JJfzRIX0+9zy9Yx2Dt+wXMPVvarjNIdZ7evX2XtycMicCDUYnNE7/w==
+-----END PUBLIC KEY-----
+</div>
+
+<h3>Examine Public Key</h3>
+
+<div title="examine public key" hidden class="plaintext">
+$ openssl ec -text -pubin -in ec-public.key -noout
+read EC key
+Private-Key: (256 bit)
+pub:
+    04:7a:33:8e:ce:51:a2:78:bc:8f:82:5d:18:b8:fe:
+    2d:1b:fb:b7:83:ba:47:89:fb:ff:24:97:f3:44:85:
+    f4:fb:dc:f2:f5:8c:76:0e:df:b0:5c:c3:d5:bd:aa:
+    e3:34:87:59:ed:eb:d7:d9:7b:72:70:c8:9c:08:35:
+    18:9c:d1:3b:ff
+ASN1 OID: prime256v1
+NIST CURVE: P-256
+</div>
+
+<h2>Certificate</h2>
+
+<h3>Create Certificate Signing Requests</h3>
+
+<div title="create certificate signing request" hidden class="plaintext">
+$ openssl req -new -key ec.key -out certificate_signing_request.pem
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:CN
+State or Province Name (full name) [Some-State]:HeBei
+Locality Name (eg, city) []:BaoDing
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:Fruit Ltd
+Organizational Unit Name (eg, section) []:IT
+Common Name (e.g. server FQDN or YOUR name) []:www.fruit.com
+Email Address []:admin@fruit.com
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+
+$ cat certificate_signing_request.pem
+-----BEGIN CERTIFICATE REQUEST-----
+MIIBRTCB6wIBADCBiDELMAkGA1UEBhMCQ04xDjAMBgNVBAgMBUhlQmVpMRAwDgYD
+VQQHDAdCYW9EaW5nMRIwEAYDVQQKDAlGcnVpdCBMdGQxCzAJBgNVBAsMAklUMRYw
+FAYDVQQDDA13d3cuZnJ1aXQuY29tMR4wHAYJKoZIhvcNAQkBFg9hZG1pbkBmcnVp
+dC5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAR6M47OUaJ4vI+CXRi4/i0b
++7eDukeJ+/8kl/NEhfT73PL1jHYO37Bcw9W9quM0h1nt69fZe3JwyJwINRic0Tv/
+oAAwCgYIKoZIzj0EAwIDSQAwRgIhAIdVrn0CxhYl1d/hqqxtYcNXBKsseZ9RgqMM
+Cm4vIiB3AiEA8BNS8snu4+oNdMeZHaVBGOfe0EDRoNvcu6v39uyPUIc=
+-----END CERTIFICATE REQUEST-----
+</div>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>An Expanded X.509 Distinguished Name</caption>
+    <tr class="w3-green">
+        <th>TWO-LETTER CODE</th>
+        <th>LONG NAME</th>
+        <th>VALUE</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>CN</td>
+        <td>Common Name</td>
+        <td>www.fruit.com</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>OU</td>
+        <td>Organizational Unit</td>
+        <td>IT</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>O</td>
+        <td>Organization</td>
+        <td>Fruit Ltd</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>L</td>
+        <td>Locality, usually a city name</td>
+        <td>BaoDing</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>ST</td>
+        <td>State</td>
+        <td>HeBei</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>C</td>
+        <td>Country</td>
+        <td>CN</td>
+    </tr>
+</table>
+
+<h3>Examine Certificate Signing Requests</h3>
+
+<div title="examine certificate signing request" hidden class="plaintext">
+$ openssl req -text -in certificate_signing_request.pem -noout
+Certificate Request:
+    Data:
+        Version: 0 (0x0)
+        Subject: C=CN, ST=HeBei, L=BaoDing, O=Fruit Ltd, OU=IT, CN=www.fruit.com/emailAddress=admin@fruit.com
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:7a:33:8e:ce:51:a2:78:bc:8f:82:5d:18:b8:fe:
+                    2d:1b:fb:b7:83:ba:47:89:fb:ff:24:97:f3:44:85:
+                    f4:fb:dc:f2:f5:8c:76:0e:df:b0:5c:c3:d5:bd:aa:
+                    e3:34:87:59:ed:eb:d7:d9:7b:72:70:c8:9c:08:35:
+                    18:9c:d1:3b:ff
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+        Attributes:
+            a0:00
+    Signature Algorithm: ecdsa-with-SHA256
+         30:46:02:21:00:87:55:ae:7d:02:c6:16:25:d5:df:e1:aa:ac:
+         6d:61:c3:57:04:ab:2c:79:9f:51:82:a3:0c:0a:6e:2f:22:20:
+         77:02:21:00:f0:13:52:f2:c9:ee:e3:ea:0d:74:c7:99:1d:a5:
+         41:18:e7:de:d0:40:d1:a0:db:dc:bb:ab:f7:f6:ec:8f:50:87
+</div>
+
+<h3>Sign Your Own Certificates</h3>
+
+<div title="sign certificate" hidden class="plaintext">
+$ openssl x509 -req -days 365 -in certificate_signing_request.pem -signkey ec.key -out signed_certificate.pem
+Signature ok
+subject=/C=CN/ST=HeBei/L=BaoDing/O=Fruit Ltd/OU=IT/CN=www.fruit.com/emailAddress=admin@fruit.com
+Getting Private key
+
+$ cat signed_certificate.pem
+-----BEGIN CERTIFICATE-----
+MIICAjCCAagCCQDXbtE+ZJ22WjAKBggqhkjOPQQDAjCBiDELMAkGA1UEBhMCQ04x
+DjAMBgNVBAgMBUhlQmVpMRAwDgYDVQQHDAdCYW9EaW5nMRIwEAYDVQQKDAlGcnVp
+dCBMdGQxCzAJBgNVBAsMAklUMRYwFAYDVQQDDA13d3cuZnJ1aXQuY29tMR4wHAYJ
+KoZIhvcNAQkBFg9hZG1pbkBmcnVpdC5jb20wHhcNMjAwNjI4MTYxMDA5WhcNMjEw
+NjI4MTYxMDA5WjCBiDELMAkGA1UEBhMCQ04xDjAMBgNVBAgMBUhlQmVpMRAwDgYD
+VQQHDAdCYW9EaW5nMRIwEAYDVQQKDAlGcnVpdCBMdGQxCzAJBgNVBAsMAklUMRYw
+FAYDVQQDDA13d3cuZnJ1aXQuY29tMR4wHAYJKoZIhvcNAQkBFg9hZG1pbkBmcnVp
+dC5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAR6M47OUaJ4vI+CXRi4/i0b
++7eDukeJ+/8kl/NEhfT73PL1jHYO37Bcw9W9quM0h1nt69fZe3JwyJwINRic0Tv/
+MAoGCCqGSM49BAMCA0gAMEUCICwPHVxaDH2sm2XBnXPsd42wIef5AsJ/O3+OqK4k
+vFxTAiEA0FB4ywCvZmBntO9qozeaanniIjU49AHTFxRVOBRo35M=
+-----END CERTIFICATE-----
+</div>
+
+<h3>Examine Signed Certificate</h3>
+
+<div title="examine signed certificate" hidden class="plaintext">
+$ openssl x509 -text -in signed_certificate.pem -noout
+Certificate:
+    Data:
+        Version: 1 (0x0)
+        Serial Number:
+            d7:6e:d1:3e:64:9d:b6:5a
+    Signature Algorithm: ecdsa-with-SHA256
+        Issuer: C=CN, ST=HeBei, L=BaoDing, O=Fruit Ltd, OU=IT, CN=www.fruit.com/emailAddress=admin@fruit.com
+        Validity
+            Not Before: Jun 28 16:10:09 2020 GMT
+            Not After : Jun 28 16:10:09 2021 GMT
+        Subject: C=CN, ST=HeBei, L=BaoDing, O=Fruit Ltd, OU=IT, CN=www.fruit.com/emailAddress=admin@fruit.com
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:7a:33:8e:ce:51:a2:78:bc:8f:82:5d:18:b8:fe:
+                    2d:1b:fb:b7:83:ba:47:89:fb:ff:24:97:f3:44:85:
+                    f4:fb:dc:f2:f5:8c:76:0e:df:b0:5c:c3:d5:bd:aa:
+                    e3:34:87:59:ed:eb:d7:d9:7b:72:70:c8:9c:08:35:
+                    18:9c:d1:3b:ff
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+    Signature Algorithm: ecdsa-with-SHA256
+         30:45:02:20:2c:0f:1d:5c:5a:0c:7d:ac:9b:65:c1:9d:73:ec:
+         77:8d:b0:21:e7:f9:02:c2:7f:3b:7f:8e:a8:ae:24:bc:5c:53:
+         02:21:00:d0:50:78:cb:00:af:66:60:67:b4:ef:6a:a3:37:9a:
+         6a:79:e2:22:35:38:f4:01:d3:17:14:55:38:14:68:df:93
+</div>
+
+

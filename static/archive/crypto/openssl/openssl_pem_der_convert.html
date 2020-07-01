@@ -1,0 +1,88 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">openssl PEM/DER Convert</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>der and pem</h2>
+
+<p class="indented">
+    <code>der</code> is the ASN.1 DER-encoded representation of the certificate or key file. <code>pem</code>, which stands for <strong>Privacy Enhanced Mail</strong>, is
+    a Base-64 encoded representation of the DER-encoded certificate with a header
+    and a footer.
+</p>
+
+<p class="indented">
+    A pem-encoded certificate file looks like this:
+</p>
+
+<div title="pem certificate" class="plaintext">
+-----BEGIN CERTIFICATE-----
+MIIDUjCCAvygAwIBAgIJAMdcnerewaJQMA0GCSqGSIb3DQEBBQUAMIGkMQswCQYD
+VQQGEwJVUzEOMAwGA1UECBMFVGV4YXMxEjAQBgNVBAcTCVNvdXRobGFrZTEUMBIG
+...
+AwEB/zANBgkqhkiG9w0BAQUFAANBAKf3QiQgbre9DSq4aeED9v0nonEHXPRsU79j
+l3q/IUMlhmtuZ4SIlNAPvRdZ6DUIvWqVVJbtl5Bm7MKo7KCMarc=
+-----END CERTIFICATE-----
+</div>
+
+<p class="indented">
+    And a pem-encoded key file looks like this:
+</p>
+
+<div title="pem key file" class="plaintext">
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpgIBAAKCAQEA8FMT3L4LZGQsWAJ7O1KxSyzQgLPZJTjbMgkf+JK69GahZ1qE
+YplW90z9DEU/hmGIF1FwcP9PvgcVJ42IQkUpJ8GTKKoRUe+nESLboggIZe1QUkVG
+...
+WI946nBeCudrxGtdZzmzK7gAr/PhH6uP1ZEJxUvIxJk9giOxrBRDlu0rRJ1FilCI
+6y2Em7FVIVfPvh0skOiRXmQxnRjej37YCflO9rrTrc/S4U6oPlxmTGVE
+-----END RSA PRIVATE KEY-----
+</div>
+
+<h2>Format Convert</h2>
+
+<h3>DER --&gt; PEM</h3>
+
+<p class="indented">
+    To convert from <strong>DER</strong> encoded certificate format to <strong>PEM</strong> encoded certificate format:
+</p>
+
+<div title="DER --&gt; PEM" class="plaintext">
+openssl x509 -in example.der -inform der -outform pem -out example.pem
+</div>
+
+<h3>PEM --&gt; DER</h3>
+
+<p class="indented">
+    To convert from <strong>PEM</strong> encoded certificate format to <strong>DER</strong> encoded certificate format:
+</p>
+
+<div title="PEM --&gt; DER" class="plaintext">
+openssl x509 -in example.pem -outform der -out example.der
+</div>
+
+<h2>Display</h2>
+
+<h3>PEM</h3>
+
+<p class="indented">
+    To display the contents of a <strong>PEM</strong> encoded certificate using OpenSSL:
+</p>
+
+<div title="PEM encoded certificate" class="plaintext">
+openssl x509 -noout -text -in example.pem
+</div>
+
+<h3>DER</h3>
+
+<p class="indented">
+    To display the contents of a <strong>DER</strong> encoded certificate using OpenSSL:
+</p>
+
+<div title="DER encoded certificate" class="plaintext">
+openssl x509 -noout -text -inform der -in example.der
+</div>

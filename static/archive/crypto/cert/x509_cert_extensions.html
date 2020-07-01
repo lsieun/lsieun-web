@@ -3,8 +3,103 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>A</h2>
+
+<h3>AuthorityKeyIdentifier</h3>
+
+<div title="AuthorityKeyIdentifier" class="plaintext">
+AuthorityKeyIdentifier ::= SEQUENCE {
+   keyIdentifier             [0] KeyIdentifier           OPTIONAL,
+   authorityCertIssuer       [1] GeneralNames            OPTIONAL,
+   authorityCertSerialNumber [2] CertificateSerialNumber OPTIONAL  }
+
+KeyIdentifier ::= OCTET STRING
+</div>
+
+<h2>B</h2>
+
+<h3>BasicConstraints</h3>
+
+<div title="BasicConstraints" class="plaintext">
+BasicConstraints ::= SEQUENCE {
+    cA                      BOOLEAN DEFAULT FALSE,
+    pathLenConstraint       INTEGER (0..MAX) OPTIONAL }
+</div>
+
+<p class="indented">
+    The basic constraints extension identifies whether the subject of the
+    certificate is a CA and the maximum depth of valid certification
+    paths that include this certificate.
+</p>
+
+<p class="indented">
+    The <code>cA</code> boolean indicates whether the certified public key may be used
+    to verify certificate signatures. If the <code>cA</code> boolean is not asserted,
+    then the <code>keyCertSign</code> bit in the <strong>key usage extension</strong> MUST NOT be
+    asserted.  If the basic constraints extension is not present in a
+    version 3 certificate, or the extension is present but the <code>cA</code> boolean
+    is not asserted, then the certified public key MUST NOT be used to
+    verify certificate signatures.
+</p>
+
+<p class="indented">
+    The <code>pathLenConstraint</code> field is meaningful only if the <code>cA</code> boolean is
+    asserted and the key usage extension, if present, asserts the
+    <code>keyCertSign</code> bit.  In this case, it gives the
+    maximum number of non-self-issued intermediate certificates that may
+    follow this certificate in a valid certification path.  (Note: The
+    last certificate in the certification path is not an intermediate
+    certificate, and is not included in this limit.  Usually, the last
+    certificate is an end entity certificate, but it can be a CA
+    certificate.)  A <code>pathLenConstraint</code> of <strong>zero</strong> indicates that no non-self-issued
+    intermediate CA certificates may follow in a valid
+    certification path.  Where it appears, the <code>pathLenConstraint</code> field
+    MUST be greater than or equal to zero.  Where <code>pathLenConstraint</code> does
+    not appear, no limit is imposed.
+</p>
+
+<h2>C</h2>
+
+<h3>certificatePolicies</h3>
+
+<div title="certificatePolicies" class="plaintext">
+certificatePolicies ::= SEQUENCE SIZE (1..MAX) OF PolicyInformation
+
+PolicyInformation ::= SEQUENCE {
+    policyIdentifier   CertPolicyId,
+    policyQualifiers   SEQUENCE SIZE (1..MAX) OF PolicyQualifierInfo OPTIONAL }
+
+CertPolicyId ::= OBJECT IDENTIFIER
+
+PolicyQualifierInfo ::= SEQUENCE {
+    policyQualifierId  PolicyQualifierId,
+    qualifier          ANY DEFINED BY policyQualifierId }
+
+PolicyQualifierId ::= OBJECT IDENTIFIER ( id-qt-cps | id-qt-unotice )
+
+Qualifier ::= CHOICE {
+    cPSuri           CPSuri,
+    userNotice       UserNotice }
+
+CPSuri ::= IA5String
+
+UserNotice ::= SEQUENCE {
+    noticeRef        NoticeReference OPTIONAL,
+    explicitText     DisplayText OPTIONAL }
+
+NoticeReference ::= SEQUENCE {
+    organization     DisplayText,
+    noticeNumbers    SEQUENCE OF INTEGER }
+
+DisplayText ::= CHOICE {
+    ia5String        IA5String      (SIZE (1..200)),
+    visibleString    VisibleString  (SIZE (1..200)),
+    bmpString        BMPString      (SIZE (1..200)),
+    utf8String       UTF8String     (SIZE (1..200)) }
 </div>
 
 <h2>K</h2>
@@ -92,3 +187,11 @@ EDIPartyName ::= SEQUENCE {
     it’s unclear what, if anything, ought to be in the CN component of a certifi cate’s
     subject when the certifi cate identifi es a web site, if not the domain name.)
 </p>
+
+<h3>Subject Key Identifier</h3>
+
+<div title="SubjectKeyIdentifier" class="plaintext">
+SubjectKeyIdentifier ::= KeyIdentifier
+
+KeyIdentifier ::= OCTET STRING
+</div>

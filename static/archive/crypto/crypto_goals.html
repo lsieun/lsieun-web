@@ -1,0 +1,122 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Goals of Cryptography</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    The primary goal of cryptography is to secure important data as it passes through a medium that
+    may not be secure itself. Usually, that medium is a computer network.
+</p>
+
+<h2>Goals</h2>
+
+<p class="indented">
+    There are many different cryptographic algorithms, each of which can provide one or more of the
+    following services to applications:
+</p>
+
+<h3>Confidentiality (secrecy)</h3>
+
+<p class="indented">
+    Data is kept secret from those without the proper credentials, even if that data travels
+    through an insecure medium. In practice, this means potential attackers might be able to
+    see garbled<sub class="my_note" style="color:green">混乱不清的 confusing, or not accurate</sub> data that is essentially "locked," but they should not be able to unlock that
+    data without the proper information. In classic cryptography, the encryption (scrambling)
+    algorithm was the secret.<sub class="my_note" style="color:green">笔记：在过去的时代里，加密算法本身就是“秘密”</sub> In modern cryptography, that isn't feasible. The algorithms are
+    public, and cryptographic keys are used in the encryption and decryption processes. The
+    only thing that needs to be secret is the key.<sub class="my_note" style="color:green">笔记：在当今的时代里，加密算法本身是“公开”的，而key是“秘密”的。</sub> In addition,
+    there are common cases in which not all keys need to be kept secret.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h3>Integrity (anti-tampering)</h3>
+
+<p class="indented">
+    The basic idea behind data integrity is that there should be a way for the recipient of a
+    piece of data to determine whether any modifications are made over a period of time. For
+    example, integrity checks can be used to make sure that data sent over a wire isn't
+    modified in transit. Plenty of well-known checksums exist that can detect and even
+    correct simple errors. However, such checksums are poor at detecting skilled intentional
+    modifications of the data. Several cryptographic checksums do not have these drawbacks
+    if used properly. Note that encryption does not ensure data integrity.<sub class="my_note" style="color:green">笔记：注意，加密算法并不能保证只能保证数据的Confidentiality，而并不能保证数据的Integrity</sub> Entire classes of
+    encryption algorithms are subject to "bit-flipping" attacks. That is, an attacker can change
+    the actual value of a bit of data by changing the corresponding encrypted bit of data.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h3>Authentication</h3>
+
+<p class="indented">
+    Cryptography can help establish identity for authentication purposes.
+</p>
+
+<h3>Non-repudiation</h3>
+
+<p class="indented">
+    Cryptography can enable Bob to prove that a message he received from Alice actually
+    came from Alice. Alice can essentially be held accountable when she sends Bob such a
+    message, as she cannot deny (repudiate) that she sent it. In the real world, you have to
+    assume that an attacker does not compromise particular cryptographic keys.
+</p>
+
+<h2>Attacks</h2>
+
+<p class="indented">
+    These simple services can be used to stop a wide variety of network attacks, including:
+</p>
+
+<h3>Snooping (passive eavesdropping)</h3>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        snoop: 窥探；打探；探听 to find out private things about sb, especially by looking secretly around a place
+    </p>
+</div>
+
+<p class="indented">
+    An attacker watches network traffic as it passes and records interesting data, such as
+    credit card information.
+</p>
+
+<h3>Tampering</h3>
+
+<p class="indented">
+    An attacker monitors network traffic and maliciously changes data in transit (for example,
+    an attacker may modify the contents of an email message).
+</p>
+
+<h3>Spoofing</h3>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        spoof: （冒用他人电邮地址）发送仿真电邮；电邮欺骗 to send an email that appears to come from sb else's email address
+    </p>
+</div>
+
+<p class="indented">
+    An attacker forges network data, appearing to come from a different network address than
+    he actually comes from. This sort of attack can be used to thwart systems that authenticate
+    based on host information (e.g., an IP address).
+</p>
+
+<h3>Hijacking</h3>
+
+<p class="indented">
+    Once a legitimate user authenticates, a spoofing attack can be used to "hijack" the
+    connection.
+</p>
+
+<h3>Capture-replay</h3>
+
+<p class="indented">
+    In some circumstances, an attacker can record and replay network transactions to ill effect.
+    For example, say that you sell a single share of stock while the price is high. If the
+    network protocol is not properly designed and secured, an attacker could record that
+    transaction, then replay it later when the stock price has dropped, and do so repeatedly
+    until all your stock is gone.
+</p>
+

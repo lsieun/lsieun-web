@@ -1,0 +1,31 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">PKCS#7</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/pkcs/pkcs_intro.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    Among all the PKCS standards, PKCS#7 is probably the most widely used one.
+    It describes a general syntax for data that may have cryptography applied to it,
+    such as <strong>digital signatures</strong> and <strong>digital envelopes</strong>.
+</p>
+
+<h2>DigestInfo</h2>
+
+<div title="DigestInfo" class="plaintext">
+DigestInfo ::= SEQUENCE {
+    digestAlgorithm DigestAlgorithmIdentifier,
+    digest Digest }
+
+DigestAlgorithmIdentifier ::= AlgorithmIdentifier
+
+Digest ::= OCTET STRING
+</div>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>

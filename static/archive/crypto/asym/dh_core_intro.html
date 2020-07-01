@@ -3,7 +3,7 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
@@ -69,3 +69,13 @@
     be feasibly inverted by an attacker, unless the attacker has solved the discrete
     logarithm problem.
 </p>
+
+<p class="indented">
+    Diffie-Hellman allows for key agreement without actually divulging the key on the network. However, Diffie-Hellman does not guarantee
+    the identity of the party with whom you are exchanging keys. Some sort of authentication
+    mechanism is necessary to ensure that you don't accidentally exchange keys with an attacker.
+    <sub class="my_note" style="color:blue">笔记：这里讲到非常重要的一点，虽然DH算法能够进行key的交换，但是却无法保证对方的身份（authentication）是谁，是理想的目标，还是一个attacker。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented"></p>

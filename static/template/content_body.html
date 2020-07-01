@@ -82,6 +82,7 @@ for the Javascript file, before the page is actually loaded.
 <script type="text/javascript" src="/js/w3codecolor.js"></script>
 <script type="text/javascript" src="/js/auto-toc.js"></script>
 <script type="text/javascript" src="/js/auto-code.js"></script>
+<script type="text/javascript" src='/js/mathjax/MathJax.js?config=TeX-AMS_CHTML'></script>
 <script>
     // Javascript inside this file
     function toggle_all_sub_note() {
@@ -101,6 +102,12 @@ for the Javascript file, before the page is actually loaded.
         toggle_all_sub_note();
         $(".at").autoToc();
         $(".javacode, .jscode, .plaintext").autoCode();
+
+        MathJax.Hub.Config({
+            "CommonHTML": {
+                scale: 138
+            }
+        });
     });
 </script>
 

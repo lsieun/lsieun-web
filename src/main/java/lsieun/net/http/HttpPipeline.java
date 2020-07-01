@@ -34,7 +34,7 @@ public class HttpPipeline {
         try {
             String http_version = request.request_line.version;
             // TODO: 这里可能还有QueryString，例如abc.html?name=tom&password=123
-            String uri_path = HttpRouter.getURIPath(request).toLowerCase();
+            String uri_path = HttpRouter.getURIPath(request);
 
             String status_line = String.format("%s 200 OK", http_version);
             HttpHeader header = new HttpHeader();

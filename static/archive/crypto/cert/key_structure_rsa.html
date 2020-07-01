@@ -1,0 +1,87 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">RSA Key Structure</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>RSA Public Key Syntax</h2>
+
+<p class="indented">
+    An RSA public key should be represented with the ASN.1 type <code>RSAPublicKey</code>:
+</p>
+
+<div title="RSAPublicKey" class="plaintext">
+RSAPublicKey ::= SEQUENCE {
+    modulus           INTEGER,  -- n
+    publicExponent    INTEGER   -- e
+}
+</div>
+
+<ul>
+    <li><code>modulus</code> is the RSA modulus n.</li>
+    <li><code>publicExponent</code> is the RSA public exponent e.</li>
+</ul>
+
+<h2>RSA Private Key Syntax</h2>
+
+<p class="indented">
+    An RSA private key should be represented with the ASN.1 type <code>RSAPrivateKey</code>:
+</p>
+
+<div title="RSAPrivateKey" class="plaintext">
+RSAPrivateKey ::= SEQUENCE {
+    version           Version,
+    modulus           INTEGER,  -- n
+    publicExponent    INTEGER,  -- e
+    privateExponent   INTEGER,  -- d
+    prime1            INTEGER,  -- p
+    prime2            INTEGER,  -- q
+    exponent1         INTEGER,  -- d mod (p-1)
+    exponent2         INTEGER,  -- d mod (q-1)
+    coefficient       INTEGER,  -- (inverse of q) mod p
+    otherPrimeInfos   OtherPrimeInfos OPTIONAL
+}
+
+Version ::= INTEGER { two-prime(0), multi(1) }
+   (CONSTRAINED BY
+   {-- version must be multi if otherPrimeInfos present --})
+
+OtherPrimeInfos ::= SEQUENCE SIZE(1..MAX) OF OtherPrimeInfo
+
+OtherPrimeInfo ::= SEQUENCE {
+    prime             INTEGER,  -- ri
+    exponent          INTEGER,  -- di
+    coefficient       INTEGER   -- ti
+}
+</div>
+
+<ul>
+    <li>
+        <code>version</code> is the version number, for compatibility with future
+        revisions of this document.  It SHALL be 0 for this version of the
+        document, unless multi-prime is used; in which case, it SHALL be 1.
+    </li>
+    <li><code>modulus</code> is the RSA modulus n.</li>
+    <li><code>publicExponent</code> is the RSA public exponent e.</li>
+    <li><code>privateExponent</code> is the RSA private exponent d.</li>
+    <li><code>prime1</code> is the prime factor p of n.</li>
+    <li><code>prime2</code> is the prime factor q of n.</li>
+    <li><code>exponent1</code> is d mod (p - 1).</li>
+    <li><code>exponent2</code> is d mod (q - 1).</li>
+    <li><code>coefficient</code> is the CRT coefficient q^(-1) mod p.</li>
+    <li>
+        <code>otherPrimeInfos</code> contains the information for the additional primes
+        r_3, ..., r_u, in order.  It SHALL be omitted if version is 0 and
+        SHALL contain at least one instance of OtherPrimeInfo if version
+        is 1.
+    </li>
+</ul>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="/doc/rfc/rfc8017.html#appendix-A.1.1" target="_blank">PKCS #1: RSA Cryptography Specifications Version 2.2</a></li>
+</ul>

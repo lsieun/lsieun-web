@@ -1,0 +1,40 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Certificate Request Structure</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Certification request syntax</h2>
+
+<h3>CertificationRequest</h3>
+
+<div title="CertificationRequest" class="plaintext">
+CertificationRequest ::= SEQUENCE {
+    certificationRequestInfo CertificationRequestInfo,
+    signatureAlgorithm AlgorithmIdentifier{{ SignatureAlgorithms }},
+    signature          BIT STRING
+}
+</div>
+
+<h3>CertificationRequestInfo</h3>
+
+<div title="CertificationRequestInfo" class="plaintext">
+CertificationRequestInfo ::= SEQUENCE {
+    version       INTEGER { v1(0) } (v1,...),
+    subject       Name,
+    subjectPKInfo SubjectPublicKeyInfo{{ PKInfoAlgorithms }},
+    attributes    [0] Attributes{{ CRIAttributes }}
+}
+</div>
+
+<h3>SubjectPublicKeyInfo</h3>
+
+<div title="SubjectPublicKeyInfo" class="plaintext">
+SubjectPublicKeyInfo { ALGORITHM : IOSet} ::= SEQUENCE {
+    algorithm        AlgorithmIdentifier {{IOSet}},
+    subjectPublicKey BIT STRING
+}
+</div>

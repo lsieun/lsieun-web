@@ -3,9 +3,22 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/crypto/index.html">TOC</a>
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
+
+<p class="indented">
+    The RSA algorithm works as follows: take two large primes, <code>p</code> and <code>q</code>, and compute their product <code>n=pq</code>; where <code>n</code> is called the
+    <strong>modulus</strong>. Choose a number, <code>e</code>, less than <code>n</code> and relatively prime to <code>(p-1)(q-1)</code>, which means <code>e</code> and <code>(p-1)(q-1)</code> have no common
+    factors except 1. Find another number <code>d</code> such that <code>(ed-1)</code> is divisible by <code>(p-1)(q-1)</code>. The values <code>e</code> and <code>d</code> are called public and
+    private exponents, respectively. The public key is the pair <code>(n,e)</code>; the private key is <code>(n,d)</code>. The factors <code>p</code> and <code>q</code> may be destroyed or
+    kept with the private key.
+</p>
+
+<p class="indented">
+    It is difficult to obtain the private key <code>d</code> from the public key <code>(n, e)</code>. However, if one could factor <code>n</code> into <code>p</code> and <code>q</code>, then one could
+    obtain the private key <code>d</code>. Thus the security of the RSA system is based on the assumption that factoring is difficult.
+</p>
 
 <h2>RSAKey.java</h2>
 

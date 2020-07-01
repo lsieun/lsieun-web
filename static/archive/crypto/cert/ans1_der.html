@@ -1,0 +1,248 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASN.1 DER</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    The translation of primitive (ASN.1) types to byte representation is described according to a set of rules.
+    Technically, these rules are independent of ASN.1 type.
+    <sub class="my_note" style="color:blue">笔记：将ASN.1 type转换成byte representation需要一定的转换规则（或者说编码规则）。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    A certificate is the sort of thing that would probably be represented in XML these
+    days — there is, in fact, a set of rules to encode ASN.1 in XML format! However,
+    by far the most common encoding, and the one that SSL relies on, is called the
+    <strong>Distinguished Encoding Rules (DER)</strong>.
+    <sub class="my_note" style="color:blue">笔记：Certificate Structure是基于ASN.1 type来描述的，在Certificate这个应用领域下，ASN.1 type最常用使用的编码规则是DER。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The DER describes how to format integers, strings, dates, object identifiers, bit
+    strings, sequences, sets and so on. See X.690 for a complete listing of DER encoding rules.
+</p>
+
+<h2>Encoded Values</h2>
+
+<p class="indented">
+    Every encoded value is represented as a <code>type</code>, followed by the <code>value’s length</code>,
+    followed by <code>the actual contents of the value itself</code>; the representation of the value
+    depends on the type.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        DER遵循的基本编码格式是<code>Tag-Length-Value</code>。其中，Tag表示type，Length表示内容的长度，Value表示实际的内容。
+    </p>
+</div>
+
+<p class="indented">
+    Actually, the first two bits of a <code>tag</code> identify its <strong>tag class</strong>. In X.509 you come across two types
+    of <strong>tag classes</strong>: <strong>universal</strong> (<code>00</code>) and <strong>context-specific</strong> (<code>10</code>).
+    (The other two are <strong>application</strong> and <strong>private</strong> and are not used in X.509 certificates.) <strong>Context-specific tags</strong> are
+    explicit tags.
+    Any <code>tag</code> value whose sixth bit is <code>1</code>(<code>0x20</code>) is a <strong>constructed tag</strong> and
+    the parser must recognize that it contains additional ASN.1-encoded data.
+    <sub class="my_note" style="color:blue">笔记：从左向右看，前两个bit是tag class，第3个bit（从右向左是第6 bit）就是标识constructed tag。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    DER allows for <strong>multi-byte types</strong> as well — and has complex rules on how to encode and
+    recognize them — but X.509 doesn’t need to make use of them and sticks with
+    <strong>single-byte types</strong>.
+    <sub class="my_note" style="color:blue">笔记：这里在讲type，其重点是在X.509的应用场景中，使用DER编码时的type只占用1个byte。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The <code>length</code> byte tells you when to stop reading the value and start looking for another tag.
+    <sub class="my_note" style="color:blue">笔记：这里在讲length。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>integer</h2>
+
+<p class="indented">
+    The integer's <code>type</code> is byte <code>02</code>. Therefore, the integer value <code>5</code> is encoded, according to DER, as
+</p>
+
+<div title="integer 5" class="plaintext">
+02 01 05
+</div>
+
+<p class="indented">
+    The integer value <code>65535</code> is encoded as
+</p>
+
+<div title="integer 65535" class="plaintext">
+02 02 FF FF
+</div>
+
+<h2>OID</h2>
+
+<p class="indented">
+    OID’s are simple to encode. They’re stored just like integers, but they have a <code>type</code> of <code>6</code> instead of <code>2</code>. Otherwise, they’re
+    encoded the same way: <code>type, length, value</code>.
+</p>
+
+<p class="indented">
+    For example, the OID of <code>55 04 03</code> is represented as
+</p>
+
+<div title="OID 55 04 03" class="plaintext">
+06 03 55 04 03
+</div>
+
+<p class="indented">
+    The <code>length</code> byte tells you that there are three bytes of OID.
+</p>
+
+<h2>dates</h2>
+
+<p class="indented">
+    The <code>type</code> for a <strong>date</strong> is either <code>23</code> or <code>24</code>;
+    <code>23</code> is a UTC — two-digit year — time.
+    <code>24</code> is a generalized — four-digit year — time.
+    Although the <code>type</code> actually includes enough information to infer
+    the length — you know that generalized times are 15 digits, and UTC times
+    are 13 — for consistency’s sake the lengths are included as well. After that, the
+    year, month, day, hour, minute, second and Z are included in ASCII format. So
+    the date Feb. 23, 2010, 6:50:13 is encoded in UTC time as
+</p>
+
+<div title="UTCTime 10-02-23 06:50:13Z" class="plaintext">
+tag length  1  0  0  2  2  3  0  6  5  0  1  3  Z
+ 17     0d 31 30 30 32 32 33 30 36 35 30 31 33 5A
+</div>
+
+<p>
+    and is encoded in generalized time as
+</p>
+
+<div title="GeneralizedTime 2010-02-23 06:50:13Z" class="plaintext">
+tag length  2  0  1  0  0  2  2  3  0  6  5  0  1  3  Z
+ 18     0f 32 30 31 30 30 32 32 33 30 36 35 30 31 33 5A
+</div>
+
+<h2>strings</h2>
+
+<p class="indented">
+    There are quite a few different string types to account for different byte encodings (among other things). The official
+    specification is actually not proscriptive about which type of string should be used,
+    and you actually see different kinds.
+    <sub class="my_note" style="color:blue">笔记：有多种不同的string类型</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    However, the most common are <strong>IA5Strings</strong> (type <code>22</code>) and <strong>printable strings</strong> (type <code>19</code>), which you can treat interchangeably.
+</p>
+
+<h3>printable strings</h3>
+
+<p class="indented">
+    Given, for example, the country code “US”, the encoding would be
+</p>
+
+<div title="PrintableString US" class="plaintext">
+13 02 55 53
+</div>
+
+<h3>UTF8String</h3>
+
+<div title="UTF8String 北京市" class="plaintext">
+0C 09 E5 8C 97 E4 BA AC E5 B8 82
+</div>
+
+<div title="验证" class="javacode">
+byte[] bytes = new byte[]{
+        (byte) 0xE5, (byte) 0x8C, (byte) 0x97,
+        (byte) 0xE4, (byte) 0xBA, (byte) 0xAC,
+        (byte) 0xE5, (byte) 0xB8, (byte) 0x82};
+String str = new String(bytes, StandardCharsets.UTF_8);
+System.out.println(str); // 北京市
+</div>
+
+<h2>Bit Strings</h2>
+
+<p class="indented">
+    Bit strings are just like strings, with one minor difference. Their type is <code>3</code> to distinguish them from <strong>printable strings</strong>, but the
+    encoding is exactly the same: <code>tag, length, contents</code>. The only difference between
+    <strong>bit strings</strong> and <strong>character strings</strong> is that bit strings don’t necessarily have to end
+    on an eight-bit boundary, so they have <strong>an extra byte</strong> to indicate how much padding
+    was included. In practice, this is always <code>0</code> because all useful bit patterns
+    are eight-bit aligned anyway.
+</p>
+
+<div class="w3-panel w3-pale-red w3-leftbar w3-rightbar w3-border-red">
+    <p>
+        注意：bit strings有一个extra byte，但是在实际应用中，这个extra byte的值常常为0。
+    </p>
+</div>
+
+<p class="indented">
+    Actually, a single-length byte can only represent 127 byte values. The high-order
+    bit is reserved. If it’s 1, then the low order seven bits represent not the
+    length of the value, but the length of the length — that is, how many of the
+    bytes following encode the length of the subsequently following value.
+    <sub class="my_note" style="color:blue">笔记：这里在讲length表达不同长度的方法。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    So, if a bit string is 512 bytes long, the DER-encoded representation looks like:
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <tr class="w3-green">
+        <th>TAG NUMBER</th>
+        <th>NUMBER OF LENGTH BYTES</th>
+        <th>ACTUAL LENGTH VALUE</th>
+        <th>BITS OF PADDING</th>
+        <th>VALUE</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>03</td>
+        <td>83</td>
+        <td>02 00 00</td>
+        <td>00</td>
+        <td>(512 bytes of value)</td>
+    </tr>
+</table>
+
+<p class="indented">
+    Technically, a value doesn’t have to be a bit string to have a length greater
+    than 127; integers, strings, and OIDs could, at least in theory. In practice, though,
+    this never happens.
+</p>
+
+<h2>Sequences and Sets</h2>
+
+<p class="indented">
+    <strong>Sets</strong> and <strong>sequences</strong> are what ASN.1 calls a <strong>constructed type</strong> — that is, a type containing other types.
+    Technically, they’re encoded the same way as other values are. They
+    start with a <code>tag</code>, are followed by <strong>a variable number of length bytes</strong>, and are then
+    followed by their contents. However, for <strong>constructed types</strong>, the contents themselves
+    are further ASN.1-encoded tags. <strong>Sequences</strong> are identified by tag <code>0x30</code>, and <strong>sets</strong> are
+    identified by tag <code>0x31</code>. Any <code>tag</code> value whose sixth bit is <code>1</code> is a <strong>constructed tag</strong> and
+    the parser must recognize that it contains additional ASN.1-encoded data.
+</p>
+
+<h2>ASN.1 Explicit Tags</h2>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>

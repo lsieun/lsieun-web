@@ -1,0 +1,175 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Public-Key Cryptography Standards</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    The wide acceptance of <strong>Public Key Cryptography</strong> requires applications developed by different
+    vendors to inter-operate seamlessly. Interoperability between applications is not always assured
+    unless the vendors adhere to the standard formats strictly.
+    <sub class="my_note" style="color:blue">笔记：这里围绕Public Key Cryptography和applications展开，要区分开两个概念，Public Key Cryptography本身是一回事，applications如何使用Public Key Cryptography是另一回事。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The <strong>PKCS standards</strong> are specifications
+    that were developed by RSA Security in conjunction with system developers worldwide (such as
+    Microsoft, Apple, Sun etc.) for the purpose of accelerating the deployment of public key
+    cryptography. The goal is to facilitate early adoption of these standards by vendors.
+    <sub class="my_note" style="color:blue">笔记：PKCS standards就是如何使用Public Key Cryptography的标准，这样不同的applications就能inter-operate seamlessly。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    In the crypto world, <strong>PKCS is ubiquitous</strong><sub class="my_note" style="color:green">似乎无所不在的；十分普遍的 seeming to be everywhere or in several places at the same time; very common</sub>.
+    These standards are used everywhere in the e-security realm.
+    Any application developer choosing to implement security into his/her application would
+    stumble upon these standards at some point of time. Applications ranging from web browsers to
+    secure email clients depend on the PKCS standards to inter-operate with one another.<sub class="my_note" style="color:green">笔记：PKCS standards被广泛应用，如果你想在application加入security，那么PKCS standards是一个必须要研究的东西。</sub>
+    Consider the following example: a website administrator might need to migrate his server’s digital
+    credentials (server certificate & private key) to a web server supplied by a different organization.
+    As long as the digital credentials are in a standardized format such as PKCS, the migration
+    would be a fairly simple task.
+    <sub class="my_note" style="color:blue">笔记：PKCS standards的应用很广泛。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    PKCS is defined for both Binary and ASCII data types. PKCS only describes the syntax for
+    messages in an abstract manner giving complete details about the algorithms. PKCS does not
+    specify the representation format for the messages although BER (Basic Encoding Rules)
+    encoded messages are a preferred format.
+</p>
+
+<h2>PKCS standards</h2>
+
+<table class="w3-table-all w3-hoverable w3-left-align">
+    <tr class="w3-green">
+        <th>Standard</th>
+        <th>Description</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><a href="/archive/crypto/pkcs/pkcs_01.html">PKCS#1</a></td>
+        <td>
+            The RSA encryption standard. This standard defines mechanisms for encrypting
+            and signing data using the RSA public key system.
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><a href="/archive/crypto/pkcs/pkcs_03.html">PKCS#3</a></td>
+        <td>
+            The Diffie-Hellman key-agreement standard. This defines the Diffie-Hellman key
+            agreement protocol.
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><a href="/archive/crypto/pkcs/pkcs_05.html">PKCS#5</a></td>
+        <td>
+            The password-based encryption standard (PBE). This describes a method to
+            generate a Secret Key based on a password.
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><a href="/archive/crypto/pkcs/pkcs_06.html">PKCS#6</a></td>
+        <td>
+            The extended-certificate syntax standard. This is currently being phased out in
+            favor of X509 v3.
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><a href="/archive/crypto/pkcs/pkcs_07.html">PKCS#7</a></td>
+        <td>
+            The <strong>cryptographic message syntax</strong> standard. This defines a generic syntax for
+            messages which have cryptography applied to it.
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><a href="/archive/crypto/pkcs/pkcs_08.html">PKCS#8</a></td>
+        <td>
+            The private-key information syntax standard. This defines a method to store Private
+            Key Information.
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><a href="/archive/crypto/pkcs/pkcs_09.html">PKCS#9</a></td>
+        <td>
+            This defines selected attribute types for use in other PKCS standards.
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><a href="/archive/crypto/pkcs/pkcs_10.html">PKCS#10</a></td>
+        <td>
+            The certification request syntax standard. This describes a syntax for certification requests.
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><a href="/archive/crypto/pkcs/pkcs_11.html">PKCS#11</a></td>
+        <td>
+            The cryptographic token interface standard. This defines a technology independent
+            programming interface for cryptographic devices such as smart cards.
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><a href="/archive/crypto/pkcs/pkcs_12.html">PKCS#12</a></td>
+        <td>
+            The personal information exchange syntax standard. This describes a portable
+            format for storage and transportation of user private keys, certificates etc.
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><a href="/archive/crypto/pkcs/pkcs_13.html">PKCS#13</a></td>
+        <td>
+            The elliptic curve cryptography standard. This describes mechanisms to encrypt
+            and sign data using elliptic curve cryptography.
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><a href="/archive/crypto/pkcs/pkcs_14.html">PKCS#14</a></td>
+        <td>
+            This covers pseudo random number generation (PRNG). This is currently under
+            active development.
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><a href="/archive/crypto/pkcs/pkcs_15.html">PKCS#15</a></td>
+        <td>
+            The cryptographic token information format standard. This describes a standard for
+            the format of cryptographic credentials stored on cryptographic tokens.
+        </td>
+    </tr>
+</table>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        <b>Note</b>: <code>PKCS #2</code> and <code>#4</code> do not exist anymore because they have been incorporated into <code>PKCS #1</code>.
+    </p>
+</div>
+
+<h2>RSA Security LLC</h2>
+
+<p class="indented">
+    <strong>RSA Security LLC</strong> is an American computer and network security company with a focus on encryption and encryption standards. RSA was named after the initials of its co-founders, Ron Rivest, Adi Shamir and Leonard Adleman, after whom the RSA public key cryptography algorithm was also named.
+    <sub class="my_note" style="color:blue">笔记：RSA Security是一家公司，专注于encryption and encryption standards。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Ron Rivest, Adi Shamir and Leonard Adleman, who developed the RSA encryption algorithm in 1977, founded RSA Data Security in 1982.
+    <sub class="my_note" style="color:blue">笔记：RSA算法是在1977年出现的，而RSA Security公司是在1982年成立的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://en.wikipedia.org/wiki/PKCS" target="_blank">Wiki: PKCS</a></li>
+    <li><a class="external" href="https://web.cs.ship.edu/~cdgira/courses/CSC434/Fall2004/docs/course_docs/IntroToPKCSstandards.pdf" target="_blank">Introduction to the PKCS Standards</a></li>
+</ul>

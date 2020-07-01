@@ -1,0 +1,530 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">openssl RSA Keys and Certificate</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>RSA Keys</h2>
+
+<h3>Generate RSA Key</h3>
+
+<p class="indented">
+    To generate an RSA key, use the <code>genrsa</code> command:
+</p>
+
+<div title="create RSA key" class="plaintext">
+$ openssl genrsa -out rsa.key 2048
+Generating RSA private key, 2048 bit long modulus
+..................................+++
+...................................................................................................+++
+e is 65537 (0x10001)
+</div>
+
+<p class="indented">
+    The <code>e</code> value that you see in the output refers to the <strong>public exponent</strong>, which is set to <code>65,537</code> by default.
+    This is what’s known as a short public exponent, and it significantly improves the performance of RSA verification.
+    Using the <code>-3</code> switch, you can choose 3 as your public exponent and make verification even faster.
+    However, there are some unpleasant historical weaknesses associated with the use of 3 as a public exponent,
+    which is why generally everyone recommends that you stick with <code>65,537</code>.
+    The latter choice provides a safety margin that’s been proven effective in the past.
+</p>
+
+<p class="indented">
+    Private keys are stored in the so-called <strong>PEM format</strong>, which is just text:
+</p>
+
+<div title="PEM format" hidden class="plaintext">
+$ cat rsa.key
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpgIBAAKCAQEA8FMT3L4LZGQsWAJ7O1KxSyzQgLPZJTjbMgkf+JK69GahZ1qE
+YplW90z9DEU/hmGIF1FwcP9PvgcVJ42IQkUpJ8GTKKoRUe+nESLboggIZe1QUkVG
+DFv3gAnkQQp2Xb7jvc1zTyBiIY03hoFlOCoh5osLl8AuNh/lUeiblAifEtG+oC1m
+HjCy/M9r0pgHsQ/tZmdAtYdMybdVMn7vNXlRgxOY+JApbUGBEqXXc9R+7nP+T8f7
+gJk6KxIfgAoqmY6HSLVyj1SPYKtpBTn9PAj0Tp2ZvGTLhYji2IQsocRq9sPTV/os
+7hSdAmMyrhUckLYdXuTUaEkeYCHrs/nzuHy3iQIDAQABAoIBAQC0KANGwmy12GZp
+n4qT4RypVzICmVAaGDIxoyeFZzGhT2KFoRSG+Z55CwzTawIBEhI8ML/S5YH42URh
+fzb7Pu9oLzPLExqiyr36GaB+Kflpt2o0Elw9nZ+/KysiGt66zgPZ4C8lzQfjUQKj
+4VJotSTut6N8IgRCbMyzB2XBpmjhaEi9y0MiuRjmVUHGbZs9r5cYL7tBE7hCMnjD
+IZtI0ExujtuipeU+eQKrgkSw1KcAmo24oXGq/BTW96IowSCAOp3tfd1V/I6otQ8b
+Dn6nTtELRbQjOLonH5KncfqcCw1PCM5LraBhVf1ZQY0xDTz9RrCg6yklgqvxjLvt
+um28fzcBAoGBAP2jfAxP1oAEm/b5KZMUSISo8VYPWCvPLohrDNJC468CL25b+n9l
+8gfY1KB40qdi7H4YMkBES+zsNqh8PqNxlzwQF6z84ezzGGxI0A3Nh5/bu77VCmu1
+xofHDOBBiBf8pUsvbNEXinWPN5ZuH2YvnWnbiBBaFqw0MRcMUi5vo1JhAoGBAPKP
+3E8Lv+j9bopzGwW5xcYrngLdVxqnOIM3Kau3IGbMmNlU1wdV/zoW5R0ZG6gxg/oH
+Q7kDdtPJk3ONh6VZxm/ThfBHwynhcpPFBNUKRgeK4mZsKnboDvc1esS39J3q+zt9
+Y6AYGYO15RHelCP4NJBPqtqoAnJ7rtAb0+CdjkYpAoGBAOYJ02UbN/EtvQK3IrTJ
+rafbzd5+1joNkyeY56z/i57bfYc7FqtbG7NwPhA45N15hAItEc5l4vLDniMbZHg6
+eq637bEwPfv40srLEx+hrAMZeGLwt53O5Hua1ZvC85rFwmi5X5kYH7TVqtXdlM7K
+Gpu6xuIFwxB12ZwMybBiAh+hAoGBALxLty9ZpKm+iuBJSLHiK8iRtYDtyB91rmYW
+HXAiobGLpCAaPy5/sLisa0Fya0je31/p4cWvDcCM2705IhLXJTdMEc6cNsG9NI/H
+wt+KsSBLzULLNw/FR1DaoCozz14DuvHMfdkavDvFqUR8760Ykd1xKuXAxN2Qa/07
+jPfx9y85AoGBAOSoe7sp9P1FCinzB8knzMo5CMYHceK9/49SllCz+oQnmBeUfLuT
+WI946nBeCudrxGtdZzmzK7gAr/PhH6uP1ZEJxUvIxJk9giOxrBRDlu0rRJ1FilCI
+6y2Em7FVIVfPvh0skOiRXmQxnRjej37YCflO9rrTrc/S4U6oPlxmTGVE
+-----END RSA PRIVATE KEY-----
+</div>
+
+<h3>Examine RSA Key</h3>
+
+<p class="indented">
+    A private key isn’t just a blob of random data, even though that’s what it looks like at a glance.
+    You can see a key’s structure using the following <code>rsa</code> command:
+</p>
+
+<div title="examine RSA key" hidden class="plaintext">
+$ openssl rsa -text -in rsa.key
+Private-Key: (2048 bit)
+modulus:
+    00:f0:53:13:dc:be:0b:64:64:2c:58:02:7b:3b:52:
+    b1:4b:2c:d0:80:b3:d9:25:38:db:32:09:1f:f8:92:
+    ba:f4:66:a1:67:5a:84:62:99:56:f7:4c:fd:0c:45:
+    3f:86:61:88:17:51:70:70:ff:4f:be:07:15:27:8d:
+    88:42:45:29:27:c1:93:28:aa:11:51:ef:a7:11:22:
+    db:a2:08:08:65:ed:50:52:45:46:0c:5b:f7:80:09:
+    e4:41:0a:76:5d:be:e3:bd:cd:73:4f:20:62:21:8d:
+    37:86:81:65:38:2a:21:e6:8b:0b:97:c0:2e:36:1f:
+    e5:51:e8:9b:94:08:9f:12:d1:be:a0:2d:66:1e:30:
+    b2:fc:cf:6b:d2:98:07:b1:0f:ed:66:67:40:b5:87:
+    4c:c9:b7:55:32:7e:ef:35:79:51:83:13:98:f8:90:
+    29:6d:41:81:12:a5:d7:73:d4:7e:ee:73:fe:4f:c7:
+    fb:80:99:3a:2b:12:1f:80:0a:2a:99:8e:87:48:b5:
+    72:8f:54:8f:60:ab:69:05:39:fd:3c:08:f4:4e:9d:
+    99:bc:64:cb:85:88:e2:d8:84:2c:a1:c4:6a:f6:c3:
+    d3:57:fa:2c:ee:14:9d:02:63:32:ae:15:1c:90:b6:
+    1d:5e:e4:d4:68:49:1e:60:21:eb:b3:f9:f3:b8:7c:
+    b7:89
+publicExponent: 65537 (0x10001)
+privateExponent:
+    00:b4:28:03:46:c2:6c:b5:d8:66:69:9f:8a:93:e1:
+    1c:a9:57:32:02:99:50:1a:18:32:31:a3:27:85:67:
+    31:a1:4f:62:85:a1:14:86:f9:9e:79:0b:0c:d3:6b:
+    02:01:12:12:3c:30:bf:d2:e5:81:f8:d9:44:61:7f:
+    36:fb:3e:ef:68:2f:33:cb:13:1a:a2:ca:bd:fa:19:
+    a0:7e:29:f9:69:b7:6a:34:12:5c:3d:9d:9f:bf:2b:
+    2b:22:1a:de:ba:ce:03:d9:e0:2f:25:cd:07:e3:51:
+    02:a3:e1:52:68:b5:24:ee:b7:a3:7c:22:04:42:6c:
+    cc:b3:07:65:c1:a6:68:e1:68:48:bd:cb:43:22:b9:
+    18:e6:55:41:c6:6d:9b:3d:af:97:18:2f:bb:41:13:
+    b8:42:32:78:c3:21:9b:48:d0:4c:6e:8e:db:a2:a5:
+    e5:3e:79:02:ab:82:44:b0:d4:a7:00:9a:8d:b8:a1:
+    71:aa:fc:14:d6:f7:a2:28:c1:20:80:3a:9d:ed:7d:
+    dd:55:fc:8e:a8:b5:0f:1b:0e:7e:a7:4e:d1:0b:45:
+    b4:23:38:ba:27:1f:92:a7:71:fa:9c:0b:0d:4f:08:
+    ce:4b:ad:a0:61:55:fd:59:41:8d:31:0d:3c:fd:46:
+    b0:a0:eb:29:25:82:ab:f1:8c:bb:ed:ba:6d:bc:7f:
+    37:01
+prime1:
+    00:fd:a3:7c:0c:4f:d6:80:04:9b:f6:f9:29:93:14:
+    48:84:a8:f1:56:0f:58:2b:cf:2e:88:6b:0c:d2:42:
+    e3:af:02:2f:6e:5b:fa:7f:65:f2:07:d8:d4:a0:78:
+    d2:a7:62:ec:7e:18:32:40:44:4b:ec:ec:36:a8:7c:
+    3e:a3:71:97:3c:10:17:ac:fc:e1:ec:f3:18:6c:48:
+    d0:0d:cd:87:9f:db:bb:be:d5:0a:6b:b5:c6:87:c7:
+    0c:e0:41:88:17:fc:a5:4b:2f:6c:d1:17:8a:75:8f:
+    37:96:6e:1f:66:2f:9d:69:db:88:10:5a:16:ac:34:
+    31:17:0c:52:2e:6f:a3:52:61
+prime2:
+    00:f2:8f:dc:4f:0b:bf:e8:fd:6e:8a:73:1b:05:b9:
+    c5:c6:2b:9e:02:dd:57:1a:a7:38:83:37:29:ab:b7:
+    20:66:cc:98:d9:54:d7:07:55:ff:3a:16:e5:1d:19:
+    1b:a8:31:83:fa:07:43:b9:03:76:d3:c9:93:73:8d:
+    87:a5:59:c6:6f:d3:85:f0:47:c3:29:e1:72:93:c5:
+    04:d5:0a:46:07:8a:e2:66:6c:2a:76:e8:0e:f7:35:
+    7a:c4:b7:f4:9d:ea:fb:3b:7d:63:a0:18:19:83:b5:
+    e5:11:de:94:23:f8:34:90:4f:aa:da:a8:02:72:7b:
+    ae:d0:1b:d3:e0:9d:8e:46:29
+exponent1:
+    00:e6:09:d3:65:1b:37:f1:2d:bd:02:b7:22:b4:c9:
+    ad:a7:db:cd:de:7e:d6:3a:0d:93:27:98:e7:ac:ff:
+    8b:9e:db:7d:87:3b:16:ab:5b:1b:b3:70:3e:10:38:
+    e4:dd:79:84:02:2d:11:ce:65:e2:f2:c3:9e:23:1b:
+    64:78:3a:7a:ae:b7:ed:b1:30:3d:fb:f8:d2:ca:cb:
+    13:1f:a1:ac:03:19:78:62:f0:b7:9d:ce:e4:7b:9a:
+    d5:9b:c2:f3:9a:c5:c2:68:b9:5f:99:18:1f:b4:d5:
+    aa:d5:dd:94:ce:ca:1a:9b:ba:c6:e2:05:c3:10:75:
+    d9:9c:0c:c9:b0:62:02:1f:a1
+exponent2:
+    00:bc:4b:b7:2f:59:a4:a9:be:8a:e0:49:48:b1:e2:
+    2b:c8:91:b5:80:ed:c8:1f:75:ae:66:16:1d:70:22:
+    a1:b1:8b:a4:20:1a:3f:2e:7f:b0:b8:ac:6b:41:72:
+    6b:48:de:df:5f:e9:e1:c5:af:0d:c0:8c:db:bd:39:
+    22:12:d7:25:37:4c:11:ce:9c:36:c1:bd:34:8f:c7:
+    c2:df:8a:b1:20:4b:cd:42:cb:37:0f:c5:47:50:da:
+    a0:2a:33:cf:5e:03:ba:f1:cc:7d:d9:1a:bc:3b:c5:
+    a9:44:7c:ef:ad:18:91:dd:71:2a:e5:c0:c4:dd:90:
+    6b:fd:3b:8c:f7:f1:f7:2f:39
+coefficient:
+    00:e4:a8:7b:bb:29:f4:fd:45:0a:29:f3:07:c9:27:
+    cc:ca:39:08:c6:07:71:e2:bd:ff:8f:52:96:50:b3:
+    fa:84:27:98:17:94:7c:bb:93:58:8f:78:ea:70:5e:
+    0a:e7:6b:c4:6b:5d:67:39:b3:2b:b8:00:af:f3:e1:
+    1f:ab:8f:d5:91:09:c5:4b:c8:c4:99:3d:82:23:b1:
+    ac:14:43:96:ed:2b:44:9d:45:8a:50:88:eb:2d:84:
+    9b:b1:55:21:57:cf:be:1d:2c:90:e8:91:5e:64:31:
+    9d:18:de:8f:7e:d8:09:f9:4e:f6:ba:d3:ad:cf:d2:
+    e1:4e:a8:3e:5c:66:4c:65:44
+writing RSA key
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpgIBAAKCAQEA8FMT3L4LZGQsWAJ7O1KxSyzQgLPZJTjbMgkf+JK69GahZ1qE
+YplW90z9DEU/hmGIF1FwcP9PvgcVJ42IQkUpJ8GTKKoRUe+nESLboggIZe1QUkVG
+DFv3gAnkQQp2Xb7jvc1zTyBiIY03hoFlOCoh5osLl8AuNh/lUeiblAifEtG+oC1m
+HjCy/M9r0pgHsQ/tZmdAtYdMybdVMn7vNXlRgxOY+JApbUGBEqXXc9R+7nP+T8f7
+gJk6KxIfgAoqmY6HSLVyj1SPYKtpBTn9PAj0Tp2ZvGTLhYji2IQsocRq9sPTV/os
+7hSdAmMyrhUckLYdXuTUaEkeYCHrs/nzuHy3iQIDAQABAoIBAQC0KANGwmy12GZp
+n4qT4RypVzICmVAaGDIxoyeFZzGhT2KFoRSG+Z55CwzTawIBEhI8ML/S5YH42URh
+fzb7Pu9oLzPLExqiyr36GaB+Kflpt2o0Elw9nZ+/KysiGt66zgPZ4C8lzQfjUQKj
+4VJotSTut6N8IgRCbMyzB2XBpmjhaEi9y0MiuRjmVUHGbZs9r5cYL7tBE7hCMnjD
+IZtI0ExujtuipeU+eQKrgkSw1KcAmo24oXGq/BTW96IowSCAOp3tfd1V/I6otQ8b
+Dn6nTtELRbQjOLonH5KncfqcCw1PCM5LraBhVf1ZQY0xDTz9RrCg6yklgqvxjLvt
+um28fzcBAoGBAP2jfAxP1oAEm/b5KZMUSISo8VYPWCvPLohrDNJC468CL25b+n9l
+8gfY1KB40qdi7H4YMkBES+zsNqh8PqNxlzwQF6z84ezzGGxI0A3Nh5/bu77VCmu1
+xofHDOBBiBf8pUsvbNEXinWPN5ZuH2YvnWnbiBBaFqw0MRcMUi5vo1JhAoGBAPKP
+3E8Lv+j9bopzGwW5xcYrngLdVxqnOIM3Kau3IGbMmNlU1wdV/zoW5R0ZG6gxg/oH
+Q7kDdtPJk3ONh6VZxm/ThfBHwynhcpPFBNUKRgeK4mZsKnboDvc1esS39J3q+zt9
+Y6AYGYO15RHelCP4NJBPqtqoAnJ7rtAb0+CdjkYpAoGBAOYJ02UbN/EtvQK3IrTJ
+rafbzd5+1joNkyeY56z/i57bfYc7FqtbG7NwPhA45N15hAItEc5l4vLDniMbZHg6
+eq637bEwPfv40srLEx+hrAMZeGLwt53O5Hua1ZvC85rFwmi5X5kYH7TVqtXdlM7K
+Gpu6xuIFwxB12ZwMybBiAh+hAoGBALxLty9ZpKm+iuBJSLHiK8iRtYDtyB91rmYW
+HXAiobGLpCAaPy5/sLisa0Fya0je31/p4cWvDcCM2705IhLXJTdMEc6cNsG9NI/H
+wt+KsSBLzULLNw/FR1DaoCozz14DuvHMfdkavDvFqUR8760Ykd1xKuXAxN2Qa/07
+jPfx9y85AoGBAOSoe7sp9P1FCinzB8knzMo5CMYHceK9/49SllCz+oQnmBeUfLuT
+WI946nBeCudrxGtdZzmzK7gAr/PhH6uP1ZEJxUvIxJk9giOxrBRDlu0rRJ1FilCI
+6y2Em7FVIVfPvh0skOiRXmQxnRjej37YCflO9rrTrc/S4U6oPlxmTGVE
+-----END RSA PRIVATE KEY-----
+</div>
+
+<h3>Export Public Key</h3>
+
+<p class="indented">
+    If you need to have just the public part of a key separately, you can do that with the following <code>rsa</code> command:
+</p>
+
+<div title="export public key" class="plaintext">
+$ openssl rsa -in rsa.key -pubout -out rsa-public.key
+writing RSA key
+
+$ cat rsa-public.key
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8FMT3L4LZGQsWAJ7O1Kx
+SyzQgLPZJTjbMgkf+JK69GahZ1qEYplW90z9DEU/hmGIF1FwcP9PvgcVJ42IQkUp
+J8GTKKoRUe+nESLboggIZe1QUkVGDFv3gAnkQQp2Xb7jvc1zTyBiIY03hoFlOCoh
+5osLl8AuNh/lUeiblAifEtG+oC1mHjCy/M9r0pgHsQ/tZmdAtYdMybdVMn7vNXlR
+gxOY+JApbUGBEqXXc9R+7nP+T8f7gJk6KxIfgAoqmY6HSLVyj1SPYKtpBTn9PAj0
+Tp2ZvGTLhYji2IQsocRq9sPTV/os7hSdAmMyrhUckLYdXuTUaEkeYCHrs/nzuHy3
+iQIDAQAB
+-----END PUBLIC KEY-----
+</div>
+
+<h3>Examine Public Key</h3>
+
+<div title="examine public key" hidden class="plaintext">
+$ openssl rsa -text -pubin -in rsa-public.key -noout
+Public-Key: (2048 bit)
+Modulus:
+    00:f0:53:13:dc:be:0b:64:64:2c:58:02:7b:3b:52:
+    b1:4b:2c:d0:80:b3:d9:25:38:db:32:09:1f:f8:92:
+    ba:f4:66:a1:67:5a:84:62:99:56:f7:4c:fd:0c:45:
+    3f:86:61:88:17:51:70:70:ff:4f:be:07:15:27:8d:
+    88:42:45:29:27:c1:93:28:aa:11:51:ef:a7:11:22:
+    db:a2:08:08:65:ed:50:52:45:46:0c:5b:f7:80:09:
+    e4:41:0a:76:5d:be:e3:bd:cd:73:4f:20:62:21:8d:
+    37:86:81:65:38:2a:21:e6:8b:0b:97:c0:2e:36:1f:
+    e5:51:e8:9b:94:08:9f:12:d1:be:a0:2d:66:1e:30:
+    b2:fc:cf:6b:d2:98:07:b1:0f:ed:66:67:40:b5:87:
+    4c:c9:b7:55:32:7e:ef:35:79:51:83:13:98:f8:90:
+    29:6d:41:81:12:a5:d7:73:d4:7e:ee:73:fe:4f:c7:
+    fb:80:99:3a:2b:12:1f:80:0a:2a:99:8e:87:48:b5:
+    72:8f:54:8f:60:ab:69:05:39:fd:3c:08:f4:4e:9d:
+    99:bc:64:cb:85:88:e2:d8:84:2c:a1:c4:6a:f6:c3:
+    d3:57:fa:2c:ee:14:9d:02:63:32:ae:15:1c:90:b6:
+    1d:5e:e4:d4:68:49:1e:60:21:eb:b3:f9:f3:b8:7c:
+    b7:89
+Exponent: 65537 (0x10001)
+</div>
+
+<h3>Export private key</h3>
+
+<p class="indented">
+    If you forget to include the <code>-pubout</code> switch on the command line,
+    the output will contain your <strong>private key</strong> instead of the <strong>public key</strong>.
+</p>
+
+<div title="export private key" class="plaintext">
+$ openssl rsa -in rsa.key -out rsa-private.key
+writing RSA key
+</div>
+
+<div class="w3-panel w3-pale-red w3-leftbar w3-rightbar w3-border-red">
+    <p>
+        事实上，rsa-private.key和rsa.key的内容是一模一样的。
+    </p>
+</div>
+
+<h2>Certificate</h2>
+
+<h3>Create Certificate Signing Requests</h3>
+
+<p class="indented">
+    Once you have a private key, you can proceed to create a <strong>Certificate Signing Request (CSR)</strong>.
+    This is a formal request asking a CA to sign a certificate, and it contains the public key of the entity
+    requesting the certificate and some information about the entity. This data will all be part of the certificate.
+    A CSR is always signed with the private key corresponding to the public key it carries.
+</p>
+
+<p class="indented">
+    CSR creation is usually an interactive process, during which you’ll be providing the elements of the certificate distinguished name.
+    Read the instructions given by the openssl tool carefully; if you want a field to be empty,
+    you must enter a single dot (.) on the line, rather than just hit Return.
+    If you do the latter, OpenSSL will populate the corresponding CSR field with the default value.
+    (This behavior doesn’t make any sense when used with the default OpenSSL configuration, which is what virtually everyone does.
+    It does make sense once you realize you can actually change the defaults,
+    either by modifying the OpenSSL configuration or by providing your own configuration files.)
+</p>
+
+<div title="create certificate signing request" hidden class="plaintext">
+$ openssl req -new -key rsa.key -out certificate_signing_request.pem
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:CN
+State or Province Name (full name) [Some-State]:HeBei
+Locality Name (eg, city) []:BaoDing
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:Fruit Ltd
+Organizational Unit Name (eg, section) []:IT
+Common Name (e.g. server FQDN or YOUR name) []:www.fruit.com
+Email Address []:admin@fruit.com
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+
+$ cat certificate_signing_request.pem
+-----BEGIN CERTIFICATE REQUEST-----
+MIICzjCCAbYCAQAwgYgxCzAJBgNVBAYTAkNOMQ4wDAYDVQQIDAVIZUJlaTEQMA4G
+A1UEBwwHQmFvRGluZzESMBAGA1UECgwJRnJ1aXQgTHRkMQswCQYDVQQLDAJJVDEW
+MBQGA1UEAwwNd3d3LmZydWl0LmNvbTEeMBwGCSqGSIb3DQEJARYPYWRtaW5AZnJ1
+aXQuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8FMT3L4LZGQs
+WAJ7O1KxSyzQgLPZJTjbMgkf+JK69GahZ1qEYplW90z9DEU/hmGIF1FwcP9PvgcV
+J42IQkUpJ8GTKKoRUe+nESLboggIZe1QUkVGDFv3gAnkQQp2Xb7jvc1zTyBiIY03
+hoFlOCoh5osLl8AuNh/lUeiblAifEtG+oC1mHjCy/M9r0pgHsQ/tZmdAtYdMybdV
+Mn7vNXlRgxOY+JApbUGBEqXXc9R+7nP+T8f7gJk6KxIfgAoqmY6HSLVyj1SPYKtp
+BTn9PAj0Tp2ZvGTLhYji2IQsocRq9sPTV/os7hSdAmMyrhUckLYdXuTUaEkeYCHr
+s/nzuHy3iQIDAQABoAAwDQYJKoZIhvcNAQELBQADggEBAFUSU+9SPqOhE7vcygpf
+xigMgFHa0OMFZrpw4n2wQw0VxQPLktRFDVOUPneZKCdDDyctvFEdJ8hjg3+uzt70
+V7/DIj+cw2vWtFvHkWm/JaJmzhjp77Yy1VreG2PUTZwEBNIiHHUe1cY0OOzPXwo7
+9C//WQQB3SCqfXwWKvfw7E8Dm0efoU0vCbgcSBY28rZqBkIBLQ+Q1wKJgHohBnFL
+2bvNVWZflCyOo93TEDOmX5TGSdc9/bzoFp4RJzP+X6o7FIbGt8EUFOHYdV0h501a
+/ITIfgo+QrzgHxVw9EXOpQ675o498wk71su+sv0+9TtJUl45+jUwinsrpvBduGJg
+FYQ=
+-----END CERTIFICATE REQUEST-----
+</div>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>An Expanded X.509 Distinguished Name</caption>
+    <tr class="w3-green">
+        <th>TWO-LETTER CODE</th>
+        <th>LONG NAME</th>
+        <th>VALUE</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>CN</td>
+        <td>Common Name</td>
+        <td>www.fruit.com</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>OU</td>
+        <td>Organizational Unit</td>
+        <td>IT</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>O</td>
+        <td>Organization</td>
+        <td>Fruit Ltd</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>L</td>
+        <td>Locality, usually a city name</td>
+        <td>BaoDing</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>ST</td>
+        <td>State</td>
+        <td>HeBei</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>C</td>
+        <td>Country</td>
+        <td>CN</td>
+    </tr>
+</table>
+
+<h3>Examine Certificate Signing Requests</h3>
+
+<p class="indented">
+    After a CSR is generated, use it to sign your own certificate and/or send it to a public CA and ask him or her to sign the certificate.
+    But before you do that, it’s a good idea to double-check that the CSR is correct. Here’s how:
+</p>
+
+<div title="examine certificate signing request" hidden class="plaintext">
+$ openssl req -text -in certificate_signing_request.pem -noout
+Certificate Request:
+    Data:
+        Version: 0 (0x0)
+        Subject: C=CN, ST=HeBei, L=BaoDing, O=Fruit Ltd, OU=IT, CN=www.fruit.com/emailAddress=admin@fruit.com
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:f0:53:13:dc:be:0b:64:64:2c:58:02:7b:3b:52:
+                    b1:4b:2c:d0:80:b3:d9:25:38:db:32:09:1f:f8:92:
+                    ba:f4:66:a1:67:5a:84:62:99:56:f7:4c:fd:0c:45:
+                    3f:86:61:88:17:51:70:70:ff:4f:be:07:15:27:8d:
+                    88:42:45:29:27:c1:93:28:aa:11:51:ef:a7:11:22:
+                    db:a2:08:08:65:ed:50:52:45:46:0c:5b:f7:80:09:
+                    e4:41:0a:76:5d:be:e3:bd:cd:73:4f:20:62:21:8d:
+                    37:86:81:65:38:2a:21:e6:8b:0b:97:c0:2e:36:1f:
+                    e5:51:e8:9b:94:08:9f:12:d1:be:a0:2d:66:1e:30:
+                    b2:fc:cf:6b:d2:98:07:b1:0f:ed:66:67:40:b5:87:
+                    4c:c9:b7:55:32:7e:ef:35:79:51:83:13:98:f8:90:
+                    29:6d:41:81:12:a5:d7:73:d4:7e:ee:73:fe:4f:c7:
+                    fb:80:99:3a:2b:12:1f:80:0a:2a:99:8e:87:48:b5:
+                    72:8f:54:8f:60:ab:69:05:39:fd:3c:08:f4:4e:9d:
+                    99:bc:64:cb:85:88:e2:d8:84:2c:a1:c4:6a:f6:c3:
+                    d3:57:fa:2c:ee:14:9d:02:63:32:ae:15:1c:90:b6:
+                    1d:5e:e4:d4:68:49:1e:60:21:eb:b3:f9:f3:b8:7c:
+                    b7:89
+                Exponent: 65537 (0x10001)
+        Attributes:
+            a0:00
+    Signature Algorithm: sha256WithRSAEncryption
+         55:12:53:ef:52:3e:a3:a1:13:bb:dc:ca:0a:5f:c6:28:0c:80:
+         51:da:d0:e3:05:66:ba:70:e2:7d:b0:43:0d:15:c5:03:cb:92:
+         d4:45:0d:53:94:3e:77:99:28:27:43:0f:27:2d:bc:51:1d:27:
+         c8:63:83:7f:ae:ce:de:f4:57:bf:c3:22:3f:9c:c3:6b:d6:b4:
+         5b:c7:91:69:bf:25:a2:66:ce:18:e9:ef:b6:32:d5:5a:de:1b:
+         63:d4:4d:9c:04:04:d2:22:1c:75:1e:d5:c6:34:38:ec:cf:5f:
+         0a:3b:f4:2f:ff:59:04:01:dd:20:aa:7d:7c:16:2a:f7:f0:ec:
+         4f:03:9b:47:9f:a1:4d:2f:09:b8:1c:48:16:36:f2:b6:6a:06:
+         42:01:2d:0f:90:d7:02:89:80:7a:21:06:71:4b:d9:bb:cd:55:
+         66:5f:94:2c:8e:a3:dd:d3:10:33:a6:5f:94:c6:49:d7:3d:fd:
+         bc:e8:16:9e:11:27:33:fe:5f:aa:3b:14:86:c6:b7:c1:14:14:
+         e1:d8:75:5d:21:e7:4d:5a:fc:84:c8:7e:0a:3e:42:bc:e0:1f:
+         15:70:f4:45:ce:a5:0e:bb:e6:8e:3d:f3:09:3b:d6:cb:be:b2:
+         fd:3e:f5:3b:49:52:5e:39:fa:35:30:8a:7b:2b:a6:f0:5d:b8:
+         62:60:15:84
+</div>
+
+<h3>Sign Your Own Certificates</h3>
+
+<p class="indented">
+    If you’re installing a TLS server for your own use, you probably don’t want to go to a CA to get a publicly trusted certificate.
+    It’s much easier to sign your own. The fastest way to do this is to generate a self-signed certificate.
+</p>
+
+<p class="indented">
+    If you already have a CSR, create a certificate using the following command:
+</p>
+
+<div title="sign certificate" hidden class="plaintext">
+$ openssl x509 -req -days 365 -in certificate_signing_request.pem -signkey rsa.key -out signed_certificate.pem
+Signature ok
+subject=/C=CN/ST=HeBei/L=BaoDing/O=Fruit Ltd/OU=IT/CN=www.fruit.com/emailAddress=admin@fruit.com
+Getting Private key
+
+$ cat signed_certificate.pem
+-----BEGIN CERTIFICATE-----
+MIIDjjCCAnYCCQDHrg3yLdDsLjANBgkqhkiG9w0BAQsFADCBiDELMAkGA1UEBhMC
+Q04xDjAMBgNVBAgMBUhlQmVpMRAwDgYDVQQHDAdCYW9EaW5nMRIwEAYDVQQKDAlG
+cnVpdCBMdGQxCzAJBgNVBAsMAklUMRYwFAYDVQQDDA13d3cuZnJ1aXQuY29tMR4w
+HAYJKoZIhvcNAQkBFg9hZG1pbkBmcnVpdC5jb20wHhcNMjAwNjI5MDI1MjExWhcN
+MjEwNjI5MDI1MjExWjCBiDELMAkGA1UEBhMCQ04xDjAMBgNVBAgMBUhlQmVpMRAw
+DgYDVQQHDAdCYW9EaW5nMRIwEAYDVQQKDAlGcnVpdCBMdGQxCzAJBgNVBAsMAklU
+MRYwFAYDVQQDDA13d3cuZnJ1aXQuY29tMR4wHAYJKoZIhvcNAQkBFg9hZG1pbkBm
+cnVpdC5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDwUxPcvgtk
+ZCxYAns7UrFLLNCAs9klONsyCR/4krr0ZqFnWoRimVb3TP0MRT+GYYgXUXBw/0++
+BxUnjYhCRSknwZMoqhFR76cRItuiCAhl7VBSRUYMW/eACeRBCnZdvuO9zXNPIGIh
+jTeGgWU4KiHmiwuXwC42H+VR6JuUCJ8S0b6gLWYeMLL8z2vSmAexD+1mZ0C1h0zJ
+t1Uyfu81eVGDE5j4kCltQYESpddz1H7uc/5Px/uAmTorEh+ACiqZjodItXKPVI9g
+q2kFOf08CPROnZm8ZMuFiOLYhCyhxGr2w9NX+izuFJ0CYzKuFRyQth1e5NRoSR5g
+Ieuz+fO4fLeJAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAMaj+5OhouW4hU8NYgH/
+k4yI8j3mhwAmjDaP2JoRPrmROqY3gnuVXzFTkXB6HEV+E1vykAkSBdu2D+mWvqgB
+rx+EIqZr2h4RB2SS4G3+bVDGQ3o1gPAFiZeUSyuADifdExmuroaCH6HfHdZ9K46b
+Luunmd4qW1HRFSdelwJyXbfOMfcA9WsQkYsGLqeJZpnKPy8dwTyqJCKYz7QCPNGu
+rXPCelB5YQBK90i8Dq0pUNvd/7ka6D1km41xhhUfJDS5ELZriwk4QQiAqE8UdJLf
+whxQtilWv1rSs+rCLvbyarqT4tCnzALQEGBo9Xp435aDnJpa+/jRrXF+nJjTTk9X
+Gxs=
+-----END CERTIFICATE-----
+</div>
+
+<h3>Examine Signed Certificate</h3>
+
+<p class="indented">
+    Certificates might look a lot like random data at first glance, but they contain a great deal of information; you just need to know how to unpack it. The <code>x509</code> command does just that, so use it to look at the self-signed certificates you generated.
+</p>
+
+<p class="indented">
+    In the following example, I use the <code>-text</code> switch to print certificate contents and <code>-noout</code> to reduce clutter
+    by not printing the encoded certificate itself (which is the default behavior):
+</p>
+
+<div title="examine signed certificate" hidden class="plaintext">
+$ openssl x509 -text -in signed_certificate.pem -noout
+Certificate:
+    Data:
+        Version: 1 (0x0)
+        Serial Number:
+            c7:ae:0d:f2:2d:d0:ec:2e
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=CN, ST=HeBei, L=BaoDing, O=Fruit Ltd, OU=IT, CN=www.fruit.com/emailAddress=admin@fruit.com
+        Validity
+            Not Before: Jun 29 02:52:11 2020 GMT
+            Not After : Jun 29 02:52:11 2021 GMT
+        Subject: C=CN, ST=HeBei, L=BaoDing, O=Fruit Ltd, OU=IT, CN=www.fruit.com/emailAddress=admin@fruit.com
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:f0:53:13:dc:be:0b:64:64:2c:58:02:7b:3b:52:
+                    b1:4b:2c:d0:80:b3:d9:25:38:db:32:09:1f:f8:92:
+                    ba:f4:66:a1:67:5a:84:62:99:56:f7:4c:fd:0c:45:
+                    3f:86:61:88:17:51:70:70:ff:4f:be:07:15:27:8d:
+                    88:42:45:29:27:c1:93:28:aa:11:51:ef:a7:11:22:
+                    db:a2:08:08:65:ed:50:52:45:46:0c:5b:f7:80:09:
+                    e4:41:0a:76:5d:be:e3:bd:cd:73:4f:20:62:21:8d:
+                    37:86:81:65:38:2a:21:e6:8b:0b:97:c0:2e:36:1f:
+                    e5:51:e8:9b:94:08:9f:12:d1:be:a0:2d:66:1e:30:
+                    b2:fc:cf:6b:d2:98:07:b1:0f:ed:66:67:40:b5:87:
+                    4c:c9:b7:55:32:7e:ef:35:79:51:83:13:98:f8:90:
+                    29:6d:41:81:12:a5:d7:73:d4:7e:ee:73:fe:4f:c7:
+                    fb:80:99:3a:2b:12:1f:80:0a:2a:99:8e:87:48:b5:
+                    72:8f:54:8f:60:ab:69:05:39:fd:3c:08:f4:4e:9d:
+                    99:bc:64:cb:85:88:e2:d8:84:2c:a1:c4:6a:f6:c3:
+                    d3:57:fa:2c:ee:14:9d:02:63:32:ae:15:1c:90:b6:
+                    1d:5e:e4:d4:68:49:1e:60:21:eb:b3:f9:f3:b8:7c:
+                    b7:89
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: sha256WithRSAEncryption
+         c6:a3:fb:93:a1:a2:e5:b8:85:4f:0d:62:01:ff:93:8c:88:f2:
+         3d:e6:87:00:26:8c:36:8f:d8:9a:11:3e:b9:91:3a:a6:37:82:
+         7b:95:5f:31:53:91:70:7a:1c:45:7e:13:5b:f2:90:09:12:05:
+         db:b6:0f:e9:96:be:a8:01:af:1f:84:22:a6:6b:da:1e:11:07:
+         64:92:e0:6d:fe:6d:50:c6:43:7a:35:80:f0:05:89:97:94:4b:
+         2b:80:0e:27:dd:13:19:ae:ae:86:82:1f:a1:df:1d:d6:7d:2b:
+         8e:9b:2e:eb:a7:99:de:2a:5b:51:d1:15:27:5e:97:02:72:5d:
+         b7:ce:31:f7:00:f5:6b:10:91:8b:06:2e:a7:89:66:99:ca:3f:
+         2f:1d:c1:3c:aa:24:22:98:cf:b4:02:3c:d1:ae:ad:73:c2:7a:
+         50:79:61:00:4a:f7:48:bc:0e:ad:29:50:db:dd:ff:b9:1a:e8:
+         3d:64:9b:8d:71:86:15:1f:24:34:b9:10:b6:6b:8b:09:38:41:
+         08:80:a8:4f:14:74:92:df:c2:1c:50:b6:29:56:bf:5a:d2:b3:
+         ea:c2:2e:f6:f2:6a:ba:93:e2:d0:a7:cc:02:d0:10:60:68:f5:
+         7a:78:df:96:83:9c:9a:5a:fb:f8:d1:ad:71:7e:9c:98:d3:4e:
+         4f:57:1b:1b
+</div>
