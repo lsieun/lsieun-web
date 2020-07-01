@@ -50,7 +50,7 @@
     k &= (c \; \% \; (q - 1)) + 1\\
     r &= (g^{k} \; \% \; p) \; \% \; q\\
     z &= hash(message),\; truncated\; to\; sizeof(q)\\
-    s &= ((k^{-1} \; \% \; q) * (z \; + \; xr)) \; \% \; q
+    s &= (k^{-1} \; * \; (z \; + \; xr)) \; \% \; q
     \end{align} $$
 </div>
 

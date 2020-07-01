@@ -22,7 +22,7 @@ public class HttpConst {
     public static final String BASE_URL = "__BASE_URL__";
 
     // Pagination
-    public static final int PAGE_SIZE = 5;
+    public static final int PAGE_SIZE = 10;
     public static final String PAGE_NUM = "__PAGE_NUM__";
     public static final String PAGE_TOTAL = "__PAGE_TOTAL__";
 }

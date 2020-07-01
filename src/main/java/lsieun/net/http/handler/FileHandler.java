@@ -21,7 +21,12 @@ public abstract class FileHandler extends ResourceHandler {
     }
 
     public String getRealFilePath(final String uri_path) {
-        return FileHandler.ROOT_PATH + uri_path;
+        String filepath = FileHandler.ROOT_PATH + uri_path;
+        File file = new File(filepath);
+        if (!file.exists()) {
+            filepath = FileHandler.ROOT_PATH + uri_path.toLowerCase();
+        }
+        return filepath;
     }
 
     public static HttpResource getDiskResource(final String uri_path, final String filepath) {
