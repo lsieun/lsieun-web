@@ -11,6 +11,7 @@ public class MIMEUtils {
         mime_map.put(".css", "text/css");
         mime_map.put(".js", "application/javascript");
         mime_map.put(".ico", "image/x-icon");
+        mime_map.put(".gif", "image/gif");
         mime_map.put(".jpg", "image/jpeg");
         mime_map.put(".png", "image/png");
         mime_map.put(".svg", "image/svg+xml");

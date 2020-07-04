@@ -1,0 +1,66 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Javascript File</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/js/js_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Read file as string</h2>
+
+<p class="indented">
+    Make sure to have a file input on your page:
+</p>
+
+<div title="html" class="plaintext">
+&lt;input type="file" id="upload"&gt;
+</div>
+
+<p class="indented">
+    Then in JavaScript:
+</p>
+
+<div title="javascript" class="plaintext">
+document.getElementById('upload').addEventListener('change', readFileAsString);
+function readFileAsString() {
+    var files = this.files;
+    if (files.length === 0) {
+        console.log('No file is selected');
+        return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function(event) {
+        console.log('File content:', event.target.result);
+    };
+    reader.readAsText(files[0]);
+}
+</div>
+
+<p class="indented">
+    Or in jQuery:
+</p>
+
+<div title="jQuery" class="plaintext">
+$('#upload').change(function (e) {
+    var files = this.files;
+    if (files.length === 0) {
+        console.log('No file is selected');
+        return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function(event) {
+        console.log('File content:', event.target.result);
+    };
+    reader.readAsText(files[0]);
+
+});
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://riptutorial.com/javascript/example/7081/read-file-as-string" target="_blank">Read file as string</a></li>
+</ul>

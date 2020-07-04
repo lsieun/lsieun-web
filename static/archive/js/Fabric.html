@@ -1,0 +1,184 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Fabric.js</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/js/js_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Introduction</h2>
+
+<p class="indented">
+    <strong>Fabric.js</strong> is a framework that makes it easy to work with HTML5 canvas element.
+</p>
+
+<p class="indented">
+    Using Fabric.js, you can create and populate objects on canvas; objects like simple geometrical shapes —
+    rectangles, circles, ellipses, polygons, or more complex shapes consisting of hundreds or thousands of simple paths.<sub class="my_note" style="color:green">笔记：可以添加几何图形</sub>
+    You can then scale, move, and rotate these objects with the mouse;<sub class="my_note" style="color:green">笔记：可以进行缩放、移动、旋转操作</sub>
+    modify their properties — color, transparency, z-index, etc.<sub class="my_note" style="color:green">笔记：可以修改属性</sub>
+    You can also manipulate these objects altogether — grouping them with a simple mouse selection.<sub class="my_note" style="color:green">笔记：可以同时选中多个对象</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Download</h2>
+
+<p class="indented">
+    Download <a class="external" href="https://github.com/fabricjs/fabric.js/releases/" target="_blank">Fabric.js</a>
+</p>
+
+<h2>Tutorial</h2>
+
+<h3>Create Canvas</h3>
+
+<div title="html" class="plaintext">
+&lt;canvas id="canvas_id"&gt;&lt;/canvas&gt;
+</div>
+
+<div title="js: create canvas" class="jscode">
+var canvas = new fabric.Canvas('canvas_id');
+</div>
+
+<h3>Create Objects</h3>
+
+<ul>
+    <li><code>fabric.Circle</code></li>
+    <li><code>fabric.Ellipse</code></li>
+    <li><code>fabric.Line</code></li>
+    <li><code>fabric.Polygon</code></li>
+    <li><code>fabric.Polyline</code></li>
+    <li><code>fabric.Rect</code></li>
+    <li><code>fabric.Triangle</code></li>
+</ul>
+
+<h4>Add Rect</h4>
+
+<div title="js: add rectangle" class="jscode">
+// create a rectangle with angle=45
+var rect = new fabric.Rect({
+  left: 100,
+  top: 100,
+  fill: 'red',
+  width: 20,
+  height: 20,
+  angle: 45
+});
+
+canvas.add(rect);
+</div>
+
+<h4>Add Circle and Triangle</h4>
+
+<div title="" class="jscode">
+var circle = new fabric.Circle({
+  radius: 20, fill: 'green', left: 100, top: 100
+});
+
+var triangle = new fabric.Triangle({
+  width: 20, height: 30, fill: 'blue', left: 50, top: 50
+});
+
+canvas.add(circle, triangle);
+</div>
+
+<h3>Manipulating objects</h3>
+
+<p class="indented">
+    Creating graphic objects — rectangles, circles, or something else — is certainly only the beginning.
+    At some point, we will probably want to modify those objects.
+</p>
+
+<p class="indented">
+    Well, as you would expect there are those related to
+    <strong>positioning</strong> — <code>left</code>, <code>top</code>;
+    <strong>dimension</strong> — <code>width</code>, <code>height</code>;
+    <strong>rendering</strong> — <code>fill</code>, <code>opacity</code>, <code>stroke</code>, <code>strokeWidth</code>;
+    <strong>scaling and rotation</strong> — <code>scaleX</code>, <code>scaleY</code>, <code>angle</code>;
+    and even those related to <strong>flipping</strong> — <code>flipX</code>, <code>flipY</code> and skewing <code>skewX</code>, <code>skewY</code>.
+</p>
+
+<p class="indented">
+    Yes, creating flipped object in Fabric is as easy as setting <code>flip*</code> property to <code>true</code>.
+</p>
+
+<h4>setters and getters</h4>
+
+<p class="indented">
+    You can read any of these properties via <code>get</code> method, and set them via <code>set</code>. Let's try changing some of the red rectangle's properties:
+</p>
+
+<div title="js: change rectangle" class="jscode">
+var canvas = new fabric.Canvas('c');
+...
+canvas.add(rect);
+
+rect.set('fill', 'red');
+rect.set({ strokeWidth: 5, stroke: 'rgba(100,200,200,0.5)' });
+rect.set('angle', 15).set('flipY', true);
+</div>
+
+<p class="indented">
+    This demonstrates that <code>set</code> is a universal method. You will probably use it quite often, and so it's meant to be as convenient as possible.
+</p>
+
+<p class="indented">
+    We've covered setters, and what about getters? Quite obviously, there's generic <code>get</code> method but also a number of specific <code>get*</code> ones.
+    To read “width” value of an object, you would use <code>get('width')</code> or <code>getWidth()</code>.
+    To get a “scaleX” value — <code>get('scaleX')</code> or <code>getScaleX()</code>, and so on.
+    There's a method like <code>getWidth</code> or <code>getScaleX</code> for each of the “public” object properties (“stroke”, “strokeWidth”, “angle”, etc.)
+</p>
+
+<p class="indented">
+    You might notice that in earlier examples objects were created with the same configuration hash as the one we just used in <code>set</code> method.
+    That's because it is <strong>exactly the same</strong>. You can either “configure” object at the time of creation, or use <code>set</code> method after:
+</p>
+
+<div title="exactly the same" class="jscode">
+var rect = new fabric.Rect({ width: 10, height: 20, fill: '#f55', opacity: 0.7 });
+
+// or functionally identical
+
+var rect = new fabric.Rect();
+rect.set({ width: 10, height: 20, fill: '#f55', opacity: 0.7 });
+</div>
+
+<h4>position</h4>
+
+<div title="js: move position" class="jscode">
+rect.set({ left: 20, top: 50 });
+canvas.renderAll();
+</div>
+
+<h4>dimension</h4>
+<h4>rendering</h4>
+<h4>scaling and rotation</h4>
+
+<h4>flip</h4>
+
+<div title="js: flip" class="jscode">
+rect.set('flipY', true);
+canvas.renderAll();
+</div>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+<div title="" class="jscode">
+
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://github.com/fabricjs/fabric.js" target="_blank">Github: Fabric.js</a></li>
+    <li><a class="external" href="http://fabricjs.com/docs/" target="_blank">Fabric.js Documentation</a></li>
+    <li><a class="external" href="http://fabricjs.com/fabric-intro-part-1" target="_blank">Introduction to Fabric.js. Part 1.</a></li>
+    <li><a class="external" href="http://fabricjs.com/fabric-intro-part-2" target="_blank">Introduction to Fabric.js. Part 2.</a></li>
+    <li><a class="external" href="http://fabricjs.com/fabric-intro-part-3" target="_blank">Introduction to Fabric.js. Part 3.</a></li>
+</ul>

@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Online Whiteboard</title>
+    <meta name="Description" content="Online Whiteboard"/>
+    <meta name="Keywords" content="Free, Online, Whiteboard"/>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" type="text/css" href="/css/whiteboard/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/css/whiteboard/lightslider.css">
+    <link rel="stylesheet" type="text/css" href="/css/whiteboard/whiteboard.css">
+
+    <script type="text/javascript" src="/js/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="/js/whiteboard/jquery.easyui.min.js"></script>
+
+    <script type="text/javascript" src="/js/whiteboard/screenfull.js"></script>
+    <script type="text/javascript" src="/js/whiteboard/FileBufferReader.min.js"></script>
+    <script type="text/javascript" src="/js/whiteboard/lightslider.js"></script>
+
+</head>
+
+
+<body class="easyui-layout" id="main_content">
+
+<!--HEADER STARTS -->
+<div data-options="region:'north'" style="height:65px; width:100%;overflow:hidden;">
+    <a href='javascript:void(0)'>
+        <img src="/images/whiteboard/diamond.png" height="50px" style="padding:5px; float:left;"/>
+    </a>
+    <h1 class="whtboard">Whiteboard</h1>
+
+    <!-- header top right menu first -->
+    <div style="margin:18px 0px 0px 0px;">
+        <div class="db-nav">
+            <a id="tool_undo" href="javascript:void(0);" title="Undo">
+                <div class="sub-default-lft" style="border-right:none;"><i class="fa-undo wbitem"></i></div>
+            </a>
+            <a id="tool_redo" href="javascript:void(0);" title="Redo">
+                <div class="sub-default-lft" style="border-right:none;"><i class="fa-repeat wbitem"></i></div>
+            </a>
+            <a id="tool_clear" href='javascript:void(0)' title="Clear all">
+                <div class="sub-default-lft wbitem" style="border-right:none;">
+                    <img src="/images/whiteboard/clear.png" style="vertical-align:bottom; height:17px;"/>
+                </div>
+            </a>
+            <a id="tool_maximize" href='javascript:void(0)' title="Maximize">
+                <div class="sub-default-lft"><i class="fa-expand"></i></div>
+            </a>
+        </div>
+    </div>
+    <!-- end of header top right menu first -->
+
+</div>
+<!--HEADER ENDS -->
+
+<div id="east" data-options="region:'east', title:'Meeting',iconCls:'icon-chat-small', split:false, collapsed:false"
+     style="width:300px;">
+</div>
+
+<!--Left Navigation starts -->
+<div id="west" data-options="region:'west', title:'',iconCls:'', split:false, collapsible:false" style="width:55px;">
+    <div class="wr-left">
+        <div class="wr-lft-cont column">
+            <div class="sub-default clickDisable">
+                <a id="tool_select" href="javascript:void(0);" title="Select Tool">
+                    <div class="sub-default-lft"><i class="fa-mouse-pointer"></i></div>
+                </a>
+                <a id="tool_background" href="javascript:void(0);" title="Background">
+                    <div class="sub-default-lft"><i class="fa-circle wbitem"></i></div>
+                </a>
+                <a id="tool_pattern" href="javascript:void(0);" title="Pattern">
+                    <div class="sub-default-lft">
+                        <img src="/images/whiteboard/pattern-icon.png"
+                             style="border:1px solid #ccc;border-radius:60px;"/>
+                    </div>
+                </a>
+                <a id="tool_pencil" href="javascript:void(0);" title="Pencil">
+                    <div class="sub-default-lft" style="border-right:none;">
+                        <i class="fa-pencil wbitem" style="font-size:120%;"></i>
+                    </div>
+                </a>
+                <a id="tool_eraser" href="javascript:void(0)" title="Eraser">
+                    <div class="sub-default-lft"><i class="fa-eraser"></i></div>
+                </a>
+                <a id="tool_shape" href="javascript:void(0);" title="Shapes">
+                    <div class="sub-default-lft" style="border-right:none;">
+                        <img src="/images/whiteboard/shape-sm.png"/>
+                    </div>
+                </a>
+                <a id="tool_text" href="javascript:void(0);" title="Text">
+                    <div class="sub-default-lft" style="border-right:none;"><i class="fa-text-height"></i></div>
+                </a>
+                <a id="tool_image" href="javascript:void(0);" title="Image">
+                    <div class="sub-default-lft" style="border-right:none;"><i class="fa-file-image-o"></i></div>
+                </a>
+
+                <a id="tool_download" href="javascript:void(0);" title="Download/Upload">
+                    <div class="sub-default-lft" style="border-right:none;">
+                        <img src="/images/whiteboard/up-down.png"/>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--End of Left Navigation -->
+
+<!--BOTTOM STARTS -->
+<div id="south" data-options="region:'south',iconCls:'icon-image-editor', title:'Slides', split:false,collapsible:true"
+     style="height:115px">
+</div>
+<!--BOTTOM ENDS -->
+
+<!--STAGE STARTS -->
+<div id="center_region" data-options="region:'center'" style="height:100%">
+    <div id="stage">
+        <canvas id="canvas_board"></canvas>
+    </div>
+
+    <!-- header top right menu second -->
+    <div class="wr-rgt">
+        <div class="wr-rgt-cont">
+
+            <!-- code of background color picker -->
+            <div id="pop_bg_color" class="wb-pop-panel left-menu-slide" style="min-height:306px; max-height:100%;">
+                <div class="icon-curve icon-bgcolor" style="background:transparent !important"></div>
+                <div class="sub-tools items">
+                    <a href="javascript:void(0);">
+                        <div class="wb-bg-color wb-black-background"></div>
+                    </a>
+                    <a href="javascript:void(0);">
+                        <div class="wb-bg-color wb-white-background"></div>
+                    </a>
+                    <a href="javascript:void(0);">
+                        <div class="wb-bg-color wb-red-background"></div>
+                    </a>
+                    <a href="javascript:void(0);">
+                        <div class="wb-bg-color wb-green-background"></div>
+                    </a>
+                    <a href="javascript:void(0);">
+                        <div class="wb-bg-color wb-yellow-background"></div>
+                    </a>
+                    <a href="javascript:void(0);">
+                        <div class="wb-bg-color wb-blue-background"></div>
+                    </a>
+
+                    <a href="javascript:void(0);">
+                        <input type="color" id="input_bg_color" class="form-control picker" value="#ffffff">
+                    </a>
+                </div>
+            </div>
+            <!-- end of code for background color picker -->
+
+            <!-- code of patterns -->
+            <div id="pop_bg_pattern" class="wb-pop-panel left-menu-slide" style="min-height:265px; max-height:100%;">
+                <div class="icon-curve icon-bgpattern"></div>
+                <div class="sub-tools items">
+                    <a href="javascript:void(0);" title="Guidelines">
+                        <div class="wb-bg-pattern"><img src="/images/whiteboard/transparent-guidelines.png"/></div>
+                    </a>
+                    <a href="javascript:void(0);" title="Book Guidelines">
+                        <div class="wb-bg-pattern"><img src="/images/whiteboard/transparent-booklines.png"/></div>
+                    </a>
+                    <a href="javascript:void(0);" title="Transparent Background">
+                        <div class="wb-bg-pattern"><img src="/images/whiteboard/transparent.png"/></div>
+                    </a>
+                    <a href="javascript:void(0);" title="Guidelines">
+                        <div class="wb-bg-pattern"><img src="/images/whiteboard/transparent-diamond.png"/></div>
+                    </a>
+                    <a href="javascript:void(0);" title="Book Guidelines">
+                        <div class="wb-bg-pattern"><img src="/images/whiteboard/transparent-lgap.png"/></div>
+                    </a>
+                    <a href="javascript:void(0);" title="Transparent Background">
+                        <div class="wb-bg-pattern"><img src="/images/whiteboard/transparent-checkered.png"/></div>
+                    </a>
+                </div>
+            </div>
+            <!-- end of code patterns -->
+
+            <!-- code of pencil -->
+            <div id="pop_pen_edit" class="wb-pop-panel left-menu-slide" style="min-height:345px; max-height:100%;">
+                <div class="icon-curve icon-pendit"></div>
+                <div class="sub-tools">
+                    <div class="items" style="margin:0px 51px 0px 0px;">
+                        <a href="javascript:void(0);" class='wb-pencil-color bgcrcle'>
+                            <input type="color" id="input_pen_color" class="form-control picker" value="#000000">
+                        </a>
+                        <a href="javascript:void(0);" class='wb-pencil-color bgcrcle'>
+                            <div class="wb-black-background"></div>
+                        </a>
+                        <a href="javascript:void(0);" class='wb-pencil-color bgcrcle'>
+                            <div class="wb-red-background"></div>
+                        </a>
+                        <a href="javascript:void(0);" class='wb-pencil-color bgcrcle'>
+                            <div class="wb-green-background"></div>
+                        </a>
+                        <a href="javascript:void(0);" class='wb-pencil-color bgcrcle'>
+                            <div class="wb-yellow-background"></div>
+                        </a>
+                        <a href="javascript:void(0);" class='wb-pencil-color bgcrcle'>
+                            <div class="wb-white-background"></div>
+                        </a>
+                        <a href="javascript:void(0);" class='wb-pencil-color bgcrcle'>
+                            <div class="wb-blue-background"></div>
+                        </a>
+                    </div>
+                    <input id="input_pen_width" name="lineSlide" value="2"/>
+                </div>
+            </div>
+            <!-- end of code for pencil-->
+
+            <!-- code for eraser-->
+            <div id="pop_erase_options" class="wb-pop-panel left-menu-slide" style="min-height:43px; max-height:100%;">
+                <div class="icon-curve icon-eraseoption"></div>
+                <div class="sub-tools">
+                    <input id="input_eraser_width" name="eraserSlide" value="2"/>
+                </div>
+            </div>
+            <!-- end of code for eraser-->
+
+            <!-- code of shapes -->
+            <div id="pop_shape_options" class="wb-pop-panel left-menu-slide"
+                 style="min-height:351px; max-height:100%;">
+                <div class="icon-curve icon-shpeoption"></div>
+                <div class="sub-tools items">
+                    <a href="javascript:void(0);" class='bgcrcle'>
+                        <input id="input_shape_fill_color" type="color" class="form-control picker" value="">
+                    </a>
+                    <a id="shape_rectangle" href="javascript:void(0)" title="Rectangle" data-style='rectangle'>
+                        <img src="/images/whiteboard/rectangle-sm.png" title="Rectangle"/></a>
+                    <a id="shape_square" href="javascript:void(0)" title="Square" data-style='square'>
+                        <img src="/images/whiteboard/square-sm.png" title="Square"/></a>
+                    <a id="shape_circle" href="javascript:void(0)" title="Circle" data-style='circle'>
+                        <img src="/images/whiteboard/circle-sm.png" title="Circle"/></a>
+                    <a id="shape_triangle" href="javascript:void(0)" title="Triangle" data-style='triangle'>
+                        <img src="/images/whiteboard/triangle-sm.png" title="Triangle"/></a>
+                    <a id="shape_line" href="javascript:void(0)" title="Line" data-style='line'>
+                        <img src="/images/whiteboard/line-sm.png" title="Line"/></a>
+                    <a id="shape_ellipse" href="javascript:void(0)" title="Ellipse" data-style='ellipse'>
+                        <img src="/images/whiteboard/ellipse-sm.png" title="Ellipse"/></a>
+                    <a id="btn_remove_shape" href='javascript:void(0)' class="eraser" title="delete">
+                        <div class="trash-bgpicker" style="border:none!important;">
+                            <i class="fa-trash"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <!-- end of code for shapes -->
+
+            <!-- HTML of Text -->
+            <div id="pop_text_options" class='wb-pop-panel left-menu-slide' style="min-height:135px; max-height:100%;">
+                <div class="icon-curve icon-txtoptions"></div>
+                <div id="dd">
+                    <div class="sub-tools items">
+                        <a href="javascript:void(0)" id="btn_new_text" title="Add New Text"><i
+                                class="fa-plus trashh"></i></a>
+                        <a href="javascript:void(0)" id="btn_remove_text" title="Delete Text"><i
+                                class="fa-trash trashh"></i></a>
+                        <a href="javascript:void(0)" id="btn_text_menu" title="Show Text Menu"><i
+                                class="fa-bars trashh"></i></a>
+                    </div>
+                </div>
+            </div>
+            <!-- End of HTML Text -->
+
+            <!-- HTML of Image -->
+            <div id="pop_image_options" class='wb-pop-panel left-menu-slide' style="min-height:91px; max-height:100%;">
+                <div class="icon-curve icon-imgoptions"></div>
+                <div class="sub-tools items">
+                    <a href="javascript:void(0)" id="btn_add_image" title="Add New Image">
+                        <i class="fa-upload trashh" style="font-size:130%!important;"></i>
+                    </a>
+                    <a href="javascript:void(0)" id="btn_remove_image" class='clsCance' title="Remove Image">
+                        <i class="fa-trash trashh"></i>
+                    </a>
+                    <div class="text-tool sub-tools-cat" id="catOne">
+                        <form method="post" enctype="multipart/form-data">
+                            <input id="input_file_image" type="file" name="fileImage"
+                                   title="Upload Image from Computer">
+                        </form>
+                        <div style="clear:both;"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of HTML Image -->
+
+            <!-- code of download -->
+            <div id="pop_download_options" class="wb-pop-panel left-menu-slide"
+                 style="min-height:145px; max-height:100%;">
+                <div class="icon-curve icon-dwnldoptions"></div>
+                <div class="sub-tools items">
+                    <a id="btn_download_json" href='javascript:void(0)' title="Download as Board">
+                        <img src="/images/whiteboard/download_board.png" class="fa-dwnload"
+                             style="width:21px; height:22px;border-radius:0px;"/></a>
+                    <a id="btn_download_jpeg" href='javascript:void(0)' title="Download as JPEG">
+                        <img src="/images/whiteboard/download_jpeg.png" class="fa-dwnload"
+                             style="width:21px; height:22px;border-radius:0px;"/></a>
+                    <a href='javascript:void(0)'>
+                        <form method="post" enctype="multipart/form-data">
+                            <input id="input_file_json" type="file" name="fileJson" title="Upload Board from Computer">
+                        </form>
+                        <div id="btn_upload_json" class="fileupload" title="Upload Board from Computer">
+                            <i class="fa-upload fa-fupload"></i>
+                        </div>
+                    </a>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <!-- end of code for download -->
+
+        </div>
+    </div>
+
+    <div class="wr-rgt">
+        <div class="wr-rgt-cont">
+            <div id="div_text_menu" class="textdisplay">
+                <div class="c-two">
+                    <select id="txt_current_font">
+                        <option value='Times New Roman'>Times New Roman</option>
+                    </select>
+                </div>
+                <div class="clear"></div>
+                <div class="c-two">
+                    <div id="txt_align_left" class="c-two-three div-text-align" data-opt="left">
+                        <a href="javascript:void(0);"><i class="fa-align-left c-border"></i></a>
+                    </div>
+                    <div id="txt_align_center" class="c-two-three div-text-align" data-opt="center">
+                        <a href="javascript:void(0);"><i class="fa-align-center c-border"></i></a>
+                    </div>
+                    <div id="txt_align_right" class="c-two-three div-text-align" data-opt="right">
+                        <a href="javascript:void(0);"> <i class="fa-align-right c-border"></i></a>
+                    </div>
+                    <div id="txt_style_bold" class="c-two-three div-text-bold" data-opt="">
+                        <a href="javascript:void(0);"><i class="fa-bold c-border"></i></a>
+                    </div>
+                    <div id="txt_style_italic" class="c-two-three div-text-italic" data-opt="">
+                        <a href="javascript:void(0);"><i class="fa-italic c-border"></i></a>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="divider"></div>
+                <textarea placeholder="Enter Text Here" cols="4" rows="3"
+                          id="txt_current_content">Sample Text</textarea>
+                <div class="divider"></div>
+                <div class="c-two">
+                    <div class="c-two-three">
+                        <a>Size:</a>
+                        <input id="txt_current_size" type="text" style="width:80%;" value="20"/></div>
+                    <div class="c-two-three" style="width:36%; padding-left:5px!important;">
+                        <a>Color:</a>
+                        <div class="clear"></div>
+                        <input id="txt_current_fore_color" type="color" class="form-control" value="#000000"/>
+                    </div>
+                    <div class="c-two-three" style="width:36%;">
+                        <a>Background:</a>
+                        <div class="clear"></div>
+                        <input id="txt_current_bg_color" type="color" class="form-control" value="#000000">
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="divider"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!--STAGE ENDS -->
+
+<script type="text/javascript" src="/js/fabric.js"></script>
+<script type="text/javascript" src="/js/whiteboard/whiteboard.js"></script>
+<script type="text/javascript">
+    /* Shapes */
+    let shape_array = [];
+
+    let total_count = 0; // total count
+    let total_obj = []; // total array
+    let total_index = 0;
+
+    // region process canvas
+    function init_canvas(canvas_id) {
+        fabric.Object.prototype.transparentCorners = false;
+
+        let canvas = new fabric.Canvas(canvas_id, {
+            isDrawingMode: true,
+            backgroundColor: '#ffffff'
+        });
+
+        let width = $('#center_region').width();
+        let height = $('#center_region').height();
+        set_canvas_size(canvas, width, height);
+
+        set_brush_attr_on_canvas(canvas, '#000000', 2);
+
+        canvas.on('object:added', function (opt) {
+            total_obj[total_index] = opt.target;
+            total_index++;
+        });
+
+        canvas.on('mouse:wheel', function (opt) {
+            let delta = opt.e.deltaY;
+            let zoom = canvas.getZoom();
+            zoom *= 0.999 ** delta;
+            if (zoom > 20) zoom = 20;
+            if (zoom < 0.01) zoom = 0.01;
+            canvas.zoomToPoint({x: opt.e.offsetX, y: opt.e.offsetY}, zoom);
+            opt.e.preventDefault();
+            opt.e.stopPropagation();
+        });
+
+        return canvas;
+    }
+
+    function remove_active_object(canvas) {
+        let obj = canvas.getActiveObject();
+        if (obj == null) {
+            return;
+        }
+        canvas.remove(obj);
+        canvas.renderAll();
+    }
+
+    function clear_canvas(canvas) {
+        canvas.clear();
+    }
+
+    function reset_canvas(canvas) {
+        $('#input_pen_width').numberspinner({
+            value: 2
+        });
+        $('#input_eraser_width').numberspinner({
+            value: 10
+        });
+        $('#input_pen_color').val('#000000');
+        $('#input_shape_fill_color').val('#000000');
+
+        set_brush_attr_on_canvas(canvas, '#000000', 2);
+        canvas.renderAll();
+    }
+    // endregion
+
+    // region canvas mode
+    function enter_drawing_mode(canvas) {
+        canvas.isDrawingMode = true;
+        canvas.forEachObject(function (obj) {
+            obj.set({
+                hasControls: false,
+                hasBorders: false,
+                selectable: false
+            });
+        });
+        canvas.renderAll();
+    }
+
+    function exit_drawing_mode(canvas) {
+        canvas.isDrawingMode = false;
+
+        canvas.forEachObject(function (obj) {
+            obj.set({
+                hasControls: true,
+                hasBorders: true,
+                selectable: true
+            });
+        });
+        canvas.renderAll();
+    }
+
+    function enter_select_mode(canvas) {
+        exit_drawing_mode(canvas);
+    }
+
+    function enter_shape_mode(canvas) {
+        exit_drawing_mode(canvas);
+    }
+
+    function enter_text_mode(canvas) {
+        exit_drawing_mode(canvas);
+    }
+
+    function enter_image_mode(canvas) {
+        exit_drawing_mode(canvas);
+    }
+    // endregion
+
+    // region brush and eraser
+    function copy_brush_attr_from_html_to_fabric(canvas) {
+        let color = $('#input_pen_color').val();
+        let width = $('#input_pen_width').val();
+
+        set_brush_attr_on_canvas(canvas, color, width);
+    }
+    // endregion
+
+    // region process shape
+    function add_rectangle(canvas) {
+        let obj = new fabric.Rect({
+            width: 200,
+            height: 100,
+            left: 50,
+            top: 50,
+            fill: '',
+            stroke: '#000000',
+            strokeWidth: 2
+        });
+
+        add_shape(canvas, obj);
+    }
+
+    function add_square(canvas) {
+        let obj = new fabric.Rect({
+            width: 100,
+            height: 100,
+            left: 150,
+            top: 50,
+            fill: '',
+            stroke: '#000000',
+            strokeWidth: 2
+        });
+
+        add_shape(canvas, obj);
+    }
+
+    function add_circle(canvas) {
+        let obj = new fabric.Circle({
+            radius: 50,
+            fill: '',
+            stroke: '#000000',
+            strokeWidth: 2
+        });
+
+        add_shape(canvas, obj);
+    }
+
+    function add_triangle(canvas) {
+        let obj = new fabric.Triangle({
+            width: 100,
+            height: 100,
+            fill: '',
+            stroke: '#000000',
+            strokeWidth: 2
+        });
+
+        add_shape(canvas, obj);
+    }
+
+    function add_line(canvas) {
+        let obj = new fabric.Line([0, 0, 200, 0], {
+            fill: '#000000',
+            stroke: '#000000',
+            strokeWidth: 2
+        });
+
+        add_shape(canvas, obj);
+    }
+
+    function add_ellipse(canvas) {
+        let obj = new fabric.Ellipse({
+            fill: '',
+            stroke: '#000000',
+            strokeWidth: 2,
+            rx: 100,
+            ry: 50
+        });
+
+        add_shape(canvas, obj);
+    }
+
+    function add_shape(canvas, obj) {
+        obj.on('selected', function (e) {
+            let fill_color = this.get("fill");
+            set_shape_fill_color_to_html(fill_color);
+            canvas.bringForward(this);
+        });
+
+        add_object_on_canvas(canvas, obj);
+    }
+
+    function get_shape_fill_color_from_fabric(canvas) {
+        let obj = canvas.getActiveObject();
+        if (obj == null) {
+            return "";
+        }
+        return obj.get("fill");
+    }
+
+    function set_shape_fill_color_to_fabric(canvas, color) {
+        let obj = canvas.getActiveObject();
+        if (obj != null) {
+            obj.set("fill", color);
+            canvas.renderAll();
+        }
+    }
+
+    function set_shape_fill_color_to_html(color) {
+        if (color === "") {
+            $('#input_shape_fill_color').val("#000000");
+        } else {
+            $('#input_shape_fill_color').val(color);
+        }
+    }
+    // endregion
+
+    // region process text
+    function reset_text_attr_to_html() {
+        $('#txt_current_font').val('Times New Roman');
+        $('#txt_current_content').val('Sample Text');
+        $('#txt_current_size').val(20);
+
+        // reset: color
+        $('#txt_current_fore_color').val('#ff0000');
+        $('#txt_current_bg_color').val('#000000');
+
+        // reset: align
+        $('.div-text-align i').css({
+            'background-color': "#ffffff",
+            'color': '#000000'
+        });
+        $('#txt_align_left i').css({
+            'background-color': "#424242",
+            'color': '#ffffff'
+        });
+
+        // reset: bold and italic
+        $('.div-text-bold i, .div-text-italic i').css({
+            'background-color': "#ffffff",
+            'color': '#000000'
+        });
+
+    }
+
+    function add_text_to_fabric(canvas) {
+        let obj = new fabric.IText('Sample Text', {
+            fontFamily: 'Times New Roman',
+            textAlign: 'left',
+            fontStyle: 'normal',
+            fontSize: '20',
+            padding: 5,
+            fill: '#ff0000',
+            hasControls: true,
+            hasBorders: true,
+            hasRotatingPoint: true
+        });
+
+        obj.on('selected', function (e) {
+            copy_text_attr_from_fabric_to_html(this);
+        });
+
+        canvas.add(obj);
+        canvas.setActiveObject(obj);
+        canvas.centerObject(obj);
+        obj.setCoords();
+        canvas.renderAll();
+    }
+
+    function copy_text_attr_from_fabric_to_html(obj) {
+        let content = obj.get("text");
+        let font_family = obj.get("fontFamily");
+        let font_size = obj.get("fontSize");
+        let font_weight = obj.get("fontWeight");
+        let font_style = obj.get("fontStyle");
+        let fore_color = obj.get("fill");
+        let bg_color = obj.get("backgroundColor");
+        let text_align = obj.get("textAlign");
+
+        set_text_attr_to_html(content, font_family, font_size, fore_color, bg_color, text_align, font_weight, font_style);
+    }
+
+    function set_text_attr_to_html(content, font_family, font_size,
+                           fore_color, bg_color,
+                           text_align, font_weight, font_style) {
+        $('#txt_current_content').val(content);
+        $('#txt_current_font').val(font_family);
+        $('#txt_current_size').val(font_size);
+
+        $('#txt_current_fore_color').val(fore_color);
+        $('#txt_current_bg_color').val(bg_color);
+
+        set_text_align_to_html(text_align);
+        set_text_bold_to_html(font_weight);
+        set_text_italic_to_html(font_style);
+    }
+
+    function set_text_align_to_html(text_align) {
+        $('.div-text-align i').css({
+            'background-color': "#ffffff",
+            'color': '#000000'
+        });
+        $('#txt_align_' + text_align + ' i').css({
+            'background-color': "#424242",
+            'color': '#ffffff'
+        });
+    }
+
+    function copy_text_attr_from_html_to_fabric(canvas) {
+        let obj = canvas.getActiveObject();
+        if (obj == null || !(obj instanceof fabric.Text)) {
+            return;
+        }
+
+        let content = $('#txt_current_content').val();
+        let font_family = $('#txt_current_font').val();
+        let font_size = $('#txt_current_size').val();
+
+        let fore_color = $('#txt_current_fore_color').val();
+        let bg_color = $('#txt_current_bg_color').val();
+        if (bg_color === "#000000") {
+            bg_color = "";
+        }
+
+        obj.set({
+            text: content,
+            fontFamily: font_family,
+            fontSize: font_size,
+            fill: fore_color,
+            textBackgroundColor: bg_color
+        });
+        canvas.renderAll();
+    }
+
+    function set_text_align_to_fabric(canvas, text_align) {
+        let obj = canvas.getActiveObject();
+        if (obj == null || !(obj instanceof fabric.Text)) {
+            return;
+        }
+
+        if ("center" === text_align) {
+            obj.set("textAlign", "center");
+        }
+        else if("right" === text_align) {
+            obj.set("textAlign", "right");
+        }
+        else {
+            obj.set("textAlign", "left");
+        }
+
+        canvas.renderAll();
+    }
+
+    function set_text_bold_to_html(font_weight) {
+        if ("bold" === font_weight) {
+            $('.div-text-bold i').css({
+                'background-color': "#424242",
+                'color': '#ffffff'
+            });
+        }
+        else {
+            $('.div-text-bold i').css({
+                'background-color': "#ffffff",
+                'color': '#000000'
+            });
+        }
+    }
+
+    function set_text_bold_to_fabric(canvas, font_weight) {
+        let obj = canvas.getActiveObject();
+        if (obj == null || !(obj instanceof fabric.Text)) {
+            return;
+        }
+
+        if ("bold" === font_weight) {
+            obj.set("fontWeight", font_weight);
+        }
+        else {
+            obj.set("fontWeight", "");
+        }
+        canvas.renderAll();
+    }
+
+    function set_text_italic_to_html(font_weight) {
+        if ("italic" === font_weight) {
+            $('.div-text-italic i').css({
+                'background-color': "#424242",
+                'color': '#ffffff'
+            });
+        }
+        else {
+            $('.div-text-italic i').css({
+                'background-color': "#ffffff",
+                'color': '#000000'
+            });
+        }
+    }
+
+    function set_text_italic_to_fabric(canvas, font_style) {
+        let obj = canvas.getActiveObject();
+        if (obj == null || !(obj instanceof fabric.Text)) {
+            return;
+        }
+
+        if ("italic" === font_style) {
+            obj.set("fontStyle", font_style);
+        }
+        else {
+            obj.set("fontStyle", "");
+        }
+        canvas.renderAll();
+    }
+    // endregion
+
+    // region show pop
+    function hide_all_pop() {
+        $('.wb-pop-panel').hide();
+    }
+
+    function show_bg_option() {
+        $('#pop_bg_color').show();
+    }
+
+    function show_pattern_option() {
+        $('#pop_bg_pattern').show();
+    }
+
+    function show_pen_option() {
+        $('#pop_pen_edit').show();
+    }
+
+    function show_eraser_option() {
+        $('#pop_erase_options').show();
+    }
+
+    function show_shape_option() {
+        $('#pop_shape_options').show();
+    }
+
+    function show_text_option() {
+        $('#pop_text_options').show();
+    }
+
+    function show_text_details() {
+        $('#div_text_menu').show();
+    }
+
+    function toggle_text_details() {
+        $('#div_text_menu').toggle();
+    }
+
+    function show_image_option() {
+        $('#pop_image_options').show();
+    }
+
+    function show_download_option() {
+        $('#pop_download_options').show();
+    }
+    // endregion
+
+    function doUndo(canvas) {
+        if (total_index > 0) {
+            canvas.remove(total_obj[total_index - 1]);
+            canvas.renderAll();
+            total_index--;
+        }
+    }
+
+    function doRedo(canvas) {
+        if (total_index < total_obj.length) {
+            canvas.add(total_obj[total_index]);
+            canvas.renderAll();
+            // 这里不能再使用“total_index++;”，因为“canvas.on('object:added')”已经加过了
+        }
+    }
+
+    $(document).ready(function () {
+        window.onbeforeunload = function () {
+            return "Leaving this page may cause loss of your work!";
+        };
+
+        hide_all_pop();
+
+        let gcanvas = init_canvas('canvas_board');
+
+        // region main content
+
+        $("#main_content").layout('panel', 'east').panel({
+            onExpand: function () {
+                gcanvas.setWidth($('#center_region').width() - 220);
+                gcanvas.renderAll();
+            },
+            onCollapse: function () {
+                gcanvas.setWidth($('#center_region').width());
+                gcanvas.renderAll();
+            }
+        });
+
+        $("#main_content").layout('panel', 'center').panel({
+            onResize: function (w, h) {
+                if (screenfull.isFullscreen) {
+                    gcanvas.setHeight(window.innerHeight);
+                    gcanvas.setWidth(window.innerWidth);
+                } else {
+                    gcanvas.setHeight($('#center_region').height());
+                    gcanvas.setWidth($('#center_region').width());
+                }
+                gcanvas.calcOffset();
+                gcanvas.forEachObject(function (o) {
+                    o.setCoords();
+                });
+                gcanvas.renderAll();
+            }
+        });
+
+        $("#main_content").layout('collapse', 'south');
+        $("#main_content").layout('collapse', 'east');
+        $("#main_content").css("visibility", "visible");
+        // endregion
+
+        // region tool click
+
+        // region tool select
+        $('#tool_select').click(function () {
+            hide_all_pop();
+            enter_select_mode(gcanvas);
+        });
+        // endregion
+
+        // region tool background color
+        $('#tool_background').click(function () {
+            hide_all_pop();
+            show_bg_option();
+
+            exit_drawing_mode(gcanvas);
+        });
+
+        $('.wb-bg-color').click(function () {
+            let bg_color = $(this).css('background-color');
+            let hex_color = rgb2hex(bg_color);
+
+            $('#input_bg_color').val(hex_color);
+            set_canvas_background(gcanvas, hex_color, "");
+        });
+
+        $('#input_bg_color').change(function () {
+            let hex_color = $(this).val();
+            set_canvas_background(gcanvas, hex_color, "");
+        });
+        // endregion
+
+        // region tool pattern
+        $('#tool_pattern').click(function () {
+            hide_all_pop();
+            show_pattern_option();
+        });
+
+        $('.wb-bg-pattern').click(function () {
+            let src = $(this).children().attr('src');
+            set_canvas_background(gcanvas, "", src);
+        });
+        // endregion
+
+        // region tool pencil
+        $('#tool_pencil').click(function () {
+            hide_all_pop();
+            show_pen_option();
+
+            copy_brush_attr_from_html_to_fabric(gcanvas);
+            enter_drawing_mode(gcanvas);
+        });
+
+        $('#input_pen_color').change(function () {
+            let hex_color = $(this).val();
+            $('#input_pen_color').val(hex_color);
+
+            copy_brush_attr_from_html_to_fabric(gcanvas);
+        });
+
+        $('.wb-pencil-color').click(function () {
+            let rgb_color = $(this).children().css('background-color');
+            let hex_color = rgb2hex(rgb_color);
+            $('#input_pen_color').val(hex_color);
+
+            copy_brush_attr_from_html_to_fabric(gcanvas);
+        });
+
+        $('#input_pen_width').numberspinner({
+            min: 1,
+            max: 50,
+            increment: 1,
+            editable: true,
+            value: 2,
+            onChange: function (nv) {
+                let width = parseInt(nv);
+                $('#input_pen_width').val(width);
+
+                copy_brush_attr_from_html_to_fabric(gcanvas);
+            }
+        });
+        // endregion
+
+        // region tool eraser
+        $('#tool_eraser').click(function () {
+            hide_all_pop();
+            show_eraser_option();
+
+            let hex_color = $('#input_bg_color').val();
+            let width = $('#input_eraser_width').val();
+            set_brush_attr_on_canvas(gcanvas, hex_color, width);
+            enter_drawing_mode(gcanvas);
+        });
+
+        $('#input_eraser_width').numberspinner({
+            min: 1,
+            max: 50,
+            increment: 1,
+            editable: true,
+            value: 10,
+            onChange: function (nv) {
+                let hex_color = $('#input_bg_color').val();
+                let width = parseInt(nv);
+
+                set_brush_attr_on_canvas(gcanvas, hex_color, width);
+            }
+        });
+        // endregion
+
+        // region tool shape
+        $('#tool_shape').click(function () {
+            hide_all_pop();
+            show_shape_option();
+
+            enter_shape_mode(gcanvas);
+        });
+
+        $('#input_shape_fill_color').click(function () {
+            // TODO: 如果同时选择多个，会出现什么样的情况呢？
+            let fill_color = get_shape_fill_color_from_fabric(gcanvas);
+            set_shape_fill_color_to_html(fill_color);
+        }).change(function () {
+            let hex_color = $(this).val();
+            set_shape_fill_color_to_fabric(gcanvas, hex_color);
+        });
+
+        $('#shape_rectangle').click(function () {
+            add_rectangle(gcanvas);
+        });
+
+        $('#shape_square').click(function () {
+            add_square(gcanvas);
+        });
+
+        $('#shape_circle').click(function () {
+            add_circle(gcanvas);
+        });
+
+        $('#shape_triangle').click(function () {
+            add_triangle(gcanvas);
+        });
+
+        $('#shape_line').click(function () {
+            add_line(gcanvas);
+        });
+
+        $('#shape_ellipse').click(function () {
+            add_ellipse(gcanvas);
+        });
+
+        $('#btn_remove_shape').click(function () {
+            remove_active_object(gcanvas);
+            set_shape_fill_color_to_html('#000000');
+        });
+        // endregion
+
+        // region tool text
+        $('#tool_text').click(function () {
+            hide_all_pop();
+            show_text_option();
+
+            enter_text_mode(gcanvas);
+        });
+
+        $('#btn_new_text').click(function () {
+            add_text_to_fabric(gcanvas);
+        });
+
+        $('#btn_remove_text').click(function () {
+            remove_active_object(gcanvas);
+        });
+
+        $('#btn_text_menu').click(function (event) {
+            event.stopPropagation();
+            toggle_text_details();
+        });
+
+        $('#div_text_menu').hide();
+        $('#div_text_menu').click(function (event) {
+            event.stopPropagation();
+        });
+
+        $('#txt_current_font').change(function () {
+            copy_text_attr_from_html_to_fabric(gcanvas);
+        });
+
+        $('.div-text-align').click(function () {
+            let text_align = $(this).attr('data-opt');
+            set_text_align_to_html(text_align);
+            set_text_align_to_fabric(gcanvas, text_align);
+        });
+
+        $('.div-text-bold').click(function () {
+            let value = $(this).attr('data-opt');
+            let font_weight;
+            if ("bold" === value) {
+                font_weight = "";
+            }
+            else {
+                font_weight = "bold";
+            }
+            $(this).attr('data-opt', font_weight);
+
+            set_text_bold_to_html(font_weight);
+            set_text_bold_to_fabric(gcanvas, font_weight);
+        });
+
+        $('.div-text-italic').click(function () {
+            let value = $(this).attr('data-opt');
+            let font_style;
+            if ("italic" === value) {
+                font_style = "";
+            }
+            else {
+                font_style = "italic";
+            }
+            $(this).attr('data-opt', font_style);
+
+            set_text_italic_to_html(font_style);
+            set_text_italic_to_fabric(gcanvas, font_style);
+        });
+
+        $('#txt_current_content').keyup(function () {
+            copy_text_attr_from_html_to_fabric(gcanvas);
+        });
+
+        $('#txt_current_size').keyup(function () {
+            copy_text_attr_from_html_to_fabric(gcanvas);
+        });
+
+        $('#txt_current_fore_color').change(function () {
+            copy_text_attr_from_html_to_fabric(gcanvas);
+        });
+
+        $('#txt_current_bg_color').change(function () {
+            copy_text_attr_from_html_to_fabric(gcanvas);
+        });
+
+        // endregion
+
+        // region tool image
+        $('#tool_image').click(function () {
+            hide_all_pop();
+            show_image_option();
+
+            enter_image_mode(gcanvas);
+        });
+
+        $('#btn_add_image').click(function () {
+            $('#input_file_image').trigger('click');
+        });
+
+        $('#btn_remove_image').click(function () {
+            remove_active_object(gcanvas);
+        });
+
+        $('#input_file_image').change(function (e) {
+            let file = $('#input_file_image').val();
+            let all_extensions = ['jpg', 'jpeg', 'png'];
+            if (file.length <= 0) {
+                alert("Please select a file from local drive.");
+                $('#input_file_image').focus();
+                return false;
+            }
+
+            let ext = file.split('.');
+            ext = ext.reverse();
+            if ($.inArray(ext[0].toLowerCase(), all_extensions) < 0) {
+                alert("Please select jpg/jpeg/png format files only.");
+                $('#input_file_image').focus();
+                return false;
+            }
+
+            let reader = new FileReader();
+            reader.onload = function (event) {
+                let img = new Image();
+                img.src = event.target.result;
+                img.onload = function () {
+                    add_image(gcanvas, img);
+                }
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        });
+        // endregion
+
+        // region tool download
+        $('#tool_download').click(function () {
+            hide_all_pop();
+            show_download_option();
+
+            exit_drawing_mode(gcanvas);
+        });
+
+        $('#btn_download_json').click(function () {
+            let json_data = JSON.stringify(gcanvas);
+
+            let canvasData = "data:text/json;charset=utf-8," + encodeURIComponent(json_data);
+            let filename = "draw-" + getTimestamp() + ".board";
+            let a = $("<a>").attr("href", canvasData).attr("download", filename).appendTo("body");
+            a[0].click();
+            a.remove();
+        });
+
+        $('#btn_download_jpeg').click(function () {
+            let canvasData = gcanvas.toDataURL(
+                {
+                    "format": 'jpeg',
+                    "quality": 1
+                }
+            );
+            let filename = getTimestamp() + ".jpeg";
+            let a = $("<a>").attr("href", canvasData).attr("download", filename).appendTo("body");
+            a[0].click();
+            a.remove();
+        });
+
+        $('#btn_upload_json').click(function () {
+            $('#input_file_json').trigger('click');
+        });
+
+        $('#input_file_json').change(function (e) {
+            let file = $('#input_file_json').val();
+            let exts = ['board'];
+            if (file.length <= 0) {
+                alert("Please select a file from local drive.");
+                $('#input_file_json').focus();
+                return false;
+            }
+            let ext = file.split('.');
+            ext = ext.reverse();
+            if ($.inArray(ext[0].toLowerCase(), exts) < 0) {
+                alert("Please select board format files only.");
+                $('#input_file_json').focus();
+                return false;
+            }
+
+            let files = this.files;
+            if (files.length === 0) {
+                console.log('No file is selected');
+                return;
+            }
+
+            let reader = new FileReader();
+            reader.onload = function (event) {
+                console.log('File content:', event.target.result);
+                let json_data = decodeURIComponent(event.target.result);
+                gcanvas.loadFromJSON(json_data, gcanvas.renderAll.bind(gcanvas));
+            };
+            reader.readAsText(files[0]);
+
+        });
+        // endregion
+
+        // region tool undo
+        $('#tool_undo').click(function () {
+            doUndo(gcanvas);
+        });
+        // endregion
+
+        // region tool redo
+        $('#tool_redo').click(function () {
+            doRedo(gcanvas);
+        });
+        // endregion
+
+        // region tool clear
+        $('#tool_clear').click(function () {
+            if (gcanvas.getObjects().length > 0) {
+                let confirmFlag = confirm("Do you really want to clear the board?");
+                if (confirmFlag) {
+                    clear_canvas(gcanvas);
+                    reset_canvas(gcanvas);
+                }
+            }
+        });
+        // endregion
+
+        // region tool maximize
+        $('#tool_maximize').click(function () {
+            if (screenfull.isEnabled) {
+                if (screenfull.isFullscreen) {
+                    screenfull.exit();
+                } else {
+                    screenfull.request();
+                }
+            }
+        });
+        // endregion
+
+        // endregion
+
+        // region document event
+        $(document).click(function () {
+            // $('#div_text_menu').hide();
+            let $el = $("#div_text_menu");
+            if ($el.is(":visible")) {
+                $el.toggle();
+            }
+        });
+        // endregion
+
+    }); // close of document ready
+
+</script>
+</body>
+</html>
