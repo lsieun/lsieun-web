@@ -1,0 +1,329 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">fabric.Text</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/js/fabric/fabric_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Basic</h2>
+
+<h3>Create Text</h3>
+
+<p class="indented">
+    By instantiating <code>fabric.Text</code> instances, we can work with text just like we would work with any other Fabric object —
+    move it, scale it, change its properties, and so on.
+</p>
+
+<p class="indented">
+    <code>fabric.Text</code> provides a much richer functionality than what canvas gives us. Some of the Fabric additions include:
+</p>
+
+<ul>
+    <li>Multiline support: Native text methods unfortunately simply ignore new lines.</li>
+    <li>Text alignment: Left, center, right. Useful when working with multiline text.</li>
+    <li>Text background: Background also respects text alignment.</li>
+    <li>Text decoration: Underline, overline, strike-through.</li>
+    <li>Line height: Useful when working with multiline text.</li>
+    <li>Char spacing: Makes text more compact or more spaced</li>
+    <li>Subranges: apply colors and properties to subranges of your text object</li>
+    <li>Multibyte: support emoticons!</li>
+    <li>On canvas editing: with the interactive class you can type text directly over the canvas</li>
+</ul>
+
+<div title="Example" class="plaintext">
+var text = new fabric.Text('hello world', { left: 100, top: 100 });
+canvas.add(text);
+</div>
+
+<p class="indented">
+    Displaying text on canvas is as simple as adding <code>fabric.Text</code> instance at a desired location.
+    As you can see, the only required first parameter is actual text string.
+    Second argument is the usual <code>options</code> object, which can have any of the usual left, top, fill, opacity, etc. properties.
+</p>
+
+<p class="indented">
+    But of course text objects also have their own, unique, text-related properties. Let's look at some of them:
+</p>
+
+<h3>fontFamily</h3>
+
+<p class="indented">
+    Set as "<strong>Times New Roman</strong>" by default, this property allow us to change font family used to render a text object.
+    Changing it will immediately make text rendered in a new font.
+</p>
+
+<div title="fontFamily" class="plaintext">
+var comicSansText = new fabric.Text("I'm in Comic Sans", {
+  fontFamily: 'Comic Sans'
+});
+</div>
+
+<h3>fontSize</h3>
+
+<p class="indented">
+    Font size controls the size of rendered text.
+    <strong>Note that unlike with other objects in Fabric, you can't change text's width/height properties directly.</strong>
+    Instead, you'll need to change <code>fontSize</code> value in order to make text objects larger or smaller.
+    Either that, or you can always use <code>scaleX/scaleY</code> properties.
+</p>
+
+<div title="fontSize" class="plaintext">
+var text40 = new fabric.Text("I'm at fontSize 40", {
+  fontSize: 40
+});
+var text20 = new fabric.Text("I'm at fontSize 20", {
+  fontSize: 20
+});
+</div>
+
+<h3>fontWeight</h3>
+
+<p class="indented">
+    Font weight allows to make text thicker or thinner -looking.
+    Just like in CSS, you can use either <strong>keywords</strong> ("normal", "bold") or <strong>numbers</strong> (100, 200, 400, 600, 800).
+    Note that whether you can use certain weight depends on availability of that weight for a chosen font.
+    If you're using remote font, you'll need to make sure you provide both normal and bold (as well as any other required weight) font definitions.
+</p>
+
+<div title="fontWeight" class="plaintext">
+var normalText = new fabric.Text("I'm a normal text", {
+  fontWeight: 'normal'
+});
+var boldText = new fabric.Text("I'm at bold text", {
+  fontWeight: 'bold'
+});
+</div>
+
+<h3>textDecoration</h3>
+
+<p class="indented">
+    Text decoration allows to add undeline, overline, or strike-through to a text.
+    This is similar to CSS, but Fabric goes a little further and allows to use any combination of the above together.
+    So you can have a text that's both underline and overline, or underline and strike-through, and so on.
+</p>
+
+<div title="underline/linethrough/overline" class="plaintext">
+var underlineText = new fabric.Text("I'm an underlined text", {
+  underline: true
+});
+var strokeThroughText = new fabric.Text("I'm a stroke-through text", {
+  linethrough: true
+});
+var overlineText = new fabric.Text("I'm an overline text", {
+  overline: true
+});
+</div>
+
+<h3>fontStyle</h3>
+
+<p class="indented">
+    Font style can be one of 2 values: <code>normal</code> or <code>italic</code>. This is similar to same-named CSS property.
+</p>
+
+<div title="fontStyle" class="plaintext">
+var italicText = new fabric.Text("A very fancy italic text", {
+  fontStyle: 'italic',
+  fontFamily: 'Delicious'
+});
+
+var anotherItalicText = new fabric.Text("another italic text", {
+  fontStyle: 'italic',
+  fontFamily: 'Hoefler Text'
+});
+</div>
+
+<h3>stroke and strokeWidth</h3>
+
+<p class="indented">
+    By combining <code>stroke</code> (color of the stroke) and <code>strokeWidth</code> (its width), you can achieve some interesting effects on your text. Here's a couple of examples:
+</p>
+
+<div title="stroke/strokeWidth" class="plaintext">
+var textWithStroke = new fabric.Text("Text with a stroke", {
+  stroke: '#ff1318',
+  strokeWidth: 1
+});
+
+var loremIpsumDolor = new fabric.Text("Lorem ipsum dolor", {
+  fontFamily: 'Impact',
+  stroke: '#c3bfbf',
+  strokeWidth: 3
+});
+</div>
+
+<div class="w3-display-container w3-centered">
+    <canvas id="canvas_stroke"></canvas>
+</div>
+
+<h3>textAlign</h3>
+
+<p class="indented">
+    Text align comes useful when working with multiline text.
+    With one-line text, the width of bounding box is always exactly matching that line's width, so there's nothing to align.
+</p>
+
+<p class="indented">
+    Allowed values are "left", "center", and "right".
+</p>
+
+<div title="textAlign" class="jscode">
+var text = 'this is\na multiline\ntext\naligned right!';
+var alignedRightText = new fabric.Text(text, {
+  textAlign: 'right'
+});
+</div>
+
+<div class="w3-display-container w3-centered">
+    <canvas id="canvas_text_align"></canvas>
+</div>
+
+<h3>lineHeight</h3>
+
+<p class="indented">
+    Another property that might be familiar from CSS-land is <code>lineHeight</code>.
+    It allows us to change vertical spacing between text lines in multiline text.
+    In the following example, first chunk of text has lineHeight of 3, and second one — 1.
+</p>
+
+<div title="lineHeight" class="jscode">
+var lineHeight3 = new fabric.Text('I Love three ...', {
+  lineHeight: 3
+});
+var lineHeight1 = new fabric.Text('I Love three ...', {
+  lineHeight: 1
+});
+</div>
+
+<div class="w3-display-container w3-centered">
+    <canvas id="canvas_line_height"></canvas>
+</div>
+
+<h3>textBackgroundColor</h3>
+
+<p class="indented">
+    Finally, <code>textBackgroundColor</code> is what allows to give text a background.
+    Note that background fills only space occupied by text characters, not the entire bounding box.
+    It means that text alignment changes the way text background is rendered.
+    So does line height, since background respects this vertical space between lines, created by lineHeight.
+</p>
+
+<div title="textWithBackground" class="jscode">
+var text = 'this is\na multiline\ntext\nwith\ncustom lineheight\n&background';
+var textWithBackground = new fabric.Text(text, {
+  textBackgroundColor: 'rgb(0,200,0)'
+});
+</div>
+
+<div class="w3-display-container w3-centered">
+    <canvas id="canvas_text_background_color"></canvas>
+</div>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+<div title="" class="jscode">
+
+</div>
+
+<script type="text/javascript">
+    function test_text_stroke() {
+        let canvas = new fabric.Canvas('canvas_stroke', {
+            width:500,
+            height:300,
+            backgroundColor: '#ffffff',
+        });
+
+        let italicText = new fabric.Text("A very fancy italic text", {
+            fontStyle: 'italic',
+            fontFamily: 'Delicious',
+            fill:'#ff0000',
+            top:100,
+            left:50
+        });
+
+        let anotherItalicText = new fabric.Text("another italic text", {
+            fontStyle: 'italic',
+            fontFamily: 'Hoefler Text',
+            top:200,
+            left:50
+        });
+
+        canvas.add(italicText);
+        canvas.add(anotherItalicText);
+    }
+
+    function test_text_align() {
+        let canvas = new fabric.Canvas('canvas_text_align', {
+            width:500,
+            height:300,
+            backgroundColor: '#ffffff',
+        });
+
+        let text = 'this is\na multiline\ntext\naligned right!';
+        let alignedRightText = new fabric.Text(text, {
+            textAlign: 'right',
+            top:50,
+            left:100
+        });
+
+        canvas.add(alignedRightText);
+    }
+
+    function test_line_height() {
+        let canvas = new fabric.Canvas('canvas_line_height', {
+            width:500,
+            height:300,
+            backgroundColor: '#ffffff',
+        });
+
+        let text = 'I Love three things in this world: \nThe Sun, The Moon and You!';
+
+        let lineHeight3 = new fabric.Text(text, {
+            lineHeight: 3,
+            top:10,
+            left:100,
+            fontSize: 20,
+            fill:'#ff0000'
+        });
+        let lineHeight1 = new fabric.Text(text, {
+            lineHeight: 1,
+            top:200,
+            left:100,
+            fontSize: 20,
+            fill:'#0000ff'
+        });
+
+        canvas.add(lineHeight3);
+        canvas.add(lineHeight1);
+    }
+
+    function test_text_background_color() {
+        let canvas = new fabric.Canvas('canvas_text_background_color', {
+            width:500,
+            height:300,
+            backgroundColor: '#ffffff',
+        });
+
+        let text = 'this is\na multiline\ntext\nwith\ncustom lineheight\n&background';
+        let textWithBackground = new fabric.Text(text, {
+            textBackgroundColor: 'rgb(0,200,0)',
+            top:10,
+            left:100,
+            fontSize:30,
+            textAlign: 'right',
+        });
+
+        canvas.add(textWithBackground);
+    }
+
+    $(function() {
+        test_text_stroke();
+        test_text_align();
+        test_line_height();
+        test_text_background_color();
+    });
+</script>

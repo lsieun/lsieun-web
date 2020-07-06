@@ -1,0 +1,27 @@
+.indented {
+    text-indent:2em;
+}
+
+.w3-tangerine {
+    font-size:36px;
+    font-family: "Tangerine", serif;
+}
+
+.external {
+    color: #3a3a3a;
+    background-position: center right;
+    background-repeat: no-repeat;
+    background-image: linear-gradient(transparent,transparent),url(/images/external-link-icon.svg);
+    padding-right: 13px;
+}
+
+code {
+    font-family: monospace;
+    padding: 2px 4px;
+    margin: 0;
+    font-size: 80%;
+    color: #d14;
+    background-color: #f7f7f9;
+    border: 1px solid #e1e1e8;
+    border-radius: 3px;
+}

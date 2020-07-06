@@ -1,0 +1,410 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">CSS Cursor</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/css/css_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<style type="text/css">
+    .alias {
+        cursor: alias;
+    }
+
+    .all-scroll {
+        cursor: all-scroll;
+    }
+
+    .auto {
+        cursor: auto;
+    }
+
+    .cell {
+        cursor: cell;
+    }
+
+    .context-menu {
+        cursor: context-menu;
+    }
+
+    .col-resize {
+        cursor: col-resize;
+    }
+
+    .copy {
+        cursor: copy;
+    }
+
+    .crosshair {
+        cursor: crosshair;
+    }
+
+    .default {
+        cursor: default;
+    }
+
+    .e-resize {
+        cursor: e-resize;
+    }
+
+    .ew-resize {
+        cursor: ew-resize;
+    }
+
+    .grab {
+        cursor: -webkit-grab;
+        cursor: grab;
+    }
+
+    .grabbing {
+        cursor: -webkit-grabbing;
+        cursor: grabbing;
+    }
+
+    .help {
+        cursor: help;
+    }
+
+    .move {
+        cursor: move;
+    }
+
+    .n-resize {
+        cursor: n-resize;
+    }
+
+    .ne-resize {
+        cursor: ne-resize;
+    }
+
+    .nesw-resize {
+        cursor: nesw-resize;
+    }
+
+    .ns-resize {
+        cursor: ns-resize;
+    }
+
+    .nw-resize {
+        cursor: nw-resize;
+    }
+
+    .nwse-resize {
+        cursor: nwse-resize;
+    }
+
+    .no-drop {
+        cursor: no-drop;
+    }
+
+    .none {
+        cursor: none;
+    }
+
+    .not-allowed {
+        cursor: not-allowed;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+
+    .progress {
+        cursor: progress;
+    }
+
+    .row-resize {
+        cursor: row-resize;
+    }
+
+    .s-resize {
+        cursor: s-resize;
+    }
+
+    .se-resize {
+        cursor: se-resize;
+    }
+
+    .sw-resize {
+        cursor: sw-resize;
+    }
+
+    .text {
+        cursor: text;
+    }
+
+    .url {
+        cursor: url(myBall.cur), auto;
+    }
+
+    .vertical-text {
+        cursor: vertical-text;
+    }
+
+    .w-resize {
+        cursor: w-resize;
+    }
+
+    .wait {
+        cursor: wait;
+    }
+
+    .zoom-in {
+        cursor: zoom-in;
+    }
+
+    .zoom-out {
+        cursor: zoom-out;
+    }
+</style>
+
+<h2>Cursor Style</h2>
+
+<div title="cursor style" hidden class="plaintext">
+.alias {
+    cursor: alias;
+}
+
+.all-scroll {
+    cursor: all-scroll;
+}
+
+.auto {
+    cursor: auto;
+}
+
+.cell {
+    cursor: cell;
+}
+
+.context-menu {
+    cursor: context-menu;
+}
+
+.col-resize {
+    cursor: col-resize;
+}
+
+.copy {
+    cursor: copy;
+}
+
+.crosshair {
+    cursor: crosshair;
+}
+
+.default {
+    cursor: default;
+}
+
+.e-resize {
+    cursor: e-resize;
+}
+
+.ew-resize {
+    cursor: ew-resize;
+}
+
+.grab {
+    cursor: -webkit-grab;
+    cursor: grab;
+}
+
+.grabbing {
+    cursor: -webkit-grabbing;
+    cursor: grabbing;
+}
+
+.help {
+    cursor: help;
+}
+
+.move {
+    cursor: move;
+}
+
+.n-resize {
+    cursor: n-resize;
+}
+
+.ne-resize {
+    cursor: ne-resize;
+}
+
+.nesw-resize {
+    cursor: nesw-resize;
+}
+
+.ns-resize {
+    cursor: ns-resize;
+}
+
+.nw-resize {
+    cursor: nw-resize;
+}
+
+.nwse-resize {
+    cursor: nwse-resize;
+}
+
+.no-drop {
+    cursor: no-drop;
+}
+
+.none {
+    cursor: none;
+}
+
+.not-allowed {
+    cursor: not-allowed;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.progress {
+    cursor: progress;
+}
+
+.row-resize {
+    cursor: row-resize;
+}
+
+.s-resize {
+    cursor: s-resize;
+}
+
+.se-resize {
+    cursor: se-resize;
+}
+
+.sw-resize {
+    cursor: sw-resize;
+}
+
+.text {
+    cursor: text;
+}
+
+.vertical-text {
+    cursor: vertical-text;
+}
+
+.w-resize {
+    cursor: w-resize;
+}
+
+.wait {
+    cursor: wait;
+}
+
+.zoom-in {
+    cursor: zoom-in;
+}
+
+.zoom-out {
+    cursor: zoom-out;
+}
+</div>
+
+<h2>Example</h2>
+
+<h3>Basic</h3>
+
+<p>General/Default Cursors</p>
+
+<p>
+    <button class="w3-button w3-border auto">auto</button>
+    <button class="w3-button w3-border default">default</button>
+    <button class="w3-button w3-border none">none</button>
+</p>
+
+<p>Selection Cursors</p>
+
+<p>
+
+    <button class="w3-button w3-border text">text</button>
+    <button class="w3-button w3-border vertical-text">vertical-text</button>
+</p>
+
+<p>Link Cursor</p>
+
+<p>
+    <button class="w3-button w3-border pointer">pointer</button>
+</p>
+
+<p>Status Cursors</p>
+
+<p>
+    <button class="w3-button w3-border all-scroll">all-scroll</button>
+    <button class="w3-button w3-border alias">alias</button>
+    <button class="w3-button w3-border context-menu">context-menu</button>
+    <button class="w3-button w3-border help">help</button>
+    <button class="w3-button w3-border progress">progress</button>
+    <button class="w3-button w3-border wait">wait</button>
+    <button class="w3-button w3-border not-allowed">not-allowed</button>
+</p>
+
+<h3>Drawing</h3>
+
+<p>Copy/Move</p>
+
+<p>
+    <button class="w3-button w3-border crosshair">crosshair</button>
+    <button class="w3-button w3-border copy">copy</button>
+    <button class="w3-button w3-border move">move</button>
+</p>
+
+
+<p>Drag & Drop Cursors</p>
+
+<p>
+    <button class="w3-button w3-border grab">grab</button>
+    <button class="w3-button w3-border grabbing">grabbing</button>
+    <button class="w3-button w3-border no-drop">no-drop</button>
+
+</p>
+
+<p>Zoom Cursors</p>
+
+<p>
+    <button class="w3-button w3-border zoom-in">zoom-in</button>
+    <button class="w3-button w3-border zoom-out">zoom-out</button>
+</p>
+
+<p>Resizing Cursors</p>
+
+<p>
+    <button class="w3-button w3-border n-resize">n-resize</button>
+    <button class="w3-button w3-border e-resize">e-resize</button>
+    <button class="w3-button w3-border s-resize">s-resize</button>
+    <button class="w3-button w3-border w-resize">w-resize</button>
+</p>
+
+<p>
+    <button class="w3-button w3-border ne-resize">ne-resize</button>
+    <button class="w3-button w3-border nw-resize">nw-resize</button>
+    <button class="w3-button w3-border se-resize">se-resize</button>
+    <button class="w3-button w3-border sw-resize">sw-resize</button>
+</p>
+
+<p>
+    <button class="w3-button w3-border ew-resize">ew-resize</button>
+    <button class="w3-button w3-border nesw-resize">nesw-resize</button>
+    <button class="w3-button w3-border ns-resize">ns-resize</button>
+    <button class="w3-button w3-border nwse-resize">nwse-resize</button>
+</p>
+
+<h3>Table</h3>
+
+<p>
+    <button class="w3-button w3-border cell">cell</button>
+    <button class="w3-button w3-border col-resize">col-resize</button>
+    <button class="w3-button w3-border row-resize">row-resize</button>
+</p>
+
+
+
+

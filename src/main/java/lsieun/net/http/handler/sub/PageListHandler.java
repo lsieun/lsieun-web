@@ -40,6 +40,12 @@ public class PageListHandler extends FileHandler {
         else if ("/code/".equals(uri_path) || "/code".equals(uri_path)) {
             resource = getPageList("Code", "code_list.txt");
         }
+        else if ("/front/".equals(uri_path) || "/front".equals(uri_path)) {
+            resource = getPageList("Front End", "front_list.txt");
+        }
+        else if ("/os/".equals(uri_path) || "/os".equals(uri_path)) {
+            resource = getPageList("OS", "os_list.txt");
+        }
         else if ("/about/".equals(uri_path) || "/about".equals(uri_path)) {
             resource = super.getResource("/about.html", header);
         }

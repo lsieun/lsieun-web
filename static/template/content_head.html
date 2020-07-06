@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="/css/w3.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/font.css">
-    <style>
+    <link rel="stylesheet" href="/css/main.css">
+    <style type="text/css">
         body, html {
             height: 100%;
             font-family: "Inconsolata", sans-serif;
@@ -23,20 +24,13 @@
             font-size:18px;
             font-weight: bold;
         }
-        .indented {
-            text-indent:2em;
-        }
+
         .bgimg {
             background-position: center;
             background-size: cover;
             background-image: url("/images/bg/beach.jpg");
             min-height: 38.2%;/*0.618是黄金分割点*/
         }
-        .w3-tangerine {
-            font-size:36px;
-            font-family: "Tangerine", serif;
-        }
-
 
         .auto-toc {
             /*background: #f2f2f2;*/
@@ -79,25 +73,40 @@
         .plaintext {
             display: none;
         }
-
-        .external {
-            color: #3a3a3a;
-            background-position: center right;
-            background-repeat: no-repeat;
-            background-image: linear-gradient(transparent,transparent),url(/images/external-link-icon.svg);
-            padding-right: 13px;
-        }
-
-        code {
-            font-family: monospace;
-            padding: 2px 4px;
-            margin: 0;
-            font-size: 80%;
-            color: #d14;
-            background-color: #f7f7f9;
-            border: 1px solid #e1e1e8;
-            border-radius: 3px;
-        }
     </style>
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="/js/w3codecolor.js"></script>
+    <script type="text/javascript" src="/js/auto-toc.js"></script>
+    <script type="text/javascript" src="/js/auto-code.js"></script>
+    <script type="text/javascript" src='/js/mathjax/MathJax.js?config=TeX-AMS_CHTML'></script>
+    <script type="text/javascript" src="/js/fabric.js"></script>
+    <script>
+        // Javascript inside this file
+        function toggle_all_sub_note() {
+            $('#main_content sub.my_note').toggle();
+        }
+
+        function display_img(img) {
+            document.getElementById('img_container').src=img.src;
+            document.getElementById('img_modal').style.display='block'
+        }
+
+        function toggle_paragraph_sub_note(obj) {
+            $(obj).parent().find("sub.my_note").toggle();
+        }
+
+        $(function() {
+            toggle_all_sub_note();
+            $(".at").autoToc();
+            $(".javacode, .jscode, .plaintext").autoCode();
+
+            MathJax.Hub.Config({
+                "CommonHTML": {
+                    scale: 138
+                }
+            });
+        });
+    </script>
 </head>
 

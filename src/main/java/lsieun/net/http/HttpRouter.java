@@ -62,6 +62,8 @@ public class HttpRouter {
                         "/whim/".equals(uri_path) || "/whim".equals(uri_path) ||
                         "/life/".equals(uri_path) || "/life".equals(uri_path) ||
                         "/code/".equals(uri_path) || "/code".equals(uri_path) ||
+                        "/front/".equals(uri_path) || "/front".equals(uri_path) ||
+                        "/os/".equals(uri_path) || "/os".equals(uri_path) ||
                         "/about/".equals(uri_path) || "/about".equals(uri_path)
         ) {
             return page_list_handler.getResource(uri_path, header);

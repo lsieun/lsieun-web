@@ -1,0 +1,319 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">fabric.Canvas</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/js/fabric/fabric_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Canvas: Container</h2>
+
+<div title="html" class="plaintext">
+&lt;canvas id="canvas_id"&gt;&lt;/canvas&gt;
+</div>
+
+<div title="js: create canvas" class="jscode">
+var canvas = new fabric.Canvas('canvas_id');
+</div>
+
+<p class="indented">
+    <code>fabric.Canvas</code> serves as a wrapper around <code>&lt;canvas&gt;</code> element, and is responsible for managing all of the fabric objects on that particular canvas.
+    It takes an <code>id</code> of an element, and returns an instance of <code>fabric.Canvas</code>.
+</p>
+
+<p class="indented">
+    We can <code>add</code> objects onto it, reference them off of it, or <code>remove</code> them:
+</p>
+
+<div title="Example" class="jscode">
+var canvas = new fabric.Canvas('c');
+var rect = new fabric.Rect();
+
+canvas.add(rect); // add object
+
+canvas.item(0); // reference fabric.Rect added earlier (first object)
+canvas.getObjects(); // get all objects on canvas (rect will be first and only)
+
+canvas.remove(rect); // remove previously-added fabric.Rect
+</div>
+
+<h2>Canvas: Configuration host</h2>
+
+<p class="indented">
+    While managing objects is the main purpose of <code>fabric.Canvas</code>, it also serves as a <strong>configuration</strong> host.
+    Need to set background color or image for an entire canvas?
+    Clip all contents to a certain area?
+    Set different width/height?
+    Specify whether canvas is interactive or not?
+    All of these options (and others) can be set on <code>fabric.Canvas</code>, either at the time of creation or after:
+    <sub class="my_note" style="color:blue">笔记：理解fabric.Canvas有两方面，一方面是作为object的容器，另一方面是作为configuration的主体。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="Example" class="jscode">
+var canvas = new fabric.Canvas('c', {
+  backgroundColor: 'rgb(100,100,200)',
+  selectionColor: 'blue',
+  selectionLineWidth: 2
+  // ...
+});
+
+// or
+
+var canvas = new fabric.Canvas('c');
+canvas.setBackgroundImage('http://...');
+canvas.onFpsUpdate = function(){ /* ... */ };
+// ...
+</div>
+
+<h3>Disabling selection</h3>
+
+<p class="indented">
+    You can disable selection of objects on canvas by setting "<code>selection</code>" property of <strong>canvas</strong> to <code>false</code>.
+    This prevents selection on absolutely everything displayed on canvas.
+    If you only need to make certain objects unselectable, you can change "<code>selectable</code>" property of <strong>objects</strong>.
+    Just set it to <code>false</code> and an object loses its interactivity.
+</p>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+<h2>Operation</h2>
+
+<h3>add</h3>
+
+<div title="add" class="plaintext">
+canvas.add(rect);
+</div>
+
+<h3>remove</h3>
+
+<div title="remove" class="plaintext">
+canvas.remove(rect);
+</div>
+
+<h3>get</h3>
+
+<div title="item" class="plaintext">
+canvas.item(0);
+</div>
+
+<h3>getAll</h3>
+
+<div title="getObjects" class="plaintext">
+canvas.getObjects(); // get all objects on canvas
+</div>
+
+<h2>Events</h2>
+
+<p class="indented">
+    The event-driven architecture is the basis for some amazing power and flexibility within a framework.
+    Fabric is no exception, and provides an extensive event system, starting from low-level "mouse" events to high-level objects ones.
+    <sub class="my_note" style="color:blue">笔记：在所有的编程语言中，event-driven architecture的目的就是提供一种灵活性；而在fabirc.js中，也提供了对event-driven architecture的支持。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    These events allow us to tap into different moments of various actions happening on canvas.
+    Want to know when the mouse was pressed? Just observe "<code>mouse:down</code>" event.
+    How about when object was added to canvas? "<code>object:added</code>" is there for you.
+    And what about when the entire canvas is re-rendered? Just use "<code>after:render</code>".
+    <sub class="my_note" style="color:blue">笔记：这里举了三个例子</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h3>Event On Canvas: on and off</h3>
+
+<p class="indented">
+    The event API is very simple and resembles that of jQuery, Underscore.js, or other popular JS libraries.
+    There's <code>on</code> method to initialize event listener, and <code>off</code> to remove it.
+    <sub class="my_note" style="color:blue">笔记：这里讲了on和off两个方法。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        on和off是方法，它们将event和event listener绑定到一起。
+    </p>
+</div>
+
+<p class="indented">Let's take a look at an actual example:</p>
+
+<div title="example" class="jscode">
+var canvas = new fabric.Canvas('...');
+canvas.on('mouse:down', function(options) {
+  console.log(options.e.clientX, options.e.clientY);
+});
+</div>
+
+<p class="indented">
+    We're adding event "<code>mouse:down</code>" event listener onto canvas, and giving it an event handler that will log coordinates of where the event originated.
+    In other words, it'll log where exactly on canvas the mouse was pressed.
+</p>
+
+<h3>Event Listener</h3>
+
+<p class="indented">
+    The event handler receives an <code>options</code> object, which has 2 properties: <code>e</code> — the original event, and <code>target</code> — a clicked object on canvas, if any.
+    The event is present at all times<sub class="my_note" style="color:green">笔记：event对象一直都会存在</sub>,
+    but <code>target</code> only exists if you actually did click on some object on canvas.<sub class="my_note" style="color:green">笔记：一方面，target要选中object才会有</sub>
+    The <code>target</code> is also only passed to handlers of events where it makes sense.<sub class="my_note" style="color:green">笔记：另一方面，target与具体的event也有关系</sub>
+    For example, for "<code>mouse:down</code>" but not for "<code>after:render</code>" (which denotes that entire canvas was re-drawn).
+    <sub class="my_note" style="color:blue">笔记：这里重点介绍了options里的两个子元素，即event和target。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="example" class="jscode">
+canvas.on('mouse:down', function(options) {
+  if (options.target) {
+    console.log('an object was clicked! ', options.target.type);
+  }
+});
+</div>
+
+<p class="indented">
+    The above example will log "an object was clicked!" if you click an object. It will also show the type of object clicked.
+</p>
+
+<p class="indented">
+    So which other events are available in Fabric?
+    Well, from <strong>mouse-level</strong> ones there are "<code>mouse:down</code>", "<code>mouse:move</code>", and "<code>mouse:up</code>".
+    From <strong>generic ones</strong>, there are "<code>after:render</code>".
+    Then there are <strong>selection-related events</strong>: "<code>before:selection:cleared</code>", "<code>selection:created</code>", "<code>selection:cleared</code>".
+    And finally, <strong>object ones</strong>: "<code>object:modified</code>", "<code>object:selected</code>", "<code>object:moving</code>", "<code>object:scaling</code>",
+    "<code>object:rotating</code>", "<code>object:added</code>", and "<code>object:removed</code>".
+    <sub class="my_note" style="color:blue">笔记：这里是介绍不同类型的event</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Note that events like "<code>object:moving</code>" (or "<code>object:scaling</code>") are fired continuously every time an object is moved (or scaled) even by one pixel.
+    On the other hand, events like "<code>object:modified</code>" or "<code>selection:created</code>" are fired only at the end of the action (object modification or selection creation).
+    <sub class="my_note" style="color:blue">笔记：event触发的频率不同。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Note how we attached events right onto canvas (<code>canvas.on('mouse:down', ...)</code>).
+    As you can imagine, this means that events are all scoped to canvas instances.
+    If you have multiple canvases on a page, you can attach different event listeners to each one of them.
+    They're all independent and respect only events that were assigned to them.
+    <sub class="my_note" style="color:blue">笔记：这里强调event绑定的对象是每一个canvas instance，多个不同的canvas可以绑定不同的event。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h3>event on object</h3>
+
+<p class="indented">
+    For convenience, Fabric takes event system even further, and allows you to attach listeners directly to canvas objects. Let's take a look:
+    <sub class="my_note" style="color:blue">笔记：之前讲的是在canvas上绑定event，而现在讲的是在object上绑定event。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="example" class="jscode">
+var rect = new fabric.Rect({ width: 100, height: 50, fill: 'green' });
+rect.on('selected', function() {
+  console.log('selected a rectangle');
+});
+
+var circle = new fabric.Circle({ radius: 75, fill: 'blue' });
+circle.on('selected', function() {
+  console.log('selected a circle');
+});
+</div>
+
+<p class="indented">
+    We're attaching event listeners directly to rectangle and circle instances. Instead of "<code>object:selected</code>", we're using "<code>selected</code>" event.
+    Similarly, we could have used "<code>modified</code>" event ("<code>object:modified</code>" when attaching to canvas),
+    "<code>rotating</code>" event ("<code>object:rotating</code>" when attaching to canvas), and so on.
+    <sub class="my_note" style="color:blue">笔记：这里讲述了event绑定在canvas上，或者是object上，名称上存在差异。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Serialization</h2>
+
+<p class="indented">
+    As soon as you start building a stateful application of some sort, perhaps allowing users to save results of canvas contents on a server, or streaming contents to a different client,
+    you'll need <strong>canvas serialization</strong>.
+    How else are you to send canvas contents?
+    Of course, there's always an option to export canvas to an image, but uploading an image to a server is certainly quite bandwidth-heavy.
+    Nothing beats text when it comes to size, and that's exactly why Fabric provides an excellent support for canvas serialization/deserialization.
+</p>
+
+<h3>toObject, toJSON</h3>
+
+<p class="indented">
+    The backbone of canvas serialization in Fabric is <code>fabric.Canvas#toObject()</code> and <code>fabric.Canvas#toJSON()</code> methods.
+    Let's take a look at a simple example, first serializing an empty canvas:
+</p>
+
+<div title="example" class="jscode">
+var canvas = new fabric.Canvas('c');
+JSON.stringify(canvas); // '{"objects":[],"background":"rgba(0, 0, 0, 0)"}'
+</div>
+
+<p class="indented">
+    We're using ES5 <code>JSON.stringify()</code> method, which implicitly calls <code>toJSON</code> method on passed object, if that method exists.
+    Since canvas instance in Fabric has <code>toJSON</code> method, it's as if we called <code>JSON.stringify(canvas.toJSON())</code> instead.
+</p>
+
+<p class="indented">
+    You might be wondering why there's also <code>fabric.Canvas#toObject</code>.
+    Quite simply, <code>toObject</code> returns the same representation as <code>toJSON</code>, only in a form of actual object, without string serialization.
+</p>
+
+<h2>Deserialization</h2>
+
+<p class="indented">
+    Similarly to serialization, there's two ways to load canvas from a string: <strong>from JSON representation</strong>, or <strong>from SVG one</strong>.
+    When using JSON representation, there's <code>fabric.Canvas#loadFromJSON</code> and <code>fabric.Canvas#loadFromDatalessJSON</code> methods.
+    When using SVG, there's <code>fabric.loadSVGFromURL</code> and <code>fabric.loadSVGFromString</code> ones.
+</p>
+
+<p class="indented">
+    Notice that first 2 methods are instance ones, and are called on canvas instance directly,
+    whereas last 2 methods are static ones and are called on "fabric" object rather than on canvas.
+</p>
+
+<h2>Free drawing</h2>
+
+<p class="indented">
+    If there's anything <code>&lt;canvas&gt;</code> really shines at, it's that it has an excellent support for free drawing! Since canvas is simply a 2D bitmap — a paper to paint on — performing free drawing is very natural. And of course Fabric takes care of this for us.
+</p>
+
+<p class="indented">
+    A free drawing mode is enabled simply by setting <code>isDrawingMode</code> property of Fabric canvas to <code>true</code>.
+    This immediately makes any further clicks and movements on canvas get interpreted as a pencil/brush.
+</p>
+
+<p class="indented">
+    You can paint as many times on canvas as you wish, while <code>isDrawingMode</code> is <code>true</code>.
+    But as soon as you perform any movement, followed by a "mouseup" event, Fabric fires "<code>path:created</code>" event and
+    actually transforms just-drawn shape into a real <code>fabric.Path</code> instance!
+</p>
+
+<p class="indented">
+    If, at any moment, you set <code>isDrawingMode</code> back to <code>false</code>, you'll end up with all of the created path objects still present on canvas.
+    And since they're good old <code>fabric.Path</code> objects, you can modify them any way you want — move, rotate, scale, etc.
+</p>
+
+<p class="indented">
+    There's also 2 properties available to customize free drawing — <code>freeDrawingBrush.color</code> and <code>freeDrawingBrush.width</code>.
+    Both are available on Fabric canvas instances through <code>freeDrawingBrush</code> instance.
+    <code>freeDrawingBrush.color</code> can be any regular color value and represents the color of a brush.
+    <code>freeDrawingBrush.width</code> is a number in pixels, and represents brush thickness.
+</p>
+
+<p class="indented"></p>
+<p class="indented"></p>
+
+<div title="" class="plaintext">
+
+</div>
+
+<div title="" class="jscode">
+
+</div>

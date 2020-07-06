@@ -15201,7 +15201,11 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
             if (!this.canvas) {
                 return false;
             }
-            var pointTL = this.canvas.vptCoords.tl, pointBR = this.canvas.vptCoords.br;
+            let pointTL = this.canvas.vptCoords.tl;
+            let pointBR = this.canvas.vptCoords.br;
+            if (!pointBR) {
+                return false;
+            }
             var points = this.getCoords(true, calculate), point;
             for (var i = 0; i < 4; i++) {
                 point = points[i];

@@ -1,0 +1,38 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">fabric.Image</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/js/fabric/fabric_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    Let's instantiate <code>fabric.Image</code> object and add it to canvas:
+</p>
+
+<div title="html" class="plaintext">
+&lt;canvas id="c"&gt;&lt;/canvas&gt;
+&lt;img src="my_image.png" id="my-image"&gt;
+</div>
+
+<div title="js" class="plaintext">
+var canvas = new fabric.Canvas('c');
+var imgElement = document.getElementById('my-image');
+var imgInstance = new fabric.Image(imgElement, {
+  left: 100,
+  top: 100,
+  angle: 30,
+  opacity: 0.85
+});
+canvas.add(imgInstance);
+</div>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+<div title="" class="plaintext">
+
+</div>

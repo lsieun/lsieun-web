@@ -149,7 +149,6 @@ body {
     height: 20px;
     position: absolute;
     top: 2px;
-    right: none;
     left: 65px;
     float: left;
 }
@@ -306,20 +305,7 @@ body {
     padding: 0px;
 }
 
-.topnav {
-    background-color: #F2F2F2;
-    background: -webkit-liear, near-gradient(top, #F7F7F7 0, #F2F2F2 100%);
-    background: -o-linear-gradient(top, #F7F7F7 0, #F2F2F2 100%);
-    background: linear-gradient(to bottom, #F7F7F7 0, #F2F2F2 100%);
-    background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient;
-    border-left: 1px solid #bcbcbc;
-    border-right: 1px solid #bcbcbc;
-    border-bottom: 1px solid #bcbcbc;
-    position: absolute;
-    top: 0px;
-    z-index: 999;
-}
+
 
 .divider {
     border-bottom: 1px dashed #70967C;
@@ -330,7 +316,7 @@ body {
 #stage {
     width: 100%;
     height: 100% !important;
-    padding: margin: 0px 0px 0px 0px
+    margin: 0px 0px 0px 0px
 }
 
 #center {
@@ -1608,7 +1594,7 @@ input[type="file"] {
     line-height: 13px;
     height: 20px;
     border-radius: 90px;
-    -moz-border-radius: 90px
+    -moz-border-radius: 90px;
     -webkit-border-radius: 90px;
     z-index: 999;
 }
@@ -1938,46 +1924,6 @@ div.show-image-view {
 /*end of css for login */
 
 /* css for upload */
-.imop_bg {
-    background: #fff url(/images/upload-bg-optim.png) no-repeat 49.8% 5%;
-    height: 160px;
-    text-align: center;
-    border: 2px dashed #B5B5B5;
-    padding: 0px;
-    margin: 20px auto 0px auto;
-    vertical-align: middle;
-    border-radius: 10px;
-    -moz-border-radius: 10px;
-}
-
-.imop_bg div {
-    font-family: 'Oswald', sans-serif;
-    color: #444;
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    padding: 0px 0px 7px 0px;
-    margin: -13px 0px 0px 0px;
-    vertical-align: middle;
-    position: relative;
-}
-
-.imop_bg div span {
-    font-family: 'Ubuntu', sans-serif;
-    font-size: 15px;
-    font-weight: bold;
-    text-align: center;
-    padding: 5px;
-    margin: 0px;
-}
-
-.imop_bg div .max-size {
-    font-family: 'Ubuntu', sans-serif;
-    font-size: 15px;
-    font-weight: normal;
-    margin: 0px;
-    padding: 0px;
-}
 
 .download-icon {
     width: 45px;

@@ -38,7 +38,8 @@ __NAVIGATION_BAR__
     <!-- ThankYou Container -->
     <div class="w3-container" id="where" style="padding-bottom:32px;">
         <div class="w3-content" style="max-width:700px">
-            <h5 class="w3-center w3-padding-48 w3-tangerine"><span class="w3-tag w3-wide">You Don't Need Wings to Fly</span>
+            <h5 class="w3-center w3-padding-48 w3-tangerine">
+                <span class="w3-tag w3-wide">You Don't Need Wings to Fly</span>
             </h5>
             <!--<p>Find us at some address at some place.</p>-->
         </div>
@@ -71,45 +72,6 @@ __NAVIGATION_BAR__
         <img id="img_container" src="/images/image_no_long_available.jpg" alt="mountains" style="width:100%">
     </div>
 </div>
-
-<!--
-Try putting script-Tags over the closing body-Tag,
-this will prevent that the page is loading endless
-for the Javascript file, before the page is actually loaded.
--->
-<script type="text/javascript" src="/js/main.js"></script>
-<script type="text/javascript" src="/js/jquery-3.4.1.js"></script>
-<script type="text/javascript" src="/js/w3codecolor.js"></script>
-<script type="text/javascript" src="/js/auto-toc.js"></script>
-<script type="text/javascript" src="/js/auto-code.js"></script>
-<script type="text/javascript" src='/js/mathjax/MathJax.js?config=TeX-AMS_CHTML'></script>
-<script>
-    // Javascript inside this file
-    function toggle_all_sub_note() {
-        $('#main_content sub.my_note').toggle();
-    }
-
-    function display_img(img) {
-        document.getElementById('img_container').src=img.src;
-        document.getElementById('img_modal').style.display='block'
-    }
-
-    function toggle_paragraph_sub_note(obj) {
-        $(obj).parent().find("sub.my_note").toggle();
-    }
-
-    $(function() {
-        toggle_all_sub_note();
-        $(".at").autoToc();
-        $(".javacode, .jscode, .plaintext").autoCode();
-
-        MathJax.Hub.Config({
-            "CommonHTML": {
-                scale: 138
-            }
-        });
-    });
-</script>
 
 </body>
 </html>
