@@ -1,0 +1,199 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Certificate: ECDSA Verification</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>ECDSA Public Key</h2>
+
+<h3>ec-public.key</h3>
+
+<div title="ec-public.key" class="plaintext">
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEejOOzlGieLyPgl0YuP4tG/u3g7pH
+ifv/JJfzRIX0+9zy9Yx2Dt+wXMPVvarjNIdZ7evX2XtycMicCDUYnNE7/w==
+-----END PUBLIC KEY-----
+</div>
+
+<h3>Hex Format</h3>
+
+<div title="Hex Format" class="plaintext">
+30 59 30 13 06 07 2A 86 48 CE 3D 02 01 06 08 2A
+86 48 CE 3D 03 01 07 03 42 00 04 7A 33 8E CE 51
+A2 78 BC 8F 82 5D 18 B8 FE 2D 1B FB B7 83 BA 47
+89 FB FF 24 97 F3 44 85 F4 FB DC F2 F5 8C 76 0E
+DF B0 5C C3 D5 BD AA E3 34 87 59 ED EB D7 D9 7B
+72 70 C8 9C 08 35 18 9C D1 3B FF
+</div>
+
+<h3>ASN1 Parse</h3>
+
+<div title="ASN1 Parse" class="plaintext">
+SEQUENCE, SEQUENCE OF (16:89) 30 59
+    SEQUENCE, SEQUENCE OF (16:19) 30 13
+        OBJECT IDENTIFIER (6:7) 06 07 EC_Public_Key
+        OBJECT IDENTIFIER (6:8) 06 08 prime256v1
+    BIT STRING (3:66) 03 42 00 04 7A 33 8E CE 51 ... // ECDSA PublicKey
+</div>
+
+<h3>Bit String</h3>
+
+<div title="Bit String" class="plaintext">
+7A 33 8E CE 51 A2 78 BC 8F 82 5D 18 B8 FE 2D 1B FB B7 83 BA 47 89 FB FF 24 97 F3 44 85 F4 FB DC // X
+F2 F5 8C 76 0E DF B0 5C C3 D5 BD AA E3 34 87 59 ED EB D7 D9 7B 72 70 C8 9C 08 35 18 9C D1 3B FF // Y
+</div>
+
+<h2>Signature Value</h2>
+
+<div title="Certificate" class="plaintext">
+Certificate  ::=  SEQUENCE  {
+    tbsCertificate       TBSCertificate,
+    signatureAlgorithm   AlgorithmIdentifier,
+    signatureValue       BIT STRING  }
+</div>
+
+<h3>signed_certificate.pem</h3>
+
+<div title="signed_certificate.pem" class="plaintext">
+-----BEGIN CERTIFICATE-----
+MIICAjCCAagCCQDXbtE+ZJ22WjAKBggqhkjOPQQDAjCBiDELMAkGA1UEBhMCQ04x
+DjAMBgNVBAgMBUhlQmVpMRAwDgYDVQQHDAdCYW9EaW5nMRIwEAYDVQQKDAlGcnVp
+dCBMdGQxCzAJBgNVBAsMAklUMRYwFAYDVQQDDA13d3cuZnJ1aXQuY29tMR4wHAYJ
+KoZIhvcNAQkBFg9hZG1pbkBmcnVpdC5jb20wHhcNMjAwNjI4MTYxMDA5WhcNMjEw
+NjI4MTYxMDA5WjCBiDELMAkGA1UEBhMCQ04xDjAMBgNVBAgMBUhlQmVpMRAwDgYD
+VQQHDAdCYW9EaW5nMRIwEAYDVQQKDAlGcnVpdCBMdGQxCzAJBgNVBAsMAklUMRYw
+FAYDVQQDDA13d3cuZnJ1aXQuY29tMR4wHAYJKoZIhvcNAQkBFg9hZG1pbkBmcnVp
+dC5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAR6M47OUaJ4vI+CXRi4/i0b
++7eDukeJ+/8kl/NEhfT73PL1jHYO37Bcw9W9quM0h1nt69fZe3JwyJwINRic0Tv/
+MAoGCCqGSM49BAMCA0gAMEUCICwPHVxaDH2sm2XBnXPsd42wIef5AsJ/O3+OqK4k
+vFxTAiEA0FB4ywCvZmBntO9qozeaanniIjU49AHTFxRVOBRo35M=
+-----END CERTIFICATE-----
+</div>
+
+<h3>Hex Format</h3>
+
+<div title="Hex Format" class="plaintext">
+30 82 02 02 30 82 01 A8 02 09 00 D7 6E D1 3E 64
+9D B6 5A 30 0A 06 08 2A 86 48 CE 3D 04 03 02 30
+81 88 31 0B 30 09 06 03 55 04 06 13 02 43 4E 31
+0E 30 0C 06 03 55 04 08 0C 05 48 65 42 65 69 31
+10 30 0E 06 03 55 04 07 0C 07 42 61 6F 44 69 6E
+67 31 12 30 10 06 03 55 04 0A 0C 09 46 72 75 69
+74 20 4C 74 64 31 0B 30 09 06 03 55 04 0B 0C 02
+49 54 31 16 30 14 06 03 55 04 03 0C 0D 77 77 77
+2E 66 72 75 69 74 2E 63 6F 6D 31 1E 30 1C 06 09
+2A 86 48 86 F7 0D 01 09 01 16 0F 61 64 6D 69 6E
+40 66 72 75 69 74 2E 63 6F 6D 30 1E 17 0D 32 30
+30 36 32 38 31 36 31 30 30 39 5A 17 0D 32 31 30
+36 32 38 31 36 31 30 30 39 5A 30 81 88 31 0B 30
+09 06 03 55 04 06 13 02 43 4E 31 0E 30 0C 06 03
+55 04 08 0C 05 48 65 42 65 69 31 10 30 0E 06 03
+55 04 07 0C 07 42 61 6F 44 69 6E 67 31 12 30 10
+06 03 55 04 0A 0C 09 46 72 75 69 74 20 4C 74 64
+31 0B 30 09 06 03 55 04 0B 0C 02 49 54 31 16 30
+14 06 03 55 04 03 0C 0D 77 77 77 2E 66 72 75 69
+74 2E 63 6F 6D 31 1E 30 1C 06 09 2A 86 48 86 F7
+0D 01 09 01 16 0F 61 64 6D 69 6E 40 66 72 75 69
+74 2E 63 6F 6D 30 59 30 13 06 07 2A 86 48 CE 3D
+02 01 06 08 2A 86 48 CE 3D 03 01 07 03 42 00 04
+7A 33 8E CE 51 A2 78 BC 8F 82 5D 18 B8 FE 2D 1B
+FB B7 83 BA 47 89 FB FF 24 97 F3 44 85 F4 FB DC
+F2 F5 8C 76 0E DF B0 5C C3 D5 BD AA E3 34 87 59
+ED EB D7 D9 7B 72 70 C8 9C 08 35 18 9C D1 3B FF
+30 0A 06 08 2A 86 48 CE 3D 04 03 02 03 48 00 30
+45 02 20 2C 0F 1D 5C 5A 0C 7D AC 9B 65 C1 9D 73
+EC 77 8D B0 21 E7 F9 02 C2 7F 3B 7F 8E A8 AE 24
+BC 5C 53 02 21 00 D0 50 78 CB 00 AF 66 60 67 B4
+EF 6A A3 37 9A 6A 79 E2 22 35 38 F4 01 D3 17 14
+55 38 14 68 DF 93
+</div>
+
+<h3>ASN1 Parse</h3>
+
+<div title="ASN1 Parse" class="plaintext">
+SEQUENCE, SEQUENCE OF (16:514) 30 82 02 02
+    SEQUENCE, SEQUENCE OF (16:424) 30 82 01 A8
+        INTEGER (2:9) 02 09 00 D7 6E D1 3E 64 9D B6 5A
+        SEQUENCE, SEQUENCE OF (16:10) 30 0A
+            OBJECT IDENTIFIER (6:8) 06 08 ECDSA_With_SHA256
+        SEQUENCE, SEQUENCE OF (16:136) 30 81 88
+            SET, SET OF (17:11) 31 0B
+                SEQUENCE, SEQUENCE OF (16:9) 30 09
+                    OBJECT IDENTIFIER (6:3) 06 03 CountryName
+                    PrintableString (19:2) 13 02 CN
+            SET, SET OF (17:14) 31 0E
+                SEQUENCE, SEQUENCE OF (16:12) 30 0C
+                    OBJECT IDENTIFIER (6:3) 06 03 StateOrProvinceName
+                    UTF8String (12:5) 0C 05 HeBei
+            SET, SET OF (17:16) 31 10
+                SEQUENCE, SEQUENCE OF (16:14) 30 0E
+                    OBJECT IDENTIFIER (6:3) 06 03 LocalityName
+                    UTF8String (12:7) 0C 07 BaoDing
+            SET, SET OF (17:18) 31 12
+                SEQUENCE, SEQUENCE OF (16:16) 30 10
+                    OBJECT IDENTIFIER (6:3) 06 03 OrganizationName
+                    UTF8String (12:9) 0C 09 Fruit Ltd
+            SET, SET OF (17:11) 31 0B
+                SEQUENCE, SEQUENCE OF (16:9) 30 09
+                    OBJECT IDENTIFIER (6:3) 06 03 OrganizationalUnitName
+                    UTF8String (12:2) 0C 02 IT
+            SET, SET OF (17:22) 31 16
+                SEQUENCE, SEQUENCE OF (16:20) 30 14
+                    OBJECT IDENTIFIER (6:3) 06 03 CommonName
+                    UTF8String (12:13) 0C 0D www.fruit.com
+            SET, SET OF (17:30) 31 1E
+                SEQUENCE, SEQUENCE OF (16:28) 30 1C
+                    OBJECT IDENTIFIER (6:9) 06 09 EmailAddress
+                    IA5String (22:15) 16 0F admin@fruit.com
+        SEQUENCE, SEQUENCE OF (16:30) 30 1E
+            UTCTime (23:13) 17 0D 200628161009Z
+            UTCTime (23:13) 17 0D 210628161009Z
+        SEQUENCE, SEQUENCE OF (16:136) 30 81 88
+            SET, SET OF (17:11) 31 0B
+                SEQUENCE, SEQUENCE OF (16:9) 30 09
+                    OBJECT IDENTIFIER (6:3) 06 03 CountryName
+                    PrintableString (19:2) 13 02 CN
+            SET, SET OF (17:14) 31 0E
+                SEQUENCE, SEQUENCE OF (16:12) 30 0C
+                    OBJECT IDENTIFIER (6:3) 06 03 StateOrProvinceName
+                    UTF8String (12:5) 0C 05 HeBei
+            SET, SET OF (17:16) 31 10
+                SEQUENCE, SEQUENCE OF (16:14) 30 0E
+                    OBJECT IDENTIFIER (6:3) 06 03 LocalityName
+                    UTF8String (12:7) 0C 07 BaoDing
+            SET, SET OF (17:18) 31 12
+                SEQUENCE, SEQUENCE OF (16:16) 30 10
+                    OBJECT IDENTIFIER (6:3) 06 03 OrganizationName
+                    UTF8String (12:9) 0C 09 Fruit Ltd
+            SET, SET OF (17:11) 31 0B
+                SEQUENCE, SEQUENCE OF (16:9) 30 09
+                    OBJECT IDENTIFIER (6:3) 06 03 OrganizationalUnitName
+                    UTF8String (12:2) 0C 02 IT
+            SET, SET OF (17:22) 31 16
+                SEQUENCE, SEQUENCE OF (16:20) 30 14
+                    OBJECT IDENTIFIER (6:3) 06 03 CommonName
+                    UTF8String (12:13) 0C 0D www.fruit.com
+            SET, SET OF (17:30) 31 1E
+                SEQUENCE, SEQUENCE OF (16:28) 30 1C
+                    OBJECT IDENTIFIER (6:9) 06 09 EmailAddress
+                    IA5String (22:15) 16 0F admin@fruit.com
+        SEQUENCE, SEQUENCE OF (16:89) 30 59
+            SEQUENCE, SEQUENCE OF (16:19) 30 13
+                OBJECT IDENTIFIER (6:7) 06 07 EC_Public_Key
+                OBJECT IDENTIFIER (6:8) 06 08 prime256v1
+            BIT STRING (3:66) 03 42 00 04 7A 33 8E CE 51 A2 ... // Public Key
+    SEQUENCE, SEQUENCE OF (16:10) 30 0A
+        OBJECT IDENTIFIER (6:8) 06 08 ECDSA_With_SHA256
+    BIT STRING (3:72) 03 48 00 30 45 02 20 2C 0F 1D 5C 5A 0C... // Signature Value
+</div>
+
+<h3>Bit String</h3>
+
+<div title="Bit String" class="plaintext">
+SEQUENCE, SEQUENCE OF (16:69) 30 45
+    INTEGER (2:32) 02 20 2C 0F 1D 5C 5A 0C 7D AC 9B 65 C1 ... // X
+    INTEGER (2:33) 02 21 00 D0 50 78 CB 00 AF 66 60 67 B4 ... // Y
+</div>

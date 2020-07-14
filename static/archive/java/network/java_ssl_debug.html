@@ -1,0 +1,38 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java SSL Debug</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_network.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Examples</h2>
+
+<p class="indented">
+    To view all debugging messages:
+</p>
+
+<div title="all" class="plaintext">
+java -Djavax.net.debug=all MyApp
+</div>
+
+<p class="indented">
+    To view the hexadecimal dumps of each handshake message, you can type the following command, where the colons are optional:
+</p>
+
+<div title="ssl:handshake:data" class="plaintext">
+java -Djavax.net.debug=ssl:handshake:data MyApp
+</div>
+
+<p class="indented">
+    To view the hexadecimal dumps of each handshake message, and to print trust manager tracing, you can type the following, where the commas are optional:
+</p>
+
+<div title="SSL,handshake,data,trustmanager" class="plaintext">
+java -Djavax.net.debug=SSL,handshake,data,trustmanager MyApp
+</div>
+
+<p class="indented"></p>
+<p class="indented"></p>
+

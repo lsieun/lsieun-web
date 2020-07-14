@@ -1,0 +1,86 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">TLS Parameters</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/tls/tls_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>TLS Parameters</h2>
+
+<h3>Client Hello</h3>
+
+<ul>
+    <li>更新<code>TLSParameters</code>的<code>client_random</code>参数</li>
+    <li></li>
+    <li></li>
+</ul>
+
+<h3>Server Hello</h3>
+
+<ul>
+    <li>更新<code>TLSParameters</code>的<code>server_random</code>参数</li>
+    <li>更新<code>TLSParameters</code>的<code>pending_send_parameters.suite</code>参数</li>
+    <li>更新<code>TLSParameters</code>的<code>pending_recv_parameters.suite</code>参数</li>
+    <li><code>tls_context.server_hello_done = true;</code></li>
+</ul>
+
+<h3>Certificate</h3>
+
+<ul>
+    <li>更新<code>TLSParameters</code>的<code>server_public_key</code>参数</li>
+    <li></li>
+</ul>
+
+<h3>Client Key Exchange</h3>
+
+<ul>
+    <li>由Client生成<code>TLSParameters</code>的<code>pre_master_secret</code>参数</li>
+    <li>将<code>pre_master_secret</code>、<code>client_random</code>和<code>server_random</code>作为输入参数，使用PRF计算<code>master_secret</code></li>
+    <li>将<code>master_secret</code>、<code>client_random</code>和<code>server_random</code>作为输入参数，使用PRF计算<code>pending_send_parameters</code>和<code>pending_recv_parameters</code>的各自3个参数（共6个）（<code>mac_secret</code>、<code>key</code>和<code>iv</code>）</li>
+    <li></li>
+</ul>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        master_secret = PRF(pre_master_secret, "master secret", ClientHello.random + ServerHello.random);<br/><br/>
+        calculate_keys = PRF(master_secret, "key expansion", ServerHello.random + ClientHello.random);<br/><br/>
+        verify_data = PRF( master_secret, "client finished", MD5(handshake_messages) + SHA-1(handshake_messages));<br/>
+    </p>
+</div>
+
+<h3>Client Change Cipher Spec</h3>
+
+<ul>
+    <li><code>pending_send_parameters.seq_num = 0;</code></li>
+    <li><code>pending_send_parameters</code>变成<code>active_send_parameters</code></li>
+    <li></li>
+</ul>
+
+<h3>Server Change Cipher Spec</h3>
+
+<ul>
+    <li>pending_recv_parameters变成active_recv_parameters</li>
+    <li>active_recv_parameters.seq_num = 0;</li>
+    <li>tls_context.peer_finished = true;</li>
+    <li></li>
+</ul>
+
+<p class="indented">
+    The <strong>sequence numbers</strong> start at <code>0</code> whenever a <code>change_cipher_spec</code> is
+    received and is incremented each time a new TLSMessage is sent or received.
+    Each side maintains a separate counter, and this counter is prepended to each
+    message before MAC’ing it.
+</p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>

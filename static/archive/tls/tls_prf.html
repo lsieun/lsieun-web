@@ -1,0 +1,47 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">TLS PRF(Pseudo-Random Function)</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/tls/tls_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    In several places during the TLS negotiation,  the algorithm calls for a lot of data to be generated deterministically
+    so that both sides agree on the same result, based on a seed.
+    This process is referred to as <strong>pseudo-random</strong>.
+</p>
+
+<p class="indented">
+    TLS has a fairly complex pseudo-random function called the <strong>PRF</strong> that generates data
+    from a seed in such a way that two compliant implementations, given the same
+    seed data, generate the same data, but that the output is randomly distributed
+    and follows no observable pattern.
+</p>
+
+<p class="indented">
+    It should come as no surprise at this point that this pseudo-random function
+    is based on secure hash algorithms, which deterministically generate output
+    from input in a non-predictable way. TLS’s PRF is actually based on the <strong>HMAC</strong>
+    algorithm. It takes as input three values: <strong>the seed</strong>, <strong>a label</strong>, and <strong>a secret</strong>. The seed
+    and the label are both used as input to the HMAC algorithm.
+</p>
+
+<p class="indented">
+    The PRF for TLS v1.0 involves both MD5 and SHA-1 (and the use of these
+    specific hash algorithms is hard-coded into the specification). MD5 and SHA-1
+    are each used, along with the HMAC algorithm, to generate an arbitrary quantity of output independently. Then the results of both
+    the MD5 HMAC and the SHA HMAC are XORed together to produce the final
+    result. The secret is split up so that the MD5 routine gets the first half and the
+    SHA routine gets the second half:
+</p>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+

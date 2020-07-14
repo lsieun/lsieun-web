@@ -1,0 +1,271 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Certificate: RSA Verification</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/crypto/crypto_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>RSA Public Key</h2>
+
+<h3>rsa-public.pem</h3>
+
+<div title="rsa-public.pem" class="plaintext">
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8FMT3L4LZGQsWAJ7O1Kx
+SyzQgLPZJTjbMgkf+JK69GahZ1qEYplW90z9DEU/hmGIF1FwcP9PvgcVJ42IQkUp
+J8GTKKoRUe+nESLboggIZe1QUkVGDFv3gAnkQQp2Xb7jvc1zTyBiIY03hoFlOCoh
+5osLl8AuNh/lUeiblAifEtG+oC1mHjCy/M9r0pgHsQ/tZmdAtYdMybdVMn7vNXlR
+gxOY+JApbUGBEqXXc9R+7nP+T8f7gJk6KxIfgAoqmY6HSLVyj1SPYKtpBTn9PAj0
+Tp2ZvGTLhYji2IQsocRq9sPTV/os7hSdAmMyrhUckLYdXuTUaEkeYCHrs/nzuHy3
+iQIDAQAB
+-----END PUBLIC KEY-----
+</div>
+
+<h3>Hex Format</h3>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p>Hex Format</p>
+    <div class="w3-code notranslate">
+<pre style="text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">
+<span style="color:red">30 82 01 22</span> <span style="color:blue">30 0D</span> <span style="color:green">06 09</span> 2A 86 48 86 F7 0D 01 01
+01 <span style="color:red">05 00</span> <span style="color:blue">03 82 01 0F</span> 00 <span style="color:green">30 82 01 0A</span> <span style="color:red">02 82 01 01</span>
+00 F0 53 13 DC BE 0B 64 64 2C 58 02 7B 3B 52 B1
+4B 2C D0 80 B3 D9 25 38 DB 32 09 1F F8 92 BA F4
+66 A1 67 5A 84 62 99 56 F7 4C FD 0C 45 3F 86 61
+88 17 51 70 70 FF 4F BE 07 15 27 8D 88 42 45 29
+27 C1 93 28 AA 11 51 EF A7 11 22 DB A2 08 08 65
+ED 50 52 45 46 0C 5B F7 80 09 E4 41 0A 76 5D BE
+E3 BD CD 73 4F 20 62 21 8D 37 86 81 65 38 2A 21
+E6 8B 0B 97 C0 2E 36 1F E5 51 E8 9B 94 08 9F 12
+D1 BE A0 2D 66 1E 30 B2 FC CF 6B D2 98 07 B1 0F
+ED 66 67 40 B5 87 4C C9 B7 55 32 7E EF 35 79 51
+83 13 98 F8 90 29 6D 41 81 12 A5 D7 73 D4 7E EE
+73 FE 4F C7 FB 80 99 3A 2B 12 1F 80 0A 2A 99 8E
+87 48 B5 72 8F 54 8F 60 AB 69 05 39 FD 3C 08 F4
+4E 9D 99 BC 64 CB 85 88 E2 D8 84 2C A1 C4 6A F6
+C3 D3 57 FA 2C EE 14 9D 02 63 32 AE 15 1C 90 B6
+1D 5E E4 D4 68 49 1E 60 21 EB B3 F9 F3 B8 7C B7
+89 <span style="color:red">02 03</span> 01 00 01
+</pre>
+    </div>
+</div>
+
+<h3>ASN1 Parse</h3>
+
+<div title="ASN1 parse" class="plaintext">
+SEQUENCE, SEQUENCE OF (16:290) 30 82 01 22
+    SEQUENCE, SEQUENCE OF (16:13) 30 0D
+        OBJECT IDENTIFIER (6:9) 06 09 2A 86 48 86 F7 0D 01 01 01     // RSAEncryption
+        NULL (5:0) 05 00
+    BIT STRING (3:271) 03 82 01 0F 00 30 82 01 0A 02 82 01 01 00 ... // RSAPublicKey
+</div>
+
+<h3>Bit String</h3>
+
+<div title="BIT STRING" class="plaintext">
+SEQUENCE, SEQUENCE OF (16:266) 30 82 01 0A
+    INTEGER (2:257) 02 82 01 01 00 F0 53 ...  // modulus
+    INTEGER (2:3) 02 03 01 00 01              // publicExponent
+</div>
+
+<h2>Signature Value</h2>
+
+<div title="Certificate" class="plaintext">
+Certificate  ::=  SEQUENCE  {
+    tbsCertificate       TBSCertificate,
+    signatureAlgorithm   AlgorithmIdentifier,
+    signatureValue       BIT STRING  }
+</div>
+
+<h3>signed_certificate.pem</h3>
+
+<div title="signed_certificate.pem" class="plaintext">
+-----BEGIN CERTIFICATE-----
+MIIDjjCCAnYCCQDHrg3yLdDsLjANBgkqhkiG9w0BAQsFADCBiDELMAkGA1UEBhMC
+Q04xDjAMBgNVBAgMBUhlQmVpMRAwDgYDVQQHDAdCYW9EaW5nMRIwEAYDVQQKDAlG
+cnVpdCBMdGQxCzAJBgNVBAsMAklUMRYwFAYDVQQDDA13d3cuZnJ1aXQuY29tMR4w
+HAYJKoZIhvcNAQkBFg9hZG1pbkBmcnVpdC5jb20wHhcNMjAwNjI5MDI1MjExWhcN
+MjEwNjI5MDI1MjExWjCBiDELMAkGA1UEBhMCQ04xDjAMBgNVBAgMBUhlQmVpMRAw
+DgYDVQQHDAdCYW9EaW5nMRIwEAYDVQQKDAlGcnVpdCBMdGQxCzAJBgNVBAsMAklU
+MRYwFAYDVQQDDA13d3cuZnJ1aXQuY29tMR4wHAYJKoZIhvcNAQkBFg9hZG1pbkBm
+cnVpdC5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDwUxPcvgtk
+ZCxYAns7UrFLLNCAs9klONsyCR/4krr0ZqFnWoRimVb3TP0MRT+GYYgXUXBw/0++
+BxUnjYhCRSknwZMoqhFR76cRItuiCAhl7VBSRUYMW/eACeRBCnZdvuO9zXNPIGIh
+jTeGgWU4KiHmiwuXwC42H+VR6JuUCJ8S0b6gLWYeMLL8z2vSmAexD+1mZ0C1h0zJ
+t1Uyfu81eVGDE5j4kCltQYESpddz1H7uc/5Px/uAmTorEh+ACiqZjodItXKPVI9g
+q2kFOf08CPROnZm8ZMuFiOLYhCyhxGr2w9NX+izuFJ0CYzKuFRyQth1e5NRoSR5g
+Ieuz+fO4fLeJAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAMaj+5OhouW4hU8NYgH/
+k4yI8j3mhwAmjDaP2JoRPrmROqY3gnuVXzFTkXB6HEV+E1vykAkSBdu2D+mWvqgB
+rx+EIqZr2h4RB2SS4G3+bVDGQ3o1gPAFiZeUSyuADifdExmuroaCH6HfHdZ9K46b
+Luunmd4qW1HRFSdelwJyXbfOMfcA9WsQkYsGLqeJZpnKPy8dwTyqJCKYz7QCPNGu
+rXPCelB5YQBK90i8Dq0pUNvd/7ka6D1km41xhhUfJDS5ELZriwk4QQiAqE8UdJLf
+whxQtilWv1rSs+rCLvbyarqT4tCnzALQEGBo9Xp435aDnJpa+/jRrXF+nJjTTk9X
+Gxs=
+-----END CERTIFICATE-----
+</div>
+
+<h3>Hex Format</h3>
+
+<div title="Hex Format" class="plaintext">
+30 82 03 8E 30 82 02 76 02 09 00 C7 AE 0D F2 2D
+D0 EC 2E 30 0D 06 09 2A 86 48 86 F7 0D 01 01 0B
+05 00 30 81 88 31 0B 30 09 06 03 55 04 06 13 02
+43 4E 31 0E 30 0C 06 03 55 04 08 0C 05 48 65 42
+65 69 31 10 30 0E 06 03 55 04 07 0C 07 42 61 6F
+44 69 6E 67 31 12 30 10 06 03 55 04 0A 0C 09 46
+72 75 69 74 20 4C 74 64 31 0B 30 09 06 03 55 04
+0B 0C 02 49 54 31 16 30 14 06 03 55 04 03 0C 0D
+77 77 77 2E 66 72 75 69 74 2E 63 6F 6D 31 1E 30
+1C 06 09 2A 86 48 86 F7 0D 01 09 01 16 0F 61 64
+6D 69 6E 40 66 72 75 69 74 2E 63 6F 6D 30 1E 17
+0D 32 30 30 36 32 39 30 32 35 32 31 31 5A 17 0D
+32 31 30 36 32 39 30 32 35 32 31 31 5A 30 81 88
+31 0B 30 09 06 03 55 04 06 13 02 43 4E 31 0E 30
+0C 06 03 55 04 08 0C 05 48 65 42 65 69 31 10 30
+0E 06 03 55 04 07 0C 07 42 61 6F 44 69 6E 67 31
+12 30 10 06 03 55 04 0A 0C 09 46 72 75 69 74 20
+4C 74 64 31 0B 30 09 06 03 55 04 0B 0C 02 49 54
+31 16 30 14 06 03 55 04 03 0C 0D 77 77 77 2E 66
+72 75 69 74 2E 63 6F 6D 31 1E 30 1C 06 09 2A 86
+48 86 F7 0D 01 09 01 16 0F 61 64 6D 69 6E 40 66
+72 75 69 74 2E 63 6F 6D 30 82 01 22 30 0D 06 09
+2A 86 48 86 F7 0D 01 01 01 05 00 03 82 01 0F 00
+30 82 01 0A 02 82 01 01 00 F0 53 13 DC BE 0B 64
+64 2C 58 02 7B 3B 52 B1 4B 2C D0 80 B3 D9 25 38
+DB 32 09 1F F8 92 BA F4 66 A1 67 5A 84 62 99 56
+F7 4C FD 0C 45 3F 86 61 88 17 51 70 70 FF 4F BE
+07 15 27 8D 88 42 45 29 27 C1 93 28 AA 11 51 EF
+A7 11 22 DB A2 08 08 65 ED 50 52 45 46 0C 5B F7
+80 09 E4 41 0A 76 5D BE E3 BD CD 73 4F 20 62 21
+8D 37 86 81 65 38 2A 21 E6 8B 0B 97 C0 2E 36 1F
+E5 51 E8 9B 94 08 9F 12 D1 BE A0 2D 66 1E 30 B2
+FC CF 6B D2 98 07 B1 0F ED 66 67 40 B5 87 4C C9
+B7 55 32 7E EF 35 79 51 83 13 98 F8 90 29 6D 41
+81 12 A5 D7 73 D4 7E EE 73 FE 4F C7 FB 80 99 3A
+2B 12 1F 80 0A 2A 99 8E 87 48 B5 72 8F 54 8F 60
+AB 69 05 39 FD 3C 08 F4 4E 9D 99 BC 64 CB 85 88
+E2 D8 84 2C A1 C4 6A F6 C3 D3 57 FA 2C EE 14 9D
+02 63 32 AE 15 1C 90 B6 1D 5E E4 D4 68 49 1E 60
+21 EB B3 F9 F3 B8 7C B7 89 02 03 01 00 01 30 0D
+06 09 2A 86 48 86 F7 0D 01 01 0B 05 00 03 82 01
+01 00 C6 A3 FB 93 A1 A2 E5 B8 85 4F 0D 62 01 FF
+93 8C 88 F2 3D E6 87 00 26 8C 36 8F D8 9A 11 3E
+B9 91 3A A6 37 82 7B 95 5F 31 53 91 70 7A 1C 45
+7E 13 5B F2 90 09 12 05 DB B6 0F E9 96 BE A8 01
+AF 1F 84 22 A6 6B DA 1E 11 07 64 92 E0 6D FE 6D
+50 C6 43 7A 35 80 F0 05 89 97 94 4B 2B 80 0E 27
+DD 13 19 AE AE 86 82 1F A1 DF 1D D6 7D 2B 8E 9B
+2E EB A7 99 DE 2A 5B 51 D1 15 27 5E 97 02 72 5D
+B7 CE 31 F7 00 F5 6B 10 91 8B 06 2E A7 89 66 99
+CA 3F 2F 1D C1 3C AA 24 22 98 CF B4 02 3C D1 AE
+AD 73 C2 7A 50 79 61 00 4A F7 48 BC 0E AD 29 50
+DB DD FF B9 1A E8 3D 64 9B 8D 71 86 15 1F 24 34
+B9 10 B6 6B 8B 09 38 41 08 80 A8 4F 14 74 92 DF
+C2 1C 50 B6 29 56 BF 5A D2 B3 EA C2 2E F6 F2 6A
+BA 93 E2 D0 A7 CC 02 D0 10 60 68 F5 7A 78 DF 96
+83 9C 9A 5A FB F8 D1 AD 71 7E 9C 98 D3 4E 4F 57
+1B 1B
+</div>
+
+<h3>ASN1 Parse</h3>
+
+<div title="ASN1 Parse" class="plaintext">
+SEQUENCE, SEQUENCE OF (16:910) 30 82 03 8E
+    SEQUENCE, SEQUENCE OF (16:630) 30 82 02 76
+        INTEGER (2:9) 02 09 00 C7 AE 0D F2 2D D0 EC 2E
+        SEQUENCE, SEQUENCE OF (16:13) 30 0D
+            OBJECT IDENTIFIER (6:9) 06 09 SHA256_With_RSA
+            NULL (5:0) 05 00
+        SEQUENCE, SEQUENCE OF (16:136) 30 81 88
+            SET, SET OF (17:11) 31 0B
+                SEQUENCE, SEQUENCE OF (16:9) 30 09
+                    OBJECT IDENTIFIER (6:3) 06 03 CountryName
+                    PrintableString (19:2) 13 02 CN
+            SET, SET OF (17:14) 31 0E
+                SEQUENCE, SEQUENCE OF (16:12) 30 0C
+                    OBJECT IDENTIFIER (6:3) 06 03 StateOrProvinceName
+                    UTF8String (12:5) 0C 05 HeBei
+            SET, SET OF (17:16) 31 10
+                SEQUENCE, SEQUENCE OF (16:14) 30 0E
+                    OBJECT IDENTIFIER (6:3) 06 03 LocalityName
+                    UTF8String (12:7) 0C 07 BaoDing
+            SET, SET OF (17:18) 31 12
+                SEQUENCE, SEQUENCE OF (16:16) 30 10
+                    OBJECT IDENTIFIER (6:3) 06 03 OrganizationName
+                    UTF8String (12:9) 0C 09 Fruit Ltd
+            SET, SET OF (17:11) 31 0B
+                SEQUENCE, SEQUENCE OF (16:9) 30 09
+                    OBJECT IDENTIFIER (6:3) 06 03 OrganizationalUnitName
+                    UTF8String (12:2) 0C 02 IT
+            SET, SET OF (17:22) 31 16
+                SEQUENCE, SEQUENCE OF (16:20) 30 14
+                    OBJECT IDENTIFIER (6:3) 06 03 CommonName
+                    UTF8String (12:13) 0C 0D www.fruit.com
+            SET, SET OF (17:30) 31 1E
+                SEQUENCE, SEQUENCE OF (16:28) 30 1C
+                    OBJECT IDENTIFIER (6:9) 06 09 EmailAddress
+                    IA5String (22:15) 16 0F admin@fruit.com
+        SEQUENCE, SEQUENCE OF (16:30) 30 1E
+            UTCTime (23:13) 17 0D 200629025211Z
+            UTCTime (23:13) 17 0D 210629025211Z
+        SEQUENCE, SEQUENCE OF (16:136) 30 81 88
+            SET, SET OF (17:11) 31 0B
+                SEQUENCE, SEQUENCE OF (16:9) 30 09
+                    OBJECT IDENTIFIER (6:3) 06 03 CountryName
+                    PrintableString (19:2) 13 02 CN
+            SET, SET OF (17:14) 31 0E
+                SEQUENCE, SEQUENCE OF (16:12) 30 0C
+                    OBJECT IDENTIFIER (6:3) 06 03 StateOrProvinceName
+                    UTF8String (12:5) 0C 05 HeBei
+            SET, SET OF (17:16) 31 10
+                SEQUENCE, SEQUENCE OF (16:14) 30 0E
+                    OBJECT IDENTIFIER (6:3) 06 03 LocalityName
+                    UTF8String (12:7) 0C 07 BaoDing
+            SET, SET OF (17:18) 31 12
+                SEQUENCE, SEQUENCE OF (16:16) 30 10
+                    OBJECT IDENTIFIER (6:3) 06 03 OrganizationName
+                    UTF8String (12:9) 0C 09 Fruit Ltd
+            SET, SET OF (17:11) 31 0B
+                SEQUENCE, SEQUENCE OF (16:9) 30 09
+                    OBJECT IDENTIFIER (6:3) 06 03 OrganizationalUnitName
+                    UTF8String (12:2) 0C 02 IT
+            SET, SET OF (17:22) 31 16
+                SEQUENCE, SEQUENCE OF (16:20) 30 14
+                    OBJECT IDENTIFIER (6:3) 06 03 CommonName
+                    UTF8String (12:13) 0C 0D www.fruit.com
+            SET, SET OF (17:30) 31 1E
+                SEQUENCE, SEQUENCE OF (16:28) 30 1C
+                    OBJECT IDENTIFIER (6:9) 06 09 EmailAddress
+                    IA5String (22:15) 16 0F admin@fruit.com
+        SEQUENCE, SEQUENCE OF (16:290) 30 82 01 22
+            SEQUENCE, SEQUENCE OF (16:13) 30 0D
+                OBJECT IDENTIFIER (6:9) 06 09 RSAEncryption
+                NULL (5:0) 05 00
+            BIT STRING (3:271) 03 82 01 0F 00 30 82 01 0A 02 82 01 01 ... // RSA Public Key
+    SEQUENCE, SEQUENCE OF (16:13) 30 0D
+        OBJECT IDENTIFIER (6:9) 06 09 SHA256_With_RSA
+        NULL (5:0) 05 00
+    BIT STRING (3:257) 03 82 01 01 00 C6 A3 FB 93 A1 A2 E5 B8 85 4F 0D ... // Signature Value
+</div>
+
+<h3>RSA Decryption</h3>
+
+<div title="After Decryption" class="plaintext">
+30 31 30 0D 06 09 60 86 48 01 65 03 04 02 01 05
+00 04 20 05 10 C1 EA CD 4B 4F FF D9 48 29 02 51
+D8 AE A7 3D 3A A8 57 BB 99 02 B6 B2 98 6C A0 8B
+C8 EA 7D
+</div>
+
+<h3>ASN1 Parse</h3>
+
+<div title="" class="plaintext">
+SEQUENCE, SEQUENCE OF (16:49) 30 31
+    SEQUENCE, SEQUENCE OF (16:13) 30 0D
+        OBJECT IDENTIFIER (6:9) 06 09 60 86 48 01 65 03 04 02 01 // SHA256
+        NULL (5:0) 05 00
+    OCTET STRING (4:32) 04 20 05 10 C1 EA CD 4B 4F FF D9 48 29 ... // Hash Value
+</div>
+
