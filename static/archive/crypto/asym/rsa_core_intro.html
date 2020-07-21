@@ -16,27 +16,27 @@
 <p class="indented">
     The theory behind RSA public-key cryptosystems is actually very simple. The
     core is <strong>modulus arithmetic</strong>. Specifically, RSA relies on three numbers
-    <code style="color:blue">e</code>, <code style="color:blue">d</code>, and <code style="color:blue">n</code> such that <code style="color:blue">(m<sup>e</sup>)<sup>d</sup> % n = m</code> — here <code style="color:blue">m</code> is the message to be encrypted and
+    <code>e</code>, <code>d</code>, and <code>n</code> such that <code>(m<sup>e</sup>)<sup>d</sup> % n = m</code> — here <code>m</code> is the message to be encrypted and
     converted to a number.
 </p>
 
 <p class="indented">
-    Not all numbers work this way; in fact, finding three numbers <code style="color:blue">e</code>, <code style="color:blue">d</code>, and <code style="color:blue">n</code> that
+    Not all numbers work this way; in fact, finding three numbers <code>e</code>, <code>d</code>, and <code>n</code> that
     satisfy this property is complex, and forms the core of the RSA specification. After
     you’ve found them, though, using them to encrypt is fairly straightforward. The
-    number <code style="color:blue">d</code> is called the <strong>private key</strong>, and you should never share it with anybody.
-    <code style="color:blue">e</code> and <code style="color:blue">n</code> together make up the <strong>public key</strong>, and you can make them available to
+    number <code>d</code> is called the <strong>private key</strong>, and you should never share it with anybody.
+    <code>e</code> and <code>n</code> together make up the <strong>public key</strong>, and you can make them available to
     anybody who cares to send you an encoded message. When the sender is ready
     to send you something that should remain private, he first converts the message
-    into a number <code style="color:blue">m</code> and then computes m<sup>e</sup> % n and sends you the result <code style="color:blue">c</code>. When
+    into a number <code>m</code> and then computes m<sup>e</sup> % n and sends you the result <code>c</code>. When
     you receive it, you then compute c<sup>d</sup> % n and, by the property stated above, you
-    get back the original message <code style="color:blue">m</code>.
+    get back the original message <code>m</code>.
 </p>
 
 <p class="indented">
     The security of the system relies on the fact that even if an attacker has access to
-    <code style="color:blue">e</code> and <code style="color:blue">n</code> — which he does because they’re public — it’s computationally infeasible
-    for him to compute <code style="color:blue">d</code>. For this to be true, <code style="color:blue">d</code> and <code style="color:blue">n</code> have to be enormous — at least
+    <code>e</code> and <code>n</code> — which he does because they’re public — it’s computationally infeasible
+    for him to compute <code>d</code>. For this to be true, <code>d</code> and <code>n</code> have to be enormous — at least
     512 bit numbers (which is on the order of 10<sup>154</sup>) — but most public key cryptosystems
     use even larger numbers. 1,024- or even 2,048-bit numbers are common.
 </p>
@@ -44,7 +44,7 @@
 <p class="indented">
     RSA works on blocks of data. Each block includes <strong>a header</strong> and <strong>some padding</strong> (of at least 11 bytes), so
     the resulting input blocks are <strong>modulus_length - 11</strong> bytes minimum. The header is
-    pretty simple: It’s a <code style="color:blue">0</code> byte, followed by a padding identifier of <code style="color:blue">0</code>, <code style="color:blue">1</code>, or <code style="color:blue">2</code>.
+    pretty simple: It’s a <code>0</code> byte, followed by a padding identifier of <code>0</code>, <code>1</code>, or <code>2</code>.
 </p>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
@@ -55,9 +55,9 @@
 
 <p class="indented">
     For <strong>RSA encryption</strong>, always
-    use padding identifier <code style="color:blue">2</code>, which indicates that the following bytes, up to the first
-    <code style="color:blue">0</code> byte, are <strong>padding</strong> and should be discarded. Everything following the first <code style="color:blue">0</code> byte,
-    up to the length of the modulus <code style="color:blue">n</code> byte in bytes, is data.
+    use padding identifier <code>2</code>, which indicates that the following bytes, up to the first
+    <code>0</code> byte, are <strong>padding</strong> and should be discarded. Everything following the first <code>0</code> byte,
+    up to the length of the modulus <code>n</code> byte in bytes, is data.
 </p>
 
 <div style="text-align: center">
@@ -73,6 +73,6 @@
 <p class="indented">
     The only difference between an <strong>RSA digital signature</strong> and an <strong>RSA encryption</strong>
     (other than the fact that encryption is done with a public key and signing is done
-    with a private key) is that the padding type is <code style="color:blue">0x01</code>, instead of
-    <code style="color:blue">0x02</code>, and the padding bytes are all <code style="color:blue">1</code>s instead of random bytes.
+    with a private key) is that the padding type is <code>0x01</code>, instead of
+    <code>0x02</code>, and the padding bytes are all <code>1</code>s instead of random bytes.
 </p>

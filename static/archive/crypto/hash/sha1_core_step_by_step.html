@@ -44,7 +44,7 @@
 </p>
 
 <p>
-    在<code style="color:blue">SHA1Const.java</code>文件中，定义如下变量:
+    在<code>SHA1Const.java</code>文件中，定义如下变量:
 </p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="color:#3F7F5F">// File SHA1Const.java</span>
@@ -58,14 +58,14 @@
 </p>
 
 <ul>
-    <li><code style="color:blue">SHA1_BLOCK_SIZE</code>：它对应于SHA1每次处理的数据量512-bit (64-byte)。</li>
-    <li><code style="color:blue">SHA1_OUTPUT_SIZE</code>：它对应于输出数据160-bit (20-byte)。</li>
+    <li><code>SHA1_BLOCK_SIZE</code>：它对应于SHA1每次处理的数据量512-bit (64-byte)。</li>
+    <li><code>SHA1_OUTPUT_SIZE</code>：它对应于输出数据160-bit (20-byte)。</li>
     <li>
-        <code style="color:blue">SHA1_RESULT_SIZE</code>：它是<code style="color:blue">SHA1_OUTPUT_SIZE</code>另外一种表现形式。<sub class="my_note" style="color:green">笔记：两者本质上是同一个事物，它是将原来的20-byte数据表示成5个int(4-byte)数据。</sub>
+        <code>SHA1_RESULT_SIZE</code>：它是<code>SHA1_OUTPUT_SIZE</code>另外一种表现形式。<sub class="my_note" style="color:green">笔记：两者本质上是同一个事物，它是将原来的20-byte数据表示成5个int(4-byte)数据。</sub>
         <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
     </li>
     <li>
-        <code style="color:blue">SHA1_PADDING_THRESHOLD</code>：这个常量的作用就是为了判断要padding多少数据。<sub class="my_note" style="color:green">笔记：这个常量表示一个“阈值”，而所谓的“阈值”就是对事物进行评判的一个标准，一个量化的值。在进行SHA1算法时，很可能输入数据并不是512-bit (64-byte)的整数倍，这个时候就要进行padding（补充数据），经过padding之后的数据，将会是512-bit (64-byte)的整数倍，这样才能让SHA1算法进行处理。</sub>
+        <code>SHA1_PADDING_THRESHOLD</code>：这个常量的作用就是为了判断要padding多少数据。<sub class="my_note" style="color:green">笔记：这个常量表示一个“阈值”，而所谓的“阈值”就是对事物进行评判的一个标准，一个量化的值。在进行SHA1算法时，很可能输入数据并不是512-bit (64-byte)的整数倍，这个时候就要进行padding（补充数据），经过padding之后的数据，将会是512-bit (64-byte)的整数倍，这样才能让SHA1算法进行处理。</sub>
         <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
     </li>
 </ul>
@@ -77,7 +77,7 @@
 </p>
 
 <p>
-    在<code style="color:blue">SHA1Const.java</code>文件中，定义<code style="color:blue">SHA1_INITIAL_HASH</code>变量，表示最初Hash值：
+    在<code>SHA1Const.java</code>文件中，定义<code>SHA1_INITIAL_HASH</code>变量，表示最初Hash值：
 </p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="color:#3F7F5F">// File SHA1Const.java</span>
@@ -322,7 +322,7 @@
 </pre>
 
 <p>
-    在上述代码中，引用到了<code style="color:blue">SHA1Const.java</code>的<code style="color:blue">k</code>变量，定义如下：
+    在上述代码中，引用到了<code>SHA1Const.java</code>的<code>k</code>变量，定义如下：
 </p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> k[] = <span style="font-weight:bold;color:#D3171B">{</span>
@@ -334,7 +334,7 @@
 </pre>
 
 <p>
-    同样，在80 rounds部分的代码中，也用了<code style="color:blue">ch</code>、<code style="color:blue">parity</code>和<code style="color:blue">maj</code>三个方法。
+    同样，在80 rounds部分的代码中，也用了<code>ch</code>、<code>parity</code>和<code>maj</code>三个方法。
 </p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="color:#3F7F5F">// ch is functions 0 - 19</span>
@@ -354,8 +354,8 @@
 </pre>
 
 <p>
-    The functions <code style="color:blue">ch</code>, <code style="color:blue">maj</code>, and <code style="color:blue">parity</code> are defined: <code style="color:blue">ch</code> for rounds 0–19, <code style="color:blue">maj</code>
-    for rounds 40–59, and <code style="color:blue">parity</code> for the remaining rounds.
+    The functions <code>ch</code>, <code>maj</code>, and <code>parity</code> are defined: <code>ch</code> for rounds 0–19, <code>maj</code>
+    for rounds 40–59, and <code>parity</code> for the remaining rounds.
     These functions just shuffle the bits of their input
     randomly.
 </p>

@@ -1,0 +1,171 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">TLS Renegotiation Attack</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/tls/tls_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    The high level impact of the <strong>TLS Renegotiation Attack</strong> is that an attacker can
+    arrange to inject traffic into a legitimate client-server exchange such that
+    the TLS server will accept it as if it came from the client. This may allow
+    the attacker to execute operations on the server using the client's credentials
+    (e.g., order a pizza as the client). However, the attacker does not (generally)
+    get to see the response. Obviously this isn't good, but it's not the end of the world.
+    <sub class="my_note" style="color:blue">笔记：TLS Renegotiation Attack，用一种形象的方式来理解就是，attacker购买了1个匹萨饼，由victim来付钱。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Attack Details</h2>
+
+<p class="indented">
+    The attack exploits TLS's renegotiation feature, which allows a client and server
+    who already have a TLS connection to negotiate new parameters, generate new keys,
+    etc. Renegotiation is carried out in the existing TLS connection, with the new
+    handshake packets being encrypted along with application packets. The difficulty
+    is that they're not otherwise tied to the channel, which gives the attacker a
+    window. The simplest form of the attack is shown below
+</p>
+
+<div title="renegotiation attack" class="plaintext">
+Client                        Attacker                        Server
+------                        -------                         ------
+                                  <----------- Handshake ---------->
+                                  <======= Initial Traffic ========>
+<--------------------------  Handshake ============================>
+<======================== Client Traffic ==========================>
+</div>
+
+<p class="indented">
+    So, in order to mount the attack, the attacker first connects to the TLS
+    server. He can communicate with the server as much as he wants, including
+    making an arbitrary number of requests/responses, etc. This traffic is all
+    encrypted and shown as <code>==</code>. Then when he's ready, he hijacks
+    the client's connection to the server (in practice he might start by hijacking
+    the connection and then connect to the server but it doesn't matter) and
+    just proxies the client's traffic over the encrypted channel. The client
+    negotiates with the server and from that point on the client and the server
+    communicate directly. Note that the client is communicating with the attacker
+    in the clear but the second handshake is encrypted and goes over the attacker's
+    channel. Thus, the client does not know that he is renegotiating. However,
+    the server thinks that the initial traffic with the attacker is also from
+    the client. There are also other (probably less useful) variants where both
+    sides see a renegotiation but of different connections.
+</p>
+
+<p class="indented">
+    TLS itself is just a security protocol, so the impact of this attack depends
+    on the application protocol running over TLS. The most important of these
+    protocols is of course HTTP over TLS (HTTPS). Most Web applications do initial
+    authentication via a username/password pair and then persist that authentication
+    state with HTTP cookies (a secret token that is sent with any request). An attacker
+    might exploit this issue by sending a partial HTTP request of his own that
+    requested some resource. This then gets prefixed to the client's real request.
+    <sub class="my_note" style="color:blue">笔记：TLS只是一个security protocol，而application protocol是在security protocol基础上构建的，这里的attack是在application protocol的层面发生的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    E.g., the attacker would send:
+</p>
+
+<div title="attacker" class="plaintext">
+GET /pizza?toppings=pepperoni;address=attackersaddress HTTP/1.1
+X-Ignore-This:
+</div>
+
+<p>
+    And leave the last line empty without a carriage return line feed. Then when
+    the client makes his own request
+</p>
+
+<div title="victim" class="plaintext">
+GET /pizza?toppings=sausage;address=victimssaddress HTTP/1.1
+Cookie: victimscookie
+</div>
+
+<p>
+    the two requests get glued together into:
+</p>
+
+<div title="server" class="plaintext">
+GET /pizza?toppings=pepperoni;address=attackersaddress HTTP/1.1
+X-Ignore-This: GET /pizza?toppings=sausage;address=victimssaddress HTTP/1.1
+Cookie: victimscookie
+</div>
+
+<p>
+    And the server uses the victim's account to send a pizza to the attacker.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/tls/tls_renegotiation_attack_01.png" alt="tls_renegotiation_attack"/>
+</div>
+
+<p class="indented">
+    It's important to note that the attacker doesn't get to see any sensitive
+    information directly: that's just sent back encrypted to the client. However, he
+    can exploit side effects of the exchange, e.g., to get a pizza. It may also
+    be possible to exploit HTTP features to directly access the data. For instance, he
+    might be able to generate a combined request that would cause the server (or perhaps
+    somehow mirrored through the client) to send the original client request to the
+    attacker. If the request contains the client's cookie or password, this would cause
+    their credentials to leak. It's not clear to me if this is possible, but I'm
+    hoping some of the Web security specialists will weigh in.
+    <sub class="my_note" style="color:blue">笔记：这种Renegotiation Attack并没有将victim的sensitive information泄露掉，说明TLS对于数据的保密性是做的很好的，它是利用了TLS的renegotiation功能和HTTP协议的特点（内容是明文的）来实现Attack的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/tls/tls_renegotiation_attack_02.jpg" alt="tls_renegotiation_attack"/>
+</div>
+
+<h2>Attack Mitigation</h2>
+
+<p class="indented">
+    For 99+% of applications, the mitigation is very simple: the server should
+    simply disable all renegotiation, which stops the attack. Unfortunately, there
+    is no similar defense on the client side. The client is unaware that renegotiation
+    happened. Moreover, the client can't tell that the server will refuse
+    renegotiation (it could explicitly probe but the attacker could of course
+    fake a failure). So, the client can't really do anything useful to protect itself.
+    <sub class="my_note" style="color:blue">笔记：对于server来说，只要disable这个renegotiation就行了；但是，对于client来说，却无技可施。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    There are a small number of cases where renegotiation
+    actually should happen. The most practical defense on the server side is to
+    restructure the site so that requests which require client auth are redirected
+    to a different address or port which always requests a certificate and itself
+    refuses renegotiation. However, this obviously requires major work on many sites.
+    <sub class="my_note" style="color:blue">笔记：在有些场景下，需要在server端开启renegotiation。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    There are a few other legitimate reasons for renegotiation, but they're mostly
+    things one doesn't need to do. For instance, people sometimes renegotiate to
+    force the generation of fresh keying material. This is not necessary with
+    modern cryptographic algorithms. Another example provided by Ray is sites
+    that support algorithms with differential strength. Again, this isn't really
+    necessary. It's very unlikely you need to renegotiate.
+    <sub class="my_note" style="color:blue">笔记：而在其他场景下，server端开启renegotiation没有很大的必要。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="http://www.educatedguesswork.org/2009/11/understanding_the_tls_renegoti.html" target="_blank">Understanding the TLS Renegotiation Attack</a></li>
+</ul>

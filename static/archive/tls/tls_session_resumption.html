@@ -1,0 +1,114 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">TLS Session Resumption</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/tls/tls_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    The server was responsible for assigning a unique session
+    ID to each TLS connection. Why does the server generate it, then?
+    <sub class="my_note" style="color:blue">笔记：Server端会向Client端发送Server Hello，而在Server Hello中有session ID，那session ID是做什么用的呢？</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/tls/tls_session_example.png" alt="Server Hello Session ID"/>
+</div>
+
+<p class="indented">
+    SSL, since v2, has always supported <strong>session resumption</strong>. Remember that SSL
+    was originally conceived as an HTTP add-on; it was only later retrofitted to
+    other protocols. It was also designed back when HTTP 1.0 was state-of-the-art<sub class="my_note" style="color:green">最新进的技术</sub>,
+    and HTTP 1.0 required the web client — the browser — to close the socket connection
+    to indicate the end of request. This meant that a lot of HTTP requests
+    needed to be made for even a single web page. Although this was corrected
+    somewhat in HTTP 1.1 with pipelining of requests/keepalives, the fact still
+    remains that HTTP has a very low data-to-socket ratio. Add the time it takes to
+    do a key exchange and the corresponding private key operations, and SSL can
+    end up being a major drain<sub class="my_note" style="color:green">消耗；耗竭；耗费 a thing that uses a lot of the time, money, etc. that could be used for sth else</sub> on the throughput of the system.
+    <sub class="my_note" style="color:blue">笔记：session ID的作用就是为了session resumption。在使用TLS时，如果每一次建立连接都进行key exchange，会对性能产生很大消耗。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    To get a handle on this, SSL, and TLS, allow keying material to be reused
+    across multiple sockets. This works by passing an old session ID in the client
+    hello message and short-circuiting the handshake. This allows the lifetime of
+    the SSL session — the keying material that’s used to protect the data — to be
+    independent of the lifetime of the socket. Regardless of the protocol used, this
+    is a good thing. After a 128-bit key has been successfully negotiated, depending
+    on the cipher spec, it can be used to protect potentially hundreds of thousands
+    of bytes of content. There’s no reason to throw away these carefully negotiated
+    keys just because the top-level protocol itself has ended.
+</p>
+
+<p class="indented">
+    The following figure shows that the <em>certificate</em>, <em>server hello done</em>, and <em>key exchange messages</em>
+    have all been elided. Because the client and the server have already negotiated
+    a master secret, there’s no reason to resend these parameters.
+    <sub class="my_note" style="color:blue">笔记：由于是resumption，因此就省略了一些步骤</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/tls/tls_shortened_session_resumption_handshake_sequence.png" alt="Shortened session resumption handshake sequence"/>
+</div>
+
+<p class="indented">
+    Interestingly, when the handshake is shortened for session resumption, the
+    server sends the <em>finished message</em> first, whereas for a normal handshake,
+    it’s the client. This is a nod to efficiency: The server
+    needn’t wait for the client to send a key exchange before it computes its finished
+    message, so it can go ahead and pipeline all three of its messages in a single
+    burst if the server is willing to renegotiate.
+    <sub class="my_note" style="color:blue">笔记：在使用resumption的情况下，server会先发送finished message。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    What if the server isn’t willing to renegotiate? According to the specification,
+    the server should go ahead and silently begin a new handshake, and send its
+    <em>certificate</em> and <em>server hello done</em> message. It’s technically up to the client if it wants to
+    abort at this point, or go ahead and just negotiate a new session. In most cases,
+    the client wants to continue anyway. It’s hard to imagine a scenario where a
+    client wouldn’t want to negotiate a new session in this case. All TLS-based
+    software that I’m familiar with automatically does so, without prompting or
+    notifying the user. It’s possible, though, that some particularly security-conscious
+    (say, military) software somewhere may say, “Hey, you gave me this session ID
+    two minutes ago, and now you’re not willing to resume it? Something’s wrong
+    here, I’m bailing,” and notify the user to investigate what could possibly be a
+    security breach.
+    <sub class="my_note" style="color:blue">笔记：前面的内容在讲server端是如何支持resumption的，而这里讲如果server端不支持resumption，将如何处理。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The TLS specification, RFC 2246, mandates that if a session was not shut down
+    correctly — if the client didn’t send a close notify alert before shutting down the
+    socket — then the session should be marked non-resumable and attempts to resume
+    it should fail. From section 7.2.1 of the RFC, which discusses the <code>close_notify</code> alert:
+</p>
+
+<ul>
+    <li>
+        close_notify: This message notifies the recipient that the sender will not send any more
+        messages on this connection. The session becomes unresumable if any connection
+        is terminated without proper <code>close_notify</code> messages with level equal to <code>warning</code>.
+    </li>
+</ul>
+
+<p class="indented">
+    This was not widely implemented, and later versions of the specification
+    rescinded this requirement. However, to be technically compliant with RFC
+    2246, this implementation ought to include this requirement when the negotiated protocol version is 3.1.
+</p>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+

@@ -1,0 +1,117 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">TLS Extension: Server Name</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/tls/tls_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Why?</h2>
+
+<p class="indented">
+    One of the most important of TLS extensions is the <b>server
+    name indication (SNI)</b> extension. It’s common in today’s Internet for low-traffic
+    websites to share a hosting provider. There’s no particular reason why a
+    blog that gets a few hundred hits a day needs a dedicated server; it can share
+    bandwidth (and costs) with several other sites on a single host. However,
+    this can pose problems for TLS. Each physical server on the Internet has its
+    own IP address, even if that physical host maps to multiple domains. So, for
+    instance, if a shared hosting provider had three hosts named <i>www.hardware.com</i>,
+    <i>www.books.com</i>, and <i>www.computers.com</i>, all hosted from a single physical server,
+    each one would resolve to the same IP address.
+</p>
+
+<p class="indented">
+    This doesn’t seem like a problem for TLS until you consider that TLS must
+    send a certificate whose domain name matches the requested domain name
+    to avoid the man-in-the-middle attack. However, TLS
+    doesn’t know what domain was requested. <strong>Domain names are for people;
+    computers deal in IP addresses.</strong> Therefore, the client has to have some way to notify
+    the server that it should present the certificate for <i>www.books.com</i> rather than the
+    certificate for <i>www.computers.com</i>; wildcard certificates don’t help here, because
+    it’s specifically prohibited to generate a wildcard of the form <i>*.com</i> — for obvious reasons.
+</p>
+
+<p class="indented">
+    Therefore, the client is optionally permitted to indicate with a client hello
+    extension the name of the host it’s trying to connect to, and all modern browsers do this.
+</p>
+
+<p class="indented">
+    TLS does not provide a mechanism for a client to tell a server the
+    name of the server it is contacting.  It may be desirable for clients
+    to provide this information to facilitate secure connections to
+    servers that host multiple 'virtual' servers at a single underlying
+    network address.
+    <sub class="my_note" style="color:blue">笔记：在引入server name extension之前，client会向server发送Client Hello信息，但是Client Hello中并没有包含域名(domain name)信息。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+
+<h2>Server Name(RFC 3546)</h2>
+
+<p class="indented">
+    In order to provide the server name, clients MAY include an extension
+    of type "server_name" in the (extended) client hello.  The
+    "extension_data" field of this extension SHALL contain
+    "ServerNameList".
+</p>
+
+<div title="ServerNameList" class="plaintext">
+struct {
+    ServerName server_name_list<1..2^16-1>
+} ServerNameList;
+
+struct {
+    NameType name_type;
+    select (name_type) {
+        case host_name: HostName;
+    } name;
+} ServerName;
+
+enum {
+    host_name(0), (255)
+} NameType;
+
+opaque HostName<1..2^16-1>;
+</div>
+
+<h2>Server Name Example</h2>
+
+<div title="Server Name Example(Hex Format)" class="plaintext">
+00 00 00 12 00 10 00 00 0D 77 77 77 2E 62 61 69 64 75 2E 63 6F 6D
+</div>
+
+<div title="Server Name Example(Parsed)" class="plaintext">
+SERVER_NAME
+    Type: 0 (00 00)
+    Length: 18 (00 12)
+    Server Name List Length: 16 (00 10)
+    Server Name Type: HOST_NAME (00)
+    Server Name Length: 13 (00 0D)
+    Server Name: www.baidu.com (77 77 77 2E 62 61 69 64 75 2E 63 6F 6D)
+</div>
+
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/tls/tls_server_name_example.png" alt="TLS Extension Server Name"/>
+</div>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+<h2>References</h2>
+
+<ul>
+    <li>
+        RFC 3546 - Transport Layer Security (TLS) Extensions (2003.06):
+        <a href="/doc/rfc/rfc3546.html" target="_blank">Local</a>
+        <a class="external" href="https://tools.ietf.org/html/rfc3546" target="_blank">Remote</a>
+    </li>
+</ul>

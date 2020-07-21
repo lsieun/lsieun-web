@@ -75,13 +75,13 @@
 </p>
 
 <p>
-    在<code style="color:blue">MD5Const.java</code>文件中，添加<code style="color:blue">MD5_PADDING_THRESHOLD</code>变量，具体如下：
+    在<code>MD5Const.java</code>文件中，添加<code>MD5_PADDING_THRESHOLD</code>变量，具体如下：
 </p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span> MD5_PADDING_THRESHOLD = 56;</pre>
 
 <p>
-    在<code style="color:blue">MD5Utils.java</code>文件中，添加<code style="color:blue">md5_padding</code>方法，具体如下：
+    在<code>MD5Utils.java</code>文件中，添加<code>md5_padding</code>方法，具体如下：
 </p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">byte</span>[] md5_padding(<span style="font-weight:bold;color:#7B0052;">long</span> input_length) <span style="font-weight:bold;color:#D3171B">{</span>

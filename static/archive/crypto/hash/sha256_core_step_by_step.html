@@ -44,7 +44,7 @@
 </p>
 
 <p>
-    在<code style="color:blue">SHA256Const.java</code>文件中，定义如下变量:
+    在<code>SHA256Const.java</code>文件中，定义如下变量:
 </p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="color:#3F7F5F">// File: SHA256Const.java</span>
@@ -61,7 +61,7 @@
 </p>
 
 <p>
-    在<code style="color:blue">SHA256Const.java</code>文件中，定义<code style="color:blue">SHA256_INITIAL_HASH</code>变量，表示最初Hash值：
+    在<code>SHA256Const.java</code>文件中，定义<code>SHA256_INITIAL_HASH</code>变量，表示最初Hash值：
 </p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="color:#3F7F5F">// File: SHA256Const.java</span>
@@ -223,7 +223,7 @@
 </pre>
 
 <p>
-    在SHA256算法的block operation当中，使用了SHA1算法中的<code style="color:blue">ch</code>和<code style="color:blue">maj</code>方法，但并没有使用<code style="color:blue">parity</code>方法，而是增加了<code style="color:blue">sigma_rot</code>和<code style="color:blue">sigma_shr</code>方法。具体的方法定义如下：
+    在SHA256算法的block operation当中，使用了SHA1算法中的<code>ch</code>和<code>maj</code>方法，但并没有使用<code>parity</code>方法，而是增加了<code>sigma_rot</code>和<code>sigma_shr</code>方法。具体的方法定义如下：
 </p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> ch(<span style="font-weight:bold;color:#7B0052;">int</span> x, <span style="font-weight:bold;color:#7B0052;">int</span> y, <span style="font-weight:bold;color:#7B0052;">int</span> z) <span style="font-weight:bold;color:#D3171B">{</span>
@@ -252,7 +252,7 @@
 </pre>
 
 <p>
-    另外，在<code style="color:blue">SHA256Const.java</code>文件中的<code style="color:blue">k</code>变量，定义如下：
+    另外，在<code>SHA256Const.java</code>文件中的<code>k</code>变量，定义如下：
 </p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">final</span> <span style="font-weight:bold;color:#7B0052;">int</span>[] k = <span style="font-weight:bold;color:#D3171B">{</span>

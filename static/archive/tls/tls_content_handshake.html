@@ -1,0 +1,32 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">TLS Content Handshake</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/tls/tls_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Client Hello</h2>
+
+<div title="ClientHello" class="plaintext">
+struct {
+    ProtocolVersion client_version;
+    Random random;
+    SessionID session_id;
+    CipherSuite cipher_suites<2..2^16-1>;
+    CompressionMethod compression_methods<1..2^8-1>;
+} ClientHello;
+
+struct {
+    uint8 major, minor;
+} ProtocolVersion;
+
+struct {
+   uint32 gmt_unix_time;
+   opaque random_bytes[28];
+} Random;
+</div>
+
+<h2>Server Hello</h2>
+

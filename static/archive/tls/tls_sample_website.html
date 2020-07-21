@@ -1,0 +1,41 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">TLS Sample Website</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/tls/tls_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    我相信，在这个世界上，总是有些“人”或“事物”跟不上时代的潮流，这可能是好事，也可能是坏事。
+    在SSL/TLS这个领域，主流的网站会使用TLSv1.2或TLSv1.3；但是，我相信，总是会存在一些网站还在支持TLSv1.0或SSLv3.0。
+</p>
+
+<h2>TLS_RSA_WITH_AES_128_CBC_SHA</h2>
+
+<div title="site: www.baidu.com" class="plaintext">
+ip: 104.193.88.123
+website: www.baidu.com
+version: TLSv1.0
+cipher : TLS_RSA_WITH_RC4_128_SHA (0x5)
+cipher : TLS_RSA_WITH_AES_128_CBC_SHA (0x2f)
+cipher : TLS_RSA_WITH_AES_256_CBC_SHA (0x35)
+cipher : TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (0xc013)
+cipher : TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (0xc014)
+</div>
+
+<h2>www.freedback.com</h2>
+
+<div title="site: www.freedback.com" class="plaintext">
+ip: 209.85.41.134
+website: www.freedback.com
+version: TLSv1.0
+cipher : TLS_RSA_WITH_RC4_128_MD5 (0x4)
+cipher : TLS_RSA_WITH_RC4_128_SHA (0x5)
+cipher : TLS_RSA_WITH_AES_128_CBC_SHA (0x2f)
+cipher : TLS_RSA_WITH_AES_256_CBC_SHA (0x35)
+cipher : TLS_DHE_RSA_WITH_AES_128_CBC_SHA (0x33)   DH 1024 bits
+cipher : TLS_DHE_RSA_WITH_AES_256_CBC_SHA (0x39)   DH 1024 bits
+</div>
+

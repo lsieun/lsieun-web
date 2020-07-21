@@ -18,11 +18,11 @@
 </div>
 
 <p>
-    <code style="color:blue">g</code> and <code style="color:blue">p</code> are agreed on by both sides, either offline or as part of the key exchange.
+    <code>g</code> and <code>p</code> are agreed on by both sides, either offline or as part of the key exchange.
 </p>
 
 <p>
-    The <strong>server</strong> chooses a value <code style="color:blue">a</code> at random and the <strong>client</strong> chooses a value <code style="color:blue">b</code> at random.
+    The <strong>server</strong> chooses a value <code>a</code> at random and the <strong>client</strong> chooses a value <code>b</code> at random.
 </p>
 
 <p>
@@ -46,11 +46,11 @@
 </div>
 
 <p>
-    The <strong>server</strong> transmits <code style="color:blue">Ys</code> to the <strong>client</strong> and the <strong>client</strong> transmits <code style="color:blue">Yc</code> to the <strong>server</strong>.
+    The <strong>server</strong> transmits <code>Ys</code> to the <strong>client</strong> and the <strong>client</strong> transmits <code>Yc</code> to the <strong>server</strong>.
 </p>
 
 <p>
-    At this point, they each have enough to compute the final value <code style="color:blue">Z = g<sup>ab</sup> % p</code>:
+    At this point, they each have enough to compute the final value <code>Z = g<sup>ab</sup> % p</code>:
 </p>
 
 <ul>
@@ -59,13 +59,13 @@
 </ul>
 
 <p>
-    And <code style="color:blue">Z</code> is the key that both sides use as the symmetric key. The server knows
-    the value <code style="color:blue">a</code> (because it chose it), and the client knows the value <code style="color:blue">b</code> (because,
+    And <code>Z</code> is the key that both sides use as the symmetric key. The server knows
+    the value <code>a</code> (because it chose it), and the client knows the value <code>b</code> (because,
     again, it chose it). Neither knows the other’s value, but they don’t need to. Nor
-    can an eavesdropper glean the value of <code style="color:blue">Z</code> without either <code style="color:blue">a</code> or <code style="color:blue">b</code>, neither of which
+    can an eavesdropper glean the value of <code>Z</code> without either <code>a</code> or <code>b</code>, neither of which
     has been shared. You can think of each side as computing one-half of an exponentiation
     and sharing that half with the other side, which then completes the
-    exponentiation. Because the exponentiation operation is done mod <code style="color:blue">p</code>, it can’t
+    exponentiation. Because the exponentiation operation is done mod <code>p</code>, it can’t
     be feasibly inverted by an attacker, unless the attacker has solved the discrete
     logarithm problem.
 </p>

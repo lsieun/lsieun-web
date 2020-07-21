@@ -1,0 +1,228 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">TLS Extension(10~11): Elliptic Curves and Point Formats</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/tls/tls_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Introduction</h2>
+
+<p class="indented">
+    <a href="/doc/rfc/rfc8422.html#section-5.1" target="_blank">RFC8422</a> specifies two TLS extensions that can be included with
+    the <code>ClientHello</code> message: the <strong>Supported Elliptic Curves Extension</strong> and
+    the <strong>Supported Point Formats Extension</strong>.
+</p>
+
+<p class="indented">
+    When these extensions are sent:
+
+    The extensions SHOULD be sent along with any <code>ClientHello</code> message that
+    proposes ECC cipher suites.
+    <sub class="my_note" style="color:blue">笔记：如果ClientHello中有关于ECC的cipher suite，该ClientHello就应该提供这两个extension。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Meaning of these extensions:
+
+    These extensions allow a client to enumerate the elliptic curves it
+    supports and/or the point formats it can parse.
+    <sub class="my_note" style="color:blue">笔记：这两个extension就表明了，Client端支持哪些elliptic curves，用什么方式表示elliptic curve上的point坐标。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="Extension" class="plaintext">
+struct {
+    ExtensionType extension_type;
+    opaque extension_data<0..2^16-1>;
+} Extension;
+</div>
+
+<div title="ExtensionType(RFC8422)" class="plaintext">
+enum {
+    elliptic_curves(10),
+    ec_point_formats(11)
+} ExtensionType;
+</div>
+
+<ul>
+    <li>
+        <em>elliptic_curves</em> (Supported Elliptic Curves Extension): Indicates
+        the set of elliptic curves supported by the client.  For this
+        extension, the opaque <code>extension_data</code> field contains <code>NamedCurveList</code>.
+    </li>
+    <li>
+        <em>ec_point_formats</em> (Supported Point Formats Extension): Indicates
+        the set of point formats that the client can parse.  For this
+        extension, the opaque <code>extension_data</code> field contains
+        <code>ECPointFormatList</code>.
+    </li>
+</ul>
+
+<h3>Actions of the sender</h3>
+
+<p class="indented">
+    A client that proposes ECC cipher suites in its <code>ClientHello</code> message
+    appends these extensions (along with any others), enumerating the
+    curves it supports and the point formats it can parse.  Clients
+    SHOULD send both the Supported Elliptic Curves Extension and the
+    Supported Point Formats Extension.  If the Supported Point Formats
+    Extension is indeed sent, it MUST contain the value <code>0</code> (uncompressed)
+    as one of the items in the list of point formats.
+    <sub class="my_note" style="color:blue">笔记：这里讲client端对这两个extension的要求</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h3>Actions of the receiver</h3>
+
+<p class="indented">
+    A server that receives a <code>ClientHello</code> containing one or both of these
+    extensions MUST use the client's enumerated capabilities to guide its
+    selection of an appropriate cipher suite.  One of the proposed ECC
+    cipher suites must be negotiated only if the server can successfully
+    complete the handshake while using the curves and point formats
+    supported by the client.
+    <sub class="my_note" style="color:blue">笔记：这里讲server端支持ECC的情况</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    If a server does not understand the Supported Elliptic Curves
+    Extension, does not understand the Supported Point Formats Extension,
+    or is unable to complete the ECC handshake while restricting itself
+    to the enumerated curves and point formats, it MUST NOT negotiate the
+    use of an ECC cipher suite.  Depending on what other cipher suites
+    are proposed by the client and supported by the server, this may
+    result in a fatal handshake failure alert due to the lack of common
+    cipher suites.
+    <sub class="my_note" style="color:blue">笔记：这里讲server端不支持ECC的情况</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Supported Elliptic Curves Extension</h2>
+
+<p class="indented">
+    RFC 4492 defined 25 different curves in the NamedCurve registry (now
+    renamed the "TLS Supported Groups" registry, although the enumeration
+    below is still named NamedCurve) for use in TLS.  Only three have
+    seen much use.  RFC 8422 is deprecating the rest (with
+    numbers 1-22).  It also deprecates the explicit
+    curves with identifiers <code>0xFF01</code> and <code>0xFF02</code>.  It also adds the new
+    curves defined in RFC 7748.  The end result is as follows:
+    <sub class="my_note" style="color:blue">笔记：以前的RFC 4492中定义了许多ellipse curves，但经常用到的却只有3个</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="NamedCurve(RFC8422)" class="plaintext">
+enum {
+    deprecated(1..22),
+    secp256r1 (23), secp384r1 (24), secp521r1 (25),
+    x25519(29), x448(30),
+    reserved (0xFE00..0xFEFF),
+    deprecated(0xFF01..0xFF02),
+    (0xFFFF)
+} NamedCurve;
+</div>
+
+<p class="indented">
+    The <code>NamedCurve</code> name space (now titled "TLS Supported Groups") is
+    maintained by IANA.
+</p>
+
+<div title="NamedCurveList(RFC8422)" class="plaintext">
+struct {
+    NamedCurve named_curve_list<2..2^16-1>
+} NamedCurveList;
+</div>
+
+<p class="indented">
+    Items in <code>named_curve_list</code> are ordered according to the client's
+    preferences (favorite choice first).
+</p>
+
+<p class="indented">
+    As an example, a client that only supports secp256r1 (aka NIST P-256;
+    value 23 = <code>0x0017</code>) and secp384r1 (aka NIST P-384; value 24 = <code>0x0018</code>)
+    and prefers to use secp256r1 would include a TLS extension consisting
+    of the following octets.  Note that the first two octets indicate the
+    extension type (Supported Elliptic Curves Extension):
+</p>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">secp256r1 and secp384r1</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">00 0A<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">extension type(10)</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 06<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">extension length</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 04<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">supported group list length</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 17<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">secp256r1</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 18<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">secp384r1</span></span>
+    </div>
+</div>
+
+<h2>Supported Point Formats Extension</h2>
+
+<div title="ECPointFormat" class="plaintext">
+enum {
+    uncompressed (0),
+    deprecated (1..2),
+    reserved (248..255)
+} ECPointFormat;
+</div>
+
+<div title="ECPointFormatList" class="plaintext">
+struct {
+    ECPointFormat ec_point_format_list<1..2^8-1>
+} ECPointFormatList;
+</div>
+
+<p class="indented">
+    Three point formats were included in the definition of <code>ECPointFormat</code>
+    above.  RFC 8422 deprecates all but the uncompressed point format.
+    Implementations of this document MUST support the
+    uncompressed format for all of their supported curves and MUST NOT
+    support other formats for curves defined in this specification.  For
+    backwards compatibility purposes, the point format list extension MAY
+    still be included and contain exactly one value: the uncompressed
+    point format (0).  RFC 4492 specified that if this extension is
+    missing, it means that only the uncompressed point format is
+    supported, so interoperability with implementations that support the
+    uncompressed format should work with or without the extension.
+</p>
+
+<p class="indented">
+    If the client sends the extension and the extension does not contain
+    the uncompressed point format, and the client has used the Supported
+    Groups extension to indicate support for any of the curves defined in
+    this specification, then the server MUST abort the handshake and
+    return an <code>illegal_parameter</code> alert.
+</p>
+
+<p class="indented">
+    The <code>ECPointFormat</code> name space (now titled "TLS EC Point Formats") is
+    maintained by IANA.
+</p>
+
+<p class="indented">
+    A client compliant with RFC 8422 specification that supports no other
+    curves MUST send the following octets; note that the first two octets
+    indicate the extension type (Supported Point Formats Extension):
+</p>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">EC Point Format Example</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">00 0B<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">extension type(11)</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 02<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">extension length</span></span>
+        <span class="w3-tooltip w3-hover-blue">01<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">EC point formats length</span></span>
+        <span class="w3-tooltip w3-hover-blue">00<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">uncompressed point format</span></span>
+    </div>
+</div>
+
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+

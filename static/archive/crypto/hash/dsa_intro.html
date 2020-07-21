@@ -33,7 +33,7 @@
 
 <p class="indented">
     So, to generate the two-element DSA signature, whose elements are named
-    <code style="color:blue">r</code><sub class="my_note" style="color:green">第1个输出参数</sub> and <code style="color:blue">s</code><sub class="my_note" style="color:green">第2个输出参数</sub> by the standard (apparently nobody ever told the FIPS people the
+    <code>r</code><sub class="my_note" style="color:green">第1个输出参数</sub> and <code>s</code><sub class="my_note" style="color:green">第2个输出参数</sub> by the standard (apparently nobody ever told the FIPS people the
     general rule on using meaningful variable names), you perform the following computations:
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
@@ -55,13 +55,13 @@
 </div>
 
 <p class="indented">
-    What about <code style="color:blue">c</code>? <code style="color:blue">c</code> is just a random number — securely generated, of
-    course — whose length in bits is the same as <code style="color:blue">q</code>.
-    <code style="color:blue">(k<sup>-1</sup> % q)</code> means the inverse mod <code style="color:blue">q</code> of <code style="color:blue">k</code>.
+    What about <code>c</code>? <code>c</code> is just a random number — securely generated, of
+    course — whose length in bits is the same as <code>q</code>.
+    <code>(k<sup>-1</sup> % q)</code> means the inverse mod <code>q</code> of <code>k</code>.
 </p>
 
 <p class="indented">
-    After performing these operations, you’ve generated <code style="color:blue">r</code> and <code style="color:blue">s</code>, which make up the signature.
+    After performing these operations, you’ve generated <code>r</code> and <code>s</code>, which make up the signature.
 </p>
 
 <h2>Receiver-Side DSA Signature Verification</h2>
@@ -82,14 +82,14 @@
 </div>
 
 <p class="indented">
-    If everything went correctly, <code style="color:blue">v</code> is equal to <code style="color:blue">r</code>. Otherwise, something went wrong
+    If everything went correctly, <code>v</code> is equal to <code>r</code>. Otherwise, something went wrong
     or the signature is faked.
 </p>
 
 
 <p class="indented">
-    DSA keys consist of the parameters <code style="color:blue">p</code>, <code style="color:blue">q</code>, and <code style="color:blue">g</code>, a private key <code style="color:blue">x</code>, and a
-    public key <code style="color:blue">y</code>. <code style="color:blue">q</code> must be a (random) prime number; <code style="color:blue">p – 1</code> must be a multiple of
-    <code style="color:blue">q</code>; and <code style="color:blue">g</code> is a small number (usually 2). <code style="color:blue">x</code>, the private key, is random, and <code style="color:blue">y = g<sup>x</sup> % p</code>. In general, rather than compute their own <code style="color:blue">p</code>, <code style="color:blue">q</code>, and <code style="color:blue">g</code>, most implementations use standardized DSA parameters. As long as <code style="color:blue">x</code> is random, the security of
+    DSA keys consist of the parameters <code>p</code>, <code>q</code>, and <code>g</code>, a private key <code>x</code>, and a
+    public key <code>y</code>. <code>q</code> must be a (random) prime number; <code>p – 1</code> must be a multiple of
+    <code>q</code>; and <code>g</code> is a small number (usually 2). <code>x</code>, the private key, is random, and <code>y = g<sup>x</sup> % p</code>. In general, rather than compute their own <code>p</code>, <code>q</code>, and <code>g</code>, most implementations use standardized DSA parameters. As long as <code>x</code> is random, the security of
     the algorithm isn’t weakened by the sharing of parameters.
 </p>

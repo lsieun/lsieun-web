@@ -33,6 +33,24 @@ function toggle_all_sub_note() {
         这里可以写整段的文字，可以是备注之类的内容。
     </p>
 </div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">Example</p>
+    <div class="w3-code notranslate" style="display: block;">
+        hello world
+    </div>
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">secp256r1 and secp384r1</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">00 0A<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">extension type(10)</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 06<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">extension length</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 04<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">Supported Group List Length</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 17<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">secp256r1</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 18<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">secp384r1</span></span>
+    </div>
+</div>
 ```
 
 ```html

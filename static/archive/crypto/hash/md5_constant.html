@@ -10,7 +10,7 @@
 <h2>第1个问题：在哪儿出现？</h2>
 
 <p>
-    在计算MD5的过程中，会调用<code style="color:blue">round</code>方法，如下：
+    在计算MD5的过程中，会调用<code>round</code>方法，如下：
 </p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> round(TriFunction&lt;Integer, Integer, Integer, Integer&gt; func,
@@ -24,7 +24,7 @@
     <span style="font-weight:bold;color:#D3171B">}</span>
 </pre>
 
-在对<code style="color:blue">round</code>方法进行调用时，我们注意最后一个参数是一个常量值（0xd76aa478），如下：
+在对<code>round</code>方法进行调用时，我们注意最后一个参数是一个常量值（0xd76aa478），如下：
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;"><span style="color:#3F7F5F">/* Round 1 */</span>
 a = round(MD5Utils::F, a, b, c, d, x[0], 7, 0xd76aa478); <span style="color:#3F7F5F">/* 1 */</span></pre>
@@ -130,7 +130,7 @@ System.out.println(val); <span style="color:#3F7F5F">// 4294967296</span>
 <h2>第3个问题：这些常量的作用是什么？</h2>
 
 <p>
-    在<code style="color:blue">round</code>方法中，这些常量是用<code style="color:blue">ac</code>来表示的。
+    在<code>round</code>方法中，这些常量是用<code>ac</code>来表示的。
 </p>
 
 <pre style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">    <span style="font-weight:bold;color:#7B0052;">public</span> <span style="font-weight:bold;color:#7B0052;">static</span> <span style="font-weight:bold;color:#7B0052;">int</span> round(TriFunction&lt;Integer, Integer, Integer, Integer&gt; func,
