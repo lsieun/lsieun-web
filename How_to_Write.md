@@ -36,7 +36,7 @@ function toggle_all_sub_note() {
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">Example</p>
-    <div class="w3-code notranslate" style="display: block;">
+    <div class="w3-code notranslate" style="display: block;text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">
         hello world
     </div>
 </div>

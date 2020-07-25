@@ -12,7 +12,7 @@
     在SSL/TLS这个领域，主流的网站会使用TLSv1.2或TLSv1.3；但是，我相信，总是会存在一些网站还在支持TLSv1.0或SSLv3.0。
 </p>
 
-<h2>TLS_RSA_WITH_AES_128_CBC_SHA</h2>
+<h2>www.baidu.com</h2>
 
 <div title="site: www.baidu.com" class="plaintext">
 ip: 104.193.88.123
@@ -25,17 +25,33 @@ cipher : TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (0xc013)
 cipher : TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (0xc014)
 </div>
 
-<h2>www.freedback.com</h2>
+<h2>www.slowlens.net</h2>
 
-<div title="site: www.freedback.com" class="plaintext">
-ip: 209.85.41.134
-website: www.freedback.com
+<div title="site: www.slowlens.net" class="plaintext">
+ip: 121.125.74.80
+website: www.slowlens.net
 version: TLSv1.0
 cipher : TLS_RSA_WITH_RC4_128_MD5 (0x4)
 cipher : TLS_RSA_WITH_RC4_128_SHA (0x5)
+cipher : TLS_RSA_WITH_DES_CBC_SHA (0x9)
+cipher : TLS_DHE_RSA_WITH_DES_CBC_SHA (0x15)
 cipher : TLS_RSA_WITH_AES_128_CBC_SHA (0x2f)
 cipher : TLS_RSA_WITH_AES_256_CBC_SHA (0x35)
-cipher : TLS_DHE_RSA_WITH_AES_128_CBC_SHA (0x33)   DH 1024 bits
+cipher : TLS_DHE_RSA_WITH_AES_128_CBC_SHA (0x33)
 cipher : TLS_DHE_RSA_WITH_AES_256_CBC_SHA (0x39)   DH 1024 bits
 </div>
+
+<h2>www.mt5.com</h2>
+
+<div title="site: www.mt5.com" class="plaintext">
+ip: 95.216.4.93
+website: www.mt5.com
+version: TLSv1.0
+cipher : TLS_DHE_RSA_WITH_AES_128_CBC_SHA (0x33)   DH 4096 bits
+cipher : TLS_DHE_RSA_WITH_AES_256_CBC_SHA (0x39)   DH 4096 bits
+cipher : TLS_RSA_WITH_AES_128_CBC_SHA (0x2f)
+cipher : TLS_RSA_WITH_AES_256_CBC_SHA (0x35)
+</div>
+
+
 

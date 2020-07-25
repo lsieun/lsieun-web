@@ -151,14 +151,28 @@ struct {
 </p>
 
 <div class="w3-panel w3-card w3-light-grey">
-    <p onclick="$(this).next().toggle()">secp256r1 and secp384r1</p>
-    <div class="w3-code notranslate" style="display: block;">
+    <p onclick="$(this).next().toggle()">Example 1: secp256r1 and secp384r1</p>
+    <div class="w3-code notranslate" style="display: block;text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace;">
         <span class="w3-tooltip w3-hover-blue">00 0A<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">extension type(10)</span></span>
         <span class="w3-tooltip w3-hover-blue">00 06<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">extension length</span></span>
         <span class="w3-tooltip w3-hover-blue">00 04<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">supported group list length</span></span>
         <span class="w3-tooltip w3-hover-blue">00 17<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">secp256r1</span></span>
         <span class="w3-tooltip w3-hover-blue">00 18<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">secp384r1</span></span>
     </div>
+</div>
+
+<div title="Example 2(Hex Format)" class="plaintext">
+00 0A 00 08 00 06 00 17 00 18 00 19
+</div>
+
+<div title="Example 2(Parsed)" class="plaintext">
+SUPPORTED_GROUPS
+    Type: 10 (00 0A)
+    Length: 8 (00 08)
+    Supported Groups List Length: 6 (00 06)
+    Supported Group: SECP256R1 (00 17)
+    Supported Group: SECP384R1 (00 18)
+    Supported Group: SECP521R1 (00 19)
 </div>
 
 <h2>Supported Point Formats Extension</h2>
@@ -212,7 +226,7 @@ struct {
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">EC Point Format Example</p>
-    <div class="w3-code notranslate" style="display: block;">
+    <div class="w3-code notranslate" style="display: block;text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace;">
         <span class="w3-tooltip w3-hover-blue">00 0B<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">extension type(11)</span></span>
         <span class="w3-tooltip w3-hover-blue">00 02<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">extension length</span></span>
         <span class="w3-tooltip w3-hover-blue">01<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">EC point formats length</span></span>

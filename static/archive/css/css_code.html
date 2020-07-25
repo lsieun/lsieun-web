@@ -1,0 +1,31 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">CSS Code</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/css/css_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div title="code css" class="plaintext">
+code {
+    font-family: monospace;
+    padding: 2px 4px;
+    margin: 0;
+    font-size: 80%;
+    color: #d14;
+    background-color: #f7f7f9;
+    border: 1px solid #e1e1e8;
+    border-radius: 3px;
+}
+</div>
+
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">Example</p>
+    <div class="w3-code notranslate" style="display: block; text-align: left; line-height: 18px; font-size: 13px; font-family:'Courier New', Courier, monospace; overflow: auto;">
+        RFC 7627 defines a new TLS extension, "extended_master_secret"
+        (with extension type <code>0x0017</code>), which is used to signal both client and
+        server to use the extended master secret computation.
+    </div>
+</div>
