@@ -67,14 +67,27 @@
     <li></li>
 </ul>
 
+<h2>sequence number</h2>
+
 <p class="indented">
     The <strong>sequence numbers</strong> start at <code>0</code> whenever a <code>change_cipher_spec</code> is
     received and is incremented each time a new TLSMessage is sent or received.
     Each side maintains a separate counter, and this counter is prepended to each
     message before MAC’ing it.
 </p>
-<p class="indented"></p>
-<p class="indented"></p>
+
+<p class="indented">
+    The sequence number MUST be set to zero whenever a connection state is made the
+    active state.  Sequence numbers are of type <code>uint64</code> and may not
+    exceed <code>2^64 - 1</code>.
+</p>
+
+<p class="indented">
+    Sequence numbers do not wrap.
+    If a TLS implementation would need to wrap a sequence number, it must renegotiate instead.
+    A sequence number is incremented after each record: specifically, the first record transmitted under a
+    particular connection state MUST use sequence number <code>0</code>.
+</p>
 <p class="indented"></p>
 <p class="indented"></p>
 <p class="indented"></p>

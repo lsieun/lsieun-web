@@ -27,29 +27,57 @@
 </ul>
 
 <p class="indented">
-    The TLS 1.0 protocol stood untouched for seven years after it was standardized
-    in 1999. In 2006, Tim Dierks and Eric Rescorla drafted RFC 4346, specifying TLS
-    1.1 and making TLS 1.0 obsolete.
+    The TLS 1.0 protocol stood untouched for seven years after it was standardized in 1999.
+    TLS 1.0 is a minor revision to SSL 3.0, which was a major overhaul of SSLv2.
+    <sub class="my_note" style="color:blue">笔记：在1999年，TLSv1.0出现，它是由SSLv3变化而来，两者之间的差异并不大。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
 <p class="indented">
-    By and large, TLS 1.1 is not a significant change from TLS 1.0. It added some
-    new cipher suites and some clarifications and implementation notes, but the
-    most important change is that initialization vectors are no longer computed
-    from the master secret; instead, they’re prepended to each packet.
+    In 2006, Tim Dierks and Eric Rescorla drafted RFC 4346, specifying TLS 1.1 and making TLS 1.0 obsolete.
+    By and large, TLS 1.1 is not a significant change from TLS 1.0.
+    It added some new cipher suites and some clarifications and implementation notes,
+    but the most important change is that initialization vectors are no longer computed from the master secret;
+    instead, they’re prepended to each packet.
     TLS 1.1 is not particularly common on the public Internet after it was drafted.
+    <sub class="my_note" style="color:blue">笔记：在2006年，TLSv1.1出现，它相对于TSLv1.0来说，变化并不大。总的来说，TLSv1.1在网络上使用的并不多。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
 <p class="indented">
-    Two years after TLS 1.1 was drafted, it was made obsolete by RFC 5246, which
-    specifies TLS 1.2. TLS 1.2 was a major modification of the TLS protocol.
+    TLS 1.2 was formally specified in 2008 which was two years after TLS 1.1 was drafted.
+    It represents a significant change to its predecessor TLS 1.1 — mostly in terms of
+    increased security options and additional cipher suite choices.
+    <sub class="my_note" style="color:blue">笔记：在2008年，TLSv1.2出现，它相对于TSLv1.1来说，是一个重大的版本更新。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
 <p class="indented">
-    TLS 1.2 was formally specified in 2008 after several years of debate. It represents
-    a significant change to its predecessor TLS 1.1 — mostly in terms of increased
-    security options and additional cipher suite choices.
+    TLS 1.3 was published in August 2018. It is the latest version of the TLS protocol.
+    In a nutshell, TLS 1.3 is faster and more secure than TLS 1.2.
+    <sub class="my_note" style="color:blue">笔记：在2018年，TLSv1.3出现，它比TSLv1.2更快、更安全。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
+
+<p class="indented">
+    One of the changes that makes TLS 1.3 faster is an update to the way a TLS handshake works:
+    TLS handshakes in TLS 1.3 only require one round trip (or back-and-forth communication) instead of two, shortening the process by a few milliseconds.
+    And in cases when the client has connected to a website before, the TLS handshake will have zero round trips.
+    This makes HTTPS connections faster, cutting down latency and improving the overall user experience.
+    <sub class="my_note" style="color:blue">笔记：这里讲TLSv1.3比TLSv1.2的速度要快</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Many of the major vulnerabilities in TLS 1.2 had to do with older cryptographic algorithms that were still supported.
+    TLS 1.3 drops support for these vulnerable cryptographic algorithms, and as a result it is less vulnerable to cyber attacks.
+    <sub class="my_note" style="color:blue">笔记：这里讲TLSv1.3比TLSv1.2更安全。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/tls/tls_timeline.png" alt="tls timeline"/>
+</div>
 
 <h2>Importance of TLS</h2>
 
@@ -83,19 +111,195 @@
 
 <h2>TLS Record</h2>
 
+<div title="TLSPlaintext" class="plaintext">
+struct {
+    uint8 major, minor;
+} ProtocolVersion;
+
+enum {
+    change_cipher_spec(20), alert(21), handshake(22),
+    application_data(23), (255)
+} ContentType;
+
+struct {
+    ContentType type;
+    ProtocolVersion version;
+    uint16 length;
+    opaque fragment[TLSPlaintext.length];
+} TLSPlaintext;
+</div>
+
+<ul>
+    <li>
+        <code>type</code>: The higher-level protocol used to process the enclosed fragment.
+    </li>
+    <li>
+        <code>version</code>: The version of the protocol being employed.
+    </li>
+    <li>
+        <code>length</code>: The length (in bytes) of the following <code>TLSPlaintext.fragment</code>.  The
+        length should not exceed <code>2^14</code>.
+    </li>
+    <li>
+        <code>fragment</code>: The application data.  This data is transparent and is treated as
+        an independent block to be dealt with by the higher-level protocol
+        specified by the <code>type</code> field.
+    </li>
+</ul>
+
 <h3>Content Change Cipher Spec(20)</h3>
+
+<p class="indented">
+    The <strong>change cipher spec protocol</strong> exists to signal transitions in ciphering strategies.
+    <sub class="my_note" style="color:green">笔记：change cipher spec protocol意味着“转变”，就是将当前使用的cipher strategy转变成一个新的cipher strategy。</sub>
+    The protocol consists of a single message,<sub class="my_note" style="color:green">笔记：这个protocol包含了一个message</sub>
+    which is encrypted and compressed under the current (not the pending) connection state.
+    The message consists of a single byte of value <code>1</code>.<sub class="my_note" style="color:green">笔记：这个message由1-byte的数据组成。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="ChangeCipherSpec" class="plaintext">
+struct {
+    enum { change_cipher_spec(1), (255) } type;
+} ChangeCipherSpec;
+</div>
+
+<div title="ChangeCipherSpec Example" class="plaintext">
+14 03 02 00 01 01
+Content Type: CONTENT_CHANGE_CIPHER_SPEC (14)
+Version: TLSv1_1 (03 02)
+Length: 1 (00 01)
+Change Cipher Spec Message (01)
+</div>
+
+<p class="indented">
+    The change cipher spec message is sent by both the client and the
+    server to notify the receiving party that subsequent records will be
+    protected under the newly negotiated CipherSpec and keys.
+    <sub class="my_note" style="color:blue">笔记：client和server都要发送change cipher spec message。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Reception of this message causes the receiver to instruct the Record Layer to
+    immediately copy the read pending state into the read current state.
+    <sub class="my_note" style="color:blue">笔记：这是从receiver的角度来说</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Immediately after sending this message, the sender MUST instruct the
+    record layer to make the write pending state the write active state.
+    <sub class="my_note" style="color:blue">笔记：这是从sender的角度来说</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The change cipher spec message is sent during the
+    handshake after the security parameters have been agreed upon, but
+    before the verifying finished message is sent.
+    <sub class="my_note" style="color:blue">笔记：这是讲change cipher spec message发送的时机</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
 <h3>Content Alert(21)</h3>
+
+<p class="indented">
+    One of the content types supported by the TLS Record layer is
+    the <strong>alert type</strong>.  Alert messages convey <em>the severity of the
+    message</em> and <em>a description of the alert</em>.<sub class="my_note" style="color:green">笔记：alert包含了两方面的信息：level和description。</sub>
+    Alert messages with a level of <code>fatal</code> result in the immediate termination of the connection.<sub class="my_note" style="color:green">笔记：遇到fatal级别的alert，意味着当前connection的终结</sub>
+    In this case, other connections corresponding to the session may continue,
+    but the session identifier MUST be invalidated,
+    preventing the failed session from being used to establish new connections.
+    <sub class="my_note" style="color:green">笔记：如果遇到fatal级别的alert，当前connection要立即终结；
+        与当前connection共享同一个session_id的其它session来说，可以继续使用；
+        但是，这个session_id不能再用于创建新的connection。</sub>
+    Like other messages, alert messages are encrypted and compressed, as specified by the current connection state.<sub class="my_note" style="color:green">笔记：alert信息，也可以进行加密。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="Alert" class="plaintext">
+enum { warning(1), fatal(2), (255) } AlertLevel;
+
+enum {
+    close_notify(0),
+    unexpected_message(10),
+    bad_record_mac(20),
+    decryption_failed(21),
+    record_overflow(22),
+    decompression_failure(30),
+    handshake_failure(40),
+    no_certificate_RESERVED (41),
+    bad_certificate(42),
+    unsupported_certificate(43),
+    certificate_revoked(44),
+    certificate_expired(45),
+    certificate_unknown(46),
+    illegal_parameter(47),
+    unknown_ca(48),
+    access_denied(49),
+    decode_error(50),
+    decrypt_error(51),
+    export_restriction_RESERVED(60),
+    protocol_version(70),
+    insufficient_security(71),
+    internal_error(80),
+    user_canceled(90),
+    no_renegotiation(100),
+    (255)
+} AlertDescription;
+
+struct {
+    AlertLevel level;
+    AlertDescription description;
+} Alert;
+</div>
+
 <h3>Content Handshake(22)</h3>
 
-<h4>Hello Request(0)</h4>
-<h4>Client Hello(1)</h4>
-<h4>Server Hello(2)</h4>
-<h4>Certificate(11)</h4>
-<h4>Server Key Exchange(12)</h4>
-<h4>Certificate Request(13)</h4>
-<h4>Server Hello Done(14)</h4>
-<h4>Certificate Verify(15)</h4>
-<h4>Client Key Exchange(16)</h4>
-<h4>Finished(20)</h4>
+<p class="indented">
+    The TLS Handshake Protocol is one of the defined higher-level clients of the TLS Record Protocol.<sub class="my_note" style="color:green">笔记：TLS Handshake Protocol是位于TLS Record Protocol之上的</sub>
+    This protocol is used to negotiate the secure attributes of a session. <sub class="my_note" style="color:green">笔记：TLS Handshake Protocol是为了协商client和server之间的参数，例如，使用哪一个对称加密的算法、使用什么密码。</sub>
+    Handshake messages are supplied to the TLS Record Layer, where they are encapsulated within one or more
+    TLSPlaintext structures, which are processed and transmitted as specified by the current active session state.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="Handshake" class="plaintext">
+enum {
+    hello_request(0), client_hello(1), server_hello(2),
+    certificate(11), server_key_exchange (12),
+    certificate_request(13), server_hello_done(14),
+    certificate_verify(15), client_key_exchange(16),
+    finished(20), (255)
+} HandshakeType;
+
+struct {
+    HandshakeType msg_type;    /* handshake type */
+    uint24 length;             /* bytes in message */
+    select (HandshakeType) {
+        case hello_request:       HelloRequest;
+        case client_hello:        ClientHello;
+        case server_hello:        ServerHello;
+        case certificate:         Certificate;
+        case server_key_exchange: ServerKeyExchange;
+        case certificate_request: CertificateRequest;
+        case server_hello_done:   ServerHelloDone;
+        case certificate_verify:  CertificateVerify;
+        case client_key_exchange: ClientKeyExchange;
+        case finished:            Finished;
+    } body;
+} Handshake;
+</div>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
 
 <h3>Content Application Data(23)</h3>
