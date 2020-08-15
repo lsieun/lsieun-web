@@ -1,0 +1,266 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Fields</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Fields</h2>
+
+<div title="ClassFile" class="plaintext">
+ClassFile {
+    u4             magic;
+    u2             minor_version;
+    u2             major_version;
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];
+    u2             access_flags;
+    u2             this_class;
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    ------------------------------------------------------------------------
+    u2             fields_count;
+    field_info     fields[fields_count];
+    ------------------------------------------------------------------------
+    u2             methods_count;
+    method_info    methods[methods_count];
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<ul>
+    <li>
+        <b>fields_count</b>:
+        The value of the <code>fields_count</code> item gives the number of <code>field_info</code> structures in the <code>fields</code> table.
+        The <code>field_info</code> structures represent all fields, both class variables and instance variables, declared by this class or interface type.
+    </li>
+    <li>
+        <b>fields[]</b>:
+        Each value in the <code>fields</code> table must be a <code>field_info</code> structure giving a complete description of a field in this class or interface.
+        The <code>fields</code> table includes only those fields that are declared by this class or interface.
+        It does not include items representing fields that are inherited from superclasses or superinterfaces.
+    </li>
+</ul>
+
+<p class="indented">
+    Each field is described by a <code>field_info</code> structure. No two fields in one class file may have the same <b>name</b> and <b>descriptor</b>.
+    The structure has the following format:
+</p>
+
+<div title="field_info" class="plaintext">
+field_info {
+    u2             access_flags;
+    u2             name_index;
+    u2             descriptor_index;
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<h2>access_flags</h2>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <tr class="w3-green">
+        <th>Flag Value</th>
+        <th>Flag Name</th>
+        <th>Interpretation</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x0001</code></td>
+        <td>ACC_PUBLIC</td>
+        <td class="w3-right-align">Declared <code>public</code>; may be accessed from outside its package.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x0002</code></td>
+        <td>ACC_PRIVATE</td>
+        <td class="w3-right-align">Declared <code>private</code>; usable only within the defining class.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x0004</code></td>
+        <td>ACC_PROTECTED</td>
+        <td class="w3-right-align">Declared <code>protected</code>; may be accessed within subclasses.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x0008</code></td>
+        <td>ACC_STATIC</td>
+        <td class="w3-right-align">Declared <code>static</code>.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x0010</code></td>
+        <td>ACC_FINAL</td>
+        <td class="w3-right-align">Declared <code>final</code>; never directly assigned to after object construction.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x0020</code></td>
+        <td></td>
+        <td class="w3-right-align"></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x0040</code></td>
+        <td>ACC_VOLATILE</td>
+        <td class="w3-right-align">Declared <code>volatile</code>; cannot be cached.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x0080</code></td>
+        <td>ACC_TRANSIENT</td>
+        <td class="w3-right-align">Declared <code>transient</code>; not written or read by a persistent object manager.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x0100</code></td>
+        <td></td>
+        <td class="w3-right-align"></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x0200</code></td>
+        <td></td>
+        <td class="w3-right-align"></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x0400</code></td>
+        <td></td>
+        <td class="w3-right-align"></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x0800</code></td>
+        <td></td>
+        <td class="w3-right-align"></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x1000</code></td>
+        <td>ACC_SYNTHETIC</td>
+        <td class="w3-right-align">Declared <code>synthetic</code>; not present in the source code.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x2000</code></td>
+        <td></td>
+        <td class="w3-right-align"></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x4000</code></td>
+        <td>ACC_ENUM</td>
+        <td class="w3-right-align">Declared as an element of an enum.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x8000</code></td>
+        <td></td>
+        <td class="w3-right-align"></td>
+    </tr>
+</table>
+n
+<h3>ACC_PUBLIC～ACC_TRANSIENT</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int publicField;
+    private int privateField;
+    protected int protectedField;
+
+    static int staticField;
+    final int finalField = 1;
+
+    volatile int volatileField;
+    transient int transientField;
+}
+</div>
+
+<div title="Example" class="plaintext">
+constant_pool_count='001C' (28)
+constant_pool
+    ... ...
+    |005| CONSTANT_Utf8 {Value='publicField', HexCode='01000B7075626C69634669656C64'}
+    |006| CONSTANT_Utf8 {Value='I', HexCode='01000149'}
+    |007| CONSTANT_Utf8 {Value='privateField', HexCode='01000C707269766174654669656C64'}
+    |008| CONSTANT_Utf8 {Value='protectedField', HexCode='01000E70726F7465637465644669656C64'}
+    |009| CONSTANT_Utf8 {Value='staticField', HexCode='01000B7374617469634669656C64'}
+    |010| CONSTANT_Utf8 {Value='finalField', HexCode='01000A66696E616C4669656C64'}
+    |011| CONSTANT_Utf8 {Value='ConstantValue', HexCode='01000D436F6E7374616E7456616C7565'}
+    |012| CONSTANT_Integer {Value='1', HexCode='0300000001'}
+    |013| CONSTANT_Utf8 {Value='volatileField', HexCode='01000D766F6C6174696C654669656C64'}
+    |014| CONSTANT_Utf8 {Value='transientField', HexCode='01000E7472616E7369656E744669656C64'}
+    ... ...
+fields_count='0007' (7)
+fields
+    FieldInfo {Value='publicField:I', AccessFlags='[ACC_PUBLIC]', Attrs='[]', HexCode='0001000500060000'}
+    FieldInfo {Value='privateField:I', AccessFlags='[ACC_PRIVATE]', Attrs='[]', HexCode='0002000700060000'}
+    FieldInfo {Value='protectedField:I', AccessFlags='[ACC_PROTECTED]', Attrs='[]', HexCode='0004000800060000'}
+    FieldInfo {Value='staticField:I', AccessFlags='[ACC_STATIC]', Attrs='[]', HexCode='0008000900060000'}
+    FieldInfo {Value='finalField:I', AccessFlags='[ACC_FINAL]', Attrs='[ConstantValue]', HexCode='0010000A00060001...'}
+    FieldInfo {Value='volatileField:I', AccessFlags='[ACC_VOLATILE]', Attrs='[]', HexCode='0040000D00060000'}
+    FieldInfo {Value='transientField:I', AccessFlags='[ACC_TRANSIENT]', Attrs='[]', HexCode='0080000E00060000'}
+</div>
+
+<h3>ACC_SYNTHETIC and ACC_ENUM</h3>
+
+<p>
+    下面的代码，在ClassFile中会生成隐藏的<code>$VALUES</code>字段，由于是compiler生成的，因此带有<code>ACC_SYNTHETIC</code>；对于MONDAY~SUNDAY则带有<code>ACC_ENUM</code>标识。
+</p>
+
+<div title="Day.java" class="javacode">
+public enum Day {
+    SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
+    THURSDAY, FRIDAY, SATURDAY
+}
+</div>
+
+<div title="Example" class="plaintext">
+fields_count='0008' (8)
+fields
+    FieldInfo {Value='SUNDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]', HexCode='4019001700180000'}
+    FieldInfo {Value='MONDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]', HexCode='4019001900180000'}
+    FieldInfo {Value='TUESDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]', HexCode='4019001A00180000'}
+    FieldInfo {Value='WEDNESDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]', HexCode='4019001B00180000'}
+    FieldInfo {Value='THURSDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]', HexCode='4019001C00180000'}
+    FieldInfo {Value='FRIDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]', HexCode='4019001D00180000'}
+    FieldInfo {Value='SATURDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]', HexCode='4019001E00180000'}
+    FieldInfo {Value='$VALUES:[Lsample/Day;', AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_FINAL,ACC_SYNTHETIC]', Attrs='[]', HexCode='101A001F00200000'}
+</div>
+
+<p>
+    如果我们在<code>HelloWorld.java</code>中定义<code>Day</code>类型的字段，它会带有<code>ACC_ENUM</code>标识吗？
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public Day day;
+}
+</div>
+
+<div title="" class="plaintext">
+fields_count='0001' (1)
+fields
+    FieldInfo {Value='day:Lsample/Day;', AccessFlags='[ACC_PUBLIC]', Attrs='[]', HexCode='0001000400050000'}
+</div>
+
+<h3>Interface Fields: ACC_PUBLIC, ACC_STATIC 和 ACC_FINAL</h3>
+
+<p>
+    Every field declaration in the body of an interface is implicitly <code>public</code>, <code>static</code>, and <code>final</code>.
+    Fields of interfaces must have their <code>ACC_PUBLIC</code>, <code>ACC_STATIC</code>, and <code>ACC_FINAL</code> flags set.
+    <sub class="my_note" style="color:blue">笔记：在接口(interface)中声明的每一个字段(field)默认是public、static和final修饰。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public interface HelloWorld {
+    int width = 10;
+}
+</div>
+
+<div title="Example" class="plaintext">
+fields_count='0001' (1)
+fields
+    FieldInfo {Value='width:I', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL]', Attrs='[ConstantValue]', HexCode='0019000300040001...'}
+</div>
+
+<h2>attributes</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static final int intValue = 10;
+}
+</div>
+

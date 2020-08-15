@@ -1,0 +1,395 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Constant Pool: (3) Mapping</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Math Mapping</h2>
+
+<div class="w3-display-container w3-center">
+    <img width="400" class="w3-image w3-center" src="/images/math/map/bijection.png" alt="bijection"/>
+</div>
+
+<div>
+    $$ {x \rightarrow f \rightarrow y} $$
+</div>
+
+<h2>Java Compiler</h2>
+
+<p>
+    Java's architecture arises out of four distinct but interrelated technologies:
+</p>
+
+<ul>
+    <li>the Java programming language</li>
+    <li>the Java class file format</li>
+    <li>the Java Application Programming Interface</li>
+    <li>the Java Virtual Machine</li>
+</ul>
+
+<p class="indented">
+    其中，对于Java programming language来说，它本身是一个抽象的规则，而<code>.java</code>文件是它的一种具体表现形式；对于Java class file format来说，它则是另一个抽象的规则，<code>.class</code>文件则是它的一种具体表现形式。
+</p>
+
+<p class="indented">
+    要将<code>.java</code>文件转换为<code>.class</code>文件，则需要用到Java Compiler(<code>javac</code>)。如果说<code>.java</code>文件则相当于\(X\)，<code>.class</code>文件则相当于\(Y\)，那么<code>javac</code>的作用就相当于\(f(x)\)，由它来实现<code>.java</code>文件内容向<code>.class</code>文件内容的映射。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/javac_from_java_to_class.jpeg" alt="javac"/>
+</div>
+
+<p class="indented">
+    更详细的说，在<code>.java</code>文件中定义的字段、定义的方法、引用的类、调用的方法等内容一定是在<code>.class</code>文件中得到体现的。
+    更概括的说，在Java programming language支持的语言特性必须有相应的Java class file format进行支持。
+</p>
+
+<h2>Mapping In ClassFile</h2>
+
+<h3>CP (1-6)</h3>
+
+<p>
+    A primitive type is predefined by the Java programming language and named by its reserved keyword:
+</p>
+
+<ul>
+    <li>
+        The <b>integral types</b> are <code>byte</code>, <code>short</code>, <code>int</code>, and <code>long</code>, whose values are 8-bit, 16-bit,
+        32-bit and 64-bit signed two's-complement integers, respectively, and <code>char</code>, whose
+        values are 16-bit unsigned integers representing UTF-16 code units (§3.1).
+    </li>
+    <li>
+        The <b>floating-point types</b> are <code>float</code>, whose values include the 32-bit IEEE 754
+        floating-point numbers, and <code>double</code>, whose values include the 64-bit IEEE 754
+        floating-point numbers.
+    </li>
+    <li>
+        The <b>boolean type</b> has exactly two values: <code>true</code> and <code>false</code>.
+    </li>
+</ul>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Primitive Types</caption>
+    <tr class="w3-green">
+        <th>Java programming language</th>
+        <th>Java class file format</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>int</td>
+        <td>CONSTANT_Integer_info</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>float</td>
+        <td>CONSTANT_Float_info</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>long</td>
+        <td>CONSTANT_Long_info</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>double</td>
+        <td>CONSTANT_Double_info</td>
+    </tr>
+</table>
+
+<p class="indented">
+    在上面的表格中，我们并没有看到Java programming language中的<code>byte</code>、<code>short</code>、<code>char</code>和<code>boolean</code>这些类型在Java class file format当中得到体现。
+    其中的原因是：<code>byte</code>、<code>short</code>、<code>char</code>和<code>boolean</code>这些在Java programming language存在的类型，在Java class file format当中都被当作<code>int</code>(<code>CONSTANT_Integer_info</code>)来处理了。
+</p>
+
+<h3>CP (8): CONSTANT_String_info</h3>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>String</caption>
+    <tr class="w3-green">
+        <th>Java programming language</th>
+        <th>Java class file format</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>String</td>
+        <td>CONSTANT_String_info<br/>CONSTANT_Utf8_info</td>
+    </tr>
+</table>
+
+<div title="String在JavaFile中表达形式" class="javacode">
+String str = "AAABBB";
+</div>
+
+<div title="String在ClassFile中的表达方式" class="plaintext">
+CONSTANT_String_info {
+    u1 tag(8);
+    u2 string_index;
+}
+
+CONSTANT_Utf8_info {
+    u1 tag(1);
+    u2 length;
+    u1 bytes[length];
+}
+
+|002| 08 00 12 // string_index = 18
+|018| 01 00 06 41 41 41 42 42 42 // AAABBB
+</div>
+
+<br/>
+
+<h3>CP (7): CONSTANT_Class_info</h3>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Class</caption>
+    <tr class="w3-green">
+        <th>Java programming language</th>
+        <th>Java class file format</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Class<br/>Interface</td>
+        <td>CONSTANT_Class_info<br/>CONSTANT_Utf8_info</td>
+    </tr>
+</table>
+
+<div title="CONSTANT_Class_info Example" class="plaintext">
+CONSTANT_Class_info {
+    u1 tag(7);
+    u2 name_index;
+}
+
+CONSTANT_Utf8_info {
+    u1 tag(1);
+    u2 length;
+    u1 bytes[length];
+}
+
+|004| 07 00 14 // name_index = 20
+|020| 01 00 10 6A 61 76 61 2F 6C 61 6E 67 2F 4F 62 6A 65 63 74 // java/lang/Object
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        Note：<code>CONSTANT_Class_info</code>不仅可以表示Class，也可以表示Interface。
+    </p>
+</div>
+
+<h3>Internal Name</h3>
+
+<p class="indented">
+    首先，是概念的“映射”，在Java programming language中的概念称之为Fully Qualified Class Name，在Java class file format当中称之为Internal name。
+</p>
+
+<p class="indented">
+    其次，是内容的“映射”，在<code>.java</code>文件中使用<code>java.lang.String</code>，而在<code>.class</code>文件当中使用<code>java/lang/String</code>进行表示。
+    其中的区别就是将<code>.</code>替换为<code>/</code>。
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        In many situations a type is constrained to be a class or interface type. For
+        instance, the super class of a class, the interfaces implemented by a class, or
+        the exceptions thrown by a method cannot be primitive types or array types,
+        and are necessarily class or interface types. These types are represented in
+        compiled classes with <b>internal names</b>. The <b>internal name</b> of a class is just the
+        <b>fully qualified class name</b> of this class, where dots are replaced with slashes. For
+        example the internal name of <code>java.lang.String</code> is <code>java/lang/String</code>.
+    </p>
+</div>
+
+<h3>CP (9-12): Fieldref/Methodref</h3>
+
+<div title="Fieldref/Methodref" class="plaintext">
+CONSTANT_Fieldref_info {
+    u1 tag;
+    u2 class_index;
+    u2 name_and_type_index;
+}
+
+CONSTANT_Methodref_info {
+    u1 tag;
+    u2 class_index;
+    u2 name_and_type_index;
+}
+
+CONSTANT_InterfaceMethodref_info {
+    u1 tag;
+    u2 class_index;
+    u2 name_and_type_index;
+}
+
+CONSTANT_NameAndType_info {
+    u1 tag;
+    u2 name_index;
+    u2 descriptor_index;
+}
+</div>
+
+<p class="indented">
+    为了理解这几个table，我们需要先区分开的概念就是，将“Field Definition、Method Definition”和“Field Invocation、Method Invocation”区分开。
+</p>
+
+<p class="indented">
+    在ClassFile当中，Field Definition是由<code>field_info</code>来承载的，Method Definition是由<code>method_info</code>来承载的；
+    而<code>CONSTANT_Fieldref_info</code>承载的是Field Invocation，<code>CONSTANT_Methodref_info</code>承载的是Method Invocation。
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Class Definition</caption>
+    <tr class="w3-green">
+        <th>Java programming language</th>
+        <th>Java class file format</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Field Definition</td>
+        <td>field_info</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Method Definition</td>
+        <td>method_info</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Field Invocation</td>
+        <td>CONSTANT_Fieldref_info</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Method Invocation</td>
+        <td>CONSTANT_Methodref_info</td>
+    </tr>
+</table>
+
+<p class="indented">
+    在<code>CONSTANT_Fieldref_info</code>、<code>CONSTANT_Methodref_info</code>和<code>CONSTANT_InterfaceMethodref_info</code>三者中都有对于<code>CONSTANT_Class_info</code>和<code>CONSTANT_NameAndType_info</code>的引用，其中<code>CONSTANT_Class_info</code>是指明是哪一个Class或者Interface，而<code>CONSTANT_NameAndType_info</code>则是指明具体的Field或Method。
+</p>
+
+<h3>Descriptors</h3>
+
+<p>
+    A descriptor is a string representing the type of a field or method. Descriptors are represented in the class file format using modified UTF-8 strings.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <tr class="w3-green">
+        <th>Type descriptor</th>
+        <th>Java Type</th>
+        <th>Interpretation</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>B</code></td>
+        <td>byte</td>
+        <td class="w3-left-align">signed byte</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>C</code></td>
+        <td>char</td>
+        <td class="w3-left-align">Unicode character code point in the Basic Multilingual Plane, encoded with UTF-16</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>D</code></td>
+        <td>double</td>
+        <td class="w3-left-align">double-precision floating-point value</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>F</code></td>
+        <td>float</td>
+        <td class="w3-left-align">single-precision floating-point value</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>I</code></td>
+        <td>int</td>
+        <td class="w3-left-align">integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>J</code></td>
+        <td>long</td>
+        <td class="w3-left-align">long integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>S</code></td>
+        <td>short</td>
+        <td class="w3-left-align">signed short</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>Z</code></td>
+        <td>boolean</td>
+        <td class="w3-left-align">true or false</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>L&lt;InternalName&gt;;</code></td>
+        <td>reference</td>
+        <td class="w3-left-align">an instance of class ClassName</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>[</code></td>
+        <td>reference</td>
+        <td class="w3-left-align">one array dimension</td>
+    </tr>
+</table>
+
+<p class="indented">
+    The descriptor of a class type is <b>the internal name of this class</b>,
+    preceded by <code>L</code> and followed by a <b>semicolon</b>.
+</p>
+
+<p class="indented">
+    To elaborate on why there is no terminating <code>]</code> - this code is to allow the JNI/JVM to quickly identify a method and its signature. It's intended to be as compact as possible to make parsing fast (=as few characters as possible), so <code>[</code> is used for an array which is pretty straightforward (what better symbol to use?).
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        For JVM Field Descriptor, why use <code>Z</code> for boolean, <code>L</code> for an instance of class, and <code>J</code> for long?
+    </p>
+    <p>
+        It’s possible that <code>L</code> stands for types requiring <b>L</b>inkage whereas <code>Z</code> implies operations boiling down to <b>Z</b>ero-testing, like “branch if zero” or “branch if non-zero”, but that’s all conjecture…
+    </p>
+    <p>
+        <code>J</code> is sometimes used in other contexts to be wider than <code>I</code> as it is the next letter (similarly <code>H</code> for half int/short, or the previous letter to <code>I</code>)
+    </p>
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static void main(String[] args) {
+        //
+    }
+}
+</div>
+
+<div title="descriptor" class="plaintext">
+([Ljava/lang/String;)V
+</div>
+
+<h3>Descriptor Vs Signature</h3>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        "descriptor" probably refers to the method descriptor as defined in the JVM spec. It describes <b>the parameter types</b> and <b>the return type</b> of a method. It does not contain the method name.
+    </p>
+    <p>
+        "signature" probably refers to the signature of as defined in the Java Language Specification. It contains <b>the name of the method</b> as well as <b>the parameter types</b>. It does not contain the return type.
+    </p>
+    <p>
+        Note that those two terms are defined in two different places and at different levels. A method descriptor exists at the JVM-level, so it's pretty detached from the Java language. The signature, however is a very similar concept, but acts on the Java language level (as it's defined in the JLS).
+    </p>
+</div>
+
+<h3>CP (15-18)</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Supplier;
+
+public class HelloWorld  {
+    public static String lambdiseMe() {
+        return "Hello World!";
+    }
+
+    public static Supplier&lt;String&gt; getSupplier() {
+        return HelloWorld::lambdiseMe;
+    }
+}
+</div>
+
+<p>
+    目前，先不讲。
+</p>
+
+<h2>Summing Up</h2>
+

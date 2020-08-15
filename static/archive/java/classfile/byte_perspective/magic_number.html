@@ -1,0 +1,217 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Magic Number</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Magic Number in ClassFile</h2>
+
+<p>
+    A class file consists of a single <code>ClassFile</code> structure:
+</p>
+
+<div title="ClassFile" class="plaintext">
+ClassFile {
+    u4             magic;
+    u2             minor_version;
+    u2             major_version;
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];
+    u2             access_flags;
+    u2             this_class;
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    u2             fields_count;
+    field_info     fields[fields_count];
+    u2             methods_count;
+    method_info    methods[methods_count];
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<p class="indented">
+    The <b>magic</b> item supplies the magic number identifying the class file format; it has the value <code>0xCAFEBABE</code>.
+    <code>0xCAFEBABE</code> is <b>3405691582</b> in decimal.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: Magic Number是为了区分不同产品（PDF、PNG、ClassFile）之间的差异。
+    </p>
+</div>
+
+<h2>What is a Magic Number?</h2>
+
+<p class="indented">
+    In computer science, a standard way to identify a file type is to insert some type of unique metadata at the beginning of a file.
+    This is the convention followed by file types such as PNG, JPEG, etc.
+    The unique identifier is termed as the <b>magic number</b> of a file.
+</p>
+
+<ul>
+    <li><b>PDF</b> Files will start with the magic text <b>%PDF</b> –> Hex (<code>25 50 44 46</code>)</li>
+    <li><b>PNG</b> Files will start with the magic text <b>.PNG</b> –> Hex (<code>89 50 4E 47</code>)</li>
+    <li><b>Java class</b> Files will start with the magic text <b>Êþº¾</b> –> Hex (<code>CAFEBABE</code>)</li>
+</ul>
+
+<h2>Why CAFEBABE?</h2>
+
+<p class="indented">
+    A lot of facts in java is pointless but they are fun to know.
+</p>
+
+<h3>One</h3>
+
+<p>
+    James Gosling <a class="external" href="http://radio-weblogs.com/0100490/2003/01/28.html" target="_blank">explained</a> this:
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p class="indented">
+        We used to go to lunch at a place called St Michael’s Alley. According to local legend, in the deep dark past,<sub class="my_note" style="color:green">笔记：dark past: a secret and bad history; a former lifestyle that no one knows about</sub> the Grateful Dead<sub class="my_note" style="color:green">笔记：Grateful Dead是一个乐队的名字</sub> used to perform there before they made it big.<sub class="my_note" style="color:green">笔记：make it big 成名 to be extremely successful</sub> It was a pretty funky<sub class="my_note" style="color:green">适宜跳舞的 with a strong rhythm that is easy to dance to</sub> place that was definitely a Grateful Dead Kinda Place.
+        <sub class="my_note" style="color:blue">笔记：由一个地方引出Grateful Dead乐队</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p class="indented">
+        When Jerry died, they even put up a little Buddhist-esque shrine. When we used to go there, we referred to the place as Cafe Dead. Somewhere along the line it was noticed that this was a HEX number.
+        <sub class="my_note" style="color:blue">笔记：由Grateful Dead乐队成员Jerry的去世引出Cafe Dead。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p class="indented">
+        I was re-vamping some file format code and needed a couple of magic numbers: one for the persistent object file, and one for classes. I used <code>CAFEDEAD</code> for the object file format, and in grepping for 4 character hex words that fit after “CAFE” (it seemed to be a good theme) I hit on BABE and decided to use it.
+        <sub class="my_note" style="color:blue">笔记：由Cafe Dead引出CafeBabe。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p class="indented">
+        At that time, it didn’t seem terribly important or destined to go anywhere but the trash-can of history. So <code>CAFEBABE</code> became the class file format, and <code>CAFEDEAD</code> was the persistent object format. But the persistent object facility went away, and along with it went the use of <code>CAFEDEAD</code> - it was eventually replaced by RMI.
+        <sub class="my_note" style="color:blue">笔记：后来，CafeBabe存活了下来，而Cafe Dead被淘汰了。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+</div>
+
+<h3>Two</h3>
+
+<p class="indented">
+    以前我们曾去过一个叫Michael's Alley的街上吃中午饭。据当地人说，Grateful Dead乐队在成名之前，就在那个地方表演过。后来（1995年），乐队成员Jerry去世，这里还一度变成纪念他的地方，我们将这个地方称之为Cafe Dead。当时我正在改造一些文件的格式，需要2个Magic Number：一个是用来表示object file，另外一个用来表示class文件。我选择使用CAFEDEAD来表示object file，后来又想到了CAFEBABE来表示class文件。当时认为，这两个名字的选择并不是什么特别重要的事情，只会随着时间的流逝而渐渐地被历史所遗忘。从那之后，CAFEBABE就用来表示class文件，而CAFEDEAD就用来表示持久化的object format。再后来，persistence object被RMI(java远程调用)所代替，CAFEDEAD也就不复存在了。
+</p>
+
+<h3>Three</h3>
+
+<p class="indented">
+    There is an interesting story behind the origin of CAFEBABE moniker. James Gosling, the father of Java, and his friends used to visit a restaurant where Grateful Dead allegedly played before they became famous. After the death of Jerry Garcia, James and his friends started calling the place Cafe Dead. While James was looking for a magic number for the object file, he decided to use CAFEDEAD. Going along with the cafe theme, he came up with CAFEBABE as the magic number of the class file.
+</p>
+
+<h3>Timeline</h3>
+
+<p>
+    Jerry Garcia是Grateful Dead乐队的主唱兼吉他手。James Gosling被称为“Java之父”。
+</p>
+
+<ul>
+    <li>1942年，Jerry Garcia出生。</li>
+    <li>1955年，James Gosling出生。当时，Jerry Garcia是13岁。</li>
+    <li>1965年，Jerry Garcia与其他成员组建Grateful Dead乐队。当时，Jerry Garcia是23岁，James Gosling是10岁。</li>
+    <li>1967年-1995年，是Grateful Dead乐队的活跃时期</li>
+    <li>1984年-2010年，James Gosling就职于Sun Microsystems</li>
+    <li>1990年，James Gosling与Patrick Naughton和Mike Sheridan等人合作“绿色计划”，后来发展一套语言叫做“Oak”，后改名为Java。当时，James Gosling是35岁，Jerry Garcia是48岁。</li>
+    <li>1995年8月9日，Jerry Garcia去世，享年53岁，Grateful Dead乐队宣布解散。当时，James Gosling是40岁。</li>
+    <li>1996年，Sun Microsystems发布了Java的第一个开发工具包（JDK 1.0），这标志着Java成为一种独立的开发工具。</li>
+    <li>2000年，Java成为世界上最流行的电脑语言。当时，James Gosling45岁。</li>
+    <li>2009年04月，Sun Microsystems被Oracle Corporation并购。</li>
+    <li>2010年04月，James Gosling宣布从Oracle Corporation离职</li>
+    <li>2011年3月29日，James Gosling在个人博客上宣布将加入Google。</li>
+    <li>2011年8月30日，仅仅加入Google数月之后的James Gosling就在个人博客上宣布离开Google</li>
+    <li>2020年，James Gosling是65岁。</li>
+</ul>
+
+<h2>Change Magic Number</h2>
+
+<p class="indented">
+    至此，我们知道，在<code>.class</code>文件当中，Magic Number的值是<code>0xCAFEBABE</code>。如果我们修改一下Magic Number的值，会出现什么情况呢？
+</p>
+
+<div title="Change Magic Number" class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.utils.HexUtils;
+import lsieun.utils.ReadUtils;
+
+public class C_Change_MagicNumber {
+    public static void main(String[] args) {
+        String filepath = FileUtils.getFilePath("sample/HelloWorld.class");
+        byte[] bytes = ReadUtils.readByPath(filepath);
+
+        String magic_str = "CAFEBABF"; // 注意：正确的值应该是CAFEBABE，
+        byte[] magic_bytes = HexUtils.parse(magic_str);
+
+        for (int i = 0; i < magic_bytes.length; i++) {
+            bytes[i] = magic_bytes[i];
+        }
+
+        FileUtils.writeBytes(filepath, bytes);
+    }
+}
+</div>
+
+<div title="Run Output" class="plaintext">
+$ java HelloWorld
+Error: A JNI error has occurred, please check your installation and try again
+Exception in thread "main" java.lang.ClassFormatError: Incompatible magic value 3405691583 in class file HelloWorld
+        at java.lang.ClassLoader.defineClass1(Native Method)
+</div>
+
+<h2>More About Magic Number</h2>
+
+<p class="indented">
+    Magic Number，可理解为“魔法般突然出现意义不明的数字”。在中文语言环境当中，一般都是将Magic Number称之为“魔数”。
+    我个人观点，觉得，“魔数”并不是一个好的翻译，因为看到“魔数”，我想到的是“妖魔鬼怪”的“魔”，而不是“魔法”的“魔”。
+    也有人将Magic Number翻译成“神奇数字”，我也觉得不好，因为我理解不出有任何“神奇”的地方。
+    <sub class="my_note" style="color:blue">笔记：我觉得，对magic number的中文翻译都不是特别好，用magic number就挺好的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The term <b>magic number</b> also refers to the bad programming practice of using numbers directly in source code without explanation.
+    In most cases this makes programs harder to read, understand, and maintain.
+    Although most guides make an exception for the numbers zero and one, it is a good idea to define all other numbers in code as named constants.
+    <sub class="my_note" style="color:blue">笔记：magic number也可以表示一种坏的编程习惯。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    除了<code>0xCAFEBABE</code>，我们也可以将十六进制数组合成其他容易记忆的单词，来用作Magic Number。
+</p>
+
+<div title="More Examples" class="plaintext">
+000FF1CE (office)
+5CA1AB1E (scalable)
+7E1ECAS7 (telecast)
+ABADBABE (a bad babe)
+BA5EBA11 (baseball)
+BADDEED5 (bad deeds)
+C0DEB10B (code blob)
+CA11AB1E (callable)
+CA55E77E (cassette)
+CAFEBABE (cafe babe)
+DA7ABA5E (database)
+DEADBEEF (dead beef)
+DEADC0DE (dead code)
+F007BA11 (football)
+FACEB00C (facebook)
+FEEDBABE (feed babe)
+</div>
+
+<h2>Summing Up</h2>
+
+<p>
+    关于Magic Number，一共需要记住两个知识点：
+</p>
+
+<ul>
+    <li>第一点，Magic Number的值是<code>0xCAFEBABE</code>。</li>
+    <li>第二点，如果修改了Magic Number的值，就会出现<code>ClassFormatError</code>的错误。</li>
+</ul>

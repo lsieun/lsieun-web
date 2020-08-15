@@ -1,0 +1,159 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java ClassFile Introduction</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>准备工作</h2>
+
+<ol>
+    <li>github的repo的下载</li>
+    <li>准备知识</li>
+    <li>适合的人群</li>
+    <li>参考文档</li>
+    <li>有些内容是可以选学的。</li>
+    <li><input type="checkbox" /> 生成各个小文件<code>.clz</code>，又可以合并成大文件</li>
+</ol>
+
+<h3>Software</h3>
+
+<p>
+    软件准备：
+</p>
+
+<ul>
+    <li><input type="checkbox" checked/> JDK 8 (<a class="external" href="https://www.oracle.com/java/technologies/javase-downloads.html" target="_blank">Download Page</a>) </li>
+    <li><input type="checkbox" checked/> IDEA Community Edition 2020.2 (<a class="external" href="https://www.jetbrains.com/idea/download/other.html" target="_blank">Download Page</a>)</li>
+    <li><input type="checkbox" checked/> Maven (IDEA自带)</li>
+    <li><input type="checkbox" checked/> Git</li>
+</ul>
+
+<h3>Git Configuration</h3>
+
+<p class="indented">
+    <b>CR</b> and <b>LF</b> are control characters, respectively coded <code>0x0D</code> (13 decimal) and <code>0x0A</code> (10 decimal).
+    They are used to mark a line break in a text file.
+    As we know, <b>Windows</b> uses two characters the <code>CR LF</code> sequence;
+    <b>Unix</b> only uses <code>LF</code> and the old <b>MacOS</b> ( pre-OSX MacIntosh) used <code>CR</code>.
+    <sub class="my_note" style="color:blue">笔记：不同的操作系统使用不同的EOL；对于Windows操作系统来说，它使用CRLR；对于Unix-like操作系统来说，它使用LF；对于Mac操作系统来说，它使用CR。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    In the context of Git, there are two options that are controlled by the <b>EOL</b> setting
+</p>
+
+<ol>
+    <li>
+        How line endings are stored in content when it is committed into the repository.
+        <sub class="my_note" style="color:blue">笔记：第一个问题，repository的EOL是什么</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        How line endings are updated (or not) when content is checked out of the repository onto a local disk.
+        <sub class="my_note" style="color:blue">笔记：第二个问题，local disk的EOL是什么</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ol>
+
+<p>
+    The first item refers to whether or not Git normalizes line endings in the repository. Normalizing refers to stripping out <b>CR</b>s and only storing files with <b>LF</b>s.
+</p>
+
+<p>
+    For the second item, when content is checked out of Git, Git can update line endings in text files. This option allows you to specify whether or not Git updates line endings in files after checkout, and, if it does, which type it sets them to.
+</p>
+
+<p class="indented">
+    At a user or repository level, how Git handles these options is controlled by a configuration setting named <code>core.autocrlf</code>. The <code>crlf</code> part here obviously stands for <b>carriage return, line-feed</b> — meaning the common EOL sequence for files on a Windows environment. The <code>auto</code> part refers to automatically inserting <b>CRLF</b> sequences in files when they are checked out.
+</p>
+
+<p>
+    There are three possible values for the <code>core.autocrlf</code> setting:
+</p>
+
+<ul>
+    <li>
+        <code>core.autocrlf=true</code>: This value tells Git to normalize line endings to just <b>LF</b>s when storing files in the repository and to automatically insert <b>CRLF</b>s when files are checked out. If users are working on a Windows environment, this is the recommended value. It allows them to get <b>CRLF</b>s in files when checked out from Git, but doesn't store the <b>CR</b>s in the repository.
+        <sub class="my_note" style="color:blue">笔记：这个适合Windows操作系统</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ul>
+
+<div title="core.autocrlf=true" class="plaintext">
+git config --global core.autocrlf true
+</div>
+
+<ul>
+    <li>
+        <code>core.autocrlf=input</code>: This value tells Git to normalize line endings to just <b>LF</b>s when storing files in the repository but not to change anything when files are checked out. If users are working in a Unix environment, this is the recommended value because Unix expects just <b>LF</b>s.
+        <sub class="my_note" style="color:blue">笔记：这个适合Unix-like操作系统</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ul>
+
+<div title="core.autocrlf=input" class="plaintext">
+git config --global core.autocrlf input
+</div>
+
+<ul>
+    <li>
+        <code>core.autocrlf=false</code>: This default value tells Git not to change anything when files are being checked in or checked out. This is the primary value for the setting that can get users into trouble. Suppose you have two users working on code for the same repository, one in a Windows environment and one in a Unix environment. If both users have specified the <code>core.autocrlf=false</code> value in their configurations, then when they commit changes, the files from Windows will have <b>CRLF</b>s and those from Unix will have just <b>LF</b>s. If the respective users later each check out the other's files, then the files will have the wrong line endings for their system. For this reason, this value should not be used when mixed environments are being used in a project.
+        <sub class="my_note" style="color:blue">笔记：这个不推荐使用</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ul>
+
+<div title="core.autocrlf=false" class="plaintext">
+git config --global core.autocrlf false
+</div>
+
+<p class="indented">
+    In general, it's a best practice to set the <code>core.autocrlf</code> setting to one of the values other than <code>false</code>, depending on which environment you're working in.
+</p>
+
+<h3>Source Code</h3>
+
+<div title="github repository" class="plaintext">
+git clone https://github.com/lsieun/java8-classfile-tutorial
+</div>
+
+<h2>学习阶段</h2>
+
+<p>
+    学习ClassFile的两个阶段：
+</p>
+
+<p>
+    第一个阶段，有如下几个层次
+</p>
+
+<ol>
+    <li>元认知</li>
+    <li>ClassFile基本结构</li>
+    <li>从byte角度来解析ClassFile</li>
+    <li>extensions</li>
+    <li>解析bytecode</li>
+</ol>
+
+<p>
+    第二个阶段
+</p>
+
+<ol>
+    <li>Java-Agent</li>
+    <li>使用Javassist</li>
+    <li>使用ASM</li>
+</ol>
+
+<p class="indented">
+    第一个阶段，是针对Java ClassFile的内部原理的解析，注重于“是什么”；第二阶段，是对Java ClassFile原理的运用，注重于“怎么用”。
+</p>
+
+<p class="indented">
+    简单来说，第一个阶段是讲原理，第二个阶段是讲应用。第一个阶段的内容，是第二个阶段内容的基础，用一种形象的说法来讲就是“有九阳神功护体，学什么武功都特别快”。
+    换句话说，学会了第一个阶段的内容，再学第二阶段的内容就是驾轻就熟（赶着轻载的车走在熟路上）。
+</p>

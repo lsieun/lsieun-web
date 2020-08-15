@@ -1,0 +1,99 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 5 Annotation</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    Annotation、Enum和Generics都是在Java 5的时候引入的。
+</p>
+
+<p>
+    在下面的代码中，<code>SuppressWarnings</code>就是Annotation的示例：
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+@SuppressWarnings("Duplicates")
+public class HelloWorld {
+}
+</div>
+
+<p class="indented">
+    我对于Annotation的理解。我认为，Annotation是一个小的容器(container)，它里面装了一些信息(info)，这些信息可以说是当前类的额外信息。
+    用一个形象的说法来讲，如果将当前JavaFile想象成一个“卡通人物”，那么Annotation则可以理解成“手提包”。
+    没有“手提包”的时候，“卡通人物”本身就是一个独立的人物形象；有“手提包”的时候，“卡通人物”可以在“手提包”里多带一些个人物品，例如：手机、镜子、眼镜等。
+    同样的，对于没有Annotation的类来说，它本身就是一个独立的类文件；对于有Annotation的类来说，Annotation只是帮当前类增加了一些额外的信息。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img width="400px" class="w3-image w3-center" src="/images/cartoon/handbag.jpg" alt="handbag"/>
+</div>
+
+<p>
+    为了清晰的理解Annotation，我觉得，应该从四个层面来看待它：
+</p>
+
+<ul>
+    <li>JavaFile</li>
+    <li>Java Compiler</li>
+    <li>ClassFile</li>
+    <li>JVM</li>
+</ul>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/javafile_javac_classfile_java_jvm.png" alt="From Java File to JVM"/>
+</div>
+
+
+<h2>Annotation In JavaFile</h2>
+
+<h3>Retention Policy</h3>
+
+<p>
+    Each annotation has the very important characteristic called <b>retention policy</b> which is an enumeration (of type <code>RetentionPolicy</code>) with the set of policies on how to retain annotations. It could be set to one of the following values.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <tr class="w3-green">
+        <th>Policy</th>
+        <th>Description</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>CLASS</code></td>
+        <td class="w3-left-align">Annotations are to be recorded in the class file by the compiler but need not be retained by the VM at run time.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>RUNTIME</code></td>
+        <td class="w3-left-align">Annotations are to be recorded in the class file by the compiler and retained by the VM at run time, so they may be read reflectively.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>SOURCE</code></td>
+        <td class="w3-left-align">Annotations are to be discarded by the compiler.</td>
+    </tr>
+</table>
+
+<p class="indented">
+    Retention policy has a crucial effect on when the annotation will be available for processing. The retention policy could be set using <code>@Retention</code> annotation. For example:
+</p>
+
+<div title="MyTag.java" class="javacode">
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyTag {
+
+}
+</div>
+
+<h2>Annotation In Java Compiler</h2>
+
+<h2>Annotation In ClassFile</h2>
+
+<h2>Annotation In JVM</h2>
+

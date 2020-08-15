@@ -1,0 +1,91 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java ClassFile 基本结构</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Purpose</h2>
+
+<div title="ClassFile" class="plaintext">
+ClassFile {
+    u4             magic;
+    u2             minor_version;
+    u2             major_version;
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];
+    u2             access_flags;
+    u2             this_class;
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    u2             fields_count;
+    field_info     fields[fields_count];
+    u2             methods_count;
+    method_info    methods[methods_count];
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<p>
+    Because the class file contains variable-sized items and does not also contain embedded file offsets (or pointers), it is typically parsed sequentially, from the first byte toward the end. At the lowest level the file format is described in terms of a few fundamental data types:
+</p>
+
+<ul>
+    <li><code>u1</code>: an unsigned 8-bit integer</li>
+    <li><code>u2</code>: an unsigned 16-bit integer in big-endian byte order</li>
+    <li><code>u4</code>: an unsigned 32-bit integer in big-endian byte order</li>
+    <li><code>table</code>: an array of variable-length items of some type. The number of items in the table is identified by a preceding count number (the count is a u2), but the size in bytes of the table can only be determined by examining each of its items.</li>
+</ul>
+
+<h2>Java ClassFile View</h2>
+
+<p>
+    Java's architecture arises out of four distinct but interrelated technologies, each of which is defined by a
+    separate specification from Sun Microsystems:
+</p>
+
+<ul>
+    <li>the Java programming language</li>
+    <li>the Java class file format</li>
+    <li>the Java Application Programming Interface</li>
+    <li>the Java Virtual Machine</li>
+</ul>
+
+<p>
+    When you write and run a Java program, you are tapping the power of these four technologies.
+    You express the program in source files written in the Java programming language, compile the source to
+    Java class files, and run the class files on a Java Virtual Machine. When you write your program, you
+    access system resources (such as I/O, for example) by calling methods in the classes that implement the
+    Java Application Programming Interface, or Java API. As your program runs, it fulfills your program's
+    Java API calls by invoking methods in class files that implement the Java API.
+</p>
+
+<p>
+    这里讲Java ClassFile的定位。
+</p>
+
+<p>
+    从Java的角度来说，。
+</p>
+
+<p>
+    从Programming Language的角度来说，。
+</p>
+
+<p>
+    从Operating System的角度来说，。
+</p>
+
+<p>
+    其实，我想在这里最想表达的一种观念是：在研究一个事物或概念的时候，我们或许可以考虑比它更大的一层概念是什么，也就是该事物或概念所处的生存环境是什么，那么在这个更大的环境下，我们可以对这个事物有一个更清晰的定位。
+</p>
+
+<h2>Java Tools</h2>
+
+<p>
+    这里讲<code>javac</code>、<code>java</code>、<code>javap</code>与Java ClassFile之间的关系。
+</p>

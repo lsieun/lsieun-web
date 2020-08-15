@@ -1,0 +1,176 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Constant Pool: (1) Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>ClassFile</h2>
+
+<p>
+    A class file consists of a single <code>ClassFile</code> structure:
+</p>
+
+<div title="ClassFile" class="plaintext">
+ClassFile {
+    u4             magic;
+    u2             minor_version;
+    u2             major_version;
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];
+    u2             access_flags;
+    u2             this_class;
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    u2             fields_count;
+    field_info     fields[fields_count];
+    u2             methods_count;
+    method_info    methods[methods_count];
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<ul>
+    <li>
+        <code>constant_pool_count</code>: The value of the <code>constant_pool_count</code> item is equal to the number of entries in the <code>constant_pool</code> table plus one.
+        A <code>constant_pool</code> index is considered valid if it is greater than zero and less than <code>constant_pool_count</code>, with the exception for constants of type <code>long</code> and <code>double</code>.
+    </li>
+    <li>
+        <code>constant_pool[]</code>: The <code>constant_pool</code> is a table of structures representing various string constants, class and interface names, field names, and other constants that are referred to within the <code>ClassFile</code> structure and its substructures. The format of each <code>constant_pool</code> table entry is indicated by its first "tag" byte.
+    </li>
+</ul>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: Magic Number是为了区分不同产品（PDF、PNG、ClassFile）之间的差异，而Compiler Version则是为了区分同一个产品在不同版本之间的差异。
+        接下来的Constant Pool、Class Info、Fields、Methods和Attributes则是实实在在的映射<code>.java</code>文件当中的内容。
+    </p>
+</div>
+
+<h2>The Constant Pool</h2>
+
+<p class="indented">
+    All <code>constant_pool</code> table entries have the following general format:
+</p>
+
+<div title="cp_info" class="plaintext">
+cp_info {
+    u1 tag;
+    u1 info[];
+}
+</div>
+
+<p class="indented">
+    Each item in the <code>constant_pool</code> table must begin with a 1-byte <code>tag</code> indicating the kind of <code>cp_info</code> entry.
+    The contents of the <code>info</code> array vary with the value of <code>tag</code>.
+    Each <code>tag</code> byte must be followed by two or more bytes giving information about the specific constant.
+    The format of the additional information varies with the <code>tag</code> value.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Constant pool tags</caption>
+    <tr class="w3-green">
+        <th>Tag</th>
+        <th>Constant Type</th>
+        <th>Description</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>1</td>
+        <td>CONSTANT_Utf8</td>
+        <td>UTF-8编码的字符串</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>2</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>3</td>
+        <td>CONSTANT_Integer</td>
+        <td>整型字面量</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>4</td>
+        <td>CONSTANT_Float</td>
+        <td>浮点型字面量</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>5</td>
+        <td>CONSTANT_Long</td>
+        <td>长整型字面量</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>6</td>
+        <td>CONSTANT_Double</td>
+        <td>双精度浮点型字面量</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>7</td>
+        <td>CONSTANT_Class</td>
+        <td>类或接口的符号引用</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>8</td>
+        <td>CONSTANT_String</td>
+        <td>字符串类型符号引用</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>9</td>
+        <td>CONSTANT_Fieldref</td>
+        <td>类中字段的符号引用</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>10</td>
+        <td>CONSTANT_Methodref</td>
+        <td>类中方法的符号引用</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>11</td>
+        <td>CONSTANT_InterfaceMethodref</td>
+        <td>接口中方法的符号引用</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>12</td>
+        <td>CONSTANT_NameAndType</td>
+        <td>字段或方法的部分符号引用</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>13</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>14</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>15</td>
+        <td>CONSTANT_MethodHandle</td>
+        <td>表示方法句柄</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>16</td>
+        <td>CONSTANT_MethodType</td>
+        <td>表示方法类型</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>17</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>18</td>
+        <td>CONSTANT_InvokeDynamic</td>
+        <td>表示一个动态方法调用点</td>
+    </tr>
+</table>
+
+
+<h2>Class Name & Internal Name</h2>
+
+<h2>Summing Up</h2>

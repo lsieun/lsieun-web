@@ -1,0 +1,53 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ReadUtils</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    对于<code>.class</code>文件来说，一般有两种存在形式，一种形式是以独立的文件直接存在于硬盘（Disk）上，另一种形式是存在于jar包当中。
+    <sub class="my_note" style="color:blue">笔记：其实，这里讲的不确切，不只是这两种存在形式，它还可以存在于内存当中，它有其他各种存在形式。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    不论是哪种存在形式，<code>ReadUtils.java</code>的目的就是读取<code>.class</code>文件内的字节（byte）。它有以下这4个方法：
+</p>
+
+<ul>
+    <li>第1个方法，<code>byte[] readByPath(String filepath)</code></li>
+    <li>第2个方法，<code>byte[] readByProject(String class_name)</code></li>
+    <li>第3个方法，<code>byte[] readByClassLoader(Class<?> clazz)</code></li>
+    <li>第4个方法，<code>byte[] readByJar(String jar_path, String entry_name)</code></li>
+</ul>
+
+<p class="indented">
+    关于这4个方法，如何区分它们的使用场景呢？如果<code>.class</code>文件是以独立的文件存在于硬盘上，那么就使用<code>readByPath</code>方法；如果<code>.class</code>文件是存在于jar包当中，那么就使用<code>readByJar</code>方法；
+    而<code>readByProject</code>方法，它是<code>readByPath</code>的一种简化版，它只搜索当前项目当中的<code>.class</code>文件；
+    最后是<code>readByClassLoader</code>方法，从功能上来说，它是<code>readByPath</code>方法和<code>readByJar</code>方法结合之后的简单版，
+    不论这个<code>.class</code>文件是单独存在于硬盘上，还是在某个jar包里，只要它在Java的ClassPath当中，<code>readByClassLoader</code>方法就能够加载到它。
+</p>
+
+<h2>Examples</h2>
+
+<div title="readByPath" class="javacode">
+byte[] bytes = ReadUtils.readByPath("/home/liusen/Workspace/tmp/HelloWorld.class");
+</div>
+
+<div title="readByProject" class="javacode">
+byte[] bytes = ReadUtils.readByProject("lsieun.classfile.MagicNumber");
+</div>
+
+<div title="readByClassLoader" class="javacode">
+byte[] bytes = ReadUtils.readByClassLoader(Object.class);
+</div>
+
+<div title="readByJar" class="javacode">
+byte[] bytes = ReadUtils.readByJar("/usr/local/jdk8/jre/lib/rt.jar", "java/lang/Object.class");
+</div>
+

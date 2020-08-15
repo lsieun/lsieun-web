@@ -1,0 +1,553 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Constant Pool: (2) Structure</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>CP (1-6)</h2>
+
+<h3>CONSTANT_Utf8(1)</h3>
+
+<p>
+    The <code>CONSTANT_Utf8_info</code> structure is used to represent constant string values:
+</p>
+
+<div title="CONSTANT_Utf8_info" class="plaintext">
+CONSTANT_Utf8_info {
+    u1 tag;
+    u2 length;
+    u1 bytes[length];
+}
+</div>
+
+<ul>
+    <li>
+        <code>tag</code>: The <code>tag</code> item of the <code>CONSTANT_Utf8_info</code> structure has the value <code>CONSTANT_Utf8 (1)</code>.
+    </li>
+    <li>
+        <code>length</code>: The value of the <code>length</code> item gives the number of bytes in the <code>bytes</code> array (not the length of the resulting string).
+    </li>
+    <li>
+        <code>bytes[]</code>: The <code>bytes</code> array contains the bytes of the string. String content is encoded in <b>modified UTF-8</b>.
+    </li>
+</ul>
+
+<p class="indented">
+    There are two differences between <b>modified UTF-8 format</b> and the <b>standard UTF-8 format</b>.
+    First, the null character (char)0 is encoded using the 2-byte format rather than the 1-byte format, so that modified UTF-8 strings never have embedded nulls.
+    Second, only the 1-byte, 2-byte, and 3-byte formats of standard UTF-8 are used.
+    The Java Virtual Machine does not recognize the four-byte format of standard UTF-8; it uses its own two-times-three-byte format instead.
+    <sub class="my_note" style="color:blue">笔记：这里的重点是要说modified UTF-8 format和standard UTF-8 format两者是有区别的，至于说“其中的区别到底是什么”并不是当前考虑的重点。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static void main(String[] args) {
+        String str = "\u4f18\u79c0"; // 优秀
+        System.out.println(str);
+    }
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_Utf8_info Example: 优秀</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">01<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 06<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">length</span></span>
+        <span class="w3-tooltip w3-hover-blue">E4 BC 98 E7 A7 80<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">bytes</span></span>
+    </div>
+</div>
+
+<div title="将bytes转换成UTF8" class="javacode">
+public static void main(String[] args) {
+    String hex_str = "E4 BC 98 E7 A7 80";
+    byte[] bytes = HexUtils.parse(hex_str, HexFormat.FORMAT_FF_SPACE_FF);
+    String str = new String(bytes, StandardCharsets.UTF_8); // 这里是采用standard UTF-8 format进行解析
+    System.out.println(str); // 优秀
+}
+</div>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        <b>Modified UTF-8</b> is used by the <b>Java Virtual Machine</b> and the interfaces attached to it (such as the Java Native Interface, the various tool interfaces, or <b>Java class files</b>), in the <code>java.io.DataInput</code> and <code>java.io.DataOutput</code> interfaces and classes implementing or using them, and for serialization. The Java Native Interface provides routines that convert to and from modified UTF-8.
+    </p>
+    <p>
+        <b>Standard UTF-8</b>, on the other hand, is supported by the <code>String</code> class, by the <code>java.io.InputStreamReader</code> and <code>java.io.OutputStreamWriter</code> classes, the <code>java.nio.charset</code> facilities, and many APIs layered on top of them.
+    </p>
+    <p>
+        <b>Since modified UTF-8 is incompatible with standard UTF-8, it is critical not to use one where the other is needed.</b> Modified UTF-8 can only be used with the Java interfaces described above. In all other cases, in particular for data streams that may come from or may be interpreted by software that's not based on the Java platform, standard UTF-8 must be used. The Java Native Interface routines that convert to and from modified UTF-8 cannot be used when standard UTF-8 is required.
+        <sub class="my_note" style="color:blue">笔记：这里是“正解”，是对于modified UTF-8和standard UTF-8的正确使用方式。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p></p>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: 大部分情况下，使用<code>new String(bytes, StandardCharsets.UTF_8)</code>方法能够得到正确的字符串内容。但如果有一天出错了，说明遇到了modified UTF-8 format和standard UTF-8 format两者之间有差异的地方。
+    </p>
+</div>
+
+<h3>CONSTANT_Integer(3)</h3>
+
+<div title="CONSTANT_Integer_info" class="plaintext">
+CONSTANT_Integer_info {
+    u1 tag;
+    u4 bytes;
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public final int value = 10007;
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_Integer_info Example: 10007</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">03<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 00 27 17<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">bytes</span></span>
+    </div>
+</div>
+
+<div title="将bytes转换成int" class="javacode">
+import lsieun.utils.HexFormat;
+import lsieun.utils.HexUtils;
+
+public class TestRun {
+    public static void main(String[] args) {
+        String hex_str = "00 00 27 17";
+        byte[] bytes = HexUtils.parse(hex_str, HexFormat.FORMAT_FF_SPACE_FF);
+
+        int sum = 0;
+        for (byte b : bytes) {
+            sum = (sum << 8) | (b & 0xFF);
+        }
+
+        System.out.println(sum); // 10007
+    }
+}
+</div>
+
+<h3>CONSTANT_Float(4)</h3>
+
+<div title="CONSTANT_Float_info" class="plaintext">
+CONSTANT_Float_info {
+    u1 tag;
+    u4 bytes;
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public final float value = 3.14F;
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_Float_info Example: 3.14F</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">04<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">40 48 F5 C3<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">bytes</span></span>
+    </div>
+</div>
+
+<div title="将bytes转换成float" class="javacode">
+import lsieun.utils.HexFormat;
+import lsieun.utils.HexUtils;
+
+import java.nio.ByteBuffer;
+
+public class TestRun {
+    public static void main(String[] args) {
+        String hex_str = "40 48 F5 C3";
+        byte[] bytes = HexUtils.parse(hex_str, HexFormat.FORMAT_FF_SPACE_FF);
+
+        ByteBuffer buffer = ByteBuffer.allocate(Float.BYTES);
+        buffer.put(bytes);
+        buffer.flip(); // need flip
+        float val = buffer.getFloat();
+
+        System.out.println(val); // 3.14
+    }
+}
+</div>
+
+<h3>CONSTANT_Long(5)</h3>
+
+<div title="CONSTANT_Long_info" class="plaintext">
+CONSTANT_Long_info {
+    u1 tag;
+    u4 high_bytes;
+    u4 low_bytes;
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public final long value = 100L;
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_Long_info Example: 100L</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">05<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 00 00 00<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">high_bytes</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 00 00 64<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">low_bytes</span></span>
+    </div>
+</div>
+
+<div title="将bytes转换成long" class="javacode">
+import lsieun.utils.HexFormat;
+import lsieun.utils.HexUtils;
+
+import java.nio.ByteBuffer;
+
+public class TestRun {
+    public static void main(String[] args) {
+        String hex_str = "00 00 00 00 00 00 00 64";
+        byte[] bytes = HexUtils.parse(hex_str, HexFormat.FORMAT_FF_SPACE_FF);
+
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        buffer.put(bytes);
+        buffer.flip(); // need flip
+        long val = buffer.getLong();
+
+        System.out.println(val); // 100
+    }
+}
+</div>
+
+<h3>CONSTANT_Double(6)</h3>
+
+<div title="CONSTANT_Double_info" class="plaintext">
+CONSTANT_Double_info {
+    u1 tag;
+    u4 high_bytes;
+    u4 low_bytes;
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public final double value = 0.618D;
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_Double_info Example: 0.618D</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">06<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">3F E3 C6 A7<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">high_bytes</span></span>
+        <span class="w3-tooltip w3-hover-blue">EF 9D B2 2D<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">low_bytes</span></span>
+    </div>
+</div>
+
+<div title="将bytes转换成double" class="javacode">
+import lsieun.utils.HexFormat;
+import lsieun.utils.HexUtils;
+
+import java.nio.ByteBuffer;
+
+public class TestRun {
+    public static void main(String[] args) {
+        String hex_str = "3F E3 C6 A7 EF 9D B2 2D";
+        byte[] bytes = HexUtils.parse(hex_str, HexFormat.FORMAT_FF_SPACE_FF);
+
+        ByteBuffer buffer = ByteBuffer.allocate(Double.BYTES);
+        buffer.put(bytes);
+        buffer.flip(); // need flip
+        double val = buffer.getDouble();
+
+        System.out.println(val); // 0.618
+    }
+}
+</div>
+
+<h2>CP (7-8)</h2>
+
+<h3>CONSTANT_Class(7)</h3>
+
+<div title="CONSTANT_Class_info" class="plaintext">
+CONSTANT_Class_info {
+    u1 tag;
+    u2 name_index;
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_Class Example</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">07<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 0E<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">name_index</span></span>
+    </div>
+</div>
+
+<div title="将bytes转换成int" class="javacode">
+import lsieun.utils.HexFormat;
+import lsieun.utils.HexUtils;
+
+public class TestRun {
+    public static void main(String[] args) {
+        String hex_str = "00 0E";
+        byte[] bytes = HexUtils.parse(hex_str, HexFormat.FORMAT_FF_SPACE_FF);
+
+        int name_index = 0;
+        for (byte b : bytes) {
+            name_index = (name_index << 8) | (b & 0xFF);
+        }
+
+        System.out.println(name_index); // 14
+    }
+}
+</div>
+
+<h3>CONSTANT_String(8)</h3>
+
+<div title="CONSTANT_String_info" class="plaintext">
+CONSTANT_String_info {
+    u1 tag;
+    u2 string_index;
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public final String value = "Hello Java";
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_String_info Example</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">08<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 13<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">string_index</span></span>
+    </div>
+</div>
+
+<h2>CP (9-12)</h2>
+
+<h3>CONSTANT_Fieldref(9)</h3>
+
+<div title="CONSTANT_Fieldref_info" class="plaintext">
+CONSTANT_Fieldref_info {
+    u1 tag;
+    u2 class_index;
+    u2 name_and_type_index;
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private String value;
+
+    public void test() {
+        // 或者赋值
+        this.value = "abc";
+        // 或者取值
+        String str = this.value;
+    }
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_Fieldref_info Example</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">09<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 04<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">class_index</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 15<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">name_and_type_index</span></span>
+    </div>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: <code>CONSTANT_Fieldref_info</code>记录的是字段的使用（取值 或 赋值），而并不是字段的定义(Field Definition)。
+    </p>
+</div>
+
+<h3>CONSTANT_Methodref(10)</h3>
+
+<div title="CONSTANT_Methodref_info" class="plaintext">
+CONSTANT_Methodref_info {
+    u1 tag;
+    u2 class_index;
+    u2 name_and_type_index;
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void print() {
+        //
+    }
+
+    public void test() {
+        this.print(); // Method Ref
+    }
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_Methodref_info Example</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">0A<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 03<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">class_index</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 11<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">name_and_type_index</span></span>
+    </div>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: <code>CONSTANT_Methodref_info</code>是记录方法的调用(Invoke Method)，而不是方法的定义(Method Definition)。方法的定义(Method Definition)是记录在methods那一部分，而当前是constant_pool部分。
+    </p>
+</div>
+
+<h3>CONSTANT_InterfaceMethodref(11)</h3>
+
+<div title="CONSTANT_InterfaceMethodref_info" class="plaintext">
+CONSTANT_InterfaceMethodref_info {
+    u1 tag;
+    u2 class_index;
+    u2 name_and_type_index;
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(Runnable r) {
+        r.run();
+    }
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_InterfaceMethodref_info Example</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">0B<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 14<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">class_index</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 15<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">name_and_type_index</span></span>
+    </div>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: <code>CONSTANT_InterfaceMethodref_info</code>是记录Interface的方法调用(Interface Invoke Method)。
+    </p>
+</div>
+
+<h3>CONSTANT_NameAndType(12)</h3>
+
+<div title="CONSTANT_NameAndType_info" class="plaintext">
+CONSTANT_NameAndType_info {
+    u1 tag;
+    u2 name_index;
+    u2 descriptor_index;
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_NameAndType_info Example</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">0C<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 04<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">name_index</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 05<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">descriptor_index</span></span>
+    </div>
+</div>
+
+<h2>CP (15-18)</h2>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Supplier;
+
+public class HelloWorld  {
+    public static String lambdiseMe() {
+        return "Hello World!";
+    }
+
+    public static Supplier&lt;String&gt; getSupplier() {
+        return HelloWorld::lambdiseMe;
+    }
+}
+</div>
+
+<h3>CONSTANT_MethodHandle(15)</h3>
+
+<div title="CONSTANT_MethodHandle_info" class="plaintext">
+CONSTANT_MethodHandle_info {
+    u1 tag;
+    u1 reference_kind;
+    u2 reference_index;
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_MethodHandle_info Example</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">0F<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">06<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">reference_kind</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 21<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">reference_index</span></span>
+    </div>
+</div>
+
+<h3>CONSTANT_MethodType(16)</h3>
+
+<div title="CONSTANT_MethodType_info" class="plaintext">
+CONSTANT_MethodType_info {
+    u1 tag;
+    u2 descriptor_index;
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_MethodType_info Example</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">10<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 0E<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">descriptor_index</span></span>
+    </div>
+</div>
+
+<h3>CONSTANT_InvokeDynamic(18)</h3>
+
+<div title="CONSTANT_InvokeDynamic_info" class="plaintext">
+CONSTANT_InvokeDynamic_info {
+    u1 tag;
+    u2 bootstrap_method_attr_index;
+    u2 name_and_type_index;
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_MethodType_info Example</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">12<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 00<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">bootstrap_method_attr_index</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 1C<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">name_and_type_index</span></span>
+    </div>
+</div>
+
+<h2>Summing Up</h2>
+
+<p>
+    这里涉及的内容一共归结为两点：
+</p>
+
+<ul>
+    <li>第一点，各个不同类型的<code>CONSTANT_XXX_Info</code>是如何解析的。</li>
+    <li>第二点，只有<code>CONSTANT_Utf8_info</code>结构的长度是可变化的，其它的<code>CONSTANT_XXX_Info</code>结构的长度是固定的。</li>
+</ul>

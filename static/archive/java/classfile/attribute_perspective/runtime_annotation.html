@@ -1,0 +1,293 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">RuntimeVisibleAnnotations</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <tr class="w3-green">
+        <th>Attribute</th>
+        <th>Location</th>
+        <th>ClassFile</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>
+            RuntimeVisibleAnnotations,<br/> RuntimeInvisibleAnnotations
+        </td>
+        <td>
+            ClassFile,<br/> field_info,<br/> method_info
+        </td>
+        <td>49.0</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>AnnotationDefault</td>
+        <td>method_info</td>
+        <td>49.0</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>
+            RuntimeVisibleParameterAnnotations,<br/> RuntimeInvisibleParameterAnnotations
+        </td>
+        <td>method_info</td>
+        <td>49.0</td>
+    </tr>
+</table>
+
+<h3>RuntimeVisibleAnnotations</h3>
+
+<p>
+    The <code>RuntimeVisibleAnnotations</code> attribute is a variable-length attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure. The <code>RuntimeVisibleAnnotations</code> attribute records run-time visible annotations on the declaration of the corresponding class, field, or method. The Java Virtual Machine must make these annotations available so they can be returned by the appropriate reflective APIs.
+</p>
+
+<p>
+    There may be at most one <code>RuntimeVisibleAnnotations</code> attribute in the attributes table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure.
+    <sub class="my_note" style="color:blue">笔记：这里是为了限定了RuntimeVisibleAnnotations的数量</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    The <code>RuntimeVisibleAnnotations</code> attribute has the following format:
+</p>
+
+<div title="RuntimeVisibleAnnotations_attribute" class="plaintext">
+RuntimeVisibleAnnotations_attribute {
+    u2         attribute_name_index;
+    u4         attribute_length;
+    u2         num_annotations;
+    annotation annotations[num_annotations];
+}
+</div>
+
+<p>
+    The items of the <code>RuntimeVisibleAnnotations_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <b>attribute_name_index</b>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "RuntimeVisibleAnnotations".
+    </li>
+    <li>
+        <b>attribute_length</b>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
+    </li>
+    <li>
+        <b>num_annotations</b>: The value of the <code>num_annotations</code> item gives the number of run-time visible annotations represented by the structure.
+    </li>
+    <li>
+        <b>annotations[]</b>: Each entry in the <code>annotations</code> table represents a single run-time visible <code>annotation</code> on a declaration.
+    </li>
+</ul>
+
+<h3>The annotation structure</h3>
+
+<p>
+    The <code>annotation</code> structure has the following format:
+</p>
+
+<div title="annotation" class="plaintext">
+annotation {
+    u2 type_index;
+    u2 num_element_value_pairs;
+    {   u2            element_name_index;
+        element_value value;
+    } element_value_pairs[num_element_value_pairs];
+}
+</div>
+
+<p>
+    The items of the <code>annotation</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <b>type_index</b>: The value of the <code>type_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing a <b>field descriptor</b>. The field descriptor denotes the type of the annotation represented by this annotation structure.
+    </li>
+    <li>
+        <b>num_element_value_pairs</b>: The value of the <code>num_element_value_pairs</code> item gives the number of <code>element-value</code> pairs of the annotation represented by this <code>annotation</code> structure.
+    </li>
+    <li>
+        <b>element_value_pairs[]</b>: Each value of the <code>element_value_pairs</code> table represents a single element-value pair in the annotation represented by this <code>annotation</code> structure. Each <code>element_value_pairs</code> entry contains the following two items:
+        <ul>
+            <li>
+                <b>element_name_index</b>: The value of the <code>element_name_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure. The <code>constant_pool</code> entry denotes the name of the element of the element-value pair represented by this <code>element_value_pairs</code> entry.
+            </li>
+            <li>
+                <b>value</b>: The value of the <code>value</code> item represents the value of the element-value pair represented by this <code>element_value_pairs</code> entry.
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<h3>The element_value structure</h3>
+
+<p>
+    The <code>element_value</code> structure is a discriminated union representing the value of an element-value pair. It has the following format:
+</p>
+
+<div title="element_value" class="plaintext">
+element_value {
+    u1 tag;
+    union {
+        u2 const_value_index;
+
+        {   u2 type_name_index;
+            u2 const_name_index;
+        } enum_const_value;
+
+        u2 class_info_index;
+
+        annotation annotation_value;
+
+        {   u2            num_values;
+            element_value values[num_values];
+        } array_value;
+    } value;
+}
+</div>
+
+<p>
+    The <code>tag</code> item uses a single ASCII character to indicate the type of the value of the element-value pair. This determines which item of the <code>value</code> union is in use.
+</p>
+
+<p>
+    The following table shows the valid characters for the <code>tag</code> item, the type indicated by each character, and the item used in the <code>value</code> union for each character. The table's fourth column is used in the description below of one item of the <code>value</code> union.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <tr class="w3-green">
+        <th>tag Item</th>
+        <th>Type</th>
+        <th>value Item</th>
+        <th>Constant Type</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>B</td>
+        <td>byte</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>C</td>
+        <td>char</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>D</td>
+        <td>double</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Double</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>F</td>
+        <td>float</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Float</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>I</td>
+        <td>int</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>J</td>
+        <td>long</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Long</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>S</td>
+        <td>short</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Z</td>
+        <td>boolean</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>s</td>
+        <td>String</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Utf8</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>e</td>
+        <td>Enum type</td>
+        <td>enum_const_value</td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>c</td>
+        <td>Class</td>
+        <td>class_info_index</td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>@</td>
+        <td>Annotation type</td>
+        <td>annotation_value</td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>[</td>
+        <td>Array type</td>
+        <td>array_value</td>
+        <td></td>
+    </tr>
+</table>
+
+
+<h2>Examples</h2>
+
+<h3>First</h3>
+
+<div title="HelloWorld.java" class="javacode">
+@Deprecated
+public class HelloWorld {
+}
+</div>
+
+<h3>XXX</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface HelloWorld {
+}
+</div>
+
+
+<h2>AnnotationDefault</h2>
+
+<div title="MyTag.java" class="javacode">
+public @interface MyTag {
+    String name() default "tomcat";
+    int age() default 12;
+}
+</div>
+
+<div title="Example: AnnotationDefault" class="plaintext">
+methods_count='0002' (2)
+methods
+    MethodInfo {Value='name:()Ljava/lang/String;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]', HexCode='0401000400050001...'}
+    MethodInfo {Value='age:()I', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]', HexCode='0401000800090001...'}
+</div>
+
+
+
+
+

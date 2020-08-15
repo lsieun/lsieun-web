@@ -223,13 +223,13 @@ function process_single_line_comment(token) {
     return comment_start_tag + token + comment_end_tag + "\n";
 }
 
-const annotation_start_tag = '<span style="color:#646464">';
+const annotation_start_tag = '<span style="color:#3300ff">';
 const annotation_end_tag = '</span>';
 
 function get_annotation_stop(src_text, start) {
     for (let i = start; i < src_text.length; i++) {
         let ch = src_text.charAt(i + 1);
-        if (ch === '(' || ch === '\n') {
+        if (ch === '(' || ch === '\n' || ch === ' ') {
             return i;
         }
     }

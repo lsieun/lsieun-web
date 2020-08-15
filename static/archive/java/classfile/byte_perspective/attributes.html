@@ -1,0 +1,403 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Attributes</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Attributes</h2>
+
+<div title="ClassFile" class="plaintext">
+ClassFile {
+    u4             magic;
+    u2             minor_version;
+    u2             major_version;
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];
+    u2             access_flags;
+    u2             this_class;
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    u2             fields_count;
+    field_info     fields[fields_count];
+    u2             methods_count;
+    method_info    methods[methods_count];
+    ------------------------------------------------------------------------
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+    ------------------------------------------------------------------------
+}
+</div>
+
+<ul>
+    <li>
+        <b>attributes_count</b>: The value of the <code>attributes_count</code> item gives the number of attributes in the <code>attributes</code> table of this class.
+    </li>
+    <li>
+        <b>attributes[]</b>: Each value of the <code>attributes</code> table must be an <code>attribute_info</code> structure.
+    </li>
+</ul>
+
+<p>
+    All attributes have the following general format:
+</p>
+
+<div title="attribute_info" class="plaintext">
+attribute_info {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u1 info[attribute_length];
+}
+</div>
+
+<p class="indented">
+    For all attributes, the <code>attribute_name_index</code> must be a valid unsigned 16-bit index into the constant pool of the class. The <code>constant_pool</code> entry at <code>attribute_name_index</code> must be a <code>CONSTANT_Utf8_info</code> structure representing the name of the attribute. The value of the <code>attribute_length</code> item indicates the length of the subsequent information in bytes. The length does not include the initial six bytes that contain the <code>attribute_name_index</code> and <code>attribute_length</code> items.
+</p>
+
+<h2>Predefined Attributes</h2>
+
+<p>
+    23 attributes are predefined by The Java 8 Virtual Machine Specification.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <tr class="w3-green">
+        <th>Attribute</th>
+        <th>Location</th>
+        <th>ClassFile</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>SourceFile</td>
+        <td>ClassFile</td>
+        <td>45.3</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>InnerClasses</td>
+        <td>ClassFile</td>
+        <td>45.3</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>EnclosingMethod</td>
+        <td>ClassFile</td>
+        <td>49.0</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>SourceDebugExtension</td>
+        <td>ClassFile</td>
+        <td>49.0</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>BootstrapMethods</td>
+        <td>ClassFile</td>
+        <td>51.0</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>ConstantValue</td>
+        <td>field_info</td>
+        <td>45.3</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Code</td>
+        <td>method_info</td>
+        <td>45.3</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Exceptions</td>
+        <td>method_info</td>
+        <td>45.3</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>
+            RuntimeVisibleParameterAnnotations,<br/> RuntimeInvisibleParameterAnnotations
+        </td>
+        <td>method_info</td>
+        <td>49.0</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>AnnotationDefault</td>
+        <td>method_info</td>
+        <td>49.0</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>MethodParameters</td>
+        <td>method_info</td>
+        <td>52.0</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Synthetic</td>
+        <td>
+            ClassFile,<br/> field_info,<br/> method_info
+        </td>
+        <td>45.3</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Deprecated</td>
+        <td>
+            ClassFile,<br/> field_info,<br/> method_info
+        </td>
+        <td>45.3</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Signature</td>
+        <td>
+            ClassFile,<br/> field_info,<br/> method_info
+        </td>
+        <td>49.0</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>
+            RuntimeVisibleAnnotations,<br/> RuntimeInvisibleAnnotations
+        </td>
+        <td>
+            ClassFile,<br/> field_info,<br/> method_info
+        </td>
+        <td>49.0</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>LineNumberTable</td>
+        <td>Code</td>
+        <td>45.3</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>LocalVariableTable</td>
+        <td>Code</td>
+        <td>45.3</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>LocalVariableTypeTable</td>
+        <td>Code</td>
+        <td>49.0</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>StackMapTable</td>
+        <td>Code</td>
+        <td>50.0</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>
+            RuntimeVisibleTypeAnnotations,<br/> RuntimeInvisibleTypeAnnotations
+        </td>
+        <td>
+            ClassFile,<br/> field_info,<br/> method_info,<br/> Code
+        </td>
+        <td>52.0</td>
+    </tr>
+</table>
+
+<h2>Defining and Naming New Attributes</h2>
+
+<p class="indented">
+    Compilers are permitted to define and emit class files containing new attributes in the <code>attributes</code> tables of <b>class file structures</b>, <code>field_info</code> structures, <code>method_info</code> structures, and <code>Code</code> attributes.<sub class="my_note" style="color:green">笔记：这是从Java Compiler的角度来说，在生成ClassFile的过程中，允许Compiler添加自定义的attribute。</sub>
+    Java Virtual Machine implementations are permitted to recognize and use new attributes found in these attributes tables.<sub class="my_note" style="color:green">笔记：这是从JVM的角度来说，对于自定义的Attribute，JVM如果能够处理，就进行处理。</sub>
+    However, any attribute not defined as part of the class file specification must not affect the semantics of the class file.
+    Java Virtual Machine implementations are required to silently ignore attributes they do not recognize.<sub class="my_note" style="color:green">笔记：如果JVM处理不了自定义的Attribute，忽略它就行了。</sub>
+    <sub class="my_note" style="color:blue">笔记：对于New Attribute，有两个参与者，一个Java Compiler，另一个是Java Virtual Machine。Java Compiler可以在生成ClassFile时添加新的Attribute，JVM在读取ClassFile时,可以选择处理或者选择忽略这些新的Attribute。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    For instance, defining a new attribute to support vendor-specific debugging is permitted. Because Java Virtual Machine implementations are required to ignore attributes they do not recognize, class files intended for that particular Java Virtual Machine implementation will be usable by other implementations even if those implementations cannot make use of the additional debugging information that the class files contain.
+    <sub class="my_note" style="color:blue">笔记：JVM，如果不认识新的Attribute，就可以忽略它，不进行处理。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Java Virtual Machine implementations are specifically prohibited from throwing an exception or otherwise refusing to use class files simply because of the presence of some new attribute. Of course, tools operating on class files may not run correctly if given class files that do not contain all the attributes they require.
+    <sub class="my_note" style="color:blue">笔记：更明确的说，JVM遇到新的Attribute，如果能处理，就处理；如果不能处理，就忽略它；但是，不能因为不认识新的Attribute，就抛出异常或拒绝执行ClassFile。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Two attributes that are intended to be distinct, but that happen to use the same attribute name and are of the same length, will conflict on implementations that recognize either attribute.
+    Attributes defined other than in this specification must have names chosen according to the package naming convention described in The Java Language Specification, Java SE 8 Edition (JLS §6.1).
+    <sub class="my_note" style="color:blue">笔记：这里是对Attribute取名字提出的要求。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Future versions of this specification may define additional attributes.
+    <sub class="my_note" style="color:blue">笔记：未来的版本会添加新的Attribute。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Attribute Examples</h2>
+
+<h3>ClassFile</h3>
+
+<h4>SourceFile</h4>
+
+<p class="indented">
+    The <code>SourceFile</code> attribute is an optional fixed-length attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.<sub class="my_note" style="color:green">笔记：要理解SourceFile，需要把握两个关键词，即optional和fixed-length。其中，optional表示SourceFile可有可无，fixed-length是指SourceFile的长度是固定的。</sub>
+    There may be at most one <code>SourceFile</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.<sub class="my_note" style="color:green">笔记：在ClassFile中，只能存在一个SourceFile。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    The <code>SourceFile</code> attribute has the following format:
+</p>
+
+<div title="SourceFile_attribute" class="plaintext">
+SourceFile_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 sourcefile_index;
+}
+</div>
+
+<p>
+    The items of the <code>SourceFile_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <b>attribute_name_index</b>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "SourceFile".
+    </li>
+    <li>
+        <b>attribute_length</b>: The value of the <code>attribute_length</code> item of a <code>SourceFile_attribute</code> structure must be <b>two</b>.
+    </li>
+    <li>
+        <b>sourcefile_index</b>: The value of the <code>sourcefile_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing a string.
+    </li>
+</ul>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+}
+</div>
+
+<div title="Example: SourceFile" class="plaintext">
+constant_pool_count='0010' (16)
+constant_pool
+    ... ...
+    |010| CONSTANT_Utf8 {Value='Lsample/HelloWorld;', HexCode='0100134C73616D706C652F48656C6C6F576F726C643B'}
+    |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
+    |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|001| SourceFile:
+HexCode: 000B00000002000C
+attribute_name_index='000B' (11)
+attribute_length='00000002' (2)
+sourcefile_index='000C' (12)
+</div>
+
+<h4>RuntimeVisibleAnnotations</h4>
+
+<div title="HelloWorld.java" class="javacode">
+@FunctionalInterface
+public interface HelloWorld {
+    void run();
+}
+</div>
+
+<div title="Example: RuntimeVisibleAnnotations" class="plaintext">
+constant_pool_count='000B' (11)
+constant_pool
+    |001| CONSTANT_Class {Value='sample/HelloWorld', HexCode='070009'}
+    |002| CONSTANT_Class {Value='java/lang/Object', HexCode='07000A'}
+    |003| CONSTANT_Utf8 {Value='run', HexCode='01000372756E'}
+    |004| CONSTANT_Utf8 {Value='()V', HexCode='010003282956'}
+    |005| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
+    |006| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    |007| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D6556697369626C65416E6E6F746174696F6E73'}
+    |008| CONSTANT_Utf8 {Value='Ljava/lang/FunctionalInterface;', HexCode='01001F4C6A6176612F6C616E672F46756E6374696F6E616C496E746572666163653B'}
+    |009| CONSTANT_Utf8 {Value='sample/HelloWorld', HexCode='01001173616D706C652F48656C6C6F576F726C64'}
+    |010| CONSTANT_Utf8 {Value='java/lang/Object', HexCode='0100106A6176612F6C616E672F4F626A656374'}
+attributes_count='0002' (2)
+attributes
+--->|001| SourceFile:
+HexCode: 0005000000020006
+attribute_name_index='0005' (5)
+attribute_length='00000002' (2)
+sourcefile_index='0006' (6)
+--->|002| RuntimeVisibleAnnotations:
+HexCode: 000700000006000100080000
+attribute_name_index='0007' (7)
+attribute_length='00000006' (6)
+num_annotations='0001' (1)
+type_index='0008' (8)
+num_element_value_pairs='0000' (0)
+</div>
+
+<h4>Deprecated</h4>
+
+<div title="HelloWorld.java" class="javacode">
+@Deprecated
+public class HelloWorld {
+}
+</div>
+
+<div title="Example: Deprecated" class="plaintext">
+constant_pool_count='0013' (19)
+constant_pool
+    ... ...
+    |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
+    |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    |013| CONSTANT_Utf8 {Value='Deprecated', HexCode='01000A44657072656361746564'}
+    |014| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D6556697369626C65416E6E6F746174696F6E73'}
+    |015| CONSTANT_Utf8 {Value='Ljava/lang/Deprecated;', HexCode='0100164C6A6176612F6C616E672F446570726563617465643B'}
+    ... ..
+attributes_count='0003' (3)
+attributes
+--->|001| SourceFile:
+HexCode: 000B00000002000C
+attribute_name_index='000B' (11)
+attribute_length='00000002' (2)
+sourcefile_index='000C' (12)
+--->|002| Deprecated:
+HexCode: 000D00000000
+attribute_name_index='000D' (13)
+attribute_length='00000000' (0)
+--->|003| RuntimeVisibleAnnotations:
+HexCode: 000E000000060001000F0000
+attribute_name_index='000E' (14)
+attribute_length='00000006' (6)
+num_annotations='0001' (1)
+type_index='000F' (15)
+num_element_value_pairs='0000' (0)
+</div>
+
+<h4>Signature</h4>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld&lt;T&gt; {
+}
+</div>
+
+<div title="Example: Signature" class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |010| CONSTANT_Utf8 {Value='Lsample/HelloWorld;', HexCode='0100134C73616D706C652F48656C6C6F576F726C643B'}
+    |011| CONSTANT_Utf8 {Value='LocalVariableTypeTable', HexCode='0100164C6F63616C5661726961626C65547970655461626C65'}
+    |012| CONSTANT_Utf8 {Value='Lsample/HelloWorld&lt;TT;&gt;', HexCode='0100184C73616D706C652F48656C6C6F576F726C643C54543B3E3B'}
+    |013| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |014| CONSTANT_Utf8 {Value='&lt;T:Ljava/lang/Object;&gt;Ljava/lang/Object;', HexCode='0100283C543A4C6A6176612F6C616E672F4F626A6563743B3E4C6A6176612F6C616E672F4F626A6563743B'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|001| Signature:
+HexCode: 000D00000002000E
+attribute_name_index='000D' (13)
+attribute_length='00000002' (2)
+signature_index='000E' (14)
+</div>
+
+<h3>field_info</h3>
+
+<h4>ConstantValue</h4>
+
+<h3>method_info</h3>
+
+<h4>Code</h4>
+
+<h4>Exceptions</h4>
+
+<h4>AnnotationDefault</h4>
+
+<h2>Summing Up</h2>

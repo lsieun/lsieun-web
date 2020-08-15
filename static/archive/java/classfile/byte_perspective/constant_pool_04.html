@@ -1,0 +1,147 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Constant Pool: (4) The Last</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Constant Pool Index</h2>
+
+<p class="indented">
+    When a Java file is compiled, all references to variables and methods are stored in the class's constant pool as a symbolic reference. A symbolic reference is a logical reference not a reference that actually points to a physical memory location.
+</p>
+
+<p class="indented">
+    For each type it loads, a Java virtual machine must store a constant pool.
+    A constant pool is an ordered set of constants used by the type, including <b>literals</b> (string, integer, and floating point constants) and <b>symbolic references</b> to types, fields, and methods.
+    Entries in the constant pool are referenced by index, much like the elements of an array.
+    Because it holds symbolic references to all types, fields, and methods used by a type, the constant pool plays a central role in the dynamic linking of Java programs.
+</p>
+
+<ul>
+    <li>
+        <b>literals</b>:
+        <ul>
+            <li>CONSTANT_Utf8_info</li>
+            <li>CONSTANT_Integer_info</li>
+            <li>CONSTANT_Float_info</li>
+            <li>CONSTANT_Long_info</li>
+            <li>CONSTANT_Double_info</li>
+        </ul>
+    </li>
+    <li>
+        <b>symbolic references</b>:
+        <ul>
+            <li>CONSTANT_Class_info</li>
+            <li>CONSTANT_String_info</li>
+            <li>CONSTANT_Fieldref_info</li>
+            <li>CONSTANT_Methodref_info</li>
+            <li>CONSTANT_InterfaceMethodref_info</li>
+            <li>CONSTANT_NameAndType_info</li>
+            <li>CONSTANT_MethodHandle_info</li>
+            <li>CONSTANT_MethodType_info</li>
+            <li>CONSTANT_InvokeDynamic_info</li>
+        </ul>
+    </li>
+</ul>
+
+<div title="CONSTANT_Class_info" class="plaintext">
+CONSTANT_Class_info {
+    u1 tag;
+    u2 name_index; --&gt; CONSTANT_Utf8_info
+}
+</div>
+
+<div title="CONSTANT_String_info" class="plaintext">
+CONSTANT_String_info {
+    u1 tag;
+    u2 string_index; --&gt; CONSTANT_Utf8_info
+}
+</div>
+
+<div title="CONSTANT_Fieldref_info" class="plaintext">
+CONSTANT_Fieldref_info {
+    u1 tag;
+    u2 class_index; --&gt; CONSTANT_Class_info
+    u2 name_and_type_index; --&gt; CONSTANT_NameAndType_info
+}
+</div>
+
+<div title="CONSTANT_Methodref_info" class="plaintext">
+CONSTANT_Methodref_info {
+    u1 tag;
+    u2 class_index; --&gt; CONSTANT_Class_info
+    u2 name_and_type_index; --&gt; CONSTANT_NameAndType_info
+}
+</div>
+
+<div title="CONSTANT_InterfaceMethodref_info" class="plaintext">
+CONSTANT_InterfaceMethodref_info {
+    u1 tag;
+    u2 class_index; --&gt; CONSTANT_Class_info
+    u2 name_and_type_index; --&gt; CONSTANT_NameAndType_info
+}
+</div>
+
+<div title="CONSTANT_NameAndType_info" class="plaintext">
+CONSTANT_NameAndType_info {
+    u1 tag;
+    u2 name_index; --&gt; CONSTANT_Utf8_info
+    u2 descriptor_index; --&gt; CONSTANT_Utf8_info
+}
+</div>
+
+<div title="CONSTANT_MethodHandle_info" class="plaintext">
+CONSTANT_MethodHandle_info {
+    u1 tag;
+    u1 reference_kind; --&gt; must be in the range 1 to 9
+    u2 reference_index; --&gt; CONSTANT_Fieldref_info/CONSTANT_Methodref_info/CONSTANT_InterfaceMethodref_info
+}
+</div>
+
+<div title="CONSTANT_MethodType_info" class="plaintext">
+CONSTANT_MethodType_info {
+    u1 tag;
+    u2 descriptor_index; --&gt; CONSTANT_Utf8_info
+}
+</div>
+
+<div title="CONSTANT_InvokeDynamic_info" class="plaintext">
+CONSTANT_InvokeDynamic_info {
+    u1 tag;
+    u2 bootstrap_method_attr_index; --&gt; a valid index into the bootstrap_methods array of the bootstrap method table
+    u2 name_and_type_index; --&gt; CONSTANT_NameAndType_info
+}
+</div>
+
+<h2>two entries Constant</h2>
+
+<p>
+    The <code>CONSTANT_Long_info</code> and <code>CONSTANT_Double_info</code> represent 8-byte numeric (<code>long</code> and <code>double</code>) constants:
+</p>
+
+<div title="" class="plaintext">
+CONSTANT_Long_info {
+    u1 tag;
+    u4 high_bytes;
+    u4 low_bytes;
+}
+
+CONSTANT_Double_info {
+    u1 tag;
+    u4 high_bytes;
+    u4 low_bytes;
+}
+</div>
+
+<p class="indented">
+    All 8-byte constants take up two entries in the <code>constant_pool</code> table of the class file.
+    If a <code>CONSTANT_Long_info</code> or <code>CONSTANT_Double_info</code> structure is the item in the <code>constant_pool</code> table at index <code>n</code>, then the next usable item in the pool is located at index <code>n+2</code>. The <code>constant_pool</code> index <code>n+1</code> must be valid but is considered unusable.
+</p>
+
+<p>
+    Note: <b>In retrospect, making 8-byte constants take two constant pool entries was a poor choice.</b>
+</p>
+
