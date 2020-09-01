@@ -1,0 +1,258 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Opcode: (2) JVM Execution Model</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>JVM Run-Time Data Areas</h2>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        提及JVM Run-Time Data Areas，我想到了一篇关于“范进中举”的文章。
+    </p>
+
+    <p>
+        范进家徒四壁，穷得连一件像样的衣服都买不起，甚至吃饭都成问题，需要老丈人胡屠夫接济。胡屠夫也瞧不起女婿范进：“我自倒运，把个女儿嫁与你这现世宝，历年以来，不知累了我多少。”
+    </p>
+
+    <p>
+        后来，范进想去乡试，因没有盘费，走去同丈人商议，被胡屠户一口啐在脸上，骂了一个狗血喷头，道：“不要失了你的时了！你自己只觉得中了一个相公，就‘癞蛤蟆想吃起天鹅肉’来！我听见人说，就是中相公时，也不是你的文章，还是宗师看见你老，不过意，舍与你的。如今痴心就想中起老爷来！这些中老爷的都是天上的‘文曲星’！你不看见城里张府上那些老爷，都有万贯家私，一个个方面大耳?像你这尖嘴猴腮，也该撒抛尿自己照照！不三不四，就想天鹅屁吃！趁早收了这心，明年在我们行事里替你寻一个馆，每年寻几两银子，养活你那老不死的老娘和你老婆是正经！你问我借盘缠，我一天杀一个猪还赚不得钱把银子，都把与你去丢在水里，叫我一家老小嗑西北风！”一顿夹七夹八，骂的范进摸不着门。
+    </p>
+
+    <p>
+        辞了丈人回来，范进心里想：“宗师说我火候已到，<b>自古无场外的举人，如不进去考他一考，如何甘心?</b>”因向几个同案商议，瞒着丈人，到城里乡试。出了场，即便回家。家里已是饿了两三天。被胡屠户知道，又骂了一顿。
+    </p>
+
+    <p>
+        如《镜花缘》所言：“盖未进场，如何言中；就如人事未尽，如何言得天命。世上无论何事，若人力未尽，从无坐在家中，就能平空落下随心所欲事来。强求固属不可，至应分当行之事，坐失其机，及至事后委之于命，常人之情，往往如此。”
+    </p>
+
+    <p>
+        范进考中之时已经54岁，一直考了二十多次。如果你现在54岁，你还有勇气坚持下来吗？估计很少有这样的人。
+    </p>
+</div>
+
+<p>
+
+</p>
+
+<p>
+    这是一种动态视角来看待问题。
+</p>
+
+<p class="indented">
+    Inside <b>compiled classes</b> the <code>code</code> of <b>methods</b> is stored as a sequence of <b>bytecode instructions</b>.
+    Before presenting the <code>bytecode instructions</code> it is necessary to present the <b>Java Virtual Machine execution model</b>.
+    <sub class="my_note" style="color:blue">笔记：compiled classes--&gt;method--&gt;code--&gt;bytecode instruction</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    As you know Java code is executed inside threads. Each <b>thread</b> has its own <b>execution stack</b>, which is made of <b>frames</b>. Each frame represents a method invocation: each time a method is invoked, a new frame is pushed on the current thread’s execution stack. When the method returns, either normally or because of an exception, this frame is popped from the execution stack and execution continues in the calling method (whose frame is now on top of the stack).
+    <sub class="my_note" style="color:blue">笔记：thread--&gt;execution stack--&gt;frame(method invocation)</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        第一，从操作系统（OS）的角度来说。启动的后Java虚拟机（JVM），就是操作系统（OS）中的一个进程（Process），操作系统还可以有许多其他的进程，此刻我们只关注JVM的进程。
+    </p>
+    <p>
+        第二，从JVM进程的角度来说。它本身是一个进程（Process），但它又可以包含许多的线程（Threads），而线程（Threads）是真正执行代码的载体。严格的来说，代码（Code）是在线程（Thread）当中执行的，而不是在进程（Process）当中执行的。进程（Process）是线程（Threads）的容器，真正完成代码执行的是线程（Threads），而进程（Process）则作为线程（Threads）的执行环境。 进程（Process）是操作系统（OS）资源分配的基本单位，而线程（Threads）是任务调度和执行的基本单位。一个进程（Process）当中，可以包含多个线程（Threads）；最少的情况下，一个进程也要包含一个线程。
+    </p>
+    <p>
+        第三，从JVM Thread的角度来说，在每一个Thread中都有一个自己的execution stack，而在execution stack存储的元素就是frame。
+    </p>
+    <p>
+        第四，从frame的角度来说。每一个frame都对应着一个方法的调用。在frame当中，有两个部分，一个部分是local variable，另一部分是operand stack。
+    </p>
+</div>
+
+<p class="indented">
+    Each <b>frame</b> contains two parts: a <b>local variables</b> part and an <b>operand stack</b> part. The local variables part contains variables that can be accessed by their index, in random order. The operand stack part, as its name implies, is a stack of values that are used as operands by bytecode instructions. This means that the values in this stack can only be accessed in Last In First Out order. Do not confuse <b>the operand stack</b> and <b>the thread’s execution stack</b>: each frame in the execution stack contains its own operand stack.
+    <sub class="my_note" style="color:blue">笔记：frame = local variables + operand stack</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The <b>size</b> of the <b>local variables</b> and <b>operand stack</b> parts depends on the method’s <code>code</code>. It is computed at compile time and is stored along with the bytecode instructions in compiled classes. As a consequence, all the frames that correspond to the invocation of a given method have the same size, but frames that correspond to different methods can have different sizes for their local variables and operand stack parts.
+    <sub class="my_note" style="color:blue">笔记：local variables和operand stack是在compile的时候决定的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="Code_attribute" class="plaintext">
+Code_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 max_stack;      // 这里表示operand stack的大小
+    u2 max_locals;     // 这里表示local variables的大小
+    u4 code_length;
+    u1 code[code_length];
+    u2 exception_table_length;
+    {   u2 start_pc;
+        u2 end_pc;
+        u2 handler_pc;
+        u2 catch_type;
+    } exception_table[exception_table_length];
+    u2 attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<p class="indented">
+    When it is created, a <b>frame</b> is initialized with <b>an empty stack</b>, and <b>its local variables</b> are initialized with the target object <code>this</code> (for non static methods) and with <b>the method’s arguments</b>. For instance, calling the method <code>a.equals(b)</code> creates a frame with an empty stack and with the first two local variables initialized to <code>a</code> and <code>b</code> (other local variables are uninitialized).
+    <sub class="my_note" style="color:blue">笔记：这里讲了frame在创建的时候，是如何初始化的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int add(int a, int b) {
+        int c = a + b;
+        return c;
+    }
+}
+</div>
+
+<div title="add:(II)I" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 6
+code = 1B1C603E1DAC
+=== === ===  === === ===  === === ===
+0000: iload_1              // 1B
+0001: iload_2              // 1C
+0002: iadd                 // 60
+0003: istore_3             // 3E
+0004: iload_3              // 1D
+0005: ireturn              // AC
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  this:Lsample/HelloWorld;
+    1         0       6  a:I
+    2         0       6  b:I
+    3         4       2  c:I
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static int add(int a, int b) {
+        int c = a + b;
+        return c;
+    }
+}
+</div>
+
+<div title="add:(II)I" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 6
+code = 1A1B603D1CAC
+=== === ===  === === ===  === === ===
+0000: iload_0              // 1A
+0001: iload_1              // 1B
+0002: iadd                 // 60
+0003: istore_2             // 3D
+0004: iload_2              // 1C
+0005: ireturn              // AC
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  a:I
+    1         0       6  b:I
+    2         4       2  c:I
+</div>
+
+<ul>
+    <li>
+        TODO: LocalVariableTable Attribute要介绍，它对应于Local Variables
+    </li>
+    <li>
+        TODO: start_pc, length表示了变量的作用域。
+    </li>
+    <li></li>
+    <li></li>
+</ul>
+
+<p class="indented">
+    Each <b>slot</b> in the <b>local variables</b> and <b>operand stack</b> parts can hold any Java value, except <code>long</code> and <code>double</code> values. These values require two slots. This complicates the management of local variables: for instance the <code>i<sup>th</sup></code> method argument is not necessarily stored in local variable <code>i</code>. For example, calling <code>Math.max(1L, 2L)</code> creates a frame with the <code>1L</code> value in the first two local variable slots, and with the value <code>2L</code> in the third and fourth slots.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        对slot概念的解读。货币，在中国，使用RMB；在日本，使用日元；在欧洲，使用欧元；在美国，使用美元。这些货币，在各自的环境中，发挥着各自的作用。在谈论内存（Memory）和硬盘（Disk）的时候，衡量它们的大小，我们使用byte作为计算单位。在frame中的local varialbe和operand stack中，并没有使用byte作为计算单位，而是使用slot作为计算单位。
+    </p>
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public long add(long a, long b) {
+        long c = a + b;
+        return c;
+    }
+}
+</div>
+
+<div title="add:(JJ)J" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 7
+code_length = 8
+code = 1F216137051605AD
+=== === ===  === === ===  === === ===
+0000: lload_1              // 1F
+0001: lload_3              // 21
+0002: ladd                 // 61
+0003: lstore          5    // 3705
+0005: lload           5    // 1605
+0007: lreturn              // AD
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       8  this:Lsample/HelloWorld;
+    1         0       8  a:J
+    3         0       8  b:J
+    5         5       3  c:J
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static long add(long a, long b) {
+        long c = a + b;
+        return c;
+    }
+}
+</div>
+
+<div title="add:(JJ)J" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 6
+code_length = 8
+code = 1E206137041604AD
+=== === ===  === === ===  === === ===
+0000: lload_0              // 1E
+0001: lload_2              // 20
+0002: ladd                 // 61
+0003: lstore          4    // 3704
+0005: lload           4    // 1604
+0007: lreturn              // AD
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       8  a:J
+    2         0       8  b:J
+    4         5       3  c:J
+</div>
+
+<h2>local variable</h2>
+
+<p>
+    local variable对于static和non-static方法，第一个local variable要不要存储this变量呢？
+</p>

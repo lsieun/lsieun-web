@@ -1,0 +1,916 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Opcode: Math</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    Arithmetic and logic. These instructions pop numeric values from the <b>operand stack</b> combine them and push the result on <b>the stack</b>. They do not have any argument. <code>xADD</code>, <code>xSUB</code>, <code>xMUL</code>, <code>xDIV</code> and <code>xREM</code> correspond to the <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> and <code>%</code> operations, where <code>x</code> is either <code>I</code>, <code>L</code>, <code>F</code> or <code>D</code>. Similarly there are other instructions corresponding to <code>&lt;&lt;</code>, <code>&gt;&gt;</code>, <code>&gt;&gt;&gt;</code>, <code>|</code>, <code>&</code> and <code>^</code>, for <code>int</code> and <code>long</code> values.
+</p>
+
+<h2>Arithmetic</h2>
+
+<h3>1+2</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 1 + 2;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 3
+code = 063CB1
+=== === ===  === === ===  === === ===
+0000: iconst_3             // 06
+0001: istore_1             // 3C
+0002: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       3  this:Lsample/HelloWorld;
+    1         2       1  a:I
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int num = 128 + 256;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 5
+code = 1101803CB1
+=== === ===  === === ===  === === ===
+0000: sipush          384  // 110180
+0003: istore_1             // 3C
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+    1         4       1  num:I
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int num = 128 + 256000;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 4
+code = 12023CB1
+=== === ===  === === ===  === === ===
+0000: ldc             #2   // 1202       || 256128
+0002: istore_1             // 3C
+0003: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       4  this:Lsample/HelloWorld;
+    1         3       1  num:I
+</div>
+
+<h3>add</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 1;
+        int b = 2;
+        int c = a + b;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 9
+code = 043C053D1B1C603EB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_2             // 05
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: iload_2              // 1C
+0006: iadd                 // 60
+0007: istore_3             // 3E
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         2       7  a:I
+    2         4       5  b:I
+    3         8       1  c:I
+</div>
+
+<h3>sub</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 1;
+        int b = 2;
+        int c = a - b;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 9
+code = 043C053D1B1C643EB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_2             // 05
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: iload_2              // 1C
+0006: isub                 // 64
+0007: istore_3             // 3E
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         2       7  a:I
+    2         4       5  b:I
+    3         8       1  c:I
+</div>
+
+<h3>mul</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 1;
+        int b = 2;
+        int c = a * b;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 9
+code = 043C053D1B1C683EB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_2             // 05
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: iload_2              // 1C
+0006: imul                 // 68
+0007: istore_3             // 3E
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         2       7  a:I
+    2         4       5  b:I
+    3         8       1  c:I
+</div>
+
+<h3>div</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 1;
+        int b = 2;
+        int c = a / b;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 9
+code = 043C053D1B1C6C3EB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_2             // 05
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: iload_2              // 1C
+0006: idiv                 // 6C
+0007: istore_3             // 3E
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         2       7  a:I
+    2         4       5  b:I
+    3         8       1  c:I
+</div>
+
+<h3>rem</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 1;
+        int b = 2;
+        int c = a % b;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 9
+code = 043C053D1B1C703EB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_2             // 05
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: iload_2              // 1C
+0006: irem                 // 70
+0007: istore_3             // 3E
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         2       7  a:I
+    2         4       5  b:I
+    3         8       1  c:I
+</div>
+
+<h3>ineg</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 1;
+        int b = -a;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 6
+code = 043C1B743DB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iload_1              // 1B
+0003: ineg                 // 74
+0004: istore_2             // 3D
+0005: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  this:Lsample/HelloWorld;
+    1         2       4  a:I
+    2         5       1  b:I
+</div>
+
+<h2>iinc</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int i = 0;
+        i++;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 6
+code = 033C840101B1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iinc       1    1    // 840101
+0005: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  this:Lsample/HelloWorld;
+    1         2       4  i:I
+</div>
+
+<h3>int plus plus</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int num = 1;
+        num++;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 6
+code = 043C840101B1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iinc       1    1    // 840101
+0005: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  this:Lsample/HelloWorld;
+    1         2       4  num:I
+</div>
+
+<h3>long plus plus</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        long num = 1;
+        num++;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 3
+code_length = 7
+code = 0A401F0A6140B1
+=== === ===  === === ===  === === ===
+0000: lconst_1             // 0A
+0001: lstore_1             // 40
+0002: lload_1              // 1F
+0003: lconst_1             // 0A
+0004: ladd                 // 61
+0005: lstore_1             // 40
+0006: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       7  this:Lsample/HelloWorld;
+    1         2       5  num:J
+</div>
+
+<h3>float plus plus</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        float num = 1;
+        num++;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 2
+code_length = 7
+code = 0C44230C6244B1
+=== === ===  === === ===  === === ===
+0000: fconst_1             // 0C
+0001: fstore_1             // 44
+0002: fload_1              // 23
+0003: fconst_1             // 0C
+0004: fadd                 // 62
+0005: fstore_1             // 44
+0006: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       7  this:Lsample/HelloWorld;
+    1         2       5  num:F
+</div>
+
+<h3>double plus plus</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        double num = 1;
+        num++;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 3
+code_length = 7
+code = 0F48270F6348B1
+=== === ===  === === ===  === === ===
+0000: dconst_1             // 0F
+0001: dstore_1             // 48
+0002: dload_1              // 27
+0003: dconst_1             // 0F
+0004: dadd                 // 63
+0005: dstore_1             // 48
+0006: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       7  this:Lsample/HelloWorld;
+    1         2       5  num:D
+</div>
+
+<h3>Integer plus plus</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Integer num = 1;
+        num++;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 22
+code = 04B800024C2B4D2BB600030460B80002594C4E2C57B1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: invokestatic    #2   // B80002     || java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+0004: astore_1             // 4C
+0005: aload_1              // 2B
+0006: astore_2             // 4D
+0007: aload_1              // 2B
+0008: invokevirtual   #3   // B60003     || java/lang/Integer.intValue:()I
+0011: iconst_1             // 04
+0012: iadd                 // 60
+0013: invokestatic    #2   // B80002     || java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+0016: dup                  // 59
+0017: astore_1             // 4C
+0018: astore_3             // 4E
+0019: aload_2              // 2C
+0020: pop                  // 57
+0021: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      22  this:Lsample/HelloWorld;
+    1         5      17  num:Ljava/lang/Integer;
+</div>
+
+<h3>i++ vs ++i</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int num = 1;
+        int result = num++;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 8
+code = 043C1B8401013DB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iload_1              // 1B
+0003: iinc       1    1    // 840101
+0006: istore_2             // 3D
+0007: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       8  this:Lsample/HelloWorld;
+    1         2       6  num:I
+    2         7       1  result:I
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int num = 1;
+        int result = ++num;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 8
+code = 043C8401011B3DB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iinc       1    1    // 840101
+0005: iload_1              // 1B
+0006: istore_2             // 3D
+0007: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       8  this:Lsample/HelloWorld;
+    1         2       6  num:I
+    2         7       1  result:I
+</div>
+
+<h2>Bit Shift</h2>
+
+<h3>shift left</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 1;
+        int b = 2;
+        int c = a &lt;&lt; b;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 9
+code = 043C053D1B1C783EB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_2             // 05
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: iload_2              // 1C
+0006: ishl                 // 78
+0007: istore_3             // 3E
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         2       7  a:I
+    2         4       5  b:I
+    3         8       1  c:I
+</div>
+
+<h3>arithmetic shift right</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 1;
+        int b = 2;
+        int c = a &gt;&gt; b;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 9
+code = 043C053D1B1C7A3EB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_2             // 05
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: iload_2              // 1C
+0006: ishr                 // 7A
+0007: istore_3             // 3E
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         2       7  a:I
+    2         4       5  b:I
+    3         8       1  c:I
+</div>
+
+<h3>logical shift right</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 1;
+        int b = 2;
+        int c = a &gt;&gt;&gt; b;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 9
+code = 043C053D1B1C7C3EB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_2             // 05
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: iload_2              // 1C
+0006: iushr                // 7C
+0007: istore_3             // 3E
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         2       7  a:I
+    2         4       5  b:I
+    3         8       1  c:I
+</div>
+
+<h3>&gt;&gt; vs &gt;&gt;&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import lsieun.utils.BitUtils;
+
+public class HelloWorld {
+    public static void main(String[] args) {
+        int value = -128;
+        System.out.println(BitUtils.toBits(value));
+        int arithmetic_shift_right = value >> 4;
+        System.out.println(BitUtils.toBits(arithmetic_shift_right));
+        int logical_shift_right = value >>> 4;
+        System.out.println(BitUtils.toBits(logical_shift_right));
+    }
+}
+</div>
+
+<div title="Run Output" class="plaintext">
+11111111111111111111111110000000
+11111111111111111111111111111000
+00001111111111111111111111111000
+</div>
+
+<h2>Bit Logic</h2>
+
+<h3>位操作：与 and</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 1;
+        int b = 2;
+        int c = a & b;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 9
+code = 043C053D1B1C7E3EB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_2             // 05
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: iload_2              // 1C
+0006: iand                 // 7E
+0007: istore_3             // 3E
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         2       7  a:I
+    2         4       5  b:I
+    3         8       1  c:I
+</div>
+
+<h3>位操作：或 or</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 1;
+        int b = 2;
+        int c = a | b;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 9
+code = 043C053D1B1C803EB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_2             // 05
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: iload_2              // 1C
+0006: ior                  // 80
+0007: istore_3             // 3E
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         2       7  a:I
+    2         4       5  b:I
+    3         8       1  c:I
+</div>
+
+<h3>位操作：异或 xor</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 1;
+        int b = 2;
+        int c = a ^ b;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 9
+code = 043C053D1B1C823EB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_2             // 05
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: iload_2              // 1C
+0006: ixor                 // 82
+0007: istore_3             // 3E
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         2       7  a:I
+    2         4       5  b:I
+    3         8       1  c:I
+</div>
+
+<h3>位操作：非 ~</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 0;
+        int b = ~a;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 7
+code = 033C1B02823DB1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iload_1              // 1B
+0003: iconst_m1            // 02
+0004: ixor                 // 82
+0005: istore_2             // 3D
+0006: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       7  this:Lsample/HelloWorld;
+    1         2       5  a:I
+    2         6       1  b:I
+</div>
+
+<h2>Summing Up</h2>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Arithmetic Operation</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>opcode</th>
+        <th>mnemonic symbol</th>
+        <th>meaning</th>
+    </tr>
+    </thead>
+    <tbody style="display: none;">
+    <tr><td><code>96</code></td><td>iadd</td><td>Add int</td></tr>
+    <tr><td><code>97</code></td><td>ladd</td><td></td></tr>
+    <tr><td><code>98</code></td><td>fadd</td><td></td></tr>
+    <tr><td><code>99</code></td><td>dadd</td><td></td></tr>
+    <tr><td><code>100</code></td><td>isub</td><td>Subtract int</td></tr>
+    <tr><td><code>101</code></td><td>lsub</td><td></td></tr>
+    <tr><td><code>102</code></td><td>fsub</td><td></td></tr>
+    <tr><td><code>103</code></td><td>dsub</td><td></td></tr>
+    <tr><td><code>104</code></td><td>imul</td><td>Multiply int</td></tr>
+    <tr><td><code>105</code></td><td>lmul</td><td></td></tr>
+    <tr><td><code>106</code></td><td>fmul</td><td></td></tr>
+    <tr><td><code>107</code></td><td>dmul</td><td></td></tr>
+    <tr><td><code>108</code></td><td>idiv</td><td>Divide int</td></tr>
+    <tr><td><code>109</code></td><td>ldiv</td><td></td></tr>
+    <tr><td><code>110</code></td><td>fdiv</td><td></td></tr>
+    <tr><td><code>111</code></td><td>ddiv</td><td></td></tr>
+    <tr><td><code>112</code></td><td>irem</td><td>Remainder int</td></tr>
+    <tr><td><code>113</code></td><td>lrem</td><td></td></tr>
+    <tr><td><code>114</code></td><td>frem</td><td></td></tr>
+    <tr><td><code>115</code></td><td>drem</td><td></td></tr>
+    <tr><td><code>116</code></td><td>ineg</td><td>Negate int</td></tr>
+    <tr><td><code>117</code></td><td>lneg</td><td></td></tr>
+    <tr><td><code>118</code></td><td>fneg</td><td></td></tr>
+    <tr><td><code>119</code></td><td>dneg</td><td></td></tr>
+    <tr><td><code>132</code></td><td>iinc</td><td>Increment local variable by constant</td></tr>
+    </tbody>
+</table>
+
+<hr/>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Bit Operation</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>opcode</th>
+        <th>mnemonic symbol</th>
+        <th>meaning</th>
+    </tr>
+    </thead>
+    <tbody style="display: none;">
+    <tr><td><code>120</code></td><td>ishl</td><td>Shift left int</td></tr>
+    <tr><td><code>121</code></td><td>lshl</td><td></td></tr>
+    <tr><td><code>122</code></td><td>ishr</td><td>Arithmetic shift right int</td></tr>
+    <tr><td><code>123</code></td><td>lshr</td><td></td></tr>
+    <tr><td><code>124</code></td><td>iushr</td><td>Logical shift right int</td></tr>
+    <tr><td><code>125</code></td><td>lushr</td><td></td></tr>
+    <tr><td><code>126</code></td><td>iand</td><td>Boolean AND int</td></tr>
+    <tr><td><code>127</code></td><td>land</td><td></td></tr>
+    <tr><td><code>128</code></td><td>ior</td><td>Boolean OR int</td></tr>
+    <tr><td><code>129</code></td><td>lor</td><td></td></tr>
+    <tr><td><code>130</code></td><td>ixor</td><td>Boolean XOR int</td></tr>
+    <tr><td><code>131</code></td><td>lxor</td><td></td></tr>
+    </tbody>
+</table>
+
+<hr/>

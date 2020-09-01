@@ -1,0 +1,598 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Opcode: Methods</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>constructor invocation</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        HelloWorld instance = new HelloWorld();
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='0013' (19)
+constant_pool
+    ... ...
+    |002| CONSTANT_Class {Value='sample/HelloWorld', HexCode='070011'}
+    |003| CONSTANT_Methodref {Value='sample/HelloWorld.&lt;init&gt;:()V', HexCode='0A00020010'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 2
+code_length = 9
+code = BB000259B700034CB1
+=== === ===  === === ===  === === ===
+0000: new             #2   // BB0002     || sample/HelloWorld
+0003: dup                  // 59
+0004: invokespecial   #3   // B70003     || sample/HelloWorld.&lt;init&gt;:()V
+0007: astore_1             // 4C
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         8       1  instance:Lsample/HelloWorld;
+</div>
+
+<h2>non-static method invocation</h2>
+
+<h3>public method</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void targetMethod() {
+        //
+    }
+
+    public void test() {
+        targetMethod();
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 5
+code = 2AB60002B1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: invokevirtual   #2   // B60002     || sample/HelloWorld.targetMethod:()V
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+</div>
+
+<h3>protected method</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    protected void targetMethod() {
+        //
+    }
+
+    public void test() {
+        targetMethod();
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 5
+code = 2AB60002B1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: invokevirtual   #2   // B60002     || sample/HelloWorld.targetMethod:()V
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+</div>
+
+<h3>private method</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private void targetMethod() {
+        //
+    }
+
+    public void test() {
+        targetMethod();
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 5
+code = 2AB70002B1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: invokespecial   #2   // B70002     || sample/HelloWorld.targetMethod:()V
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+</div>
+
+<h3>package method</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    void targetMethod() {
+        //
+    }
+
+    public void test() {
+        targetMethod();
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 5
+code = 2AB60002B1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: invokevirtual   #2   // B60002     || sample/HelloWorld.targetMethod:()V
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+</div>
+
+<h3>use "this" only when necessary</h3>
+
+<p class="indented">
+    Some people will obsessively(着迷一般地) put <code>this</code> in front of every <b>method call</b> and <b>field reference</b>, arguing that it makes it “clearer and more explicit.” <strong>Don’t do it.</strong> There’s a reason that we use high-level languages: They do things for us. If you put <code>this</code> in when it’s not necessary, you will confuse and annoy everyone who reads your code, since all the rest of the code they’ve read won’t use <code>this</code> everywhere. People expect <code>this</code> to be used only when it is necessary. Following a consistent and straightforward coding style saves time and money. -- 《Think in Java》
+</p>
+
+<h2>static method invocation</h2>
+
+<h3>static public method</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static void targetMethod() {
+        //
+    }
+
+    public void test() {
+        targetMethod();
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 0
+max_locals = 1
+code_length = 4
+code = B80002B1
+=== === ===  === === ===  === === ===
+0000: invokestatic    #2   // B80002     || sample/HelloWorld.targetMethod:()V
+0003: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       4  this:Lsample/HelloWorld;
+</div>
+
+<h3>static protected method</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    protected static void targetMethod() {
+        //
+    }
+
+    public void test() {
+        targetMethod();
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 0
+max_locals = 1
+code_length = 4
+code = B80002B1
+=== === ===  === === ===  === === ===
+0000: invokestatic    #2   // B80002     || sample/HelloWorld.targetMethod:()V
+0003: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       4  this:Lsample/HelloWorld;
+</div>
+
+<h3>static private method</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private static void targetMethod() {
+        //
+    }
+
+    public void test() {
+        targetMethod();
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 0
+max_locals = 1
+code_length = 4
+code = B80002B1
+=== === ===  === === ===  === === ===
+0000: invokestatic    #2   // B80002     || sample/HelloWorld.targetMethod:()V
+0003: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       4  this:Lsample/HelloWorld;
+</div>
+
+<h3>static package method</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    static void targetMethod() {
+        //
+    }
+
+    public void test() {
+        targetMethod();
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 0
+max_locals = 1
+code_length = 4
+code = B80002B1
+=== === ===  === === ===  === === ===
+0000: invokestatic    #2   // B80002     || sample/HelloWorld.targetMethod:()V
+0003: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       4  this:Lsample/HelloWorld;
+</div>
+
+<h2>Interface Method</h2>
+
+<h3>interface non-static method</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.ArrayList;
+import java.util.List;
+
+public class HelloWorld {
+    public void test() {
+        List&lt;String&gt; list = new ArrayList<>();
+        list.add("Good");
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 2
+code_length = 18
+code = BB000259B700034C2B1204B90005020057B1
+=== === ===  === === ===  === === ===
+0000: new             #2   // BB0002     || java/util/ArrayList
+0003: dup                  // 59
+0004: invokespecial   #3   // B70003     || java/util/ArrayList.&lt;init&gt;:()V
+0007: astore_1             // 4C
+0008: aload_1              // 2B
+0009: ldc             #4   // 1204       || Good
+0011: invokeinterface #5   // B900050200 || java/util/List.add:(Ljava/lang/Object;)Z
+0016: pop                  // 57
+0017: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      18  this:Lsample/HelloWorld;
+    1         8      10  list:Ljava/util/List;
+
+LocalVariableTypeTable:
+index  start_pc  length  name_and_type
+    1         8      10  list:Ljava/util/List&lt;Ljava/lang/String;&gt;;
+</div>
+
+<h3>interface default method</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        MyInterface instance = null;
+        instance.targetMethod();
+    }
+}
+
+interface MyInterface {
+    default void targetMethod() {
+        //
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 9
+code = 014C2BB900020100B1
+=== === ===  === === ===  === === ===
+0000: aconst_null          // 01
+0001: astore_1             // 4C
+0002: aload_1              // 2B
+0003: invokeinterface #2   // B900020100 || sample/MyInterface.targetMethod:()V
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         2       7  instance:Lsample/MyInterface;
+</div>
+
+<h3>interface static method</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        MyInterface.targetMethod();
+    }
+}
+
+interface MyInterface {
+    static void targetMethod() {
+        //
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 0
+max_locals = 1
+code_length = 4
+code = B80002B1
+=== === ===  === === ===  === === ===
+0000: invokestatic    #2   // B80002     || sample/MyInterface.targetMethod:()V
+0003: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       4  this:Lsample/HelloWorld;
+</div>
+
+<h2>Invokedynamic</h2>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.IntFunction;
+
+public class HelloWorld {
+    public void test() {
+        IntFunction&lt;Integer&gt; func = (i) -> i + 5;
+        func.apply(10);
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='003B' (59)
+constant_pool
+    ... ...
+    |002| CONSTANT_InvokeDynamic {Value='#0:apply:()Ljava/util/function/IntFunction;', HexCode='1200000020'}
+    |003| CONSTANT_InterfaceMethodref {Value='java/util/function/IntFunction.apply:(I)Ljava/lang/Object;', HexCode='0B00210022'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 2
+code_length = 16
+code = BA000200004C2B100AB90003020057B1
+=== === ===  === === ===  === === ===
+0000: invokedynamic   #2   // BA00020000 || apply:()Ljava/util/function/IntFunction;
+0005: astore_1             // 4C
+0006: aload_1              // 2B
+0007: bipush          10   // 100A
+0009: invokeinterface #3   // B900030200 || java/util/function/IntFunction.apply:(I)Ljava/lang/Object;
+0014: pop                  // 57
+0015: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      16  this:Lsample/HelloWorld;
+    1         6      10  func:Ljava/util/function/IntFunction;
+
+LocalVariableTypeTable:
+index  start_pc  length  name_and_type
+    1         6      10  func:Ljava/util/function/IntFunction&lt;Ljava/lang/Integer;&gt;;
+</div>
+
+<h2>Other Scene</h2>
+
+<h3>parent method</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        String str = toString();
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 6
+code = 2AB600024CB1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: invokevirtual   #2   // B60002     || java/lang/Object.toString:()Ljava/lang/String;
+0004: astore_1             // 4C
+0005: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  this:Lsample/HelloWorld;
+    1         5       1  str:Ljava/lang/String;
+</div>
+
+<p>
+    仅做一点小小的改变，添加<code>super</code>限定，就会使用<code>invokespecial</code>。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        String str = super.toString();
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 6
+code = 2AB700024CB1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: invokespecial   #2   // B70002     || java/lang/Object.toString:()Ljava/lang/String;
+0004: astore_1             // 4C
+0005: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  this:Lsample/HelloWorld;
+    1         5       1  str:Ljava/lang/String;
+</div>
+
+<h3>native method</h3>
+
+<p>
+    <code>System.nanoTime()</code>方法带有<code>ACC_NATIVE</code>标识，说明它调用的是一个native method（implemented in a language other than Java），其本身并不带有<code>Code</code>属性。
+    但是，在自己的代码中调用<code>System.nanoTime()</code>，则是调用Java代码。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        System.nanoTime();
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 1
+code_length = 5
+code = B8000258B1
+=== === ===  === === ===  === === ===
+0000: invokestatic    #2   // B80002     || java/lang/System.nanoTime:()J
+0003: pop2                 // 58
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+</div>
+
+<h2>Summing Up</h2>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>invoke method</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>opcode</th>
+        <th>mnemonic symbol</th>
+        <th>meaning</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr><td><code>182</code></td><td>invokevirtual</td><td class="w3-left-align">Invoke instance method; dispatch based on class</td></tr>
+    <tr><td><code>183</code></td><td>invokespecial</td><td class="w3-left-align">Invoke instance method; special handling for superclass, private, and instance initialization method invocations</td></tr>
+    <tr><td><code>184</code></td><td>invokestatic</td><td class="w3-left-align">Invoke a class (static) method</td></tr>
+    <tr><td><code>185</code></td><td>invokeinterface</td><td class="w3-left-align">Invoke interface method</td></tr>
+    <tr><td><code>186</code></td><td>invokedynamic</td><td class="w3-left-align">Invoke dynamic method</td></tr>
+    </tbody>
+</table>
+
+<p>
+    对于<code>invokespecial</code>有三种情况
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public HelloWorld() {
+        super(); // 第一种情况，invokespecial for superclass
+    }
+
+    private void targetMethod() {
+        //
+    }
+
+    public void test() {
+        super.toString(); // 第一种情况，invokespecial for superclass
+        targetMethod(); // 第二种情况，invokespecial for private method
+        HelloWorld instance = new HelloWorld(); // 第三种情况，invokespecial for instance initialization
+    }
+
+    public void compare() {
+        super.toString(); //invokespecial for superclass
+        toString(); // invokevirtual
+    }
+}
+</div>
+
+<p class="indented">
+    <b>Invokespecial</b> is used in three situations in which an instance method must be invoked based on the type of the reference, not on the class of the object. The three situations are:
+</p>
+
+<ol>
+    <li>
+        invocation of methods using the <code>super</code> keyword
+    </li>
+    <li>
+        invocation of private methods
+    </li>
+    <li>
+        invocation of instance initialization (<code>&lt;init&gt;</code>) methods
+    </li>
+</ol>
+

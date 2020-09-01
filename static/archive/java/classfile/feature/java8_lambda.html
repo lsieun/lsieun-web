@@ -1,0 +1,31 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Lambdas in Java Bytecode</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    We know that Java code itself does not compile directly to bytes that are executed by the operating system.
+    Instead, the Java compiler (henceforth, “javac”) compiles to another intermediate form, which is executed by the Java Virtual Machine (henceforth, “JVM”).
+    This intermediate form is called the <b>Java bytecode</b>.
+    <b>Bytecode, however, has no concept of lambdas.</b>
+    It also has no concept of try-with-resources blocks, enhanced for-loops, or many of the other structures within Java.
+    Instead, the compiler converts those Java structures into an underlying form in bytecode.
+</p>
+
+<h2>Method References in Bytecode</h2>
+
+<p>
+    In terms of bytecode, the simplest kind of lambda is the <b>method reference</b>.
+</p>
+
+
+
+
+
+
+
+

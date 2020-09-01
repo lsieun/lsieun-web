@@ -1,0 +1,97 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java Synthetic Examples</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        I like that very short definition of "synthetic": a Java construct introduced by the compiler.
+    </p>
+</div>
+
+<h2>First Example</h2>
+
+<p class="indented">
+    The Java compiler must create synthetic methods on <b>nested classes</b> when their attributes specified with the <code>private</code> modifier are accessed by the <b>enclosing class</b>.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public class InnerClass {
+        private int value;
+    }
+
+    private void test() {
+        InnerClass instance = new InnerClass();
+        instance.value = 100;
+    }
+}
+</div>
+
+<div title="HelloWorld$InnerClass.class" class="plaintext">
+methods_count='0002' (2)
+methods
+    MethodInfo {Value='&lt;init&gt;:(Lsample/HelloWorld;)V', AccessFlags='[ACC_PUBLIC]'}
+    MethodInfo {Value='access$002:(Lsample/HelloWorld$InnerClass;I)I', AccessFlags='[ACC_STATIC,ACC_SYNTHETIC]'}
+</div>
+
+<p class="indented">
+    稍微修改一下代码，将<code>InnerClass</code>的修饰符<code>public</code>修改为<code>private</code>，如下：
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private class InnerClass { // 将这行的public变成private
+        private int value;
+    }
+
+    private void test() {
+        InnerClass instance = new InnerClass();
+        instance.value = 100;
+    }
+}
+</div>
+
+<div title="HelloWorld$InnerClass.class" class="plaintext">
+methods_count='0003' (3)
+methods
+    MethodInfo {Value='&lt;init&gt;:(Lsample/HelloWorld;)V', AccessFlags='[ACC_PRIVATE]'}
+    MethodInfo {Value='&lt;init&gt;:(Lsample/HelloWorld;Lsample/HelloWorld$1;)V', AccessFlags='[ACC_SYNTHETIC]'}
+    MethodInfo {Value='access$102:(Lsample/HelloWorld$InnerClass;I)I', AccessFlags='[ACC_STATIC,ACC_SYNTHETIC]'}
+</div>
+
+<h2>Second Example</h2>
+
+<p>
+    下面的代码会将Lambda Expression(<code>(i) -> i + 5</code>)生成名为<code>lambda$main$0</code>的方法，并带有<code>ACC_SYNTHETIC</code>标志。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Function;
+
+public class HelloWorld {
+    public static void main(String[] args) {
+        Function&lt;Integer, Integer&gt; func = (i) -> i + 5;
+        Integer value = func.apply(10);
+        System.out.println(value);
+    }
+}
+</div>
+
+<div title="Example: ACC_SYNTHETIC" class="plaintext">
+methods_count='0003' (3)
+methods
+    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]'}
+    MethodInfo {Value='main:([Ljava/lang/String;)V', AccessFlags='[ACC_PUBLIC,ACC_STATIC]'}
+    MethodInfo {Value='lambda$main$0:(Ljava/lang/Integer;)Ljava/lang/Integer;', AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_SYNTHETIC]'}
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a href="/archive/java/classfile/attribute_perspective/synthetic.html" target="_blank">Synthetic Attribute</a></li>
+</ul>

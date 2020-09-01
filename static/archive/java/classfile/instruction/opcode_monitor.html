@@ -1,0 +1,61 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Opcode: Monitor</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        synchronized (System.out) {
+            System.out.println("Hello World");
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 25
+code = B20002594CC2B200021203B600042BC3A700084D2BC32CBFB1
+=== === ===  === === ===  === === ===
+0000: getstatic       #2   // B20002     || java/lang/System.out:Ljava/io/PrintStream;
+0003: dup                  // 59
+0004: astore_1             // 4C
+0005: monitorenter         // C2
+0006: getstatic       #2   // B20002     || java/lang/System.out:Ljava/io/PrintStream;
+0009: ldc             #3   // 1203       || Hello World
+0011: invokevirtual   #4   // B60004     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0014: aload_1              // 2B
+0015: monitorexit          // C3
+0016: goto            8    // A70008
+=== === ===  === === ===  === === === 异常处理
+0019: astore_2             // 4D
+0020: aload_1              // 2B
+0021: monitorexit          // C3
+0022: aload_2              // 2C
+0023: athrow               // BF
+0024: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      25  this:Lsample/HelloWorld;
+
+Exception Table:
+from    to  target  type
+   6    16      19  All Exceptions(catch_type = 0)
+  19    22      19  All Exceptions(catch_type = 0)
+</div>
+
+
+
+
+
+
+
+

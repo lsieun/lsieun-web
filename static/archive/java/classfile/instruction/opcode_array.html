@@ -1,0 +1,400 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Opcode: Array</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    Arrays. These instructions are used to read and write values in arrays. The <code>xALOAD</code> instructions pop <b>an index</b> and <b>an array</b>, and push <b>the value of the array element</b> at this <code>index</code>.
+    The <code>xASTORE</code> instructions pop <b>a value</b>, <b>an index</b> and <b>an array</b>, and store <b>this value</b> at that <code>index</code> in the array.
+    Here <code>x</code> can be <code>I</code>, <code>L</code>, <code>F</code>, <code>D</code> or <code>A</code>, but also <code>B</code>, <code>C</code> or <code>S</code>.
+</p>
+
+<h2>new array</h2>
+
+<table class="w3-table-all w3-hoverable w3-centered" style="width: 50%;">
+    <caption>newarray-Array type codes</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>Array Type</th>
+        <th>atype</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>T_BOOLEAN</td>
+        <td>4</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>T_CHAR</td>
+        <td>5</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>T_FLOAT</td>
+        <td>6</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>T_DOUBLE</td>
+        <td>7</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>T_BYTE</td>
+        <td>8</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>T_SHORT</td>
+        <td>9</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>T_INT</td>
+        <td>10</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>T_LONG</td>
+        <td>11</td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>byte array</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        byte[] byteArray = new byte[5];
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 5
+code = 08BC084CB1
+=== === ===  === === ===  === === ===
+0000: iconst_5             // 08
+0001: newarray        8    // BC08       || byte
+0003: astore_1             // 4C
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+    1         4       1  byteArray:[B
+</div>
+
+<h3>int array</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int[] intArray = new int[5];
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 5
+code = 08BC0A4CB1
+=== === ===  === === ===  === === ===
+0000: iconst_5             // 08
+0001: newarray        10   // BC0A       || int
+0003: astore_1             // 4C
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+    1         4       1  intArray:[I
+</div>
+
+<h3>Object array</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Object[] objArray = new Object[5];
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='0013' (19)
+constant_pool
+    ... ...
+    |002| CONSTANT_Class {Value='java/lang/Object', HexCode='070011'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 6
+code = 08BD00024CB1
+=== === ===  === === ===  === === ===
+0000: iconst_5             // 08
+0001: anewarray       #2   // BD0002     || java/lang/Object
+0004: astore_1             // 4C
+0005: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  this:Lsample/HelloWorld;
+    1         5       1  objArray:[Ljava/lang/Object;
+</div>
+
+<h3>multianewarray</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int[][] array = new int[3][4];
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |002| CONSTANT_Class {Value='[[I', HexCode='07000E'}
+    ... ...
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 2
+code_length = 8
+code = 0607C50002024CB1
+=== === ===  === === ===  === === ===
+0000: iconst_3             // 06
+0001: iconst_4             // 07
+0002: multianewarray  #2   // C5000202   || [[I
+0006: astore_1             // 4C
+0007: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       8  this:Lsample/HelloWorld;
+    1         7       1  array:[[I
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Object[][] array = new Object[3][4];
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |002| CONSTANT_Class {Value='[[Ljava/lang/Object;', HexCode='07000E'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 2
+code_length = 8
+code = 0607C50002024CB1
+=== === ===  === === ===  === === ===
+0000: iconst_3             // 06
+0001: iconst_4             // 07
+0002: multianewarray  #2   // C5000202   || [[Ljava/lang/Object;
+0006: astore_1             // 4C
+0007: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       8  this:Lsample/HelloWorld;
+    1         7       1  array:[[Ljava/lang/Object;
+</div>
+
+<h2>Get and Set Array Element</h2>
+
+<h3>int Array Get And Set</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int[] intArray = new int[5];
+        intArray[0] = 10;
+        int i = intArray[0];
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 3
+code_length = 14
+code = 08BC0A4C2B03100A4F2B032E3DB1
+=== === ===  === === ===  === === ===
+0000: iconst_5             // 08
+0001: newarray        10   // BC0A       || int
+0003: astore_1             // 4C
+0004: aload_1              // 2B
+0005: iconst_0             // 03
+0006: bipush          10   // 100A
+0008: iastore              // 4F
+0009: aload_1              // 2B
+0010: iconst_0             // 03
+0011: iaload               // 2E
+0012: istore_2             // 3D
+0013: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      14  this:Lsample/HelloWorld;
+    1         4      10  intArray:[I
+    2        13       1  i:I
+</div>
+
+<h3>Object Array Get And Set</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Object[] objArray = new Object[2];
+        objArray[0] = null;
+        Object obj = objArray[0];
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 3
+code_length = 14
+code = 05BD00024C2B0301532B03324DB1
+=== === ===  === === ===  === === ===
+0000: iconst_2             // 05
+0001: anewarray       #2   // BD0002     || java/lang/Object
+0004: astore_1             // 4C
+0005: aload_1              // 2B
+0006: iconst_0             // 03
+0007: aconst_null          // 01
+0008: aastore              // 53
+0009: aload_1              // 2B
+0010: iconst_0             // 03
+0011: aaload               // 32
+0012: astore_2             // 4D
+0013: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      14  this:Lsample/HelloWorld;
+    1         5       9  objArray:[Ljava/lang/Object;
+    2        13       1  obj:Ljava/lang/Object;
+</div>
+
+<h2>Array Length</h2>
+
+<h3>int Array Length</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int[] intArray = new int[1];
+        int length = intArray.length;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 8
+code = 04BC0A4C2BBE3DB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: newarray        10   // BC0A       || int
+0003: astore_1             // 4C
+0004: aload_1              // 2B
+0005: arraylength          // BE
+0006: istore_2             // 3D
+0007: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       8  this:Lsample/HelloWorld;
+    1         4       4  intArray:[I
+    2         7       1  length:I
+</div>
+
+<h3>Object Array Length</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Object[] objArray = new Object[2];
+        int length = objArray.length;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 9
+code = 05BD00024C2BBE3DB1
+=== === ===  === === ===  === === ===
+0000: iconst_2             // 05
+0001: anewarray       #2   // BD0002     || java/lang/Object
+0004: astore_1             // 4C
+0005: aload_1              // 2B
+0006: arraylength          // BE
+0007: istore_2             // 3D
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         5       4  objArray:[Ljava/lang/Object;
+    2         8       1  length:I
+</div>
+
+<h2>Summing Up</h2>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Array Operation</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>opcode</th>
+        <th>mnemonic symbol</th>
+        <th>meaning</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr><td><code>46</code></td><td>iaload</td><td></td></tr>
+    <tr><td><code>47</code></td><td>laload</td><td></td></tr>
+    <tr><td><code>48</code></td><td>faload</td><td></td></tr>
+    <tr><td><code>49</code></td><td>daload</td><td></td></tr>
+    <tr><td><code>50</code></td><td>aaload</td><td></td></tr>
+    <tr><td><code>51</code></td><td>baload</td><td></td></tr>
+    <tr><td><code>52</code></td><td>caload</td><td></td></tr>
+    <tr><td><code>53</code></td><td>saload</td><td></td></tr>
+    <tr><td><code>79</code></td><td>iastore</td><td></td></tr>
+    <tr><td><code>80</code></td><td>lastore</td><td></td></tr>
+    <tr><td><code>81</code></td><td>fastore</td><td></td></tr>
+    <tr><td><code>82</code></td><td>dastore</td><td></td></tr>
+    <tr><td><code>83</code></td><td>aastore</td><td></td></tr>
+    <tr><td><code>84</code></td><td>bastore</td><td></td></tr>
+    <tr><td><code>85</code></td><td>castore</td><td></td></tr>
+    <tr><td><code>86</code></td><td>sastore</td><td></td></tr>
+    <tr><td><code>188</code></td><td>newarray</td><td></td></tr>
+    <tr><td><code>189</code></td><td>anewarray</td><td></td></tr>
+    <tr><td><code>190</code></td><td>arraylength</td><td></td></tr>
+    </tbody>
+</table>
+

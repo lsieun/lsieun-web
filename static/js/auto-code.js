@@ -252,7 +252,7 @@ function process_annotation(token) {
 const separators = [
     '+', '-', '*', '/', '=', // 加减乘除
     '{', '}', '[', ']', '(', ')', '<', '>', // 括号
-    '`', '~', '!', '@', '#', '$', '%', '^', '&', '_', // 数字键上的符号
+    '`', '~', '!', '@', '#', '$', '%', '^', '&', // 数字键上的符号
     '"', "'", ',', '.', ':', ';', '?', // 标点符号
     ' ', '\t', '\n', '\r' // 空白字符
 ];
@@ -291,6 +291,7 @@ function toCode(src_text, title, keywords, display) {
                 result += process_keyword(token);
             } else {
                 result += token;
+
             }
 
             token = "";
@@ -312,6 +313,10 @@ function toCode(src_text, title, keywords, display) {
             i = stop;
         } else if (ch === "'") {
             let stop = get_single_quotes_stop(src_text, i + 1);
+            if (stop === -1) {
+                token += ch;
+                continue;
+            }
             let str = get_single_quotes(src_text, i, stop);
             result += process_single_quotes(str);
 
@@ -361,7 +366,6 @@ function toCode(src_text, title, keywords, display) {
             if (hidden !== undefined && hidden == "hidden") {
                 display = false;
             }
-            console.log("display: " + display);
 
             let src_text = $(this).text();
             let content = "";

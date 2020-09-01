@@ -1,0 +1,513 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">How JVM handles method invocation and return</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Method invocation</h2>
+
+<p class="indented">
+    The Java programming language provides two basic kinds of methods: <b>instance methods</b> and <b>class (or static) methods</b>. The difference between these two kinds of methods are:
+</p>
+
+<ol>
+    <li>
+        <b>Instance methods</b> require an <code>instance</code> before they can be invoked, whereas <b>class methods</b> do not.
+        <sub class="my_note" style="color:blue">笔记：是否需要instance。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        <b>Instance methods</b> use dynamic (late) binding, whereas <b>class methods</b> use static (early) binding.
+        <sub class="my_note" style="color:blue">笔记：是dynamic binding，还是static binding。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ol>
+
+<p class="indented">
+    When the Java virtual machine invokes a <b>class method</b>, it selects the method to invoke based on <b>the type of the object reference</b>, which is always known at compile-time.
+    On the other hand, when the virtual machine invokes an <b>instance method</b>, it selects the method to invoke based on <b>the actual class of the object</b>, which may only be known at run time.
+</p>
+
+<p class="indented">
+    The JVM uses two different instructions to invoke these two different kinds of methods: <code>invokevirtual</code> for <b>instance methods</b>, and <code>invokestatic</code> for <b>class methods</b>.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Method invocation of invokevirtual and invokestatic</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>Opcode</th>
+        <th>Operand(s)</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td><code>invokevirtual</code></td>
+        <td>
+            indexbyte1,
+            indexbyte2
+        </td>
+        <td>
+            pop <code>objectref</code> and <code>args</code>, invoke method at constant pool <code>index</code>
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>invokestatic</code></td>
+        <td>
+            indexbyte1,
+            indexbyte2
+        </td>
+        <td>
+            pop <code>args</code>, invoke static method at constant pool <code>index</code>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/opcode_invokevirtual.png" alt="invokevirtual"/>
+    <img class="w3-image w3-center" src="/images/java/classfile/opcode_invokestatic.png" alt="invokestatic"/>
+</div>
+
+<h3>Dynamic linking</h3>
+
+<p class="indented">
+    Because Java programs are dynamically linked, references to methods initially are <b>symbolic</b>.
+    All invoke instructions, such as <code>invokevirtual</code> and <code>invokestatic</code>,
+    refer to a constant pool entry that initially contains a <b>symbolic reference</b>.
+</p>
+
+<p class="indented">
+    The <b>symbolic reference</b> is a bundle of information that uniquely identifies <b>a method</b>, including the <b>class name</b>, <b>method name</b>, and <b>method descriptor</b>. (A method descriptor is the method's return type and the number and types of its arguments.) The first time the Java virtual machine encounters a particular invoke instruction, the symbolic reference must be resolved.
+</p>
+
+<p class="indented">
+    To resolve a <b>symbolic reference</b>, the JVM locates the method being referred to symbolically and replaces the symbolic reference with a direct reference.
+    A direct reference, such as a pointer or offset, allows the virtual machine to invoke the method more quickly if the reference is ever used again in the future.
+</p>
+
+<p class="indented">
+    For example, upon encountering an <code>invokevirtual</code> instruction, the Java virtual machine forms an <code>index</code> into the constant pool of the current class from the <code>indexbyte1</code> and <code>indexbyte2</code> operands that follow the <code>invokevirtual</code> opcode. The constant pool entry contains a symbolic reference to the method to invoke. <strong>The process of resolving symbolic references in the constant pool is how the JVM performs dynamic linking</strong>.
+</p>
+
+<h3>Verification</h3>
+
+<p class="indented">
+    During resolution, the JVM also performs several verification checks. These checks ensure that Java language rules are followed and that the invoke instruction is safe to execute.
+    For example, the virtual machine first makes sure the symbolically referenced method exists.
+    If it exists, the virtual machine checks to make sure the current class can legally access the method.
+    For example, if the method is private, it must be a member of the current class.
+    If any of these checks fail, the Java virtual machine throws an exception.
+</p>
+
+<h3>Objectref and args</h3>
+
+<p class="indented">
+    Once the method has been resolved, the Java virtual machine is ready to invoke it.
+    If the method is an <b>instance method</b>, it must be invoked on an object.
+    For every instance method invocation, the virtual machine expects a reference to the object (<code>objectref</code>) to be on the stack.
+    In addition to <code>objectref</code>, the virtual machine expects the arguments (<code>args</code>) required by the method, if any, to be on the stack.
+    If the method is a <b>class method</b>, only the <code>args</code> are on the stack.
+    Class methods don't require an <code>objectref</code> because they aren't invoked on an object.
+</p>
+
+<p class="indented">
+    The <code>objectref</code> and <code>args</code> (or just <code>args</code>, in the case of a class method) must be pushed onto the calling method's operand stack by the bytecode instructions that precede the invoke instruction.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/opcode_invokevirtual.png" alt="invokevirtual"/>
+    <img class="w3-image w3-center" src="/images/java/classfile/opcode_invokestatic.png" alt="invokestatic"/>
+</div>
+
+<h3>Pushing and popping the stack frame</h3>
+
+<p class="indented">
+    To invoke a method, the Java virtual machine creates a new stack frame for the method.
+    The <b>stack frame</b> contains space for the method's <b>local variables</b>, its <b>operand stack</b>, and any other information required by a particular virtual machine implementation.
+    The size of the local variables and operand stack are calculated at compile-time and placed into the class file, so the virtual machine knows just how much memory will be needed by the method's stack frame.
+    When the JVM invokes a method, it creates a stack frame of the proper size for that method.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        method --&gt; stack frame
+    </p>
+    <p>
+        stack frame = local variables + operand stack
+    </p>
+</div>
+
+<p class="indented">
+    Adding a new frame onto the Java execution stack when a method is invoked is called "pushing" a stack frame;
+    removing a frame when a method returns is called "popping" a stack frame.
+    The Java execution stack is made up solely of these frames.
+</p>
+
+<h3>Invoking a Java method</h3>
+
+<p class="indented">
+    If the method is a Java method (not a native method), the Java virtual machine will push a new frame onto the current Java stack.
+</p>
+
+<p class="indented">
+    In the case of an <b>instance method</b>, the virtual machine pops the <code>objectref</code> and <code>args</code> from the <b>operand stack</b> of the calling method's stack frame.
+    The JVM creates a new stack frame and places the <code>objectref</code> on the new stack frame as <b>local variable 0</b>, and all the <code>args</code> as <b>local variable 1, 2, and so on</b>.
+    The <code>objectref</code> is the implicit <code>this</code> pointer that is passed to any instance method.
+</p>
+
+<p class="indented">
+    For a <b>class method</b>, the virtual machine just pops the <code>args</code> from the operand stack of the calling method's frame and places them onto the new stack frame as <b>local variable 0, 1, 2, and so on</b>.
+</p>
+
+<p class="indented">
+    Once the <code>objectref</code> and <code>args</code> (or just the <code>args</code>, for a class method) have been placed into the local variables of the new frame, the virtual machine makes the new stack frame current and sets the <b>program counter</b> to point to the first instruction in the new method.
+</p>
+
+<p class="indented">
+    The JVM specification does not require a particular implementation for the Java execution stack.
+    Frames could be allocated individually from a heap, or they could be taken from contiguous memory, or both.
+    If two frames are contiguous, however, the virtual machine can just overlap them such that the top of the operand stack of one frame forms the bottom of the local variables of the next.
+    In this scheme, the virtual machine need not copy <code>objectref</code> and <code>args</code> from one frame to another, because the two frames overlap.
+    The operand stack containing <code>objectref</code> in the calling method's frame would be the same memory location as local variable <code>0</code> of the new frame.
+</p>
+
+<h3>Invoking a native method</h3>
+
+<p class="indented">
+    If the method being invoked is native, the Java virtual machine invokes it in an implementation-dependent manner.
+    The virtual machine does not push a new stack frame onto the Java stack for the native method.
+    At the point at which the thread enters the native method, it leaves the Java stack behind.
+    When the native method returns, the Java stack once again will be used.
+</p>
+
+<h2>Other forms of method invocation</h2>
+
+<p class="indented">
+    Although <code>instance methods</code> normally are invoked with <code>invokevirtual</code>, two other opcodes are used to invoke this kind of method in certain situations:
+    <code>invokespecial</code> and <code>invokeinterface</code>.
+</p>
+
+<p class="indented">
+    <code>invokespecial</code> is used in three situations in which an <b>instance method</b> must be invoked based on <b>the type of the reference</b>, not on <b>the class of the object</b>. The three situations are:
+</p>
+
+<ol>
+    <li>
+        invocation of instance initialization (<code>&lt;init&gt;</code>) methods
+    </li>
+    <li>
+        invocation of private methods
+    </li>
+    <li>
+        invocation of methods using the <code>super</code> keyword
+    </li>
+</ol>
+
+<p>
+    <code>invokeinterface</code> is used to invoke an <b>instance method</b> given a reference to an interface.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Method invocation of invokevirtual and invokestatic</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>Opcode</th>
+        <th>Operand(s)</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td><code>invokespecial</code></td>
+        <td>
+            indexbyte1,
+            indexbyte2
+        </td>
+        <td>
+            pop <code>objectref</code> and <code>args</code>, invoke method at constant pool <code>index</code>
+        </td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>invokeinterface</code></td>
+        <td>
+            indexbyte1,
+            indexbyte2
+        </td>
+        <td>
+            pop <code>objectref</code> and <code>args</code>, invoke method at constant pool <code>index</code>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>The invokespecial instruction</h3>
+
+<p class="indented">
+    <code>invokespecial</code> differs from <code>invokevirtual</code> primarily in that <code>invokespecial</code> selects a method based on <b>the type of the reference</b> rather than <b>the class of the object</b>.
+    In other words, it does static binding instead of dynamic binding.
+    In each of the three situations where <code>invokespecial</code> is used, dynamic binding wouldn't yield the desired result.
+</p>
+
+<h4>invokespecial and &lt;init&gt;</h4>
+
+<p class="indented">
+    The compiler places code for constructors and instance variable initializers into <code>&lt;init&gt;</code> methods, or instance initialization methods.
+    A class gets one <code>&lt;init&gt;</code> method in the class file for each constructor in the source.
+    If you don't explicitly declare a constructor in the source, the compiler will generate a default no-arg constructor for you.
+    This default constructor also ends up as an <code>&lt;init&gt;</code> method in the class file.
+    So just as every class will have at least one constructor, every class also will have at least one <code>&lt;init&gt;</code> method.
+    <sub class="my_note" style="color:blue">笔记：在JavaFile当中的constructor对应于ClassFile中的&lt;init&gt;方法。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The <code>&lt;init&gt;</code> methods are called only when a new instance is created.
+    At least one <code>&lt;init&gt;</code> method will be invoked for each class along the inheritance path of the newly created object,
+    and multiple <code>&lt;init&gt;</code> methods could be invoked for any one class along that path.
+    <sub class="my_note" style="color:blue">笔记：只有在创建对象的时候，才会调用&lt;init&gt;方法。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Why is <code>invokespecial</code> used to invoke <code>&lt;init&gt;</code> methods?
+    Because subclass <code>&lt;init&gt;</code> methods need to be able to invoke superclass <code>&lt;init&gt;</code> methods.
+    This is how multiple <code>&lt;init&gt;</code> methods get invoked when an object is instantiated.
+    The virtual machine invokes an <code>&lt;init&gt;</code> method declared in the object's class.
+    That <code>&lt;init&gt;</code> method first invokes either another <code>&lt;init&gt;</code> method in the same class, or an <code>&lt;init&gt;</code> method in its superclass.
+    This process continues all the way up to <code>Object</code>.
+    <sub class="my_note" style="color:blue">笔记：子类的&lt;init&gt;方法需要调用父类的&lt;init&gt;方法，因此需要用到invokespecial。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    For example, consider this code:
+</p>
+
+<div title="ParentClass.java" class="javacode">
+public class ParentClass {
+    // nothing
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld extends ParentClass {
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+    }
+}
+</div>
+
+<p class="indented">
+    When you invoke <code>main()</code>, the virtual machine will allocate space for a new <code>HelloWorld</code> object, then invoke <code>HelloWorld</code>'s default no-arg <code>&lt;init&gt;</code> method to initialize that space. That method will invoke <code>ParentClass</code>'s <code>&lt;init&gt;</code> method, which will invoke <code>Object</code>'s <code>&lt;init&gt;</code> method.
+</p>
+
+<p class="indented">
+    Because every class has at least one <code>&lt;init&gt;</code> method, it is common for classes to have <code>&lt;init&gt;</code> methods with identical signatures.
+    (A method's signature is its name and the number and types of its arguments.)
+    For example, the <code>&lt;init&gt;</code> methods for all three classes in the inheritance path for <code>HelloWorld</code> have the same signature. <code>HelloWorld</code>, <code>ParentClass</code>, and <code>Object</code> all contain a method named <code>&lt;init&gt;</code> that takes no arguments.
+</p>
+
+<p class="indented">
+    It would be impossible to invoke a <code>ParentClass</code>'s <code>&lt;init&gt;</code> method from <code>HelloWorld</code>'s <code>&lt;init&gt;</code> method using <code>invokevirtual</code>, because <code>invokevirtual</code> would perform dynamic binding and invoke <code>HelloWorld</code>'s <code>&lt;init&gt;</code> method.
+    With <code>invokespecial</code>, however, <code>ParentClass</code>'s <code>&lt;init&gt;</code> method can be invoked from <code>HelloWorld</code>'s <code>&lt;init&gt;</code> method, because the type of the reference placed in the class file is <code>ParentClass</code>.
+</p>
+
+<div title="HelloWorld.class init:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 5
+code = 2AB70001B1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: invokespecial   #1   // B70001     || sample/ParentClass.<code>&lt;init&gt;</code>:()V
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+</div>
+
+<h4>invokespecial and private methods</h4>
+
+<p class="indented">
+    In the case of private methods, it must be possible for a subclass to declare a method with the same signature as a private method in a superclass.
+    For example, consider the following code in which <code>interestingMethod()</code> is declared as <code>private</code> in a superclass and with <code>package</code> access in a subclass:
+</p>
+
+<div title="ParentClass.java" class="javacode">
+public class ParentClass {
+    private void interestingMethod() {
+        System.out.println("Superclass's interesting method.");
+    }
+
+    void exampleMethod() {
+        interestingMethod();
+    }
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld extends ParentClass {
+    void interestingMethod() {
+        System.out.println("Subclass's interesting method.");
+    }
+
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+        instance.exampleMethod();
+    }
+}
+</div>
+
+<div title="Run Output" class="plaintext">
+Superclass's interesting method.
+</div>
+
+<p class="indented">
+    When you invoke <code>main()</code> in <code>HelloWorld</code> as defined above, it must print "Superclass's interesting method."
+    If <code>invokevirtual</code> were used, it would print "Subclass's interesting method." Why?
+    Because the virtual machine would choose the <code>interestingMethod()</code> to call based on the actual class of the object, which is <code>HelloWorld</code>.
+    So it will use <code>HelloWorld</code>'s <code>interestingMethod()</code>.
+    On the other hand, with <code>invokespecial</code> the virtual machine will select the method based on the type of the reference,
+    so <code>ParentClass</code>'s version of <code>interestingMethod()</code> will be invoked.
+</p>
+
+<h4>invokespecial and super</h4>
+
+<p class="indented">
+    When invoking a method with the <code>super</code> keyword, as in <code>super.someMethod()</code>, you want the superclass's version of a method to be invoked -- even if the current class overrides the method.
+    Once again, <code>invokevirtual</code> would invoke the current class's version, so it can't be used in this situation.
+</p>
+
+<h3>The invokeinterface instruction</h3>
+
+<p class="indented">
+    The <code>invokeinterface</code> opcode performs the same function as <code>invokevirtual</code>.
+    The only difference is that <code>invokeinterface</code> is used when <b>the reference</b> is of <b>an interface type</b>.
+</p>
+
+<p class="indented">
+    To understand why a separate opcode is necessary for <b>interface references</b>, you must understand a bit about <b>method tables</b>.
+    When the Java virtual machine loads a class file, it may create a <b>method table</b> for the class.
+    (Whether or not a method table is actually created is the decision of each virtual machine designer;
+    however, it is likely that commercial JVMs will create method tables.)
+    <strong>A method table is just an array of direct references to the bytecodes for each instance method that can be invoked on an object, including methods inherited from superclasses.</strong>
+</p>
+
+<p class="indented">
+    The JVM uses a different opcode to invoke a method given <b>an interface reference</b> because it can't make as many assumptions about the <b>method table</b> offset as it can given a <b>class reference</b>.
+    If the JVM has a <b>class reference</b>, it knows each method will always occupy the same position in the method table, independent of the actual class of the object.
+    This is not true with an <b>interface reference</b>: The method could occupy different locations for different classes that implement the same interface.
+</p>
+
+<h2>Invocation instructions and speed</h2>
+
+<p class="indented">
+    As you might imagine, invoking a method given an <b>interface reference</b> is likely to be slower than invoking a method given a <b>class reference</b>.
+    When the Java virtual machine encounters an <code>invokevirtual</code> instruction and resolves the <b>symbolic reference</b> to a direct reference to an instance method, that direct reference is likely to be an offset into a <b>method table</b>.
+    From that point forward, the same offset can be used.
+    For an <code>invokeinterface</code> instruction, however, the virtual machine will have to search through the <b>method table</b> every single time the instruction is encountered,
+    because it can't assume the offset is the same as in previous invocations.
+</p>
+
+<p class="indented">
+    The fastest instructions will most likely be <code>invokespecial</code> and <code>invokestatic</code>, because methods invoked by these instructions are statically bound.
+    When the JVM resolves the <b>symbolic reference</b> for these instructions and replaces it with a <b>direct reference</b>, that direct reference probably will include a pointer to the actual bytecodes.
+</p>
+
+<h3>Implementation dependence</h3>
+
+<p class="indented">
+    All these predictions of speed are to some extent guesses, because individual designers of Java virtual machines can use any technique to speed things up; they are limited only by their imagination.
+    The data structures and algorithms for resolving symbolic references and invoking methods are not part of the JVM specification.
+    These decisions are left to the designers of each Java virtual machine implementation.
+</p>
+
+<h2>Returning from methods</h2>
+
+<p class="indented">
+    To return from a method, the JVM uses several opcodes, one for each type of return value.
+    These opcodes do not take operands: If there is a return value, it must be on the operand stack.
+    The return value is popped off the operand stack and pushed onto the operand stack of the calling method's stack frame.
+    The current stack frame is popped, and the calling method's stack frame becomes current.
+    The <b>program counter</b> is reset to the instruction following the instruction that invoked this method in the first place.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Method invocation of invokevirtual and invokestatic</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>Opcode</th>
+        <th>Operand(s)</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td><code>ireturn</code></td>
+        <td>none</td>
+        <td class="w3-left-align">pop int, push onto stack of calling method and return</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>lreturn</code></td>
+        <td>none</td>
+        <td class="w3-left-align">pop long, push onto stack of calling method and return</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>freturn</code></td>
+        <td>none</td>
+        <td class="w3-left-align">pop float, push onto stack of calling method and return</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>dreturn</code></td>
+        <td>none</td>
+        <td class="w3-left-align">pop double, push onto stack of calling method and return</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>areturn</code></td>
+        <td>none</td>
+        <td class="w3-left-align">pop object reference, push onto stack of calling method and return</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>return</code></td>
+        <td>none</td>
+        <td class="w3-left-align">return void</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    The <code>ireturn</code> instruction is used for methods that return <code>int</code>, <code>char</code>, <code>byte</code>, or <code>short</code>.
+</p>
+
+<h2>Conclusion</h2>
+
+<p>
+    Although the subtle differences between the ways a JVM invokes methods can be a bit confusing, understanding these differences can help you understand the subtleties of the Java language.
+    The main points to remember are:
+</p>
+
+<ol>
+    <li>
+        Instance methods are dynamically bound except for <code>&lt;init&gt;</code> methods, private methods, and methods invoked with the <code>super</code> keyword. In these three special cases, instance methods are statically bound.
+    </li>
+    <li>
+        Class methods are always statically bound.
+    </li>
+    <li>
+        Instance methods invoked with an <b>interface reference</b> may be slower than the same methods invoked with an <b>object reference</b>.
+    </li>
+</ol>
+
+<h2>References</h2>
+
+<ul>
+    <li>原文：<a class="external" href="https://www.infoworld.com/article/2076949/how-the-java-virtual-machine-handles-method-invocation-and-return.html" target="_blank">How the Java virtual machine handles method invocation and return</a></li>
+</ul>
+

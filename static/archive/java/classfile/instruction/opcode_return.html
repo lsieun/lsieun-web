@@ -1,0 +1,414 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Opcode return</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    The <code>xRETURN</code> and <code>RETURN</code> instructions are used to terminate the execution of a method and to return its result to the caller.
+    <code>RETURN</code> is used for methods that return <code>void</code>, and <code>xRETURN</code> for the other methods.
+</p>
+
+<ul>
+    <li>
+        Type
+        <ul>
+            <li>
+                Primitive Type
+                <ul>
+                    <li>boolean</li>
+                    <li>
+                        Number Type
+                        <ul>
+                            <li>Integral Type: byte, short, char, int, long</li>
+                            <li>Floating Point Type: float, double</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Reference Type
+                <ul>
+                    <li>Class Or Interface Type</li>
+                    <li>
+                        Array Type
+                        <ul>
+                            <li>Primitive Type Dims</li>
+                            <li>Class Or Interface Type Dims</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<h2>return void</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        // do nothing
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 0
+max_locals = 1 // 用于存放this变量；如果是static方法，则不需要存放this变量。
+code_length = 1
+code = B1
+=== === ===  === === ===  === === ===
+0000: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       1  this:Lsample/HelloWorld;
+</div>
+
+<p class="indented">
+    The <code>return</code> instruction, which is implicit in the source code but which is mandatory in the compiled code, destroys the current execution frame and returns to the caller.
+</p>
+
+<h2>Return Primitive Type</h2>
+
+<h3>return int</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int test() {
+        return 0;
+    }
+}
+</div>
+
+<div title="test:()I" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 2
+code = 03AC
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: ireturn              // AC
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       2  this:Lsample/HelloWorld;
+</div>
+
+<h3>return boolean</h3>
+
+<p>
+    The Java Virtual Machine internally converts values of types <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> to type <code>int</code>.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public boolean test() {
+        return false;
+    }
+}
+</div>
+
+<div title="test:()Z" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 2
+code = 03AC
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: ireturn              // AC
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       2  this:Lsample/HelloWorld;
+</div>
+
+<h3>return byte</h3>
+
+<p>
+    The Java Virtual Machine internally converts values of types <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> to type <code>int</code>.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public byte test() {
+        return 0;
+    }
+}
+</div>
+
+<div title="test:()B" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 2
+code = 03AC
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: ireturn              // AC
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       2  this:Lsample/HelloWorld;
+</div>
+
+<h3>return short</h3>
+
+<p>
+    The Java Virtual Machine internally converts values of types <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> to type <code>int</code>.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public short test() {
+        return 0;
+    }
+}
+</div>
+
+<div title="test:()S" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 2
+code = 03AC
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: ireturn              // AC
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       2  this:Lsample/HelloWorld;
+</div>
+
+<h3>return char</h3>
+
+<p>
+    The Java Virtual Machine internally converts values of types <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> to type <code>int</code>.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public char test() {
+        return 0;
+    }
+}
+</div>
+
+<div title="test:()C" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 2
+code = 03AC
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: ireturn              // AC
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       2  this:Lsample/HelloWorld;
+</div>
+
+<h3>return long</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public long test() {
+        return 0;
+    }
+}
+</div>
+
+<div title="test:()J" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2 // 注意，这里变成了2
+max_locals = 1
+code_length = 2
+code = 09AD
+=== === ===  === === ===  === === ===
+0000: lconst_0             // 09
+0001: lreturn              // AD
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       2  this:Lsample/HelloWorld;
+</div>
+
+<h3>return float</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public float test() {
+        return 0;
+    }
+}
+</div>
+
+<div title="test:()F" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 2
+code = 0BAE
+=== === ===  === === ===  === === ===
+0000: fconst_0             // 0B
+0001: freturn              // AE
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       2  this:Lsample/HelloWorld;
+</div>
+
+<h3>return double</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public double test() {
+        return 0;
+    }
+}
+</div>
+
+<div title="test:()D" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2 // 注意，这里变成了2
+max_locals = 1
+code_length = 2
+code = 0EAF
+=== === ===  === === ===  === === ===
+0000: dconst_0             // 0E
+0001: dreturn              // AF
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       2  this:Lsample/HelloWorld;
+</div>
+
+<h2>Return Reference Type</h2>
+
+<h3>return Object</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public Object test() {
+        return null;
+    }
+}
+</div>
+
+<div title="test:()Ljava/lang/Object;" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 2
+code = 01B0
+=== === ===  === === ===  === === ===
+0000: aconst_null          // 01
+0001: areturn              // B0
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       2  this:Lsample/HelloWorld;
+</div>
+
+<h3>return Array</h3>
+
+<h4>return int array</h4>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int[] test() {
+        return null;
+    }
+}
+</div>
+
+<div title="test:()[I" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 2
+code = 01B0
+=== === ===  === === ===  === === ===
+0000: aconst_null          // 01
+0001: areturn              // B0
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       2  this:Lsample/HelloWorld;
+</div>
+
+<h4>return Object Array</h4>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public Object[] test() {
+        return null;
+    }
+}
+</div>
+
+<div title="test:()[Ljava/lang/Object;" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 2
+code = 01B0
+=== === ===  === === ===  === === ===
+0000: aconst_null          // 01
+0001: areturn              // B0
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       2  this:Lsample/HelloWorld;
+</div>
+
+<h2>Summing Up</h2>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <tr class="w3-green">
+        <th>opcode</th>
+        <th>mnemonic symbol</th>
+        <th>return type</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>177</code></td>
+        <td>return</td>
+        <td>void</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>172</code></td>
+        <td>ireturn</td>
+        <td>int, boolean, byte, short, char</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>173</code></td>
+        <td>lreturn</td>
+        <td>long</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>174</code></td>
+        <td>freturn</td>
+        <td>float</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>175</code></td>
+        <td>dreturn</td>
+        <td>double</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>176</code></td>
+        <td>areturn</td>
+        <td>Object, int[], Object[]</td>
+    </tr>
+</table>
+
+

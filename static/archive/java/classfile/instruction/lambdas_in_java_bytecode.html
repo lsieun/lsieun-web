@@ -1,0 +1,663 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Lambdas in Java Bytecode</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    Although <b>lambdas</b> and <code>invokedynamic</code> are conceptually orthogonal, in practice <b>lambdas</b> are implemented using <code>invokedynamic</code>.
+    <sub class="my_note" style="color:blue">笔记：lambda是Java Language范围内的概念，而invokedynamic是ClassFile范围内的概念，两者是不相关的（orthogonal）概念。但两者之间也存在联系，即lambda底层的实现是依赖于invokedynamic完成的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    We know that Java code itself does not compile directly to bytes that are executed by the operating system.
+    Instead, the Java compiler (henceforth, “javac”) compiles to another intermediate form, which is executed by the Java Virtual Machine (henceforth, “JVM”).
+    This intermediate form is called the <b>Java bytecode</b>.
+    <b>Bytecode, however, has no concept of lambdas.</b>
+    It also has no concept of <b>try-with-resources blocks</b>, <b>enhanced for-loops</b>, or many of the other structures within Java.
+    Instead, the compiler converts those Java structures into an underlying form in bytecode.
+</p>
+
+
+
+<h2>Lambda in Bytecode Perspective</h2>
+
+<h3>Static Method References</h3>
+
+<p class="indented">
+    In terms of bytecode, the simplest kind of <b>lambda</b> is the <b>method reference</b>.
+    <sub class="my_note" style="color:blue">笔记：最简单的lambda的表现形式是method reference。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Supplier;
+
+public class HelloWorld {
+    public static String lambdiseMe() {
+        return "Hello World!";
+    }
+
+    public static Supplier&lt;String&gt; getSupplier() {
+        return HelloWorld::lambdiseMe;
+    }
+}
+</div>
+
+<p class="indented">
+    From bytecode perspective, the <code>getSupplier</code> method is of the same basic form of the <code>lambdiseMe</code> method:
+    it executes an opcode to push an object onto the operand stack, and then it returns the object on that operand stack.
+    The difference is the opcode that pushes the object onto the operand stack.
+</p>
+
+<p>
+    In <code>lambdiseMe</code>, it use <code>ldc</code> to load a constant:
+</p>
+
+<div title="lambdiseMe:()Ljava/lang/String;" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 0
+code_length = 3
+code = 1202B0
+=== === ===  === === ===  === === ===
+0000: ldc             #2   // 1202       || Hello World!
+0002: areturn              // B0
+</div>
+
+<p>
+    In <code>getSupplier</code>, it use <code>invokedynamic</code> to put the value on the operand stack:
+</p>
+
+<div title="getSupplier:()Ljava/util/function/Supplier;" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 0
+code_length = 6
+code = BA00030000B0
+=== === ===  === === ===  === === ===
+0000: invokedynamic   #3   // BA00030000 || #0:get:()Ljava/util/function/Supplier;
+0005: areturn              // B0
+</div>
+
+<p class="indented">
+    The <code>invokedynamic</code> instruction was introduced in Java 7 to support dynamic languages that ran on the JVM, such as JRuby and Groovy.
+    These dynamic languages had a similar problem: <b>for certain common method calls, they could not know exactly what method to call until runtime.</b>
+    <sub class="my_note" style="color:green">笔记：这里指出问题所在，有些方法要在runtime时才能决定。</sub>
+    No amount of polymorphism helped them out<sub class="my_note" style="color:green">笔记：多态，并不能解决这个问题。多态，是同一操作作用于不同的对象，可以有不同的解释，产生不同的执行结果。多态，强调的是“同一个方法”，在不同的对象上调用，有不同的处理方式；而这里的问题是强调“多个方法”，希望能够在多个方法之间进行选择。</sub>:
+    they simply had to defer the decision about what method to run until the moment the code was executed.
+    The result was that each dynamic language had its own method dispatch structure<sub class="my_note" style="color:green">笔记：不同的语言，在Java已有功能的基础之上，提供了自己的实现，其结果是不利于Java的优化。</sub> built on top of Java’s own method dispatch structure, and those structures tended to be bad for Java’s optimizations.
+    To help them out (and lay the groundwork for lambdas), Java 7 introduced <code>invokedynamic</code>.
+    <sub class="my_note" style="color:green">笔记：Java 7引入了invokedynamic，一方面为问题提供了解决方法，另一方面也为lambda的出现做了铺垫。</sub>
+    The <code>invokedynamic</code> instruction tells Java to wait until runtime.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    When the <code>invokedynamic</code> instruction is encountered, it will delegate to another method provided by the classfile, called the “bootstrap method.”
+    The <b>bootstrap method</b> will be expected to return the method binding for that location, which is encapsulated in the type <code>java.lang.invoke.CallSite</code>.
+    That <code>CallSite</code> has all the information that the JVM needs to execute the target method.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        invokedynamic --&gt; bootstrap method --&gt; CallSite --&gt; JVM execute the target method
+    </p>
+</div>
+
+<div title="constant_pool" class="plaintext">
+constant_pool
+    ... ...
+    |003| CONSTANT_InvokeDynamic {Value='#0:get:()Ljava/util/function/Supplier;', HexCode='120000001C'}
+</div>
+
+<div title="CONSTANT_InvokeDynamic_info" class="plaintext">
+CONSTANT_InvokeDynamic_info {
+    u1 tag;
+    u2 bootstrap_method_attr_index;
+    u2 name_and_type_index;
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">CONSTANT_InvokeDynamic</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">12<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">tag(18)</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 00<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">bootstrap_method_attr_index(#0)</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 1C<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">name_and_type_index(#28)</span></span>
+    </div>
+</div>
+
+<p class="indented">
+    In this case, the instruction executes the Bootstrap Method <code>#0</code>, which is the “0” argument to the <code>invokedynamic</code> instruction.
+    That <b>bootstrap methods have their own pool</b>, and in this case, <code>#0</code> is the static method <code>metafactory</code> on the class <code>java.lang.invoke.LambdaMetafactory</code>.
+    Every bootstrap method is automatically passed <code>MethodHandles.Lookup</code> (a utility class to look up methods), <b>the String name of the invoked method</b>, and <b>the type the <code>CallSite</code> is expected to provide as a <code>MethodType</code></b>.
+    In this case, the type that is expected is a <code>Supplier</code>, and we are implementing the <code>get</code> method: that is specified by the other argument to <code>invokedynamic</code> (the <code>#3</code>).
+    <sub class="my_note" style="color:blue">笔记：LambdaMetafactory.metafactory()方法，一共接收6个参数，前3个参数由JVM自动提供。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="BootstrapMethods" class="plaintext">
+BootstrapMethods:
+  0: #24 invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
+            Ljava/lang/invoke/MethodHandles$Lookup;   // 由JVM 提供，是MethodHandles.Lookup类的实例
+            Ljava/lang/String;                        // 由JVM 提供，本例中，这里是get
+            Ljava/lang/invoke/MethodType;             // 由JVM 提供，本例中，这里是Supplier
+            Ljava/lang/invoke/MethodType;             // 由Method arguments提供，本例中，它表示Supplier.get()方法的descriptor
+            Ljava/lang/invoke/MethodHandle;           // 由Method arguments提供，本例中，它表示HelloWorld.lambdiseMe()方法
+            Ljava/lang/invoke/MethodType;             // 由Method arguments提供，本例中，它表示HelloWorld.lambdiseMe()方法的descriptor
+        )Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #25 ()Ljava/lang/Object;
+      #26 invokestatic sample/HelloWorld.lambdiseMe:()Ljava/lang/String; // 注意，这里是invokestatic
+      #27 ()Ljava/lang/String;
+</div>
+
+<div title="BootstrapMethods" class="plaintext">
+constant_pool_count='002F' (47)
+constant_pool
+    ... ...
+    |022| CONSTANT_Utf8 {Value='Hello World!', HexCode='01000C48656C6C6F20576F726C6421'}
+    |023| CONSTANT_Utf8 {Value='BootstrapMethods', HexCode='010010426F6F7473747261704D6574686F6473'}
+    |024| CONSTANT_MethodHandle {Value='invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
+            Ljava/lang/invoke/MethodHandles$Lookup;
+            Ljava/lang/String;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodHandle;
+            Ljava/lang/invoke/MethodType;
+        )Ljava/lang/invoke/CallSite;', HexCode='0F06001F'}
+    |025| CONSTANT_MethodType {Value='()Ljava/lang/Object;', HexCode='100020'}
+    |026| CONSTANT_MethodHandle {Value='invokestatic sample/HelloWorld.lambdiseMe:()Ljava/lang/String;', HexCode='0F060021'}
+    |027| CONSTANT_MethodType {Value='()Ljava/lang/String;', HexCode='10000E'}
+    |028| CONSTANT_NameAndType {Value='get:()Ljava/util/function/Supplier;', HexCode='0C00220010'}
+    ... ...
+attributes_count='0003' (3)
+attributes
+... ...
+--->|003| BootstrapMethods:
+HexCode: 00170000000C0001001800030019001A001B
+attribute_name_index='0017' (#23)
+attribute_length='0000000C' (12)
+num_bootstrap_methods='0001' (1)
+|000|
+bootstrap_method_ref='0018' (#24)
+num_bootstrap_arguments='0003' (3)
+bootstrap_arguments='0019001A001B' ([#25,#26,#27])
+</div>
+
+
+
+<p class="indented">
+    In the bootstrap method pool, we see a few other <b>method arguments</b> declared.
+    These are tacked onto the end, and they are the three remaining arguments to the <code>metafactory</code> call.
+    The second argument is the simplest: it is the source of the implementation for the lambda.
+    In this case, it is the static invocation(<code>invokestatic</code>) of our <code>lambdiseMe</code> method.
+    The first and last arguments are <b>the implementation signature</b> and <b>runtime type of the method being implemented</b>.
+    The <b>implementation signature</b> is something that takes no arguments and returns an object – <code>()Ljava/lang/Object;</code> – because that is the signature of <code>Supplier.get()</code> that we are trying to match.
+    However, we also tell the runtime via the third argument that this method will actually always return a <code>String</code> – <code>()Ljava/lang/String;</code> – which is useful for optimization and casting.
+    <sub class="my_note" style="color:blue">笔记：LambdaMetafactory.metafactory()方法，一共接收6个参数，后3个参数由method arguments处获得。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Let’s pull it all together. The <code>invokedynamic</code> instruction is encountered for the first time.
+    The <code>metafactory</code> method is called, being passed some <b>default arguments</b> and some <b>custom arguments</b>.
+    The <b>default arguments</b> are the utility for method lookup, the name of the invoked method, and an instruction to return a <code>Supplier</code>.
+    The <b>custom arguments</b> specify that we will implement <code>Supplier.get()</code>, and even though it normally takes no arguments and returns an <code>Object</code>,
+    we will really provide an implementation that takes no arguments and returns a <code>String</code>.
+    Another custom argument specifies that the implementation of that is through statically invoking our <code>lambdiseMe</code> method.
+    This <b>bootstrap method</b> returns the details about the call site, which is invoked to generate the <code>Supplier</code> based on our lambda. Whew!
+</p>
+
+<p class="indented">
+    Given all this work for a <b>static method</b>, though, what happens when we want to call a method on some <b>bound object</b>, such as our old friend, <code>System.out::println</code>?
+</p>
+
+<h3>Bound Instance Method References</h3>
+
+<p class="indented">
+    In the previous section, we saw how a <b>static method</b> was turned into a <b>functional interface</b> implementation via a <b>method reference</b>.
+    The static case is the simplest; binding an instance method is trickier.
+    <b>An instance method also has to store its particular instance for later execution, and that instance has to be used to invoke the method.</b>
+    <sub class="my_note" style="color:blue">笔记：static method可以直接使用“类名”来进行调用，而instance method则需要使用类的实例来进行调用。与static method相比较，instance method很关键的一点就是要“获得类的实例对象”，才能进行调用。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Consumer;
+
+public class HelloWorld {
+    public Consumer&lt;String&gt; getConsumer() {
+        return System.out::println;
+    }
+}
+</div>
+
+<div title="getConsumer:()Ljava/util/function/Consumer;" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 1
+code_length = 14
+code = B2000259B6000357BA00040000B0
+=== === ===  === === ===  === === ===
+0000: getstatic       #2   // B20002     || java/lang/System.out:Ljava/io/PrintStream;
+0003: dup                  // 59
+0004: invokevirtual   #3   // B60003     || java/lang/Object.getClass:()Ljava/lang/Class;
+0007: pop                  // 57
+0008: invokedynamic   #4   // BA00040000 || #0:accept:(Ljava/io/PrintStream;)Ljava/util/function/Consumer;
+0013: areturn              // B0
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      14  this:Lsample/HelloWorld;
+</div>
+
+<p class="indented">
+    If we compare this to the previous function, we see that there is a bit more going on.
+    The first thing is the <code>getstatic</code> call, which loads <code>System.out</code> onto the operand stack.
+    Eventually, we will pass that instance into our <code>invokedynamic</code> call on instruction 8, which will again use the bootstrap method to produce our <code>Consumer</code>.
+</p>
+
+<p class="indented">
+    The bootstrap method is practically identical to what we saw with the <b>static method reference</b>, except that our method is being invoked using <code>invokevirtual</code> instead of <code>invokestatic</code>.
+    Whereas <code>invokestatic</code> makes the static method call, <code>invokevirtual</code> makes an instance method call.
+    So that is our method reference, and the instance to invoke it on is also passed into the bootstrap method.
+</p>
+
+<div title="BootstrapMethods" class="plaintext">
+BootstrapMethods:
+  0: #25 invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
+            Ljava/lang/invoke/MethodHandles$Lookup;
+            Ljava/lang/String;              // 本例中，是accept
+            Ljava/lang/invoke/MethodType;   // 本例中，是Consumer
+            Ljava/lang/invoke/MethodType;   // 本例中，是Consumer.accept()的descriptor
+            Ljava/lang/invoke/MethodHandle; // 本例中，是PrintStream.println()方法
+            Ljava/lang/invoke/MethodType;   // 本例中，是PrintStream.println()方法的descriptor
+        )Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #26 (Ljava/lang/Object;)V
+      #27 invokevirtual java/io/PrintStream.println:(Ljava/lang/String;)V  // 注意，这里是invokevirtual
+      #28 (Ljava/lang/String;)V
+</div>
+
+<p class="indented">
+    Aside from that difference, this is all very similar to what we saw before. But what is that stuff in instructions 3, 4, and 7?
+</p>
+
+<div title="instructions 3, 4, and 7" class="plaintext">
+0003: dup                  // 59
+0004: invokevirtual   #3   // B60003     || java/lang/Object.getClass:()Ljava/lang/Class;
+0007: pop                  // 57
+</div>
+
+<p class="indented">
+    It is possible that this variable came from some other classloader far away, or that it was somehow gamed into existence.
+    The bootstrap method, however, is going to need access to the class, and is going to need it to be fully formed.
+    <b>To ensure that the class is fully loaded and accessible in the current context</b>, we will call the <code>Object.getClass()</code> method on <code>System.out</code>.
+    The <code>invokevirtual</code> call, however, will consume the top element of the stack as the target, and we want to keep the top element around – it’s our reference to <code>System.out</code>.
+    So we first do a <code>dup</code>, which duplicates the top element of the stack.
+    The stack now has two <code>System.out</code> references, and we consume one with <code>invokevirtual</code> to call the <code>Object.getClass()</code> method.
+    We don’t want to actually do anything with the class, however, so we can then just <code>pop</code> it off the stack.
+    <sub class="my_note" style="color:blue">笔记：这三个instruction的目的，就是为了保证class已经被加载，并且能访问到</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+
+
+<p class="indented">
+    This class maneuver(巧妙的动作；花招) is the kind of bookkeeping that you do not have to deal with in the world of Java, and which the compiler provides to you free of charge.
+    It also demonstrates the subtlety and complexity of bootstrapping and method handle lookups, which it is very easy to get wrong. So please love and appreciate your compiler!
+    <sub class="my_note" style="color:blue">笔记：这是Java Compiler帮我们做的额外的工作</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h3>Free Instance Method References</h3>
+
+<p class="indented">
+    There is one last kind of method reference: <b>the free instance method reference</b>.
+    This is the case when we pass in a type and an instance method to the method reference, and it creates a method that accepts that type and calls the given instance method.
+    This is somewhat like <b>the bound method reference</b>, in that it has to track what type is being called.
+    However, <b>we do not have a particular instance</b> that is being called in this case, so it can’t act like the bound instance method reference. How does it work?
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.math.BigInteger;
+import java.util.function.Function;
+
+public class HelloWorld {
+    public Function&lt;BigInteger, String&gt; getFunction() {
+        return BigInteger::toString;
+    }
+}
+</div>
+
+<div title="getFunction:()Ljava/util/function/Function;" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 6
+code = BA00020000B0
+=== === ===  === === ===  === === ===
+0000: invokedynamic   #2   // BA00020000 || #0:apply:()Ljava/util/function/Function;
+0005: areturn              // B0
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  this:Lsample/HelloWorld;
+</div>
+
+<p class="indented">
+    It may seem like the <b>free instance method</b> is the strangest of all three types of <b>method references</b>, but the actual implementation is just as simple as the <b>static method reference</b>!
+    The only difference is that the method handle passed into the bootstrap uses <code>invokevirtual</code> instead of <code>invokestatic</code>.
+    This goes to show that the <code>invokevirtual</code> and the <code>invokestatic</code> calls are not directly invoked, but are instead implementation details about the functional interface itself.
+    So there is no difference between creating a static and a free instance method, except in the way the implementation calls the methods.
+</p>
+
+<div title="BootstrapMethods" class="plaintext">
+BootstrapMethods:
+  0: #20 invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
+            Ljava/lang/invoke/MethodHandles$Lookup;
+            Ljava/lang/String;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodHandle;
+            Ljava/lang/invoke/MethodType;
+        )Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #21 (Ljava/lang/Object;)Ljava/lang/Object;
+      #22 invokevirtual java/math/BigInteger.toString:()Ljava/lang/String; // 注意，这里是invokevirtual
+      #23 (Ljava/math/BigInteger;)Ljava/lang/String;
+</div>
+
+<h3>Inline Lambda Definitions and Lambda Lifting</h3>
+
+<p class="indented">
+    The last kind of lambda that you can have is a <b>lambda with an inline definition</b>.
+    We are not talking about a reference to an existing method here, but instead defining an entirely new unit of functionality right inline.
+    You may consider code like this:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Supplier;
+
+public class HelloWorld {
+    public Supplier&lt;String&gt; getSupplier() {
+        return () -> "Hello World!";
+    }
+}
+</div>
+
+<div title="javap -v -p HelloWorld.class" class="plaintext">
+$ javap -v -p HelloWorld.class
+... ...
+{
+  ... ...
+
+  public java.util.function.Supplier&lt;java.lang.String&gt; getSupplier();
+    descriptor: ()Ljava/util/function/Supplier;
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: invokedynamic #2,  0              // InvokeDynamic #0:get:()Ljava/util/function/Supplier;
+         5: areturn
+      LineNumberTable:
+        line 8: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       6     0  this   Lsample/HelloWorld;
+    Signature: #16                          // ()Ljava/util/function/Supplier&lt;Ljava/lang/String;&gt;;
+
+  private static java.lang.String lambda$getSupplier$0();
+    descriptor: ()Ljava/lang/String;
+    flags: ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #3                  // String Hello World!
+         2: areturn
+      LineNumberTable:
+        line 8: 0
+}
+... ...
+BootstrapMethods:
+  0: #23 invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
+            Ljava/lang/invoke/MethodHandles$Lookup;
+            Ljava/lang/String;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodHandle;
+            Ljava/lang/invoke/MethodType;
+        )Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #24 ()Ljava/lang/Object;
+      #25 invokestatic sample/HelloWorld.lambda$getSupplier$0:()Ljava/lang/String; // 注意，这里是invokestatic
+      #26 ()Ljava/lang/String;
+</div>
+
+<p class="indented">
+    What the compiler will do in this case is create a method for you with that implementation.
+    That is called a “<b>synthetic method</b>.”
+    This will be a <b>static method</b> that takes no arguments and returns the string, “Hello, World!”.
+    Once that is created, the compiler has now reduced the problem of the <b>inline lambda</b> into the <b>static method reference</b> problem that we saw before.
+    It is a quite clever solution, and ultimately quite trivial an implementation – which means it is boring for us.
+</p>
+
+<p class="indented">
+    The more interesting case is when you have variables in the mix.
+    Let’s create a method that calls an <b>instance method</b> (requiring access to <code>this</code>) along with <b>a local variable</b> in the scope.
+    After all, these lambdas are closures: they enclose their scope. This kind of stuff is their job! How is the compiler going to deal with that complexity? The answer is in Following.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Supplier;
+
+public class HelloWorld {
+    public String provideMessage(String message) {
+        return message;
+    }
+
+    public Supplier&lt;String&gt; getSupplier(String message) {
+        return () -> this.provideMessage(message);
+    }
+}
+</div>
+
+<div title="javap -v -p HelloWorld.class" class="plaintext">
+$ javap -v -p HelloWorld.class
+... ...
+{
+  public java.lang.String provideMessage(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_1
+         1: areturn
+      LineNumberTable:
+        line 8: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0  this   Lsample/HelloWorld;
+            0       2     1 message   Ljava/lang/String;
+    MethodParameters:
+      Name                           Flags
+      message
+
+  public java.util.function.Supplier&lt;java.lang.String&gt; getSupplier(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/util/function/Supplier;
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokedynamic #2,  0              // InvokeDynamic #0:get:(Lsample/HelloWorld;Ljava/lang/String;)Ljava/util/function/Supplier;
+         7: areturn
+      LineNumberTable:
+        line 12: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       8     0  this   Lsample/HelloWorld;
+            0       8     1 message   Ljava/lang/String;
+    MethodParameters:
+      Name                           Flags
+      message
+    Signature: #21                          // (Ljava/lang/String;)Ljava/util/function/Supplier&lt;Ljava/lang/String;&gt;;
+
+  private java.lang.String lambda$getSupplier$0(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: ACC_PRIVATE, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokevirtual #3                  // Method provideMessage:(Ljava/lang/String;)Ljava/lang/String;
+         5: areturn
+      LineNumberTable:
+        line 12: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       6     0  this   Lsample/HelloWorld;
+            0       6     1 message   Ljava/lang/String;
+    MethodParameters:
+      Name                           Flags
+      message                        final synthetic
+}
+... ...
+BootstrapMethods:
+  0: #27 invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
+            Ljava/lang/invoke/MethodHandles$Lookup;
+            Ljava/lang/String;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodHandle;
+            Ljava/lang/invoke/MethodType;
+        )Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #28 ()Ljava/lang/Object;
+      #29 invokespecial sample/HelloWorld.lambda$getSupplier$0:(Ljava/lang/String;)Ljava/lang/String; // 注意，这里是invokespecial
+      #30 ()Ljava/lang/String;
+</div>
+
+<p class="indented">
+    Now things have gotten really quite strange. We see the example of the synthetic method with the strange name: <code>lambda$getSupplier$0(java.lang.String);</code>.
+    That is an instance method that takes a <code>String</code>, and calls <code>provideMessage</code> on that string using the instance: it loads <code>aload_0</code>, which is <code>this</code>, and then <code>aload_1</code>, which is the argument, and then does an <code>invokevirtual</code>.
+    Our <code>getSupplier</code> method does something similar: it loads the <code>this</code> and <code>message</code>, and then does our familiar <code>invokedynamic</code> call to generate the <code>Supplier</code>.
+</p>
+
+<p class="indented">
+    Note that we are passing in two arguments to <code>invokedynamic</code> now:
+    all the variables that we need to reference inside our lambda implementation become arguments to <code>invokedynamic</code>.
+    This is called “<b>lambda lifting</b>”: we lift the bound variables out of the lambda and make them arguments to instantiating it.
+    The signal that we have performed lambda lifting is the use of <code>invokespecial</code> as our means of method invocation:
+    we saw it used before to signal a constructor, but now we are using it as a signal to the bootstrap method that we are having to construct a new instance with the lifted arguments.
+</p>
+
+<p class="indented">
+    The important part to realize is that <b>declaring a lambda</b> that uses variables is a lot like <b>declaring a new type</b> that refers to those variables:
+    we will end up instantiating a new instance that will hold onto those variables, and it will end up referring to those member fields when it executes.
+    Therefore, <b>defining a lambda inline</b> and <b>defining your own anonymous inner class</b> have practically identical performance characteristics.
+    Use whichever approach is more natural for the space you are in.
+    <sub class="my_note" style="color:blue">笔记：在使用局部变量的情况下，定义lambda和定义inner class是相类似的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Lambda in Java API Perspective</h2>
+
+<p class="indented">
+    <b>Boostrap Method</b> is a method which instantiates <code>CallSite</code> objects.
+</p>
+
+<p class="indented">
+    Each <code>invokedynamic</code> has a known <b>bootstrap method</b> given as its compile-time parameter.
+    Whenever a <code>invokedynamic</code> is processed for a first time, appropriate <b>bootstrap method</b> is invoked.
+    As result of <b>boostrap method</b> execution a <code>CallSite</code> object is created.
+    This <code>CallSite</code> object is then cached and associated by JVM to a given <code>invokedynamic</code> operation.
+    From now on, whenever particular <code>invokedynamic</code> call is to be executed, a cached <code>CallSite</code> instance is used to resolve called method.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        invokedynamic --&gt; bootstrap method --&gt; CallSite
+    </p>
+</div>
+
+<p class="indented">
+    Majority of boostrap methods are not written directly by Java programmer.
+    However that doesn't mean they are some rare obscure mechanism.
+    They are created by <b>javac compiler</b> whenever particular java statements are used within source.
+    String concatenation or lambda expression come to mind.
+    <sub class="my_note" style="color:blue">笔记：大部分的boostrap method是由javac生成的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    For example <b>lambda expression</b> could be implemented as <b>inner classes</b>.
+    For matter of fact, lambdas are presented to programmers 'as shorthand' to using inner classes.
+    However actual javac implementation, for performance reasons, avoids inner classes by generating lambda code under a static method and using <code>invokedynamic</code> to invoke this method.
+</p>
+
+<h3>LambdaMetafactory</h3>
+
+<p class="indented">
+    Methods to facilitate the creation of simple "function objects" that implement one or more interfaces by delegation to a provided <code>MethodHandle</code>.
+    These methods are typically used as <b>bootstrap methods</b> for <code>invokedynamic</code> call sites, to support the <b>lambda expression</b> and <b>method reference expression</b> features of the Java Programming Language.
+</p>
+
+<div title="LambdaMetafactory.java" class="javacode">
+public static CallSite metafactory(MethodHandles.Lookup caller,
+                                   String invokedName,
+                                   MethodType invokedType,
+                                   MethodType samMethodType,
+                                   MethodHandle implMethod,
+                                   MethodType instantiatedMethodType)
+        throws LambdaConversionException {
+    //... ...
+}
+</div>
+
+<h3>CallSite</h3>
+
+<p class="indented">
+    A <code>CallSite</code> is a holder for a variable <code>MethodHandle</code>, which is called its <code>target</code>.
+    An <code>invokedynamic</code> instruction linked to a <code>CallSite</code> delegates all calls to the site's current target.
+</p>
+
+<div title="CallSite.java" class="javacode">
+public abstract class CallSite {
+    MethodHandle target;
+}
+</div>
+
+<h3>MethodHandle</h3>
+
+<p class="indented">
+    A <b>method handle</b> is a typed, directly executable reference to an underlying method, constructor, field, or similar low-level operation, with optional transformations of arguments or return values.
+</p>
+
+<h3>MethodType</h3>
+
+<p class="indented">
+    A <b>method type</b> represents the <b>arguments and return type</b> accepted and returned by a method handle.
+    <sub class="my_note" style="color:blue">笔记：method type = return type + argument types</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    MethodType objects are sometimes derived from bytecode instructions such as <code>invokedynamic</code>, specifically from the type descriptor strings associated with the instructions in a class file's constant pool.
+    <sub class="my_note" style="color:blue">笔记：method type可以从bytecode instruction当中衍生得到。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+
+
+<h2>References</h2>
+
+<ul>
+    <li>《Java Closures and Lambda》中的Chapter 8 Lambdas in Java Bytecode</li>
+    <li><a class="external" href="https://en.wikipedia.org/wiki/American_Dream" target="_blank">Wiki: American Dream</a></li>
+</ul>
+

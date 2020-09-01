@@ -1,0 +1,561 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Opcode Constants</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    These instructions push <b>a constant value</b> on the <b>operand stack</b>: <code>ACONST_NULL</code> pushes <code>null</code>, <code>ICONST_0</code> pushes the int value <code>0</code>, <code>FCONST_0</code> pushes <code>0f</code>, <code>DCONST_0</code> pushes <code>0d</code>, <code>BIPUSH b</code> pushes the byte value <code>b</code>, <code>SIPUSH s</code> pushes the short value <code>s</code>, <code>LDC cst</code> pushes the arbitrary <code>int</code>, <code>float</code>, <code>long</code>, <code>double</code>, <code>String</code>, or <b>class constant</b> <code>cst</code>, etc.
+</p>
+
+<h2>int</h2>
+
+<h3>iconst_&lt;i&gt;: -1~5</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int int_m1 = -1;
+        int int_0 = 0;
+        int int_1 = 1;
+        int int_2 = 2;
+        int int_3 = 3;
+        int int_4 = 4;
+        int int_5 = 5;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 8
+code_length = 19
+code = 023C033D043E053604063605073606083607B1
+=== === ===  === === ===  === === ===
+0000: iconst_m1            // 02
+0001: istore_1             // 3C
+0002: iconst_0             // 03
+0003: istore_2             // 3D
+0004: iconst_1             // 04
+0005: istore_3             // 3E
+0006: iconst_2             // 05
+0007: istore          4    // 3604
+0009: iconst_3             // 06
+0010: istore          5    // 3605
+0012: iconst_4             // 07
+0013: istore          6    // 3606
+0015: iconst_5             // 08
+0016: istore          7    // 3607
+0018: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      19  this:Lsample/HelloWorld;
+    1         2      17  int_m1:I
+    2         4      15  int_0:I
+    3         6      13  int_1:I
+    4         9      10  int_2:I
+    5        12       7  int_3:I
+    6        15       4  int_4:I
+    7        18       1  int_5:I
+</div>
+
+<h3>bipush: -128~-2 and 6~127</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int int_m128 = -128;
+        int int_m2 = -2;
+        int int_6 = 6;
+        int int_127 = 127;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 5
+code_length = 14
+code = 10803C10FE3D10063E107F3604B1
+=== === ===  === === ===  === === ===
+0000: bipush          -128 // 1080
+0002: istore_1             // 3C
+0003: bipush          -2   // 10FE
+0005: istore_2             // 3D
+0006: bipush          6    // 1006
+0008: istore_3             // 3E
+0009: bipush          127  // 107F
+0011: istore          4    // 3604
+0013: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      14  this:Lsample/HelloWorld;
+    1         3      11  int_m128:I
+    2         6       8  int_m2:I
+    3         9       5  int_6:I
+    4        13       1  int_127:I
+</div>
+
+<h3>sipush: -32768~-129 and 128~32767</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int int_m32768 = -32768;
+        int int_m129 = -129;
+        int int_128 = 128;
+        int int_32767 = 32767;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 5
+code_length = 18
+code = 1180003C11FF7F3D1100803E117FFF3604B1
+=== === ===  === === ===  === === ===
+0000: sipush          -32768 // 118000
+0003: istore_1             // 3C
+0004: sipush          -129 // 11FF7F
+0007: istore_2             // 3D
+0008: sipush          128  // 110080
+0011: istore_3             // 3E
+0012: sipush          32767 // 117FFF
+0015: istore          4    // 3604
+0017: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      18  this:Lsample/HelloWorld;
+    1         4      14  int_m32768:I
+    2         8      10  int_m129:I
+    3        12       6  int_128:I
+    4        17       1  int_32767:I
+</div>
+
+<h3>ldc</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int int_min = Integer.MIN_VALUE;
+        int int_m32789 = -32769;
+        int int_32768 = 32768;
+        int int_max = Integer.MAX_VALUE;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='001C' (28)
+constant_pool
+    ... ...
+    |003| CONSTANT_Integer {Value='-2147483648', HexCode='0380000000'}
+    |004| CONSTANT_Integer {Value='-32769', HexCode='03FFFF7FFF'}
+    |005| CONSTANT_Integer {Value='32768', HexCode='0300008000'}
+    |006| CONSTANT_Integer {Value='2147483647', HexCode='037FFFFFFF'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 5
+code_length = 14
+code = 12033C12043D12053E12063604B1
+=== === ===  === === ===  === === ===
+0000: ldc             #3   // 1203       || -2147483648
+0002: istore_1             // 3C
+0003: ldc             #4   // 1204       || -32769
+0005: istore_2             // 3D
+0006: ldc             #5   // 1205       || 32768
+0008: istore_3             // 3E
+0009: ldc             #6   // 1206       || 2147483647
+0011: istore          4    // 3604
+0013: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      14  this:Lsample/HelloWorld;
+    1         3      11  int_min:I
+    2         6       8  int_m32789:I
+    3         9       5  int_32768:I
+    4        13       1  int_max:I
+</div>
+
+<h3>int Range</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Byte Min=" + Byte.MIN_VALUE + ", MAX=" + Byte.MAX_VALUE);
+        System.out.println("Short Min=" + Short.MIN_VALUE + ", MAX=" + Short.MAX_VALUE);
+        System.out.println("Integer Min=" + Integer.MIN_VALUE + ", MAX=" + Integer.MAX_VALUE);
+    }
+}
+</div>
+
+<div title="Run Output" class="plaintext">
+Byte Min=-128, MAX=127
+Short Min=-32768, MAX=32767
+Integer Min=-2147483648, MAX=2147483647
+</div>
+
+<h2>long</h2>
+
+<h3>lconst_&lt;l&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        long long_0 = 0;
+        long long_1 = 1;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 5
+code_length = 5
+code = 09400A42B1
+=== === ===  === === ===  === === ===
+0000: lconst_0             // 09
+0001: lstore_1             // 40
+0002: lconst_1             // 0A
+0003: lstore_3             // 42
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+    1         2       3  long_0:J
+    3         4       1  long_1:J
+</div>
+
+<h3>ldc2_w</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        long long_2 = 2;
+        long long_max = Long.MAX_VALUE;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='001A' (26)
+constant_pool
+    ... ...
+    |002| CONSTANT_Long {Value='2', HexCode='050000000000000002'} // Long占用两个位置
+    |004| CONSTANT_Class {Value='#23', HexCode='070017'}
+    |005| CONSTANT_Long {Value='9223372036854775807', HexCode='057FFFFFFFFFFFFFFF'}
+    ... ...
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 5
+code_length = 9
+code = 1400024014000542B1
+=== === ===  === === ===  === === ===
+0000: ldc2_w          #2   // 140002     || 2
+0003: lstore_1             // 40
+0004: ldc2_w          #5   // 140005     || 9223372036854775807
+0007: lstore_3             // 42
+0008: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         4       5  long_2:J
+    3         8       1  long_max:J
+</div>
+
+<h2>float</h2>
+
+<h3>fconst_&lt;f&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        float float_0 = 0;
+        float float_1 = 1;
+        float float_2 = 2;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 4
+code_length = 7
+code = 0B440C450D46B1
+=== === ===  === === ===  === === ===
+0000: fconst_0             // 0B
+0001: fstore_1             // 44
+0002: fconst_1             // 0C
+0003: fstore_2             // 45
+0004: fconst_2             // 0D
+0005: fstore_3             // 46
+0006: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       7  this:Lsample/HelloWorld;
+    1         2       5  float_0:F
+    2         4       3  float_1:F
+    3         6       1  float_2:F
+</div>
+
+<h3>ldc</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        float float_PI = 3.14F;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |002| CONSTANT_Float {Value='3.14', HexCode='044048F5C3'}
+    ... ...
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 4
+code = 120244B1
+=== === ===  === === ===  === === ===
+0000: ldc             #2   // 1202       || 3.14
+0002: fstore_1             // 44
+0003: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       4  this:Lsample/HelloWorld;
+    1         3       1  float_PI:F
+</div>
+
+<h2>double</h2>
+
+<h3>dconst_&lt;d&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        double double_0 = 0;
+        double double_1 = 1;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 5
+code_length = 5
+code = 0E480F4AB1
+=== === ===  === === ===  === === ===
+0000: dconst_0             // 0E
+0001: dstore_1             // 48
+0002: dconst_1             // 0F
+0003: dstore_3             // 4A
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+    1         2       3  double_0:D
+    3         4       1  double_1:D
+</div>
+
+<h3>ldc2_w</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        double double_PI = 3.14D;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='0015' (21)
+constant_pool
+    ... ...
+    |002| CONSTANT_Double {Value='3.14', HexCode='0640091EB851EB851F'}
+    |004| CONSTANT_Class {Value='#19', HexCode='070013'}
+    ... ...
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 5
+code = 14000248B1
+=== === ===  === === ===  === === ===
+0000: ldc2_w          #2   // 140002     || 3.14
+0003: dstore_1             // 48
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+    1         4       1  double_PI:D
+</div>
+
+<h2>Reference Type</h2>
+
+<h3>null</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Object obj_null = null;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 3
+code = 014CB1
+=== === ===  === === ===  === === ===
+0000: aconst_null          // 01
+0001: astore_1             // 4C
+0002: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       3  this:Lsample/HelloWorld;
+    1         2       1  obj_null:Ljava/lang/Object;
+</div>
+
+<h3>String</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        String str = "GoodBoy";
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='0015' (21)
+constant_pool
+    ... ...
+    |002| CONSTANT_String {Value='#18', HexCode='080012'}
+    ... ...
+    |018| CONSTANT_Utf8 {Value='GoodBoy', HexCode='010007476F6F64426F79'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 4
+code = 12024CB1
+=== === ===  === === ===  === === ===
+0000: ldc             #2   // 1202       || GoodBoy
+0002: astore_1             // 4C
+0003: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       4  this:Lsample/HelloWorld;
+    1         3       1  str:Ljava/lang/String;
+</div>
+
+<h3>Class&lt;?&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Class clazz = HelloWorld.class;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='0013' (19)
+constant_pool
+    ... ...
+    |002| CONSTANT_Class {Value='#17', HexCode='070011'}
+    ... ...
+    |017| CONSTANT_Utf8 {Value='sample/HelloWorld', HexCode='01001173616D706C652F48656C6C6F576F726C64'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 4
+code = 12024CB1
+=== === ===  === === ===  === === ===
+0000: ldc             #2   // 1202       || sample/HelloWorld
+0002: astore_1             // 4C
+0003: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       4  this:Lsample/HelloWorld;
+    1         3       1  clazz:Ljava/lang/Class;
+</div>
+
+<h2>Summing Up</h2>
+
+<h2>ldc</h2>
+
+<h2>ldc_w</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private String str001 = "str001";
+    // ... ... 省略255个
+    private String str257 = "str257";
+
+    public void test() {
+        String str = "str258";
+    }
+
+    public static void main(String[] args) {
+        String format = "private String str%03d = \"str%03d\";";
+        for (int i = 1; i < 258; i++) {
+            String line = String.format(format, i, i);
+            System.out.println(line);
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 5
+code = 1302044CB1
+=== === ===  === === ===  === === ===
+0000: ldc_w           #516 // 130204     || str258
+0003: astore_1             // 4C
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+    1         4       1  str:Ljava/lang/String;
+</div>

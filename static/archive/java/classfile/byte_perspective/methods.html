@@ -3,7 +3,7 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
@@ -263,33 +263,6 @@ methods
     MethodInfo {Value='compareTo:(Ljava/lang/Object;)I', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[Signature]', HexCode='0401000300040001...'}
 </div>
 
-<p>
-    还有一种情况，就是Java Language和ClassFile对于“OverWriter”的概念是不一样的：在Java Language中，只要方法名和参数类型相同，就可以构成OverWrite；而在ClassFile中，除了方法名和参数类型相同外，还需要返回值类型也相同。
-</p>
-
-<div title="SuperClass.java" class="javacode">
-public abstract class SuperClass {
-    public abstract Object getValue(String str);
-}
-</div>
-
-<div title="HelloWorld.java" class="javacode">
-public class HelloWorld extends SuperClass {
-    @Override
-    public String getValue(String str) {
-        return "ABC";
-    }
-}
-</div>
-
-<div title="Example: ACC_BRIDGE,ACC_SYNTHETIC" class="plaintext">
-methods_count='0003' (3)
-methods
-    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]', HexCode='0001000600070001...'}
-    MethodInfo {Value='getValue:(Ljava/lang/String;)Ljava/lang/String;', AccessFlags='[ACC_PUBLIC]', Attrs='[Code, MethodParameters]', HexCode='0001000D000E0002...'}
-    MethodInfo {Value='getValue:(Ljava/lang/String;)Ljava/lang/Object;', AccessFlags='[ACC_PUBLIC,ACC_BRIDGE,ACC_SYNTHETIC]', Attrs='[Code, MethodParameters]', HexCode='1041000D00120002...'}
-</div>
-
 <h3>ACC_NATIVE</h3>
 
 <p>
@@ -380,6 +353,15 @@ $ javap -v -p HelloWorld.class
 </div>
 
 <h2>&lt;init&gt; and &lt;clinit&gt;</h2>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        init = initializer
+    </p>
+    <p>
+        clinit = class initializer
+    </p>
+</div>
 
 <h3>&lt;init&gt;</h3>
 

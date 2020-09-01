@@ -3,7 +3,7 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/java/java_class_index.html">TOC</a>
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
@@ -57,18 +57,21 @@ attribute_info {
     For all attributes, the <code>attribute_name_index</code> must be a valid unsigned 16-bit index into the constant pool of the class. The <code>constant_pool</code> entry at <code>attribute_name_index</code> must be a <code>CONSTANT_Utf8_info</code> structure representing the name of the attribute. The value of the <code>attribute_length</code> item indicates the length of the subsequent information in bytes. The length does not include the initial six bytes that contain the <code>attribute_name_index</code> and <code>attribute_length</code> items.
 </p>
 
-<h2>Predefined Attributes</h2>
+<h2>23 Predefined Attributes</h2>
 
 <p>
     23 attributes are predefined by The Java 8 Virtual Machine Specification.
 </p>
 
 <table class="w3-table-all w3-hoverable w3-centered">
+    <thead onclick="$(this).next().toggle()">
     <tr class="w3-green">
         <th>Attribute</th>
         <th>Location</th>
         <th>ClassFile</th>
     </tr>
+    </thead>
+    <tbody style="display: none;">
     <tr class="w3-hover-blue">
         <td>SourceFile</td>
         <td>ClassFile</td>
@@ -185,6 +188,7 @@ attribute_info {
         </td>
         <td>52.0</td>
     </tr>
+    </tbody>
 </table>
 
 <h2>Defining and Naming New Attributes</h2>
@@ -326,6 +330,13 @@ num_element_value_pairs='0000' (0)
 
 <h4>Deprecated</h4>
 
+<div title="Deprecated_attribute" class="plaintext">
+Deprecated_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+}
+</div>
+
 <div title="HelloWorld.java" class="javacode">
 @Deprecated
 public class HelloWorld {
@@ -364,6 +375,14 @@ num_element_value_pairs='0000' (0)
 
 <h4>Signature</h4>
 
+<div title="Signature_attribute" class="plaintext">
+Signature_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 signature_index;
+}
+</div>
+
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld&lt;T&gt; {
 }
@@ -392,12 +411,147 @@ signature_index='000E' (14)
 
 <h4>ConstantValue</h4>
 
+<div title="ConstantValue_attribute" class="plaintext">
+ConstantValue_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 constantvalue_index;
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public final int intValue = 1024;
+}
+</div>
+
+<div title="Example: HelloWorld.class intValue Attributes" class="plaintext">
+constant_pool_count='0016' (22)
+constant_pool
+    ... ...
+    |007| CONSTANT_Utf8 {Value='ConstantValue', HexCode='01000D436F6E7374616E7456616C7565'}
+    |008| CONSTANT_Integer {Value='1024', HexCode='0300000400'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|001| ConstantValue:
+HexCode: 0007000000020008
+attribute_name_index='0007' (#7)
+attribute_length='00000002' (2)
+constantvalue_index='0008' (#8)
+</div>
+
 <h3>method_info</h3>
 
 <h4>Code</h4>
 
+<div title="Code_attribute" class="plaintext">
+Code_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 max_stack;
+    u2 max_locals;
+    u4 code_length;
+    u1 code[code_length];
+    u2 exception_table_length;
+    {   u2 start_pc;
+        u2 end_pc;
+        u2 handler_pc;
+        u2 catch_type;
+    } exception_table[exception_table_length];
+    u2 attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+public class HelloWorld {
+    public void test() {
+        InputStream in = null;
+
+        try {
+            in = new FileInputStream("/path/to/file");
+            int val;
+            while ((val = in.read()) != -1) {
+                System.out.println((char)val);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    // do nothing
+                }
+            }
+        }
+    }
+}
+</div>
+
 <h4>Exceptions</h4>
 
-<h4>AnnotationDefault</h4>
+<div title="Exceptions_attribute" class="plaintext">
+Exceptions_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 number_of_exceptions;
+    u2 exception_index_table[number_of_exceptions];
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+public class HelloWorld {
+    public void test() throws FileNotFoundException, IOException {
+    }
+}
+</div>
+
+<div title="" class="plaintext">
+constant_pool_count='0016' (22)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='Code', HexCode='010004436F6465'}
+    |007| CONSTANT_Utf8 {Value='LineNumberTable', HexCode='01000F4C696E654E756D6265725461626C65'}
+    |008| CONSTANT_Utf8 {Value='LocalVariableTable', HexCode='0100124C6F63616C5661726961626C655461626C65'}
+    |009| CONSTANT_Utf8 {Value='this', HexCode='01000474686973'}
+    |010| CONSTANT_Utf8 {Value='Lsample/HelloWorld;', HexCode='0100134C73616D706C652F48656C6C6F576F726C643B'}
+    |011| CONSTANT_Utf8 {Value='test', HexCode='01000474657374'}
+    |012| CONSTANT_Utf8 {Value='Exceptions', HexCode='01000A457863657074696F6E73'}
+    |013| CONSTANT_Class {Value='java/io/FileNotFoundException', HexCode='070014'}
+    |014| CONSTANT_Class {Value='java/io/IOException', HexCode='070015'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|001| Code:
+HexCode: 00060000002B0000000100000001B10000000200070000000600010000001E00080000000C0001000000010009000A0000
+attribute_name_index='0006' (#6)
+attribute_length='0000002B' (43)
+max_stack='0000' (0)
+max_locals='0001' (1)
+code_length='00000001' (1)
+code:
+B1
+exception_table_length='0000' (0)
+attributes_count='0002' (2)
+    LineNumberTable: 000700000006000100000008
+    LocalVariableTable: 00080000000C0001000000010009000A0000
+--->|002| Exceptions:
+HexCode: 000C000000060002000D000E
+attribute_name_index='000C' (#12)
+attribute_length='00000006' (6)
+number_of_exceptions='0002' (2)
+    exception_index = '000D' (#13)
+    exception_index = '000E' (#14)
+</div>
 
 <h2>Summing Up</h2>

@@ -1,0 +1,176 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Opcode: Cast</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>primitive type</h2>
+
+<h3>int to long</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int intValue = 0;
+        long longValue = intValue;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 6
+code = 033C1B8541B1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iload_1              // 1B
+0003: i2l                  // 85
+0004: lstore_2             // 41
+0005: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  this:Lsample/HelloWorld;
+    1         2       4  intValue:I
+    2         5       1  longValue:J
+</div>
+
+<h3>long to int</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        long longValue = 0;
+        int intValue = (int) longValue;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 6
+code = 09401F883EB1
+=== === ===  === === ===  === === ===
+0000: lconst_0             // 09
+0001: lstore_1             // 40
+0002: lload_1              // 1F
+0003: l2i                  // 88
+0004: istore_3             // 3E
+0005: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  this:Lsample/HelloWorld;
+    1         2       4  longValue:J
+    3         5       1  intValue:I
+</div>
+
+<h2>non-primitive type</h2>
+
+<h3>checkcast</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Object obj = null;
+        String str = (String) obj;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 8
+code = 014C2BC000024DB1
+=== === ===  === === ===  === === ===
+0000: aconst_null          // 01
+0001: astore_1             // 4C
+0002: aload_1              // 2B
+0003: checkcast       #2   // C00002     || java/lang/String
+0006: astore_2             // 4D
+0007: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       8  this:Lsample/HelloWorld;
+    1         2       6  obj:Ljava/lang/Object;
+    2         7       1  str:Ljava/lang/String;
+</div>
+
+<h3>instanceof</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        String str = null;
+        boolean flag = str instanceof Object;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 8
+code = 014C2BC100023DB1
+=== === ===  === === ===  === === ===
+0000: aconst_null          // 01
+0001: astore_1             // 4C
+0002: aload_1              // 2B
+0003: instanceof      #2   // C10002     || java/lang/Object
+0006: istore_2             // 3D
+0007: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       8  this:Lsample/HelloWorld;
+    1         2       6  str:Ljava/lang/String;
+    2         7       1  flag:Z
+</div>
+
+<h2>Summing Up</h2>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Array Operation</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>opcode</th>
+        <th>mnemonic symbol</th>
+        <th>meaning</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr><td><code>133</code></td><td>i2l</td><td></td></tr>
+    <tr><td><code>134</code></td><td>i2f</td><td></td></tr>
+    <tr><td><code>135</code></td><td>i2d</td><td></td></tr>
+    <tr><td><code>136</code></td><td>l2i</td><td></td></tr>
+    <tr><td><code>137</code></td><td>l2f</td><td></td></tr>
+    <tr><td><code>138</code></td><td>l2d</td><td></td></tr>
+    <tr><td><code>139</code></td><td>f2i</td><td></td></tr>
+    <tr><td><code>140</code></td><td>f2l</td><td></td></tr>
+    <tr><td><code>141</code></td><td>f2d</td><td></td></tr>
+    <tr><td><code>142</code></td><td>d2i</td><td></td></tr>
+    <tr><td><code>143</code></td><td>d2l</td><td></td></tr>
+    <tr><td><code>144</code></td><td>d2f</td><td></td></tr>
+    <tr><td><code>145</code></td><td>i2b</td><td></td></tr>
+    <tr><td><code>146</code></td><td>i2c</td><td></td></tr>
+    <tr><td><code>147</code></td><td>i2s</td><td></td></tr>
+    <tr><td><code>192</code></td><td>checkcast</td><td></td></tr>
+    <tr><td><code>193</code></td><td>instanceof</td><td></td></tr>
+    </tbody>
+</table>
+
+
+
+

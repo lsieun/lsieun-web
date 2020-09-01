@@ -1,0 +1,1308 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Opcode: Jump</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    Jumps. These instructions jump to an arbitrary instruction if some condition is true, or unconditionally(<code>GOTO</code>).
+    They are used to compile <code>if</code>, <code>for</code>, <code>do</code>, <code>while</code>, <code>break</code> and <code>continue</code> instructions.
+    For instance <code>IFEQ label</code> pops an <code>int</code> value from the operand stack, and jumps to the instruction designed by <code>label</code> if this value is <code>0</code> (otherwise execution continues normally to the next instruction).
+    Many other jump instructions exist, such as <code>IFNE</code> or <code>IFGE</code>.
+    Finally <code>TABLESWITCH</code> and <code>LOOKUPSWITCH</code> correspond to the switch Java instruction.
+</p>
+
+<h2>if</h2>
+
+<h3>compare int with zero</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int value = 0;
+        if(value == 0) {
+            int intValue = 1;
+        }
+        else {
+            String strValue = null;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3  // 注意，这里是3个local variables，下面只显示了2个。
+code_length = 14
+code = 033C1B9A0008043DA70005014DB1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iload_1              // 1B
+0003: ifne            8    // 9A0008
+0006: iconst_1             // 04
+0007: istore_2             // 3D
+0008: goto            5    // A70005
+0011: aconst_null          // 01
+0012: astore_2             // 4D
+0013: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      14  this:Lsample/HelloWorld;
+    1         2      12  value:I
+</div>
+
+<ul>
+    <li><code>ifle</code>: <code>if(value &gt; 0)</code></li>
+    <li><code>ifge</code>: <code>if(value &lt; 0)</code></li>
+    <li><code>ifeq</code>: <code>if(value != 0)</code></li>
+    <li><code>iflt</code>: <code>if(value &gt;= 0)</code></li>
+    <li><code>ifgt</code>: <code>if(value &lt;= 0)</code></li>
+</ul>
+
+<h3>compare int with non-zero</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int value = 0;
+        if(value == 1) {
+            int intValue = 1;
+        }
+        else {
+            String strValue = null;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 15
+code = 033C1B04A00008043DA70005014DB1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iload_1              // 1B
+0003: iconst_1             // 04
+0004: if_icmpne       8    // A00008
+0007: iconst_1             // 04
+0008: istore_2             // 3D
+0009: goto            5    // A70005
+0012: aconst_null          // 01
+0013: astore_2             // 4D
+0014: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      15  this:Lsample/HelloWorld;
+    1         2      13  value:I
+</div>
+
+<ul>
+    <li><code>if_icmple</code>: <code>if(value &gt; 1)</code></li>
+    <li><code>if_icmpge</code>: <code>if(value &lt; 1)</code></li>
+    <li><code>if_icmpeq</code>: <code>if(value != 1)</code></li>
+    <li><code>if_icmplt</code>: <code>if(value &gt;= 1)</code></li>
+    <li><code>if_icmpgt</code>: <code>if(value &lt;= 1)</code></li>
+</ul>
+
+<h3>compare long</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        long longA = 0;
+        long longB = 0;
+        if(longA > longB) {
+            int intValue = 1;
+        }
+        else {
+            String strValue = null;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 6
+code_length = 20
+code = 094009421F21949E0009043605A70006013A05B1
+=== === ===  === === ===  === === ===
+0000: lconst_0             // 09
+0001: lstore_1             // 40
+0002: lconst_0             // 09
+0003: lstore_3             // 42
+0004: lload_1              // 1F
+0005: lload_3              // 21
+0006: lcmp                 // 94
+0007: ifle            9    // 9E0009
+0010: iconst_1             // 04
+0011: istore          5    // 3605
+0013: goto            6    // A70006
+0016: aconst_null          // 01
+0017: astore          5    // 3A05
+0019: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      20  this:Lsample/HelloWorld;
+    1         2      18  longA:J
+    3         4      16  longB:J
+</div>
+
+<h3>compare obj with null</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Object obj = null;
+        if(obj == null) {
+            int intValue = 1;
+        }
+        else {
+            String strValue = null;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 14
+code = 014C2BC70008043DA70005014DB1
+=== === ===  === === ===  === === ===
+0000: aconst_null          // 01
+0001: astore_1             // 4C
+0002: aload_1              // 2B
+0003: ifnonnull       8    // C70008
+0006: iconst_1             // 04
+0007: istore_2             // 3D
+0008: goto            5    // A70005
+0011: aconst_null          // 01
+0012: astore_2             // 4D
+0013: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      14  this:Lsample/HelloWorld;
+    1         2      12  obj:Ljava/lang/Object;
+</div>
+
+<ul>
+    <li><code>ifnull</code>: <code>if(obj != null)</code></li>
+</ul>
+
+<h3>compare obj with obj</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Object objA = null;
+        Object objB = null;
+        if(objA == objB) {
+            int intValue = 1;
+        }
+        else {
+            String strValue = null;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 17
+code = 014C014D2B2CA60008043EA70005014EB1
+=== === ===  === === ===  === === ===
+0000: aconst_null          // 01
+0001: astore_1             // 4C
+0002: aconst_null          // 01
+0003: astore_2             // 4D
+0004: aload_1              // 2B
+0005: aload_2              // 2C
+0006: if_acmpne       8    // A60008
+0009: iconst_1             // 04
+0010: istore_3             // 3E
+0011: goto            5    // A70005
+0014: aconst_null          // 01
+0015: astore_3             // 4E
+0016: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      17  this:Lsample/HelloWorld;
+    1         2      15  objA:Ljava/lang/Object;
+    2         4      13  objB:Ljava/lang/Object;
+</div>
+
+<ul>
+    <li><code>if_acmpeq</code>: <code>if(objA != objB)</code></li>
+</ul>
+
+<h3>long/float/double</h3>
+
+<ul>
+    <li>比较两个<code>long</code>值，是使用<code>lcmp</code>和<code>ifxx</code>组合来完成。</li>
+    <li>比较两个<code>float</code>值，是使用<code>fcmpl</code>/<code>fcmpg</code>和<code>ifxxx</code>组合来完成的。</li>
+    <li>比较两个<code>double</code>值，是使用<code>dcmpl</code>/<code>dcmpg</code>和<code>ifxx</code>组合来完成的。</li>
+</ul>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        long a = 3;
+        long b = 2;
+        boolean c = (a>b);
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 6
+code_length = 22
+code = 14000240140004421F21949E000704A70004033605B1
+=== === ===  === === ===  === === ===
+0000: ldc2_w          #2   // 140002     || 3
+0003: lstore_1             // 40
+0004: ldc2_w          #4   // 140004     || 2
+0007: lstore_3             // 42
+0008: lload_1              // 1F
+0009: lload_3              // 21
+0010: lcmp                 // 94
+0011: ifle            7    // 9E0007
+0014: iconst_1             // 04
+0015: goto            4    // A70004
+0018: iconst_0             // 03
+0019: istore          5    // 3605
+0021: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      22  this:Lsample/HelloWorld;
+    1         4      18  a:J
+    3         8      14  b:J
+    5        21       1  c:Z
+</div>
+
+<h3>if multiple condition</h3>
+
+<p>
+    多个<code>||</code>会生成怎样的opcode：
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int test(int a, int b, int c) {
+        int result = 0;
+        if(a == 1 || b == 2 || c==3) {
+            result = 4;
+        }
+        else {
+            result = 5;
+        }
+        return result;
+    }
+}
+</div>
+
+<div title="test:(III)I" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 5
+code_length = 30
+code = 0336041B049F000D1C059F00081D06A00009073604A700060836041504AC
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore          4    // 3604
+0003: iload_1              // 1B
+0004: iconst_1             // 04
+0005: if_icmpeq       13   // 9F000D
+0008: iload_2              // 1C
+0009: iconst_2             // 05
+0010: if_icmpeq       8    // 9F0008
+0013: iload_3              // 1D
+0014: iconst_3             // 06
+0015: if_icmpne       9    // A00009
+0018: iconst_4             // 07
+0019: istore          4    // 3604
+0021: goto            6    // A70006
+0024: iconst_5             // 08
+0025: istore          4    // 3604
+0027: iload           4    // 1504
+0029: ireturn              // AC
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      30  this:Lsample/HelloWorld;
+    1         0      30  a:I
+    2         0      30  b:I
+    3         0      30  c:I
+    4         3      27  result:I
+</div>
+
+<p>
+    多个<code>&&</code>会生成怎样的opcode：
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int test(int a, int b, int c) {
+        int result = 0;
+        if (a == 1 && b == 2 && c == 3) {
+            result = 4;
+        }
+        else {
+            result = 5;
+        }
+        return result;
+    }
+}
+</div>
+
+<div title="test:(III)I" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 5
+code_length = 30
+code = 0336041B04A000131C05A0000E1D06A00009073604A700060836041504AC
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore          4    // 3604
+0003: iload_1              // 1B
+0004: iconst_1             // 04
+0005: if_icmpne       19   // A00013
+0008: iload_2              // 1C
+0009: iconst_2             // 05
+0010: if_icmpne       14   // A0000E
+0013: iload_3              // 1D
+0014: iconst_3             // 06
+0015: if_icmpne       9    // A00009
+0018: iconst_4             // 07
+0019: istore          4    // 3604
+0021: goto            6    // A70006
+0024: iconst_5             // 08
+0025: istore          4    // 3604
+0027: iload           4    // 1504
+0029: ireturn              // AC
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      30  this:Lsample/HelloWorld;
+    1         0      30  a:I
+    2         0      30  b:I
+    3         0      30  c:I
+    4         3      27  result:I
+</div>
+
+<h2>switch</h2>
+
+<h3>tableswitch</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int value = 1;
+        int result = 0;
+
+        switch (value) {
+            case 1:
+                result = 1;
+                break;
+            case 2:
+                result = 2;
+                break;
+            case 3:
+                result = 3;
+                break;
+            default:
+                result = 4;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 50
+code = 043C033D1BAA00000000002A00000001000000030000001B0000002000000025043DA7000F053DA7000A063DA70005073DB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_0             // 03
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: tableswitch     42   // AA00000000002A00000001000000030000001B0000002000000025
+      {
+              1: 27
+              2: 32
+              3: 37
+        default: 42
+      }
+0032: iconst_1             // 04
+0033: istore_2             // 3D
+0034: goto            15   // A7000F
+0037: iconst_2             // 05
+0038: istore_2             // 3D
+0039: goto            10   // A7000A
+0042: iconst_3             // 06
+0043: istore_2             // 3D
+0044: goto            5    // A70005
+0047: iconst_4             // 07
+0048: istore_2             // 3D
+0049: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      50  this:Lsample/HelloWorld;
+    1         2      48  value:I
+    2         4      46  result:I
+</div>
+
+<h3>lookupswitch</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int value = 1;
+        int result = 0;
+
+        switch (value) {
+            case 10:
+                result = 1;
+                break;
+            case 20:
+                result = 2;
+                break;
+            case 30:
+                result = 3;
+                break;
+            default:
+                result = 4;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 58
+code = 043C033D1BAB000000000032000000030000000A0000002300000014000000280000001E0000002D043DA7000F053DA7000A063DA70005073DB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_0             // 03
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: lookupswitch    50   // AB000000000032000000030000000A0000002300000014000000280000001E0000002D
+      {
+             10: 35
+             20: 40
+             30: 45
+        default: 50
+      }
+0040: iconst_1             // 04
+0041: istore_2             // 3D
+0042: goto            15   // A7000F
+0045: iconst_2             // 05
+0046: istore_2             // 3D
+0047: goto            10   // A7000A
+0050: iconst_3             // 06
+0051: istore_2             // 3D
+0052: goto            5    // A70005
+0055: iconst_4             // 07
+0056: istore_2             // 3D
+0057: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      58  this:Lsample/HelloWorld;
+    1         2      56  value:I
+    2         4      54  result:I
+</div>
+
+<p>
+    如果去掉一个<code>break</code>，是什么情况呢？
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int value = 1;
+        int result = 0;
+
+        switch (value) {
+            case 10:
+                result = 1;
+                break;
+            case 20:
+                result = 2; // 注意：后面缺少了break
+            case 30:
+                result = 3;
+                break;
+            default:
+                result = 4;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 55
+code = 043C033D1BAB00000000002F000000030000000A0000002300000014000000280000001E0000002A043DA7000C053D063DA70005073DB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_0             // 03
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: lookupswitch    47   // AB00000000002F000000030000000A0000002300000014000000280000001E0000002A
+      {
+             10: 35
+             20: 40
+             30: 42
+        default: 47
+      }
+0040: iconst_1             // 04
+0041: istore_2             // 3D
+0042: goto            12   // A7000C
+0045: iconst_2             // 05
+0046: istore_2             // 3D
+0047: iconst_3             // 06
+0048: istore_2             // 3D
+0049: goto            5    // A70005
+0052: iconst_4             // 07
+0053: istore_2             // 3D
+0054: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      55  this:Lsample/HelloWorld;
+    1         2      53  value:I
+    2         4      51  result:I
+</div>
+
+<p>
+    另一种变形：
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int value = 1;
+        int result = 0;
+
+        switch (value) {
+            case 10:
+                result = 1;
+                break;
+            case 20: // 注意：后面缺少了result=2和break
+            case 30:
+                result = 3;
+                break;
+            default:
+                result = 4;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 53
+code = 043C033D1BAB00000000002D000000030000000A0000002300000014000000280000001E00000028043DA7000A063DA70005073DB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_0             // 03
+0003: istore_2             // 3D
+0004: iload_1              // 1B
+0005: lookupswitch    45   // AB00000000002D000000030000000A0000002300000014000000280000001E00000028
+      {
+             10: 35
+             20: 40
+             30: 40
+        default: 45
+      }
+0040: iconst_1             // 04
+0041: istore_2             // 3D
+0042: goto            10   // A7000A
+0045: iconst_3             // 06
+0046: istore_2             // 3D
+0047: goto            5    // A70005
+0050: iconst_4             // 07
+0051: istore_2             // 3D
+0052: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      53  this:Lsample/HelloWorld;
+    1         2      51  value:I
+    2         4      49  result:I
+</div>
+
+<h3>lookupswitch with String</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        String str = "Hello";
+        String result = "World";
+        switch (str) {
+            case "AAA":
+                result = "A3";
+                break;
+            case "BBB":
+                result = "B3";
+                break;
+            default:
+                result = "X3";
+                break;
+        }
+        System.out.println(result);
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 5
+code_length = 119
+code = 12024C12034D2B4E0236042DB60004AB
+    00000034000000020000FC2100000019
+    00010002000000282D1205B600069900
+    15033604A7000F2D1207B60006990006
+    0436041504AB00000000002700000002
+    000000000000001B0000000100000021
+    12084DA7000C12094DA70006120A4DB2
+    000B2CB6000CB1
+=== === ===  === === ===  === === ===
+0000: ldc             #2   // 1202       || Hello
+0002: astore_1             // 4C
+0003: ldc             #3   // 1203       || World
+0005: astore_2             // 4D
+0006: aload_1              // 2B
+0007: astore_3             // 4E
+0008: iconst_m1            // 02
+0009: istore          4    // 3604
+0011: aload_3              // 2D
+0012: invokevirtual   #4   // B60004     || java/lang/String.hashCode:()I
+0015: lookupswitch    52   // AB00000034000000020000FC21000000190001000200000028
+      {
+          64545: 25
+          65538: 40
+        default: 52
+      }
+0040: aload_3              // 2D
+0041: ldc             #5   // 1205       || AAA
+0043: invokevirtual   #6   // B60006     || java/lang/String.equals:(Ljava/lang/Object;)Z
+0046: ifeq            21   // 990015
+0049: iconst_0             // 03
+0050: istore          4    // 3604
+0052: goto            15   // A7000F
+0055: aload_3              // 2D
+0056: ldc             #7   // 1207       || BBB
+0058: invokevirtual   #6   // B60006     || java/lang/String.equals:(Ljava/lang/Object;)Z
+0061: ifeq            6    // 990006
+0064: iconst_1             // 04
+0065: istore          4    // 3604
+0067: iload           4    // 1504
+0069: lookupswitch    39   // AB00000000002700000002000000000000001B0000000100000021
+      {
+              0: 27
+              1: 33
+        default: 39
+      }
+0096: ldc             #8   // 1208       || A3
+0098: astore_2             // 4D
+0099: goto            12   // A7000C
+0102: ldc             #9   // 1209       || B3
+0104: astore_2             // 4D
+0105: goto            6    // A70006
+0108: ldc             #10  // 120A       || X3
+0110: astore_2             // 4D
+0111: getstatic       #11  // B2000B     || java/lang/System.out:Ljava/io/PrintStream;
+0114: aload_2              // 2C
+0115: invokevirtual   #12  // B6000C     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0118: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0     119  this:Lsample/HelloWorld;
+    1         3     116  str:Ljava/lang/String;
+    2         6     113  result:Ljava/lang/String;
+</div>
+
+<h3>switch with long</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        long value = 1000;
+        String result = "init value";
+        switch (value) { // Error
+            case 1000:
+                result = "one";
+                break;
+            case 2000:
+                result = "two";
+                break;
+            default:
+                result = "unknown";
+                break;
+        }
+        System.out.println(result);
+    }
+}
+</div>
+
+<div title="Error Message" class="plaintext">
+Incompatible types. Found: 'long', required: 'char, byte, short, int, Character, Byte, Short, Integer, String, or an enum'
+</div>
+
+<h2>for</h2>
+
+<h3>simple for</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int value = 0;
+        for (int i = 0; i < 3; i++) {
+            value = i;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 18
+code = 033C033D1C06A2000B1C3C840201A7FFF6B1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iconst_0             // 03
+0003: istore_2             // 3D
+0004: iload_2              // 1C
+0005: iconst_3             // 06
+0006: if_icmpge       11   // A2000B
+0009: iload_2              // 1C
+0010: istore_1             // 3C
+0011: iinc       2    1    // 840201
+0014: goto            -10  // A7FFF6
+0017: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      18  this:Lsample/HelloWorld;
+    1         2      16  value:I
+    2         4      13  i:I
+</div>
+
+<h3>break for</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int value = 0;
+        for (int i = 0; i < 3; i++) {
+            if (i == 1) break;
+            value = i;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 26
+code = 033C033D1C06A200131C04A00006A7000B1C3C840201A7FFEEB1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iconst_0             // 03
+0003: istore_2             // 3D
+0004: iload_2              // 1C
+0005: iconst_3             // 06
+0006: if_icmpge       19   // A20013
+0009: iload_2              // 1C
+0010: iconst_1             // 04
+0011: if_icmpne       6    // A00006
+0014: goto            11   // A7000B
+0017: iload_2              // 1C
+0018: istore_1             // 3C
+0019: iinc       2    1    // 840201
+0022: goto            -18  // A7FFEE
+0025: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      26  this:Lsample/HelloWorld;
+    1         2      24  value:I
+    2         4      21  i:I
+</div>
+
+<h3>continue for</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int value = 0;
+        for (int i = 0; i < 3; i++) {
+            if (i == 1) continue;
+            value = i;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 26
+code = 033C033D1C06A200131C04A00006A700051C3C840201A7FFEEB1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iconst_0             // 03
+0003: istore_2             // 3D
+0004: iload_2              // 1C
+0005: iconst_3             // 06
+0006: if_icmpge       19   // A20013
+0009: iload_2              // 1C
+0010: iconst_1             // 04
+0011: if_icmpne       6    // A00006
+0014: goto            5    // A70005
+0017: iload_2              // 1C
+0018: istore_1             // 3C
+0019: iinc       2    1    // 840201
+0022: goto            -18  // A7FFEE
+0025: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      26  this:Lsample/HelloWorld;
+    1         2      24  value:I
+    2         4      21  i:I
+</div>
+
+<h3>list.size()</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.ArrayList;
+import java.util.List;
+
+public class HelloWorld {
+    private List&lt;Integer&gt; list = new ArrayList<>();
+
+    public void test() {
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i));
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 2
+code_length = 38
+code = 033C1B2AB40004B900050100A20019B200062AB400041BB900070200B60008840101A7FFE0B1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iload_1              // 1B
+0003: aload_0              // 2A
+0004: getfield        #4   // B40004     || sample/HelloWorld.list:Ljava/util/List;
+0007: invokeinterface #5   // B900050100 || java/util/List.size:()I
+0012: if_icmpge       25   // A20019
+0015: getstatic       #6   // B20006     || java/lang/System.out:Ljava/io/PrintStream;
+0018: aload_0              // 2A
+0019: getfield        #4   // B40004     || sample/HelloWorld.list:Ljava/util/List;
+0022: iload_1              // 1B
+0023: invokeinterface #7   // B900070200 || java/util/List.get:(I)Ljava/lang/Object;
+0028: invokevirtual   #8   // B60008     || java/io/PrintStream.println:(Ljava/lang/Object;)V
+0031: iinc       1    1    // 840101
+0034: goto            -32  // A7FFE0
+0037: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      38  this:Lsample/HelloWorld;
+    1         2      35  i:I
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.ArrayList;
+import java.util.List;
+
+public class HelloWorld {
+    private List&lt;Integer&gt; list = new ArrayList<>();
+
+    public void test() {
+        int size = list.size(); // 注意，这里将list.size()定义为一个局部变量
+        for (int i = 0; i < size; i++) {
+            System.out.println(list.get(i));
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 3
+code_length = 40
+code = 2AB40004B9000501003C033D1C1BA20019B200062AB400041CB900070200B60008840201A7FFE8B1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: getfield        #4   // B40004     || sample/HelloWorld.list:Ljava/util/List;
+0004: invokeinterface #5   // B900050100 || java/util/List.size:()I
+0009: istore_1             // 3C
+0010: iconst_0             // 03
+0011: istore_2             // 3D
+0012: iload_2              // 1C
+0013: iload_1              // 1B
+0014: if_icmpge       25   // A20019
+0017: getstatic       #6   // B20006     || java/lang/System.out:Ljava/io/PrintStream;
+0020: aload_0              // 2A
+0021: getfield        #4   // B40004     || sample/HelloWorld.list:Ljava/util/List;
+0024: iload_2              // 1C
+0025: invokeinterface #7   // B900070200 || java/util/List.get:(I)Ljava/lang/Object;
+0030: invokevirtual   #8   // B60008     || java/io/PrintStream.println:(Ljava/lang/Object;)V
+0033: iinc       2    1    // 840201
+0036: goto            -24  // A7FFE8
+0039: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      40  this:Lsample/HelloWorld;
+    1        10      30  size:I
+    2        12      27  i:I
+</div>
+
+<h3>array.length</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private int[] array = new int[10];
+
+    public void test() {
+        for (int i = 0; i < array.length; i++) {
+            System.out.println(array[i]);
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 2
+code_length = 30
+code = 033C1B2AB40002BEA20015B200032AB400021B2EB60004840101A7FFE8B1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iload_1              // 1B
+0003: aload_0              // 2A
+0004: getfield        #2   // B40002     || sample/HelloWorld.array:[I
+0007: arraylength          // BE
+0008: if_icmpge       21   // A20015
+0011: getstatic       #3   // B20003     || java/lang/System.out:Ljava/io/PrintStream;
+0014: aload_0              // 2A
+0015: getfield        #2   // B40002     || sample/HelloWorld.array:[I
+0018: iload_1              // 1B
+0019: iaload               // 2E
+0020: invokevirtual   #4   // B60004     || java/io/PrintStream.println:(I)V
+0023: iinc       1    1    // 840101
+0026: goto            -24  // A7FFE8
+0029: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      30  this:Lsample/HelloWorld;
+    1         2      27  i:I
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private int[] array = new int[10];
+
+    public void test() {
+        int length = array.length;
+        for (int i = 0; i < length; i++) {
+            System.out.println(array[i]);
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 3
+code_length = 32
+code = 2AB40002BE3C033D1C1BA20015B200032AB400021C2EB60004840201A7FFECB1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: getfield        #2   // B40002     || sample/HelloWorld.array:[I
+0004: arraylength          // BE
+0005: istore_1             // 3C
+0006: iconst_0             // 03
+0007: istore_2             // 3D
+0008: iload_2              // 1C
+0009: iload_1              // 1B
+0010: if_icmpge       21   // A20015
+0013: getstatic       #3   // B20003     || java/lang/System.out:Ljava/io/PrintStream;
+0016: aload_0              // 2A
+0017: getfield        #2   // B40002     || sample/HelloWorld.array:[I
+0020: iload_2              // 1C
+0021: iaload               // 2E
+0022: invokevirtual   #4   // B60004     || java/io/PrintStream.println:(I)V
+0025: iinc       2    1    // 840201
+0028: goto            -20  // A7FFEC
+0031: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      32  this:Lsample/HelloWorld;
+    1         6      26  length:I
+    2         8      23  i:I
+</div>
+
+<h2>while</h2>
+
+<h3>simple while</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int value = 0;
+        int i = 0;
+        while(i < 10) {
+            value = i;
+            i++;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 19
+code = 033C033D1C100AA2000B1C3C840201A7FFF5B1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iconst_0             // 03
+0003: istore_2             // 3D
+0004: iload_2              // 1C
+0005: bipush          10   // 100A
+0007: if_icmpge       11   // A2000B
+0010: iload_2              // 1C
+0011: istore_1             // 3C
+0012: iinc       2    1    // 840201
+0015: goto            -11  // A7FFF5
+0018: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      19  this:Lsample/HelloWorld;
+    1         2      17  value:I
+    2         4      15  i:I
+</div>
+
+<h3>break while</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int value = 0;
+        int i = 0;
+        while(i < 10) {
+            if(i == 3) break;
+            value = i;
+            i++;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 27
+code = 033C033D1C100AA200131C06A00006A7000B1C3C840201A7FFEDB1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iconst_0             // 03
+0003: istore_2             // 3D
+0004: iload_2              // 1C
+0005: bipush          10   // 100A
+0007: if_icmpge       19   // A20013
+0010: iload_2              // 1C
+0011: iconst_3             // 06
+0012: if_icmpne       6    // A00006
+0015: goto            11   // A7000B
+0018: iload_2              // 1C
+0019: istore_1             // 3C
+0020: iinc       2    1    // 840201
+0023: goto            -19  // A7FFED
+0026: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      27  this:Lsample/HelloWorld;
+    1         2      25  value:I
+    2         4      23  i:I
+</div>
+
+<h3>continue while</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int value = 0;
+        int i = 0;
+        while(i < 10) {
+            if(i == 3) {
+                i++;
+                continue;
+            }
+            value = i;
+            i++;
+        }
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 30
+code = 033C033D1C100AA200161C06A00009840201A7FFF21C3C840201A7FFEAB1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iconst_0             // 03
+0003: istore_2             // 3D
+0004: iload_2              // 1C
+0005: bipush          10   // 100A
+0007: if_icmpge       22   // A20016
+0010: iload_2              // 1C
+0011: iconst_3             // 06
+0012: if_icmpne       9    // A00009
+0015: iinc       2    1    // 840201
+0018: goto            -14  // A7FFF2
+0021: iload_2              // 1C
+0022: istore_1             // 3C
+0023: iinc       2    1    // 840201
+0026: goto            -22  // A7FFEA
+0029: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      30  this:Lsample/HelloWorld;
+    1         2      28  value:I
+    2         4      26  i:I
+</div>
+
+<h2>Summing Up</h2>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Array Operation</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>opcode</th>
+        <th>mnemonic symbol</th>
+        <th>meaning</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr><td><code>148</code></td><td>lcmp</td><td></td></tr>
+    <tr><td><code>149</code></td><td>fcmpl</td><td></td></tr>
+    <tr><td><code>150</code></td><td>fcmpg</td><td></td></tr>
+    <tr><td><code>151</code></td><td>dcmpl</td><td></td></tr>
+    <tr><td><code>152</code></td><td>dcmpg</td><td></td></tr>
+    <tr><td><code>153</code></td><td>ifeq</td><td></td></tr>
+    <tr><td><code>154</code></td><td>ifne</td><td></td></tr>
+    <tr><td><code>155</code></td><td>iflt</td><td></td></tr>
+    <tr><td><code>156</code></td><td>ifge</td><td></td></tr>
+    <tr><td><code>157</code></td><td>ifgt</td><td></td></tr>
+    <tr><td><code>158</code></td><td>ifle</td><td></td></tr>
+    <tr><td><code>159</code></td><td>if_icmpeq</td><td></td></tr>
+    <tr><td><code>160</code></td><td>if_icmpne</td><td></td></tr>
+    <tr><td><code>161</code></td><td>if_icmplt</td><td></td></tr>
+    <tr><td><code>162</code></td><td>if_icmpge</td><td></td></tr>
+    <tr><td><code>163</code></td><td>if_icmpgt</td><td></td></tr>
+    <tr><td><code>164</code></td><td>if_icmple</td><td></td></tr>
+    <tr><td><code>165</code></td><td>if_acmpeq</td><td></td></tr>
+    <tr><td><code>166</code></td><td>if_acmpne</td><td></td></tr>
+    <tr><td><code>167</code></td><td>goto</td><td></td></tr>
+    <tr><td><code>168</code></td><td>jsr</td><td></td></tr>
+    <tr><td><code>169</code></td><td>ret</td><td></td></tr>
+    <tr><td><code>170</code></td><td>tableswitch</td><td></td></tr>
+    <tr><td><code>171</code></td><td>lookupswitch</td><td></td></tr>
+    </tbody>
+</table>
+
+<ul>
+    <li><code></code>: <code></code></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

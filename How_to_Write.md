@@ -71,6 +71,8 @@ function toggle_all_sub_note() {
 </div>
 ```
 
+How the Java virtual machine handles method invocation and return
+
 ## Image
 
 图片居中显示
@@ -109,7 +111,7 @@ In the same vein<sub class="my_note" style="color:green">以同样的方式</sub
 
 </div>
 
-<div title="Example" class="plaintext">
+<div title="test:()V" class="plaintext">
 
 </div>
 
@@ -148,106 +150,21 @@ Code
 
 ```html
 <table class="w3-table-all w3-hoverable w3-centered">
+<caption>Title</caption>
+<thead onclick="$(this).next().toggle()">
 <tr class="w3-green">
   <th>First Name</th>
   <th>Last Name</th>
   <th>Points</th>
 </tr>
+</thead>
+<tbody style="display: none;">
 <tr class="w3-hover-blue">
   <td>Jill</td>
   <td>Smith</td>
   <td>50</td>
 </tr>
-</table>
-```
-
-```html
-<table class="w3-table-all w3-hoverable w3-centered">
-    <tr class="w3-green">
-        <th>Flag Value</th>
-        <th>Flag Name</th>
-        <th>Interpretation</th>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x0001</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x0002</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x0004</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x0008</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x0010</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x0020</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x0040</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x0080</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x0100</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x0200</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x0400</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x0800</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x1000</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x2000</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x4000</code></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>0x8000</code></td>
-        <td></td>
-        <td></td>
-    </tr>
+</tbody>
 </table>
 ```
 
