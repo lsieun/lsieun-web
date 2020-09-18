@@ -1,0 +1,75 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Signature Attribute</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    The <code>Signature</code> attribute is a fixed-length attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure. A <code>Signature</code> attribute records a signature for a class, interface, constructor, method, or field whose declaration in the Java programming language uses type variables or parameterized types.
+</p>
+
+<p>
+    The <code>Signature</code> attribute has the following format:
+</p>
+
+<div title="Signature_attribute" class="plaintext">
+Signature_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 signature_index;
+}
+</div>
+
+<p>
+    The items of the <code>Signature_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "Signature".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item of a <code>Signature_attribute</code> structure must be <b>two</b>.
+    </li>
+    <li>
+        <code>signature_index</code>: The value of the <code>signature_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing a class signature if this <code>Signature</code> attribute is an attribute of a <code>ClassFile</code> structure; a method signature if this <code>Signature</code> attribute is an attribute of a <code>method_info</code> structure; or a field signature otherwise.
+    </li>
+</ul>
+
+<h2>Examples</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld&lt;T&gt; {
+}
+</div>
+
+<div title="HelloWorld.class Signature Attribute" class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |010| CONSTANT_Utf8 {Value='Lsample/HelloWorld;', HexCode='0100134C73616D706C652F48656C6C6F576F726C643B'}
+    |011| CONSTANT_Utf8 {Value='LocalVariableTypeTable', HexCode='0100164C6F63616C5661726961626C65547970655461626C65'}
+    |012| CONSTANT_Utf8 {Value='Lsample/HelloWorld&lt;TT;&gt;', HexCode='0100184C73616D706C652F48656C6C6F576F726C643C54543B3E3B'}
+    |013| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |014| CONSTANT_Utf8 {Value='&lt;T:Ljava/lang/Object;&gt;Ljava/lang/Object;', HexCode='0100283C543A4C6A6176612F6C616E......'}
+    |015| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
+    |016| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|001| Signature:
+HexCode: 000D00000002000E
+attribute_name_index='000D' (#13)
+attribute_length='00000002' (2)
+signature_index='000E' (#14)
+--->|002| SourceFile:
+HexCode: 000F000000020010
+attribute_name_index='000F' (#15)
+attribute_length='00000002' (2)
+sourcefile_index='0010' (#16)
+</div>

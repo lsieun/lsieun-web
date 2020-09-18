@@ -15,6 +15,8 @@
 
 <h2>new array</h2>
 
+<h3>newarray: primitive type</h3>
+
 <table class="w3-table-all w3-hoverable w3-centered" style="width: 50%;">
     <caption>newarray-Array type codes</caption>
     <thead onclick="$(this).next().toggle()">
@@ -59,7 +61,7 @@
     </tbody>
 </table>
 
-<h3>byte array</h3>
+<h4>byte array</h4>
 
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
@@ -87,7 +89,7 @@ index  start_pc  length  name_and_type
     1         4       1  byteArray:[B
 </div>
 
-<h3>int array</h3>
+<h4>int array</h4>
 
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
@@ -115,7 +117,100 @@ index  start_pc  length  name_and_type
     1         4       1  intArray:[I
 </div>
 
-<h3>Object array</h3>
+<h4>boolean array</h4>
+
+<p class="indented">
+    Although the Java Virtual Machine defines a <code>boolean</code> type, it only provides very limited support for it.
+    There are no Java Virtual Machine instructions solely dedicated to operations on <code>boolean</code> values.
+    Instead, expressions in the Java programming language that operate on <code>boolean</code> values are compiled to use values of the Java Virtual Machine <code>int</code> data type.
+    <sub class="my_note" style="color:blue">笔记：在JVM中，将boolean类型当成int类型来处理。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        boolean bool_true = true;
+        boolean bool_false = false;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 5
+code = 043C033DB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: iconst_0             // 03
+0003: istore_2             // 3D
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+    1         2       3  bool_true:Z
+    2         4       1  bool_false:Z
+</div>
+
+<p class="indented">
+    The Java Virtual Machine does directly support <b><code>boolean</code> arrays</b>.
+    Its <code>newarray</code> instruction enables creation of <code>boolean</code> arrays.
+    Arrays of type <code>boolean</code> are accessed and modified using <b>the <code>byte</code> array</b> instructions <code>baload</code> and <code>bastore</code>.
+    <sub class="my_note" style="color:blue">笔记：在JVM中，使用boolean arrays时，又当成byte array来进行处理。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    In Oracle’s Java Virtual Machine implementation, <b><code>boolean</code> arrays</b> in the Java programming language are encoded as Java Virtual Machine <b><code>byte</code> arrays</b>, using 8 bits per <code>boolean</code> element.
+</p>
+
+<p class="indented">
+    The Java Virtual Machine encodes <code>boolean</code> array components using <code>1</code> to represent <code>true</code> and <code>0</code> to represent <code>false</code>.
+    Where Java programming language <code>boolean</code> values are mapped by compilers to values of Java Virtual Machine type <code>int</code>, the compilers must use the same encoding.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        boolean[] boolArray = new boolean[5];
+        boolArray[0] = true;
+        boolean flag = boolArray[1];
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 3
+code_length = 13
+code = 08BC044C2B0304542B04333DB1
+=== === ===  === === ===  === === ===
+0000: iconst_5             // 08
+0001: newarray        4    // BC04       || boolean
+0003: astore_1             // 4C
+0004: aload_1              // 2B
+0005: iconst_0             // 03
+0006: iconst_1             // 04
+0007: bastore              // 54
+0008: aload_1              // 2B
+0009: iconst_1             // 04
+0010: baload               // 33
+0011: istore_2             // 3D
+0012: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      13  this:Lsample/HelloWorld;
+    1         4       9  boolArray:[Z
+    2        12       1  flag:Z
+</div>
+
+<h3>anewarray: Object type</h3>
 
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
@@ -150,6 +245,8 @@ index  start_pc  length  name_and_type
 
 <h3>multianewarray</h3>
 
+<h4>primitive type multi-array</h4>
+
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
@@ -183,6 +280,8 @@ index  start_pc  length  name_and_type
     0         0       8  this:Lsample/HelloWorld;
     1         7       1  array:[[I
 </div>
+
+<h4>Object type multi-array</h4>
 
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {

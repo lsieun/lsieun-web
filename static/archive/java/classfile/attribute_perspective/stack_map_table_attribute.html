@@ -1,0 +1,379 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">StackMapTable Attribute</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    The <code>StackMapTable</code> attribute is a variable-length attribute in the <code>attributes</code> table of a <code>Code</code> attribute.
+    A <code>StackMapTable</code> attribute is used during the process of verification by type checking.
+</p>
+
+<p class="indented">
+    There may be at most one <code>StackMapTable</code> attribute in the <code>attributes</code> table of a <code>Code</code> attribute.
+</p>
+
+<p>
+    The <code>StackMapTable</code> attribute has the following format:
+</p>
+
+<div title="StackMapTable_attribute" class="plaintext">
+StackMapTable_attribute {
+    u2              attribute_name_index;
+    u4              attribute_length;
+    u2              number_of_entries;
+    stack_map_frame entries[number_of_entries];
+}
+</div>
+
+<p>
+    The items of the <code>StackMapTable_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "StackMapTable".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
+    </li>
+    <li>
+        <code>number_of_entries</code>: The value of the <code>number_of_entries</code> item gives the number of <code>stack_map_frame</code> entries in the <code>entries</code> table.
+    </li>
+    <li>
+        <code>entries[]</code>: Each entry in the <code>entries</code> table describes one stack map frame of the method. <b>The order of the stack map frames</b> in the <code>entries</code> table is <strong>significant</strong>.
+    </li>
+</ul>
+
+<p class="indented">
+    A <b>stack map frame</b> specifies (either explicitly or implicitly) <b>the bytecode offset</b> at which it applies, and <b>the verification types of local variables and operand stack entries</b> for that offset.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        stack map frame = bytecode offset + verification types
+    </p>
+    <p>
+        verification types = local variables +  operand stack entries
+    </p>
+</div>
+
+<p class="indented">
+    Each stack map frame described in the <code>entries</code> table relies on <b>the previous frame</b> for some of its semantics.
+    <strong>The first stack map frame of a method is implicit</strong>, and computed from the <b>method descriptor</b> by the type checker.
+    The <code>stack_map_frame</code> structure at <code>entries[0]</code> therefore describes <strong>the second stack map frame of the method</strong>.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <ol>
+        <li>
+            当前的stack map frame，是在前一面个stack map frame的基础之上演变来而来。
+        </li>
+        <li>
+            第一个stack map frame，是由method descriptor来计算来的。值得注意的是，第一个stack map frame并没有存储。
+        </li>
+        <li>
+            第二个stack map frame，是存储在<code>entries[0]</code>当中。
+        </li>
+    </ol>
+</div>
+
+<p class="indented">
+    The <b>bytecode offset</b> at which a stack map frame applies is calculated by taking the value <code>offset_delta</code> specified in the frame (either explicitly or implicitly), and adding <code>offset_delta + 1</code> to <b>the bytecode offset of the previous frame</b>, unless the previous frame is the initial frame of the method. In that case, the bytecode offset at which the stack map frame applies is the value <code>offset_delta</code> specified in the frame.
+    <sub class="my_note" style="color:blue">笔记：这里讲了当前stack map frame的bytecode offset部分是如何计算的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    By using an offset delta rather than storing the actual bytecode offset, we ensure, by definition, that stack map frames are in the correctly sorted order.
+    Furthermore, by consistently using the formula <code>offset_delta + 1</code> for all explicit frames (as opposed to the implicit first frame), we guarantee the absence of duplicates.
+    <sub class="my_note" style="color:blue">笔记：主要是说使用相对变化量（offset delta）比绝对量（the actual bytecode offset）有优势。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    We say that an instruction in the bytecode has a corresponding stack map frame if the instruction starts at offset <code>i</code> in the <code>code</code> array of a <code>Code</code> attribute, and the <code>Code</code> attribute has a <code>StackMapTable</code> attribute whose <code>entries</code> array contains a stack map frame that applies at bytecode offset <code>i</code>.
+</p>
+
+<p class="indented">
+    A verification type specifies the type of either one or two locations, where a location is either a single local variable or a single operand stack entry.
+    A verification type is represented by a discriminated union, <code>verification_type_info</code>, that consists of a one-byte <code>tag</code>, indicating which item of the union is in use, followed by zero or more bytes, giving more information about the <code>tag</code>.
+    <sub class="my_note" style="color:blue">笔记：stack map frame = bytecode offset + verification types。前面讲了bytecode offset，现在开始讲verification type。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>verification_type_info</h2>
+
+<div title="verification_type_info" class="plaintext">
+union verification_type_info {
+    Top_variable_info;
+    Integer_variable_info;
+    Float_variable_info;
+    Long_variable_info;
+    Double_variable_info;
+    Null_variable_info;
+    UninitializedThis_variable_info;
+    Object_variable_info;
+    Uninitialized_variable_info;
+}
+</div>
+
+<p>
+    A verification type that specifies one location in <b>the local variable array</b> or in <b>the operand stack</b> is represented by the following items of the <code>verification_type_info</code> union.
+</p>
+
+<h3>Top_variable_info</h3>
+
+<p>
+    The <code>Top_variable_info</code> item indicates that the local variable has the verification type <code>top</code>.
+</p>
+
+<div title="Top_variable_info" class="plaintext">
+Top_variable_info {
+    u1 tag = ITEM_Top; /* 0 */
+}
+</div>
+
+<h3>Integer_variable_info</h3>
+
+<p>
+    The <code>Integer_variable_info</code> item indicates that the location has the verification type <code>int</code>.
+</p>
+
+<div title="Integer_variable_info" class="plaintext">
+Integer_variable_info {
+    u1 tag = ITEM_Integer; /* 1 */
+}
+</div>
+
+<h3>Float_variable_info</h3>
+
+<p>
+    The <code>Float_variable_info</code> item indicates that the location has the verification type <code>float</code>.
+</p>
+
+<div title="Float_variable_info" class="plaintext">
+Float_variable_info {
+    u1 tag = ITEM_Float; /* 2 */
+}
+</div>
+
+<h3>Double_variable_info</h3>
+
+<p>
+    The <code>Double_variable_info</code> item indicates that the first of two locations has the verification type <code>double</code>.
+</p>
+
+<div title="Double_variable_info" class="plaintext">
+Double_variable_info {
+    u1 tag = ITEM_Double; /* 3 */
+}
+</div>
+
+<h3>Long_variable_info</h3>
+
+<p>
+    The <code>Long_variable_info</code> item indicates that the first of two locations has the verification type <code>long</code>.
+</p>
+
+<div title="Long_variable_info" class="plaintext">
+Long_variable_info {
+    u1 tag = ITEM_Long; /* 4 */
+}
+</div>
+
+<h3>Null_variable_info</h3>
+
+<p>
+    The <code>Null_variable_info</code> type indicates that the location has the verification type <code>null</code>.
+</p>
+
+<div title="Null_variable_info" class="plaintext">
+Null_variable_info {
+    u1 tag = ITEM_Null; /* 5 */
+}
+</div>
+
+<h3>UninitializedThis_variable_info</h3>
+
+<p>
+    The <code>UninitializedThis_variable_info</code> item indicates that the location has the verification type <code>uninitializedThis</code>.
+</p>
+
+<div title="UninitializedThis_variable_info" class="plaintext">
+UninitializedThis_variable_info {
+    u1 tag = ITEM_UninitializedThis; /* 6 */
+}
+</div>
+
+<h3>Object_variable_info</h3>
+
+<p>
+    The <code>Object_variable_info</code> item indicates that the location has the verification type which is the class represented by the <code>CONSTANT_Class_info structure</code> found in the <code>constant_pool</code> table at the index given by <code>cpool_index</code>.
+</p>
+
+<div title="Object_variable_info" class="plaintext">
+Object_variable_info {
+    u1 tag = ITEM_Object; /* 7 */
+    u2 cpool_index;
+}
+</div>
+
+<h3>Uninitialized_variable_info</h3>
+
+<p>
+    The <code>Uninitialized_variable_info</code> item indicates that the location has the verification type <code>uninitialized</code>(<code>Offset</code>). The <code>Offset</code> item indicates the offset, in the <code>code</code> array of the <code>Code</code> attribute that contains this <code>StackMapTable</code> attribute, of the <code>new</code> instruction that created the object being stored in the location.
+</p>
+
+<div title="Uninitialized_variable_info" class="plaintext">
+Uninitialized_variable_info {
+    u1 tag = ITEM_Uninitialized; /* 8 */
+    u2 offset;
+}
+</div>
+
+<h2>stack_map_frame</h2>
+
+<p class="indented">
+    A <b>stack map frame</b> is represented by a discriminated union, <code>stack_map_frame</code>, which consists of a one-byte <code>tag</code>, indicating which item of the union is in use, followed by zero or more bytes, giving more information about the <code>tag</code>.
+</p>
+
+<div title="stack_map_frame" class="plaintext">
+union stack_map_frame {
+    same_frame;
+    same_locals_1_stack_item_frame;
+    same_locals_1_stack_item_frame_extended;
+    chop_frame;
+    same_frame_extended;
+    append_frame;
+    full_frame;
+}
+</div>
+
+<h3>same_frame</h3>
+
+<p class="indented">
+    The frame type <code>same_frame</code> is represented by tags in the range <code>[0-63]</code>.
+    This frame type indicates that the frame has exactly <b>the same local variables</b> as the previous frame and that <b>the operand stack</b> is empty.
+    The <code>offset_delta</code> value for the frame is the value of the tag item, <code>frame_type</code>.
+</p>
+
+<div title="same_frame" class="plaintext">
+same_frame {
+    u1 frame_type = SAME; /* 0-63 */
+}
+</div>
+
+<h3>same_locals_1_stack_item_frame</h3>
+
+<p class="indented">
+    The frame type <code>same_locals_1_stack_item_frame</code> is represented by tags in the range <code>[64, 127]</code>.
+    This frame type indicates that the frame has exactly <b>the same local variables</b> as the previous frame and that <b>the operand stack has one entry</b>.
+    The <code>offset_delta</code> value for the frame is given by the formula <code>frame_type - 64</code>.
+    The verification type of the one stack entry appears after the frame type.
+</p>
+
+<div title="same_locals_1_stack_item_frame" class="plaintext">
+same_locals_1_stack_item_frame {
+    u1 frame_type = SAME_LOCALS_1_STACK_ITEM; /* 64-127 */
+    verification_type_info stack[1];
+}
+</div>
+
+<h3>reserved</h3>
+
+<p>
+    Tags in the range <code>[128-246]</code> are reserved for future use.
+</p>
+
+<h3>same_locals_1_stack_item_frame_extended</h3>
+
+<p class="indented">
+    The frame type <code>same_locals_1_stack_item_frame_extended</code> is represented by the tag <code>247</code>.
+    This frame type indicates that the frame has exactly <b>the same local variables</b> as the previous frame and that <b>the operand stack has one entry</b>.
+    The <code>offset_delta</code> value for the frame is given explicitly, unlike in the frame type <code>same_locals_1_stack_item_frame</code>.
+    The verification type of the one stack entry appears after <code>offset_delta</code>.
+</p>
+
+<div title="same_locals_1_stack_item_frame_extended" class="plaintext">
+same_locals_1_stack_item_frame_extended {
+    u1 frame_type = SAME_LOCALS_1_STACK_ITEM_EXTENDED; /* 247 */
+    u2 offset_delta;
+    verification_type_info stack[1];
+}
+</div>
+
+<h3>chop_frame</h3>
+
+<p class="indented">
+    The frame type <code>chop_frame</code> is represented by tags in the range <code>[248-250]</code>.
+    This frame type indicates that the frame has <b>the same local variables</b> as the previous frame except that <b>the last <code>k</code> local variables are absent</b>, and that <b>the operand stack is empty</b>.
+    The value of <code>k</code> is given by the formula <code>251 - frame_type</code>.
+    The <code>offset_delta</code> value for the frame is given explicitly.
+</p>
+
+<div title="chop_frame" class="plaintext">
+chop_frame {
+    u1 frame_type = CHOP; /* 248-250 */
+    u2 offset_delta;
+}
+</div>
+
+<h3>same_frame_extended</h3>
+
+<p class="indented">
+    The frame type <code>same_frame_extended</code> is represented by the tag <code>251</code>.
+    This frame type indicates that the frame has exactly <b>the same local variables</b> as the previous frame and that <b>the operand stack is empty</b>.
+    The <code>offset_delta</code> value for the frame is given explicitly, unlike in the frame type <code>same_frame</code>.
+</p>
+
+<div title="same_frame_extended" class="plaintext">
+same_frame_extended {
+    u1 frame_type = SAME_FRAME_EXTENDED; /* 251 */
+    u2 offset_delta;
+}
+</div>
+
+<h3>append_frame</h3>
+
+<p class="indented">
+    The frame type <code>append_frame</code> is represented by tags in the range <code>[252-254]</code>.
+    This frame type indicates that the frame has <b>the same locals</b> as the previous frame except that <code>k</code> additional locals are defined, and that <b>the operand stack is empty</b>.
+    The value of <code>k</code> is given by the formula <code>frame_type - 251</code>.
+    The <code>offset_delta</code> value for the frame is given explicitly.
+</p>
+
+<div title="append_frame" class="plaintext">
+append_frame {
+    u1 frame_type = APPEND; /* 252-254 */
+    u2 offset_delta;
+    verification_type_info locals[frame_type - 251];
+}
+</div>
+
+<h3>full_frame</h3>
+
+<p class="indented">
+    The frame type <code>full_frame</code> is represented by the tag <code>255</code>.
+    The <code>offset_delta</code> value for the frame is given explicitly.
+</p>
+
+<div title="full_frame" class="plaintext">
+full_frame {
+    u1 frame_type = FULL_FRAME; /* 255 */
+    u2 offset_delta;
+    u2 number_of_locals;
+    verification_type_info locals[number_of_locals];
+    u2 number_of_stack_items;
+    verification_type_info stack[number_of_stack_items];
+}
+</div>
+
+
+

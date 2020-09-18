@@ -7,7 +7,68 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<h2>Reserved Opcodes</h2>
+
+<p class="indented">
+    Three opcodes are reserved for internal use by a Java Virtual Machine implementation.
+    If the instruction set of the Java Virtual Machine is extended in the future, these reserved opcodes are guaranteed not to be used.
+</p>
+
+<p class="indented">
+    Two of the reserved opcodes, numbers <code>254</code> (<code>0xfe</code>) and <code>255</code> (<code>0xff</code>), have the mnemonics <code>impdep1</code> and <code>impdep2</code>, respectively.
+    These instructions are intended to provide "back doors" or traps to implementation-specific functionality implemented in software and hardware, respectively.
+    The third reserved opcode, number <code>202</code> (<code>0xca</code>), has the mnemonic <code>breakpoint</code> and is intended to be used by debuggers to implement breakpoints.
+</p>
+
+<p class="indented">
+    Although these opcodes have been reserved, they may be used only inside a Java Virtual Machine implementation.
+    They cannot appear in valid class files.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Reserved Opcodes</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>opcode</th>
+        <th>mnemonic symbol</th>
+        <th>meaning</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr><td><code>202</code></td><td>breakpoint</td><td class="w3-left-align">used by debuggers to implement breakpoints</td></tr>
+    <tr><td><code>254</code></td><td>impdep1</td><td class="w3-left-align">provide "back doors" to implementation-specific functionality</td></tr>
+    <tr><td><code>255</code></td><td>impdep2</td><td class="w3-left-align">provide "back doors" to implementation-specific functionality</td></tr>
+    </tbody>
+</table>
+
+<h2>Deprecated Opcodes</h2>
+
+<p class="indented">
+    If the class file version number is 51.0(Java 7) or above, then neither the <code>jsr</code> opcode or the <code>jsr_w</code> opcode may appear in the <code>code</code> array.
+</p>
+
+
 <ul>
     <li><code>jsr</code></li>
+    <li><code>jsr_w</code></li>
     <li><code>ret</code></li>
 </ul>
+
+<div title="Code_attribute" class="plaintext">
+Code_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 max_stack;
+    u2 max_locals;
+    u4 code_length;
+    u1 code[code_length];
+    u2 exception_table_length;
+    {   u2 start_pc;
+        u2 end_pc;
+        u2 handler_pc;
+        u2 catch_type;
+    } exception_table[exception_table_length];
+    u2 attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>

@@ -1,0 +1,180 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">LocalVariableTable Attribute</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    The <code>LocalVariableTable</code> attribute is an optional variable-length attribute in the <code>attributes</code> table of a <code>Code</code> attribute.
+    It may be used by debuggers to determine the value of a given local variable during the execution of a method.
+</p>
+
+<p class="indented">
+    If multiple <code>LocalVariableTable</code> attributes are present in the <code>attributes</code> table of a <code>Code</code> attribute, then they may appear in any order.
+</p>
+
+<p class="indented">
+    There may be no more than one <code>LocalVariableTable</code> attribute per local variable in the <code>attributes</code> table of a <code>Code</code> attribute.
+</p>
+
+<p>
+    The <code>LocalVariableTable</code> attribute has the following format:
+</p>
+
+<div title="LocalVariableTable_attribute" class="plaintext">
+LocalVariableTable_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 local_variable_table_length;
+    {   u2 start_pc;
+        u2 length;
+        u2 name_index;
+        u2 descriptor_index;
+        u2 index;
+    } local_variable_table[local_variable_table_length];
+}
+</div>
+
+<p>
+    The items of the <code>LocalVariableTable_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the attribute_name_index item must be a valid index into the constant_pool table. The constant_pool entry at that index must be a CONSTANT_Utf8_info structure (§4.4.7) representing the string "LocalVariableTable".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the attribute_length item indicates the length of the attribute, excluding the initial six bytes.
+    </li>
+    <li>
+        <code>local_variable_table_length</code>: The value of the local_variable_table_length item indicates the number of entries in the local_variable_table array.
+    </li>
+    <li>
+        <code>local_variable_table[]</code>: Each entry in the local_variable_table array indicates a range of code array offsets within which a local variable has a value. It also indicates the index into the local variable array of the current frame at which that local variable can be found.
+    </li>
+</ul>
+
+<p>
+    Each <code>local_variable_table</code> entry must contain the following five items:
+</p>
+
+<ul>
+    <li>
+        <code>start_pc</code>, <code>length</code>:
+        The given local variable must have a value at indices into the <code>code</code> array in the interval <code>[start_pc, start_pc + length)</code>, that is, between <code>start_pc</code> inclusive and <code>start_pc + length</code> exclusive.
+        The value of <code>start_pc</code> must be a valid index into the <code>code</code> array of this <code>Code</code> attribute and must be the index of the opcode of an instruction.
+        The value of <code>start_pc + length</code> must either be a valid index into the <code>code</code> array of this <code>Code</code> attribute and be the index of the opcode of an instruction, or it must be the first index beyond the end of that <code>code</code> array.
+    </li>
+    <li>
+        <code>name_index</code>: The value of the <code>name_index</code> item must be a valid index into <code>the constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must contain a <code>CONSTANT_Utf8_info</code> structure representing a valid unqualified name denoting a local variable.
+    </li>
+    <li>
+        <code>descriptor_index</code>: The value of the <code>descriptor_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must contain a <code>CONSTANT_Utf8_info</code> structure representing <b>a field descriptor</b> which encodes the type of a local variable in the source program.
+    </li>
+    <li>
+        <code>index</code>: The given local variable must be at index in the local variable array of the current frame.
+        If the local variable at <code>index</code> is of type <code>double</code> or <code>long</code>, it occupies both <code>index</code> and <code>index + 1</code>.
+    </li>
+</ul>
+
+<ul>
+    <li>
+        <code>-g</code>: Generate all debugging info
+    </li>
+    <li>
+        <code>-g:none</code>: Generate no debugging info
+    </li>
+    <li>
+        <code>-g:{lines,vars,source}</code>: Generate only some debugging info
+    </li>
+</ul>
+
+<div title="javac example" class="plaintext">
+javac -g:vars Main.java
+javac -g:vars,lines Main.java
+</div>
+
+<h2>Examples</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 0;
+        int b = 1;
+        int c = 2;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='0015' (21)
+constant_pool
+    ... ...
+    |008| CONSTANT_Utf8 {Value='LocalVariableTable', HexCode='0100124C6F63616C5661726961626C655461626C65'}
+    |009| CONSTANT_Utf8 {Value='this', HexCode='01000474686973'}
+    |010| CONSTANT_Utf8 {Value='Lsample/HelloWorld;', HexCode='0100134C73616D706C652F48656C6C6F576F726C643B'}
+    |011| CONSTANT_Utf8 {Value='test', HexCode='01000474657374'}
+    |012| CONSTANT_Utf8 {Value='a', HexCode='01000161'}
+    |013| CONSTANT_Utf8 {Value='I', HexCode='01000149'}
+    |014| CONSTANT_Utf8 {Value='b', HexCode='01000162'}
+    |015| CONSTANT_Utf8 {Value='c', HexCode='01000163'}
+    ... ...
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iconst_1             // 04
+0003: istore_2             // 3D
+0004: iconst_2             // 05
+0005: istore_3             // 3E
+0006: return               // B1
+=== === ===  === === ===  === === ===
+attributes_count='0002' (2)
+attributes
+... ...
+--->|002| LocalVariableTable:
+HexCode: 00080000002A
+    0004
+    000000070009000A0000
+    00020005000C000D0001
+    00040003000E000D0002
+    00060001000F000D0003
+attribute_name_index='0008' (#8)
+attribute_length='0000002A' (42)
+local_variable_table_length='0004' (4)
+local_variable_table[0] {
+    start_pc='0000' (0)
+    length='0007' (7)
+    name_index='0009' (#9)
+    descriptor_index='000A' (#10)
+    index='0000' (0)
+}
+local_variable_table[1] {
+    start_pc='0002' (2)
+    length='0005' (5)
+    name_index='000C' (#12)
+    descriptor_index='000D' (#13)
+    index='0001' (1)
+}
+local_variable_table[2] {
+    start_pc='0004' (4)
+    length='0003' (3)
+    name_index='000E' (#14)
+    descriptor_index='000D' (#13)
+    index='0002' (2)
+}
+local_variable_table[3] {
+    start_pc='0006' (6)
+    length='0001' (1)
+    name_index='000F' (#15)
+    descriptor_index='000D' (#13)
+    index='0003' (3)
+}
+</div>
+

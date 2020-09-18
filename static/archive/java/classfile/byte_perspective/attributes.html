@@ -191,6 +191,55 @@ attribute_info {
     </tbody>
 </table>
 
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO：对于任何一个attribute都可以从长度、位置、数量和结构4个方面进行把握。
+    </p>
+</div>
+
+<ul>
+    <li>
+        外部视角：
+        <ul>
+            <li>长度：这个attribute的长度是固定的，还是可变的？</li>
+            <li>位置：这个attribute可以出现在什么位置？ClassFile、method_info、field_info或Code。</li>
+            <li>数量：这个attribute可以出现多少次？</li>
+        </ul>
+    </li>
+    <li>
+        内部视角：
+        <ul>
+            <li>结构：究竟是如何存储数据的？</li>
+        </ul>
+    </li>
+</ul>
+
+<ol>
+    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">AnnotationDefault Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/bootstrap_methods_attribute.html" target="_blank">BootstrapMethods Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/code_attribute.html" target="_blank">Code Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/constant_value_attribute.html" target="_blank">ConstantValue Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/deprecated_attribute.html" target="_blank">Deprecated Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/enclosing_method_attribute.html" target="_blank">EnclosingMethod Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/exceptions_attribute.html" target="_blank">Exceptions Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/inner_classes_attribute.html" target="_blank">InnerClasses Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/line_number_table_attribute.html" target="_blank">LineNumberTable Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/local_variable_table_attribute.html" target="_blank">LocalVariableTable Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/local_variable_type_table_attribute.html" target="_blank">LocalVariableTypeTable Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/method_parameters_attribute.html" target="_blank">MethodParameters Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeInvisibleAnnotations Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeVisibleAnnotations Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeInvisibleParameterAnnotations Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeVisibleParameterAnnotations Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeInvisibleTypeAnnotations Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeVisibleTypeAnnotations Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/signature_attribute.html" target="_blank">Signature Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/source_debug_extension_attribute.html" target="_blank">SourceDebugExtension Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/source_file_attribute.html" target="_blank">SourceFile Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/stack_map_table_attribute.html" target="_blank">StackMapTable Attribute</a></li>
+    <li><a href="/archive/java/classfile/attribute_perspective/synthetic_attribute.html" target="_blank">Synthetic Attribute</a></li>
+</ol>
+
 <h2>Defining and Naming New Attributes</h2>
 
 <p class="indented">
@@ -226,332 +275,5 @@ attribute_info {
     <sub class="my_note" style="color:blue">笔记：未来的版本会添加新的Attribute。</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
-
-<h2>Attribute Examples</h2>
-
-<h3>ClassFile</h3>
-
-<h4>SourceFile</h4>
-
-<p class="indented">
-    The <code>SourceFile</code> attribute is an optional fixed-length attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.<sub class="my_note" style="color:green">笔记：要理解SourceFile，需要把握两个关键词，即optional和fixed-length。其中，optional表示SourceFile可有可无，fixed-length是指SourceFile的长度是固定的。</sub>
-    There may be at most one <code>SourceFile</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.<sub class="my_note" style="color:green">笔记：在ClassFile中，只能存在一个SourceFile。</sub>
-    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
-</p>
-
-<p>
-    The <code>SourceFile</code> attribute has the following format:
-</p>
-
-<div title="SourceFile_attribute" class="plaintext">
-SourceFile_attribute {
-    u2 attribute_name_index;
-    u4 attribute_length;
-    u2 sourcefile_index;
-}
-</div>
-
-<p>
-    The items of the <code>SourceFile_attribute</code> structure are as follows:
-</p>
-
-<ul>
-    <li>
-        <b>attribute_name_index</b>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
-        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "SourceFile".
-    </li>
-    <li>
-        <b>attribute_length</b>: The value of the <code>attribute_length</code> item of a <code>SourceFile_attribute</code> structure must be <b>two</b>.
-    </li>
-    <li>
-        <b>sourcefile_index</b>: The value of the <code>sourcefile_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing a string.
-    </li>
-</ul>
-
-<div title="HelloWorld.java" class="javacode">
-public class HelloWorld {
-}
-</div>
-
-<div title="Example: SourceFile" class="plaintext">
-constant_pool_count='0010' (16)
-constant_pool
-    ... ...
-    |010| CONSTANT_Utf8 {Value='Lsample/HelloWorld;', HexCode='0100134C73616D706C652F48656C6C6F576F726C643B'}
-    |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
-    |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
-    ... ...
-attributes_count='0001' (1)
-attributes
---->|001| SourceFile:
-HexCode: 000B00000002000C
-attribute_name_index='000B' (11)
-attribute_length='00000002' (2)
-sourcefile_index='000C' (12)
-</div>
-
-<h4>RuntimeVisibleAnnotations</h4>
-
-<div title="HelloWorld.java" class="javacode">
-@FunctionalInterface
-public interface HelloWorld {
-    void run();
-}
-</div>
-
-<div title="Example: RuntimeVisibleAnnotations" class="plaintext">
-constant_pool_count='000B' (11)
-constant_pool
-    |001| CONSTANT_Class {Value='sample/HelloWorld', HexCode='070009'}
-    |002| CONSTANT_Class {Value='java/lang/Object', HexCode='07000A'}
-    |003| CONSTANT_Utf8 {Value='run', HexCode='01000372756E'}
-    |004| CONSTANT_Utf8 {Value='()V', HexCode='010003282956'}
-    |005| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
-    |006| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
-    |007| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D6556697369626C65416E6E6F746174696F6E73'}
-    |008| CONSTANT_Utf8 {Value='Ljava/lang/FunctionalInterface;', HexCode='01001F4C6A6176612F6C616E672F46756E6374696F6E616C496E746572666163653B'}
-    |009| CONSTANT_Utf8 {Value='sample/HelloWorld', HexCode='01001173616D706C652F48656C6C6F576F726C64'}
-    |010| CONSTANT_Utf8 {Value='java/lang/Object', HexCode='0100106A6176612F6C616E672F4F626A656374'}
-attributes_count='0002' (2)
-attributes
---->|001| SourceFile:
-HexCode: 0005000000020006
-attribute_name_index='0005' (5)
-attribute_length='00000002' (2)
-sourcefile_index='0006' (6)
---->|002| RuntimeVisibleAnnotations:
-HexCode: 000700000006000100080000
-attribute_name_index='0007' (7)
-attribute_length='00000006' (6)
-num_annotations='0001' (1)
-type_index='0008' (8)
-num_element_value_pairs='0000' (0)
-</div>
-
-<h4>Deprecated</h4>
-
-<div title="Deprecated_attribute" class="plaintext">
-Deprecated_attribute {
-    u2 attribute_name_index;
-    u4 attribute_length;
-}
-</div>
-
-<div title="HelloWorld.java" class="javacode">
-@Deprecated
-public class HelloWorld {
-}
-</div>
-
-<div title="Example: Deprecated" class="plaintext">
-constant_pool_count='0013' (19)
-constant_pool
-    ... ...
-    |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
-    |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
-    |013| CONSTANT_Utf8 {Value='Deprecated', HexCode='01000A44657072656361746564'}
-    |014| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D6556697369626C65416E6E6F746174696F6E73'}
-    |015| CONSTANT_Utf8 {Value='Ljava/lang/Deprecated;', HexCode='0100164C6A6176612F6C616E672F446570726563617465643B'}
-    ... ..
-attributes_count='0003' (3)
-attributes
---->|001| SourceFile:
-HexCode: 000B00000002000C
-attribute_name_index='000B' (11)
-attribute_length='00000002' (2)
-sourcefile_index='000C' (12)
---->|002| Deprecated:
-HexCode: 000D00000000
-attribute_name_index='000D' (13)
-attribute_length='00000000' (0)
---->|003| RuntimeVisibleAnnotations:
-HexCode: 000E000000060001000F0000
-attribute_name_index='000E' (14)
-attribute_length='00000006' (6)
-num_annotations='0001' (1)
-type_index='000F' (15)
-num_element_value_pairs='0000' (0)
-</div>
-
-<h4>Signature</h4>
-
-<div title="Signature_attribute" class="plaintext">
-Signature_attribute {
-    u2 attribute_name_index;
-    u4 attribute_length;
-    u2 signature_index;
-}
-</div>
-
-<div title="HelloWorld.java" class="javacode">
-public class HelloWorld&lt;T&gt; {
-}
-</div>
-
-<div title="Example: Signature" class="plaintext">
-constant_pool_count='0014' (20)
-constant_pool
-    ... ...
-    |010| CONSTANT_Utf8 {Value='Lsample/HelloWorld;', HexCode='0100134C73616D706C652F48656C6C6F576F726C643B'}
-    |011| CONSTANT_Utf8 {Value='LocalVariableTypeTable', HexCode='0100164C6F63616C5661726961626C65547970655461626C65'}
-    |012| CONSTANT_Utf8 {Value='Lsample/HelloWorld&lt;TT;&gt;', HexCode='0100184C73616D706C652F48656C6C6F576F726C643C54543B3E3B'}
-    |013| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
-    |014| CONSTANT_Utf8 {Value='&lt;T:Ljava/lang/Object;&gt;Ljava/lang/Object;', HexCode='0100283C543A4C6A6176612F6C616E672F4F626A6563743B3E4C6A6176612F6C616E672F4F626A6563743B'}
-    ... ...
-attributes_count='0002' (2)
-attributes
---->|001| Signature:
-HexCode: 000D00000002000E
-attribute_name_index='000D' (13)
-attribute_length='00000002' (2)
-signature_index='000E' (14)
-</div>
-
-<h3>field_info</h3>
-
-<h4>ConstantValue</h4>
-
-<div title="ConstantValue_attribute" class="plaintext">
-ConstantValue_attribute {
-    u2 attribute_name_index;
-    u4 attribute_length;
-    u2 constantvalue_index;
-}
-</div>
-
-<div title="HelloWorld.java" class="javacode">
-public class HelloWorld {
-    public final int intValue = 1024;
-}
-</div>
-
-<div title="Example: HelloWorld.class intValue Attributes" class="plaintext">
-constant_pool_count='0016' (22)
-constant_pool
-    ... ...
-    |007| CONSTANT_Utf8 {Value='ConstantValue', HexCode='01000D436F6E7374616E7456616C7565'}
-    |008| CONSTANT_Integer {Value='1024', HexCode='0300000400'}
-    ... ...
-attributes_count='0001' (1)
-attributes
---->|001| ConstantValue:
-HexCode: 0007000000020008
-attribute_name_index='0007' (#7)
-attribute_length='00000002' (2)
-constantvalue_index='0008' (#8)
-</div>
-
-<h3>method_info</h3>
-
-<h4>Code</h4>
-
-<div title="Code_attribute" class="plaintext">
-Code_attribute {
-    u2 attribute_name_index;
-    u4 attribute_length;
-    u2 max_stack;
-    u2 max_locals;
-    u4 code_length;
-    u1 code[code_length];
-    u2 exception_table_length;
-    {   u2 start_pc;
-        u2 end_pc;
-        u2 handler_pc;
-        u2 catch_type;
-    } exception_table[exception_table_length];
-    u2 attributes_count;
-    attribute_info attributes[attributes_count];
-}
-</div>
-
-<div title="HelloWorld.java" class="javacode">
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-public class HelloWorld {
-    public void test() {
-        InputStream in = null;
-
-        try {
-            in = new FileInputStream("/path/to/file");
-            int val;
-            while ((val = in.read()) != -1) {
-                System.out.println((char)val);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    // do nothing
-                }
-            }
-        }
-    }
-}
-</div>
-
-<h4>Exceptions</h4>
-
-<div title="Exceptions_attribute" class="plaintext">
-Exceptions_attribute {
-    u2 attribute_name_index;
-    u4 attribute_length;
-    u2 number_of_exceptions;
-    u2 exception_index_table[number_of_exceptions];
-}
-</div>
-
-<div title="HelloWorld.java" class="javacode">
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-public class HelloWorld {
-    public void test() throws FileNotFoundException, IOException {
-    }
-}
-</div>
-
-<div title="" class="plaintext">
-constant_pool_count='0016' (22)
-constant_pool
-    ... ...
-    |006| CONSTANT_Utf8 {Value='Code', HexCode='010004436F6465'}
-    |007| CONSTANT_Utf8 {Value='LineNumberTable', HexCode='01000F4C696E654E756D6265725461626C65'}
-    |008| CONSTANT_Utf8 {Value='LocalVariableTable', HexCode='0100124C6F63616C5661726961626C655461626C65'}
-    |009| CONSTANT_Utf8 {Value='this', HexCode='01000474686973'}
-    |010| CONSTANT_Utf8 {Value='Lsample/HelloWorld;', HexCode='0100134C73616D706C652F48656C6C6F576F726C643B'}
-    |011| CONSTANT_Utf8 {Value='test', HexCode='01000474657374'}
-    |012| CONSTANT_Utf8 {Value='Exceptions', HexCode='01000A457863657074696F6E73'}
-    |013| CONSTANT_Class {Value='java/io/FileNotFoundException', HexCode='070014'}
-    |014| CONSTANT_Class {Value='java/io/IOException', HexCode='070015'}
-    ... ...
-attributes_count='0002' (2)
-attributes
---->|001| Code:
-HexCode: 00060000002B0000000100000001B10000000200070000000600010000001E00080000000C0001000000010009000A0000
-attribute_name_index='0006' (#6)
-attribute_length='0000002B' (43)
-max_stack='0000' (0)
-max_locals='0001' (1)
-code_length='00000001' (1)
-code:
-B1
-exception_table_length='0000' (0)
-attributes_count='0002' (2)
-    LineNumberTable: 000700000006000100000008
-    LocalVariableTable: 00080000000C0001000000010009000A0000
---->|002| Exceptions:
-HexCode: 000C000000060002000D000E
-attribute_name_index='000C' (#12)
-attribute_length='00000006' (6)
-number_of_exceptions='0002' (2)
-    exception_index = '000D' (#13)
-    exception_index = '000E' (#14)
-</div>
 
 <h2>Summing Up</h2>

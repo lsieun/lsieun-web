@@ -1,0 +1,284 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ConstantValue Attribute</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    The <code>ConstantValue</code> attribute is a fixed-length attribute in the attributes table of a <code>field_info</code> structure.
+    <sub class="my_note" style="color:blue">笔记：这里是说明ConstantValue可以出现的位置</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    There may be at most one <code>ConstantValue</code> attribute in the <code>attributes</code> table of a <code>field_info</code> structure.
+    <sub class="my_note" style="color:blue">笔记：这里是说明ConstantValue的数量限制</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    The <code>ConstantValue</code> attribute has the following format:
+</p>
+
+<div title="ConstantValue_attribute" class="plaintext">
+ConstantValue_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 constantvalue_index;
+}
+</div>
+
+<p>
+    The items of the <code>ConstantValue_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "ConstantValue".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item of a <code>ConstantValue_attribute</code> structure must be <b>two</b>.
+    </li>
+    <li>
+        <code>constantvalue_index</code>: The value of the <code>constantvalue_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index gives the constant value represented by this attribute.
+    </li>
+</ul>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Constant value attribute types</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>Field Type</th>
+        <th>Entry Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>long</td>
+        <td>CONSTANT_Long</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>float</td>
+        <td>CONSTANT_Float</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>double</td>
+        <td>CONSTANT_Double</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>int, short, char, byte, boolean</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>String</td>
+        <td>CONSTANT_String</td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Examples</h2>
+
+<h3>int</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public final int intValue = 1024;
+}
+</div>
+
+<div title="intValue ConstantValue" class="plaintext">
+constant_pool_count='0016' (22)
+constant_pool
+    ... ...
+    |007| CONSTANT_Utf8 {Value='ConstantValue', HexCode='01000D436F6E7374616E7456616C7565'}
+    |008| CONSTANT_Integer {Value='1024', HexCode='0300000400'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|001| ConstantValue:
+HexCode: 0007000000020008
+attribute_name_index='0007' (#7)
+attribute_length='00000002' (2)
+constantvalue_index='0008' (#8)
+</div>
+
+<h3>String</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static final String strValue = "Good";
+}
+</div>
+
+<div title="strValue ConstantValue" class="plaintext">
+constant_pool_count='0015' (21)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='ConstantValue', HexCode='01000D436F6E7374616E7456616C7565'}
+    |007| CONSTANT_String {Value='Good', HexCode='080014'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|001| ConstantValue:
+HexCode: 0006000000020007
+attribute_name_index='0006' (#6)
+attribute_length='00000002' (2)
+constantvalue_index='0007' (#7)
+</div>
+
+<h2>Compile-Time Resolution of Constants</h2>
+
+<p class="indented">
+    References to <code>static final</code> variables initialized to a compile-time constant are resolved at compile-time to <b>a local copy of the constant value</b>.
+    This is true for constants of <b>all the primitive types</b> and of type <code>java.lang.String</code>.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+
+    private static final int intValue = 10;
+
+    public void test() {
+        int i = HelloWorld.intValue; // 注意，这里编译到.class文件中，并没有使用HelloWorld的intValue字段
+    }
+
+}
+</div>
+
+<div title="test:()V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 4
+code = 100A3CB1
+=== === ===  === === ===  === === ===
+0000: bipush          10   // 100A
+0002: istore_1             // 3C
+0003: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       4  this:Lsample/HelloWorld;
+    1         3       1  i:I
+</div>
+
+<p class="indented">
+    This special treatment of constants facilitates two features of the Java language.
+    First, local copies of constant values enable <code>static final</code> variables to be used as <code>case</code> expressions in <code>switch</code> statements.
+    The two virtual machine instructions that implement <code>switch</code> statements in bytecodes, <code>tableswitch</code> and <code>lookupswitch</code>,
+    require the <code>case</code> values in-line in the bytecode stream.
+    These instructions do not support run-time resolution of <code>case</code> values.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+
+    private static final int intValue = 10;
+
+    public void test(int val) {
+        switch (val) {
+            case 1:
+                System.out.println("AAA");
+                break;
+            case intValue:
+                System.out.println("BBB");
+                break;
+            default:
+                System.out.println("CCC");
+        }
+    }
+
+}
+</div>
+
+<div title="test:(I)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+0000: iload_1              // 1B
+0001: lookupswitch    49   // AB00000000003100000002000000010000001B0000000A00000026
+      {
+              1: 27
+             10: 38        // 注意，这里直接使用HelloWorld的intValue字段值（10）
+        default: 49
+      }
+0028: getstatic       #2   // B20002     || java/lang/System.out:Ljava/io/PrintStream;
+0031: ldc             #3   // 1203       || AAA
+0033: invokevirtual   #4   // B60004     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0036: goto            22   // A70016
+0039: getstatic       #2   // B20002     || java/lang/System.out:Ljava/io/PrintStream;
+0042: ldc             #5   // 1205       || BBB
+0044: invokevirtual   #4   // B60004     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0047: goto            11   // A7000B
+0050: getstatic       #2   // B20002     || java/lang/System.out:Ljava/io/PrintStream;
+0053: ldc             #6   // 1206       || CCC
+0055: invokevirtual   #4   // B60004     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0058: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      59  this:Lsample/HelloWorld;
+    1         0      59  val:I
+</div>
+
+
+<p class="indented">
+    The other motivation behind the special treatment of constants is <b>conditional compilation</b>.
+    Java supports <b>conditional compilation</b> via <code>if</code> statements whose expressions resolve to a compile-time constant.
+    Here is an example:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+
+    private static final boolean debug = true;
+
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+        if (debug) {
+            instance.RunAsDebug();
+        }
+        else {
+            instance.RunAsRelease(); // 注意，这条语句没有编译到.class文件中
+        }
+    }
+
+    public void RunAsDebug() {
+        System.out.println("Run as Debug");
+    }
+
+    public void RunAsRelease() {
+        System.out.println("Run as Release");
+    }
+
+}
+</div>
+
+<div title="main:([Ljava/lang/String;)V" class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 2
+code_length = 13
+code = BB000159B700034C2BB60004B1
+=== === ===  === === ===  === === ===
+0000: new             #1   // BB0001     || sample/HelloWorld
+0003: dup                  // 59
+0004: invokespecial   #3   // B70003     || sample/HelloWorld.&lt;init&gt;:()V
+0007: astore_1             // 4C
+0008: aload_1              // 2B
+0009: invokevirtual   #4   // B60004     || sample/HelloWorld.RunAsDebug:()V
+0012: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      13  args:[Ljava/lang/String;
+    1         8       5  instance:Lsample/HelloWorld;
+</div>
+

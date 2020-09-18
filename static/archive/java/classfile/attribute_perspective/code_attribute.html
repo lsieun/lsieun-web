@@ -1,0 +1,387 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Code Attribute</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    The <code>Code</code> attribute is a variable-length attribute in the <code>attributes</code> table of a <code>method_info</code> structure.
+    A <code>Code</code> attribute contains the Java Virtual Machine instructions and auxiliary information for a method, including <b>an instance initialization method</b> or <b>a class or interface initialization method</b>.
+    <sub class="my_note" style="color:blue">笔记：这里说明Code Attribute可以出现的位置。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+
+<p>
+    The <code>Code</code> attribute has the following format:
+</p>
+
+<div title="Code_attribute" class="plaintext">
+Code_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 max_stack;
+    u2 max_locals;
+    u4 code_length;
+    u1 code[code_length];
+    u2 exception_table_length;
+    {   u2 start_pc;
+        u2 end_pc;
+        u2 handler_pc;
+        u2 catch_type;
+    } exception_table[exception_table_length];
+    u2 attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<p>
+    The items of the <code>Code_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "Code".
+    </li>
+    <li><code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.</li>
+    <li><code>max_stack</code>: The value of the <code>max_stack</code> item gives the maximum depth of the operand stack of this method at any point during execution of the method.</li>
+    <li><code>max_locals</code>:
+        The value of the <code>max_locals</code> item gives the number of local variables in the local variable array allocated upon invocation of this method, including the local variables used to pass parameters to the method on its invocation.
+        The greatest local variable index for a value of type <code>long</code> or <code>double</code> is <code>max_locals - 2</code>. The greatest local variable index for a value of any other type is <code>max_locals - 1</code>.
+    </li>
+    <li>
+        <code>code_length</code>:
+        The value of the <code>code_length</code> item gives the number of bytes in the <code>code</code> array for this method.
+        The value of <code>code_length</code> must be greater than zero (as the code array must not be empty) and less than 65536.
+    </li>
+    <li><code>code[]</code>: The code array gives the actual bytes of Java Virtual Machine code that implement the method.</li>
+    <li>
+        <code>exception_table_length</code>: The value of the <code>exception_table_length</code> item gives the number of entries in the <code>exception_table</code> table.
+    </li>
+    <li>
+        <code>exception_table[]</code>: Each entry in the <code>exception_table</code> array describes one exception handler in the <code>code</code> array.
+        The order of the handlers in the <code>exception_table</code> array is significant.
+        Each <code>exception_table</code> entry contains the following four items:
+        <ul>
+            <li>
+                <code>start_pc</code>, <code>end_pc</code>:
+                The values of the two items <code>start_pc</code> and <code>end_pc</code> indicate the ranges in the <code>code</code> array at which the exception handler is active.
+                The value of <code>start_pc</code> must be a valid index into the <code>code</code> array of the opcode of an instruction.
+                The value of <code>end_pc</code> either must be a valid index into the <code>code</code> array of the opcode of an instruction or must be equal to <code>code_length</code>, the length of the <code>code</code> array.
+                The value of <code>start_pc</code> must be less than the value of <code>end_pc</code>.
+                The <code>start_pc</code> is inclusive and <code>end_pc</code> is exclusive; that is, the exception handler must be active while the program counter is within the interval <code>[start_pc, end_pc)</code>.
+            </li>
+            <li>
+                <code>handler_pc</code>: The value of the <code>handler_pc</code> item indicates the start of the exception handler.
+                The value of the item must be a valid index into the <code>code</code> array and must be the index of the opcode of an instruction.
+            </li>
+            <li>
+                <code>catch_type</code>: If the value of the <code>catch_type</code> item is <b>nonzero</b>, it must be a valid index into the <code>constant_pool</code> table.
+                The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Class_info</code> structure representing a class of exceptions that this exception handler is designated to catch.
+                The exception handler will be called only if the thrown exception is an instance of the given class or one of its subclasses.
+                The verifier checks that the class is <code>Throwable</code> or a subclass of <code>Throwable</code>.
+                If the value of the <code>catch_type</code> item is zero, this exception handler is called for all exceptions.
+            </li>
+        </ul>
+    </li>
+    <li>
+        <code>attributes_count</code>: The value of the <code>attributes_count</code> item indicates the number of <code>attributes</code> of the <code>Code</code> attribute.
+    </li>
+    <li>
+        <code>attributes[]</code>: Each value of the <code>attributes</code> table must be an <code>attribute_info</code> structure.
+    </li>
+</ul>
+
+<h2>Examples</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</div>
+
+<div title="test:()V Code" class="plaintext">
+constant_pool_count='0022' (34)
+constant_pool
+    ... ...
+    |002| CONSTANT_Long {Value='1000', HexCode='0500000000000003E8'}
+    |004| CONSTANT_Methodref {Value='java/lang/Thread.sleep:(J)V', HexCode='0A00180019'}
+    |005| CONSTANT_Class {Value='java/lang/InterruptedException', HexCode='07001A'}
+    |006| CONSTANT_Methodref {Value='java/lang/InterruptedException.printStackTrace:()V', HexCode='0A0005001B'}
+    ... ...
+    |011| CONSTANT_Utf8 {Value='Code', HexCode='010004436F6465'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|001| Code:
+HexCode: 000B00000068000200020000000F
+    140002B80004A700084C2BB60006B1
+    00010000000600090005
+    0003
+    000C000000160005000000070006000A00090008000A0009000E000B
+    000D000000160002000A00040011001200010000000F000E000F0000
+    00130000000700024907001404
+attribute_name_index='000B' (#11)
+attribute_length='00000068' (104)
+max_stack='0002' (2)
+max_locals='0002' (2)
+code_length='0000000F' (15)
+code: 140002B80004A700084C2BB60006B1
+exception_table_length='0001' (1)
+exception_table[0] {
+    start_pc='0000' (0)
+    end_pc='0006' (6)
+    handler_pc='0009' (9)
+    catch_type='0005' (#5)
+}
+attributes_count='0003' (3)
+    LineNumberTable: 000C000000160005000000070006000A00090008000A0009000E000B
+    LocalVariableTable: 000D000000160002000A00040011001200010000000F000E000F0000
+    StackMapTable: 00130000000700024907001404
+</div>
+
+<div title="test:()V Code" class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 2
+code_length = 15
+code = 140002B80004A700084C2BB60006B1
+=== === ===  === === ===  === === ===
+0000: ldc2_w          #2   // 140002     || 1000
+0003: invokestatic    #4   // B80004     || java/lang/Thread.sleep:(J)V
+0006: goto            8    // A70008
+0009: astore_1             // 4C
+0010: aload_1              // 2B
+0011: invokevirtual   #6   // B60006     || java/lang/InterruptedException.printStackTrace:()V
+0014: return               // B1
+
+Exception Table:
+from    to  target  type
+   0     6       9  java/lang/InterruptedException
+</div>
+
+<h2>什么情况下没有Code Attribute</h2>
+
+<p class="indented">
+    If the method is either <code>native</code> or <code>abstract</code>, its <code>method_info</code> structure must not have a <code>Code</code> attribute in its <code>attributes</code> table.
+    Otherwise, its <code>method_info</code> structure must have exactly one <code>Code</code> attribute in its <code>attributes</code> table.
+    <sub class="my_note" style="color:blue">笔记：如果方法是native或abstract，那么方法就不带有Code Attribute。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        为什么讲这部分内容？
+    </p>
+    <p>
+        我暂时不回答这个问题，让我来先举一个生活中的例子：“有没有钱”和“钱怎么花”，这两个问题，虽然都是关于钱的，但却是两个截然不同的问题。
+        如果没有钱，则不会去考虑“钱怎么花”的问题；如果有钱，才会进一步涉及到“钱要怎么花”。
+        从逻辑的角度来说，一件事物的“有和无”，要优先于该事物的“具体表现形式”。因为要先有了这个事物，才能去研究它；如果没有这个事物，则没有办法对它进行研究。
+    </p>
+    <p>
+        “什么情况下没有Code Attribute”，其实就是在探讨Code Attribute的“有和无”的问题，至于Code Attribute的结构中包含哪些数据则是“具体表现形式”的问题。
+    </p>
+    <p>
+        《道德经》有一句话：天下万物生于有，有生于无。
+        针对这句话，在当前的语言（或话题）环境中，我是这样理解的：“无”是最优先的，由“无”中产生“有”（也就是“无中生有”），再由“有”生成“天下万物”；
+        在Java bytecode层面，“无”则是引导我们探索哪些情况下不存在Code Attribute，“有”则是Code Attribute存在的情况下，我们则去探究Code Attribute的具体的数据组织方式，
+        而“天下万物”则是许许多的不同代码都要归结为“有”，都要遵循Code Attribute的具体数据组织方式。
+    </p>
+</div>
+
+<h3>native method</h3>
+
+<p class="indented">
+    <code>System</code>类的<code>currentTimeMillis()</code>方法是一个native method，它不带有<code>Code</code>属性。
+</p>
+
+<h3>abstract method</h3>
+
+<p class="indented">
+    对于abstract method，有两种存在形式：第一种是抽象类的抽象方法，第二种是接口内的抽象方法。
+</p>
+
+<p>
+    第一种情况，抽象类的抽象方法：
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public abstract class HelloWorld {
+    public abstract void test(); // 抽象类的抽象方法
+}
+</div>
+
+<div title="抽象类的抽象方法" class="plaintext">
+methods_count='0002' (2)
+methods
+    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]', HexCode='0001000400050001...'}
+    MethodInfo {Value='test:()V', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[]', HexCode='0401000B00050000'}
+</div>
+
+<p>
+    第二种情况，接口内的抽象方法：
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public interface HelloWorld {
+    void test(); // 接口内的方法
+}
+</div>
+
+<div title="接口内的方法" class="plaintext">
+methods_count='0001' (1)
+methods
+    MethodInfo {Value='test:()V', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[]', HexCode='0401000300040000'}
+</div>
+
+<p>
+    另外，相比于Java 7，Java 8支持“接口默认方法”（default methods in interface）和“接口静态方法”（static method in interface）。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public interface HelloWorld {
+    default void test() {
+        // 接口中的default method
+    }
+}
+</div>
+
+<div title="接口中的default method" class="plaintext">
+methods_count='0001' (1)
+methods
+    MethodInfo {Value='test:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]', HexCode='0001000300040001...'}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public interface HelloWorld {
+    static void test() {
+        // 接口中的static method
+    }
+}
+</div>
+
+<div title="接口中的static method" class="plaintext">
+methods_count='0001' (1)
+methods
+    MethodInfo {Value='test:()V', AccessFlags='[ACC_PUBLIC,ACC_STATIC]', Attrs='[Code]', HexCode='0009000300040001...'}
+</div>
+
+<h2>exception_table Vs Exceptions Attribute</h2>
+
+<p class="indented">
+    对于exception来说，我的理解就是，它相当于生活当中的“意外情况”，针对不同的“意外情况”，又有了各种“保险”的产生，例如：“医疗保险”、“财产保险”。
+    从生活的经验来看，并不是任何保险都需要买，有些所谓的“意外情况”是我们自己能够处理的，这就是exception_table做的事情，
+    而有些“意外情况”则超出了我们的承受能力或处理能力，我们买个保险，让别人或别的机构帮助我们处理，这就是Exceptions Attribute。
+</p>
+
+<div title="Code_attribute" class="plaintext">
+Code_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 max_stack;
+    u2 max_locals;
+    u4 code_length;
+    u1 code[code_length];
+    u2 exception_table_length;
+    {   u2 start_pc;
+        u2 end_pc;
+        u2 handler_pc;
+        u2 catch_type;
+    } exception_table[exception_table_length]; // 这里是exception_table
+    u2 attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<p class="indented">
+    Each entry in the <code>exception_table[]</code> array describes one exception handler in the <code>code</code> array.
+    <sub class="my_note" style="color:blue">笔记：从ClassFile的角度来说，每一个exception_table代表了一个exception handler。那么换一个视角，从JavaFile的角度来说，要有try...catch这样的语句块，才能在Code Attribute当中出现exception_table的内容；如果没有try...catch语句块，那么在Code Attribute当中不会出现exception_table的内容。换句话说，exception_table是属于Java ClassFile Format范畴内的概念，而try...catch是属于Java Language的范围内的概念，它们之间是一个映射的关系。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="Exceptions_attribute" class="plaintext">
+Exceptions_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 number_of_exceptions;
+    u2 exception_index_table[number_of_exceptions];
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+import java.io.IOException;
+
+public class HelloWorld {
+    public void test() throws IOException {
+        try {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</div>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/code_attribute_exception_table_vs_exceptions_attribute.png" alt="exception_table vs Exceptions"/>
+</div>
+
+<div title="test:()V Attribute" class="plaintext">
+constant_pool_count='0025' (37)
+constant_pool
+    ... ...
+    |006| CONSTANT_Methodref {Value='java/lang/InterruptedException.printStackTrace:()V', HexCode='0A0005001D'}
+    ... ...
+    |011| CONSTANT_Utf8 {Value='Code', HexCode='010004436F6465'}
+    ... ...
+    |021| CONSTANT_Utf8 {Value='Exceptions', HexCode='01000A457863657074696F6E73'}
+    |022| CONSTANT_Class {Value='java/io/IOException', HexCode='070020'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|001| Code:
+HexCode: 000B00000068000200020000000F
+    140002B80004A700084C2BB60006B1
+    0001
+    00000006000900050003
+    000C000000160005000000080006000C0009000A000A000B000E000D
+    000D000000160002000A00040011001200010000000F000E000F0000
+    00130000000700024907001404
+attribute_name_index='000B' (#11)
+attribute_length='00000068' (104)
+max_stack='0002' (2)
+max_locals='0002' (2)
+code_length='0000000F' (15)
+code: 140002B80004A700084C2BB60006B1
+exception_table_length='0001' (1)
+exception_table[0] {
+    start_pc='0000' (0)
+    end_pc='0006' (6)
+    handler_pc='0009' (9)
+    catch_type='0005' (#5)
+}
+attributes_count='0003' (3)
+    LineNumberTable: 000C000000160005000000080006000C0009000A000A000B000E000D
+    LocalVariableTable: 000D000000160002000A00040011001200010000000F000E000F0000
+    StackMapTable: 00130000000700024907001404
+--->|002| Exceptions:
+HexCode: 00150000000400010016
+attribute_name_index='0015' (#21)
+attribute_length='00000004' (4)
+number_of_exceptions='0001' (1)
+exception_index_table {
+    exception_index='0016' (#22)
+}
+</div>

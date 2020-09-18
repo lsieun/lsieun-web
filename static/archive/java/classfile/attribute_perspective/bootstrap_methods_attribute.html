@@ -1,0 +1,153 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">BootstrapMethods Attribute</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    The <code>BootstrapMethods</code> attribute is a variable-length attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
+    The <code>BootstrapMethods</code> attribute records bootstrap method specifiers referenced by <code>invokedynamic</code> instructions.
+</p>
+
+<p class="indented">
+    There must be exactly one <code>BootstrapMethods</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure if the <code>constant_pool</code> table of the <code>ClassFile</code> structure has at least one <code>CONSTANT_InvokeDynamic_info</code> entry.
+</p>
+
+<p class="indented">
+    There may be at most one <code>BootstrapMethods</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
+</p>
+
+<p>
+    The <code>BootstrapMethods</code> attribute has the following format:
+</p>
+
+<div title="BootstrapMethods_attribute" class="plaintext">
+BootstrapMethods_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 num_bootstrap_methods;
+    {   u2 bootstrap_method_ref;
+        u2 num_bootstrap_arguments;
+        u2 bootstrap_arguments[num_bootstrap_arguments];
+    } bootstrap_methods[num_bootstrap_methods];
+}
+</div>
+
+<p>
+    The items of the <code>BootstrapMethods_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "BootstrapMethods".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
+        The value of the <code>attribute_length</code> item is thus dependent on the number of <code>invokedynamic</code> instructions in this <code>ClassFile</code> structure.
+    </li>
+    <li>
+        <code>num_bootstrap_methods</code>: The value of the <code>num_bootstrap_methods</code> item determines the number of bootstrap method specifiers in the <code>bootstrap_methods</code> array.
+    </li>
+    <li>
+        <code>bootstrap_methods[]</code>: Each entry in the <code>bootstrap_methods</code> table contains an index to a <code>CONSTANT_MethodHandle_info</code> structure which specifies a bootstrap method, and a sequence (perhaps empty) of indexes to static arguments for the bootstrap method.
+    </li>
+</ul>
+
+<p>
+    Each <code>bootstrap_methods</code> entry must contain the following three items:
+</p>
+
+<ul>
+    <li>
+        <code>bootstrap_method_ref</code>: The value of the <code>bootstrap_method_ref</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_MethodHandle_info</code> structure.
+    </li>
+    <li>
+        <code>num_bootstrap_arguments</code>: The value of the <code>num_bootstrap_arguments</code> item gives the number of items in the <code>bootstrap_arguments</code> array.
+    </li>
+    <li>
+        <code>bootstrap_arguments[]</code>: Each entry in the <code>bootstrap_arguments</code> array must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_String_info</code>, <code>CONSTANT_Class_info</code>, <code>CONSTANT_Integer_info</code>, <code>CONSTANT_Long_info</code>, <code>CONSTANT_Float_info</code>, <code>CONSTANT_Double_info</code>, <code>CONSTANT_MethodHandle_info</code>, or <code>CONSTANT_MethodType_info</code> structure.
+    </li>
+</ul>
+
+<h2>Examples</h2>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Function;
+
+public class HelloWorld {
+    public void test() {
+        Function&lt;Integer, Integer&gt; func = item -&gt; item + 5;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='003C' (60)
+constant_pool
+    ... ...
+    |024| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
+    |025| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    ... ...
+    |027| CONSTANT_Utf8 {Value='BootstrapMethods', HexCode='010010426F6F7473747261704D6574686F6473'}
+    |028| CONSTANT_MethodHandle {Value='invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
+            Ljava/lang/invoke/MethodHandles$Lookup;
+            Ljava/lang/String;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodHandle;
+            Ljava/lang/invoke/MethodType;
+        )Ljava/lang/invoke/CallSite;', HexCode='0F060026'}
+    |029| CONSTANT_MethodType {Value='(Ljava/lang/Object;)Ljava/lang/Object;', HexCode='100027'}
+    |030| CONSTANT_MethodHandle {Value='invokestatic sample/HelloWorld.lambda$test$0:(
+            Ljava/lang/Integer;
+        )Ljava/lang/Integer;', HexCode='0F060028'}
+    |031| CONSTANT_MethodType {Value='(Ljava/lang/Integer;)Ljava/lang/Integer;', HexCode='100014'}
+    ... ...
+    |052| CONSTANT_Utf8 {Value='metafactory', HexCode='01000B6D657461666163746F7279'}
+    |053| CONSTANT_Class {Value='java/lang/invoke/MethodHandles$Lookup', HexCode='07003A'}
+    |054| CONSTANT_Utf8 {Value='Lookup', HexCode='0100064C6F6F6B7570'}
+    ... ...
+    |057| CONSTANT_Class {Value='java/lang/invoke/MethodHandles', HexCode='07003B'}
+    ... ...
+attributes_count='0003' (3)
+attributes
+--->|001| SourceFile:
+HexCode: 0018000000020019
+attribute_name_index='0018' (#24)
+attribute_length='00000002' (2)
+sourcefile_index='0019' (#25)
+--->|002| InnerClasses:
+HexCode: 00370000000A
+    0001
+    0035003900360019
+attribute_name_index='0037' (#55)
+attribute_length='0000000A' (10)
+number_of_classes='0001' (1)
+classes[0] {
+    inner_class_info_index='0035' (#53)
+    outer_class_info_index='0039' (#57)
+    inner_name_index='0036' (#54)
+    inner_class_access_flags='0019' ([ACC_PUBLIC,ACC_STATIC,ACC_FINAL])
+}
+--->|003| BootstrapMethods:
+HexCode: 001B0000000C
+    0001
+    001C0003001D001E001F
+attribute_name_index='001B' (#27)
+attribute_length='0000000C' (12)
+num_bootstrap_methods='0001' (1)
+bootstrap_methods[0] {
+    bootstrap_method_ref='001C' (#28)
+    num_bootstrap_arguments='0003' (3)
+    bootstrap_arguments='001D001E001F' ([#29,#30,#31])
+}
+</div>
+

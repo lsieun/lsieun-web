@@ -1,0 +1,165 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">InnerClasses Attribute</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    The <code>InnerClasses</code> attribute is a variable-length attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
+</p>
+
+<p>
+    The <code>InnerClasses</code> attribute has the following format:
+</p>
+
+<div title="InnerClasses_attribute" class="plaintext">
+InnerClasses_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 number_of_classes;
+    {   u2 inner_class_info_index;
+        u2 outer_class_info_index;
+        u2 inner_name_index;
+        u2 inner_class_access_flags;
+    } classes[number_of_classes];
+}
+</div>
+
+<p>
+    The items of the <code>InnerClasses_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "InnerClasses".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
+    </li>
+    <li>
+        <code>number_of_classes</code>: The value of the <code>number_of_classes</code> item indicates the number of entries in the <code>classes</code> array.
+    </li>
+</ul>
+
+<p>
+    Each entry in the <code>classes</code> array contains the following four items:
+</p>
+
+<ul>
+    <li>
+        <code>inner_class_info_index</code>: The value of the <code>inner_class_info_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Class_info</code> structure.
+    </li>
+    <li>
+        <code>outer_class_info_index</code>:
+        If C is not a member of a class or an interface (that is, if C is a top-level class or interface (JLS §7.6) or a local class (JLS §14.3) or an anonymous class (JLS §15.9.5)), the value of the outer_class_info_index item must be zero.
+        Otherwise, the value of the outer_class_info_index item must be a valid index into the constant_pool table, and the entry at that index must be a CONSTANT_Class_info structure representing the class or interface of which C is a member.
+    </li>
+    <li>
+        <code>inner_name_index</code>:
+        If C is anonymous (JLS §15.9.5), the value of the inner_name_index item must be zero.
+        Otherwise, the value of the inner_name_index item must be a valid index into the constant_pool table, and the entry at that index must be a CONSTANT_Utf8_info structure (§4.4.7) that represents the original simple name of C, as given in the source code from which this class file was compiled.
+    </li>
+    <li>
+        <code>inner_class_access_flags</code>: The value of the inner_class_access_flags item is a mask of flags used to denote access permissions to and properties of class or interface C as declared in the source code from which this class file was compiled. It is used by a compiler to recover the original information when source code is not available.
+    </li>
+</ul>
+
+<p class="indented">
+
+</p>
+
+<h2>Examples</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public final class AAA {
+        //
+    }
+
+    public abstract class BBB {
+        //
+    }
+}
+</div>
+
+<div title="HelloWorld.class Attribute" class="plaintext">
+constant_pool_count='0017' (23)
+constant_pool
+    ... ...
+    |002| CONSTANT_Class {Value='sample/HelloWorld', HexCode='070013'}
+    |003| CONSTANT_Class {Value='java/lang/Object', HexCode='070014'}
+    |004| CONSTANT_Class {Value='sample/HelloWorld$BBB', HexCode='070015'}
+    |005| CONSTANT_Utf8 {Value='BBB', HexCode='010003424242'}
+    |006| CONSTANT_Utf8 {Value='InnerClasses', HexCode='01000C496E6E6572436C6173736573'}
+    |007| CONSTANT_Class {Value='sample/HelloWorld$AAA', HexCode='070016'}
+    |008| CONSTANT_Utf8 {Value='AAA', HexCode='010003414141'}
+    ... ...
+    |016| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
+    |017| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|001| SourceFile:
+HexCode: 0010000000020011
+attribute_name_index='0010' (#16)
+attribute_length='00000002' (2)
+sourcefile_index='0011' (#17)
+--->|002| InnerClasses:
+HexCode: 000600000012000200040002000504010007000200080011
+attribute_name_index='0006' (#6)
+attribute_length='00000012' (18)
+number_of_classes='0002' (2)
+classes[0] {
+    inner_class_info_index='0004' (#4)
+    outer_class_info_index='0002' (#2)
+    inner_name_index='0005' (#5)
+    inner_class_access_flags='0401' ([ACC_PUBLIC,ACC_ABSTRACT])
+}
+classes[1] {
+    inner_class_info_index='0007' (#7)
+    outer_class_info_index='0002' (#2)
+    inner_name_index='0008' (#8)
+    inner_class_access_flags='0011' ([ACC_PUBLIC,ACC_FINAL])
+}
+</div>
+
+<div title="HelloWorld$AAA.class Attribute" class="plaintext">
+constant_pool_count='001A' (26)
+constant_pool
+    ... ...
+    |003| CONSTANT_Class {Value='sample/HelloWorld$AAA', HexCode='070016'}
+    ... ...
+    |013| CONSTANT_Utf8 {Value='AAA', HexCode='010003414141'}
+    |014| CONSTANT_Utf8 {Value='InnerClasses', HexCode='01000C496E6E6572436C6173736573'}
+    ... ...
+    |017| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
+    |018| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    ... ...
+    |021| CONSTANT_Class {Value='sample/HelloWorld', HexCode='070019'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|001| SourceFile:
+HexCode: 0011000000020012
+attribute_name_index='0011' (#17)
+attribute_length='00000002' (2)
+sourcefile_index='0012' (#18)
+--->|002| InnerClasses:
+HexCode: 000E0000000A000100030015000D0011
+attribute_name_index='000E' (#14)
+attribute_length='0000000A' (10)
+number_of_classes='0001' (1)
+classes[0] {
+    inner_class_info_index='0003' (#3)
+    outer_class_info_index='0015' (#21)
+    inner_name_index='000D' (#13)
+    inner_class_access_flags='0011' ([ACC_PUBLIC,ACC_FINAL])
+}
+</div>
+
+

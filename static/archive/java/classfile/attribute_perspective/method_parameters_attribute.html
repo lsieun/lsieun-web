@@ -1,0 +1,125 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">MethodParameters Attribute</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    The <code>MethodParameters</code> attribute is a variable-length attribute in the <code>attributes</code> table of a <code>method_info</code> structure.
+    A <code>MethodParameters</code> attribute records information about the formal parameters of a method, such as their names.
+</p>
+
+<p class="indented">
+    There may be at most one <code>MethodParameters</code> attribute in the <code>attributes</code> table of a <code>method_info</code> structure.
+</p>
+
+<p>
+    The <code>MethodParameters</code> attribute has the following format:
+</p>
+
+<div title="MethodParameters_attribute" class="plaintext">
+MethodParameters_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u1 parameters_count;
+    {   u2 name_index;
+        u2 access_flags;
+    } parameters[parameters_count];
+}
+</div>
+
+<p>
+    The items of the <code>MethodParameters_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "MethodParameters".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
+    </li>
+    <li>
+        <code>parameters_count</code>: The value of the <code>parameters_count</code> item indicates the number of parameter descriptors in the method descriptor referenced by the <code>descriptor_index</code> of the attribute's enclosing <code>method_info</code> structure.
+
+        This is not a constraint which a Java Virtual Machine implementation must enforce during format checking.
+        The task of matching <b>parameter descriptors</b> in a <b>method descriptor</b> against the items in the <code>parameters</code> array below is done by the reflection libraries of the Java SE platform.
+    </li>
+    <li>
+        <code>parameters[]</code>:
+    </li>
+</ul>
+
+<p>
+    Each entry in the <code>parameters</code> array contains the following pair of items:
+</p>
+
+<ul>
+    <li>
+        <code>name_index</code>: The value of the <code>name_index</code> item must either be zero or a valid index into the <code>constant_pool</code> table.
+            If the value of the <code>name_index</code> item is zero, then this <code>parameters</code> element indicates a formal parameter with no name.
+            If the value of the <code>name_index</code> item is nonzero, the <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing a valid unqualified name denoting a formal parameter.
+    </li>
+    <li>
+        <code>access_flags</code>: The value of the <code>access_flags</code> item is as follows:
+        <ul>
+            <li>
+                <code>0x0010</code> (<code>ACC_FINAL</code>): Indicates that the formal parameter was declared <code>final</code>.
+            </li>
+            <li>
+                <code>0x1000</code> (<code>ACC_SYNTHETIC</code>): Indicates that the formal parameter was not explicitly or implicitly declared in source code, according to the specification of the language in which the source code was written. (The formal parameter is an implementation artifact of the compiler which produced this class file.)
+            </li>
+            <li>
+                <code>0x8000</code> (<code>ACC_MANDATED</code>): Indicates that the formal parameter was implicitly declared in source code, according to the specification of the language in which the source code was written. (The formal parameter is mandated by a language specification, so all compilers for the language must emit it.)
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<h2>Examples</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(String name, final int age) {
+        //
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='0017' (23)
+constant_pool
+    ... ...
+    |013| CONSTANT_Utf8 {Value='name', HexCode='0100046E616D65'}
+    |014| CONSTANT_Utf8 {Value='Ljava/lang/String;', HexCode='0100124C6A6176612F6C616E672F537472696E673B'}
+    |015| CONSTANT_Utf8 {Value='age', HexCode='010003616765'}
+    |016| CONSTANT_Utf8 {Value='I', HexCode='01000149'}
+    |017| CONSTANT_Utf8 {Value='MethodParameters', HexCode='0100104D6574686F64506172616D6574657273'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|001| Code:
+... ...
+--->|002| MethodParameters:
+HexCode: 001100000009
+    02
+    000D0000
+    000F0010
+attribute_name_index='0011' (#17)
+attribute_length='00000009' (9)
+parameters_count='02' (2)
+parameters[0] {
+    name_index='000D' (#13:name)
+    access_flags='0000' ()
+}
+parameters[1] {
+    name_index='000F' (#15:age)
+    access_flags='0010' (ACC_FINAL)
+}
+</div>

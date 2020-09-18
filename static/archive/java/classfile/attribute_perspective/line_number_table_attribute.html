@@ -1,0 +1,143 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">LineNumberTable Attribute</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    The <code>LineNumberTable</code> attribute is an optional variable-length attribute in the <code>attributes</code> table of a <code>Code</code> attribute. It may be used by debuggers to determine which part of the <code>code</code> array corresponds to a given line number in the original source file.
+</p>
+
+<p class="indented">
+    If multiple <code>LineNumberTable</code> attributes are present in the <code>attributes</code> table of a <code>Code</code> attribute, then they may appear in any order.
+</p>
+
+<p class="indented">
+    There may be more than one <code>LineNumberTable</code> attribute per line of a source file in the <code>attributes</code> table of a <code>Code</code> attribute.
+    That is, <code>LineNumberTable</code> attributes may together represent a given line of a source file, and need not be one-to-one with source lines.
+</p>
+
+<p>
+    The LineNumberTable attribute has the following format:
+</p>
+
+<div title="LineNumberTable_attribute" class="plaintext">
+LineNumberTable_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 line_number_table_length;
+    {   u2 start_pc;
+        u2 line_number;
+    } line_number_table[line_number_table_length];
+}
+</div>
+
+<p>
+    The items of the <code>LineNumberTable_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "LineNumberTable".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
+    </li>
+    <li>
+        <code>line_number_table_length</code>: The value of the <code>line_number_table_length</code> item indicates the number of entries in the <code>line_number_table</code> array.
+    </li>
+    <li>
+        <code>line_number_table[]</code>: Each entry in the <code>line_number_table</code> array indicates that the line number in the original source file changes at a given point in the <code>code</code> array.
+    </li>
+</ul>
+
+<p>
+    Each <code>line_number_table</code> entry must contain the following two items:
+</p>
+
+<ul>
+    <li>
+        <code>start_pc</code>:
+        The value of the <code>start_pc</code> item must indicate the index into the <code>code</code> array at which the code for a new line in the original source file begins.
+        The value of <code>start_pc</code> must be less than the value of the <code>code_length</code> item of the <code>Code</code> attribute of which this <code>LineNumberTable</code> is an attribute.
+    </li>
+    <li>
+        <code>line_number</code>: The value of the <code>line_number</code> item must give the corresponding line number in the original source file.
+    </li>
+</ul>
+
+<ul>
+    <li>
+        <code>-g</code>: Generate all debugging info
+    </li>
+    <li>
+        <code>-g:none</code>: Generate no debugging info
+    </li>
+    <li>
+        <code>-g:{lines,vars,source}</code>: Generate only some debugging info
+    </li>
+</ul>
+
+<div title="javac example" class="plaintext">
+javac -g:vars Main.java
+javac -g:vars,lines Main.java
+</div>
+
+<h2>Examples</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int a = 0;
+        int b = 1;
+        int c = 2;
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iconst_1             // 04
+0003: istore_2             // 3D
+0004: iconst_2             // 05
+0005: istore_3             // 3E
+0006: return               // B1
+=== === ===  === === ===  === === ===
+attributes_count='0002' (2)
+attributes
+--->|001| LineNumberTable:
+HexCode: 000700000012
+    0004
+    00000005
+    00020006
+    00040007
+    00060008
+attribute_name_index='0007' (#7)
+attribute_length='00000012' (18)
+line_number_table_length='0004' (4)
+line_number_table[0] {
+    start_pc='0000' (0)
+    line_number='0005' (5)
+}
+line_number_table[1] {
+    start_pc='0002' (2)
+    line_number='0006' (6)
+}
+line_number_table[2] {
+    start_pc='0004' (4)
+    line_number='0007' (7)
+}
+line_number_table[3] {
+    start_pc='0006' (6)
+    line_number='0008' (8)
+}
+... ...
+</div>

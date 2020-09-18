@@ -331,11 +331,11 @@ public class HelloWorld {
     Annotation processors can analyze the annotations usage (perform static code analysis), create additional Java source files or resources (which in turn could be compiled and processed) or mutate the annotated code.
 </p>
 
-<p>
+<p class="indented">
     The <b>retention policy</b> plays a key role by instructing the compiler which annotations should be available for processing by annotation processors.
 </p>
 
-<p>
+<p class="indented">
     Annotation processors are widely used, however to write one it requires some knowledge of how Java compiler works and the compilation process itself.
 </p>
 
@@ -417,23 +417,25 @@ constant_pool
     ... ...
     |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
     |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
-    |013| CONSTANT_Utf8 {Value='RuntimeInvisibleAnnotations', HexCode='01001B52756E74696D65496E76697369626C65416E6E6F746174696F6E73'}
+    |013| CONSTANT_Utf8 {Value='RuntimeInvisibleAnnotations', HexCode='01001B52756E74696D65496E......'}
     |014| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
     ... ...
 attributes_count='0002' (2)
 attributes
 --->|001| SourceFile:
 HexCode: 000B00000002000C
-attribute_name_index='000B' (11)
+attribute_name_index='000B' (#11)
 attribute_length='00000002' (2)
-sourcefile_index='000C' (12)
+sourcefile_index='000C' (#12)
 --->|002| RuntimeInvisibleAnnotations:
 HexCode: 000D000000060001000E0000
-attribute_name_index='000D' (13)
+attribute_name_index='000D' (#13)
 attribute_length='00000006' (6)
 num_annotations='0001' (1)
-    type_index='000E' (14)
+annotation[0] {
+    type_index='000E' (#14)
     num_element_value_pairs='0000' (0)
+}
 </div>
 
 <h4>RetentionPolicy.SOURCE</h4>
@@ -452,9 +454,9 @@ attributes_count='0001' (1)
 attributes
 --->|001| SourceFile:
 HexCode: 000B00000002000C
-attribute_name_index='000B' (11)
+attribute_name_index='000B' (#11)
 attribute_length='00000002' (2)
-sourcefile_index='000C' (12)
+sourcefile_index='000C' (#12)
 </div>
 
 <h4>RetentionPolicy.CLASS</h4>
@@ -473,16 +475,18 @@ attributes_count='0002' (2)
 attributes
 --->|001| SourceFile:
 HexCode: 000B00000002000C
-attribute_name_index='000B' (11)
+attribute_name_index='000B' (#11)
 attribute_length='00000002' (2)
-sourcefile_index='000C' (12)
+sourcefile_index='000C' (#12)
 --->|002| RuntimeInvisibleAnnotations:
 HexCode: 000D000000060001000E0000
-attribute_name_index='000D' (13)
+attribute_name_index='000D' (#13)
 attribute_length='00000006' (6)
 num_annotations='0001' (1)
-    type_index='000E' (14)
+annotation[0] {
+    type_index='000E' (#14)
     num_element_value_pairs='0000' (0)
+}
 </div>
 
 <h4>RetentionPolicy.RUNTIME</h4>
@@ -501,16 +505,18 @@ attributes_count='0002' (2)
 attributes
 --->|001| SourceFile:
 HexCode: 000B00000002000C
-attribute_name_index='000B' (11)
+attribute_name_index='000B' (#11)
 attribute_length='00000002' (2)
-sourcefile_index='000C' (12)
+sourcefile_index='000C' (#12)
 --->|002| RuntimeVisibleAnnotations:
 HexCode: 000D000000060001000E0000
-attribute_name_index='000D' (13)
+attribute_name_index='000D' (#13)
 attribute_length='00000006' (6)
 num_annotations='0001' (1)
-    type_index='000E' (14)
+annotation[0] {
+    type_index='000E' (#14)
     num_element_value_pairs='0000' (0)
+}
 </div>
 
 <h4>Summing Up</h4>
@@ -545,7 +551,7 @@ constant_pool
     ... ...
     |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
     |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
-    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D6556697369626C65416E6E6F746174696F6E73'}
+    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D65566973......'}
     |014| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
     |015| CONSTANT_Utf8 {Value='age', HexCode='010003616765'}
     |016| CONSTANT_Integer {Value='18', HexCode='0300000012'}
@@ -562,11 +568,17 @@ HexCode: 000D0000000B0001000E0001000F490010
 attribute_name_index='000D' (#13)
 attribute_length='0000000B' (11)
 num_annotations='0001' (1)
+annotation[0] {
     type_index='000E' (#14)
     num_element_value_pairs='0001' (1)
-    element_name_index='000F' (#15)
-        tag='49' (I)
-        const_value_index='0010' (#16: 18)
+    element_value_pairs[0] {
+        element_name_index='000F' (#15)
+        element_value {
+            tag='49' (I)
+            const_value_index='0010' (#16: 18)
+        }
+    }
+}
 </div>
 
 <h4>default value</h4>
@@ -593,7 +605,7 @@ constant_pool
     ... ...
     |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
     |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
-    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D6556697369626C65416E6E6F746174696F6E73'}
+    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D65566973......'}
     |014| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
     ... ...
 attributes_count='0002' (2)
@@ -608,8 +620,10 @@ HexCode: 000D000000060001000E0000
 attribute_name_index='000D' (#13)
 attribute_length='00000006' (6)
 num_annotations='0001' (1)
+annotation[0] {
     type_index='000E' (#14)
     num_element_value_pairs='0000' (0)
+}
 </div>
 
 <div title="ClassFile: MyTag.class age() Attributes" class="plaintext">
@@ -625,8 +639,10 @@ attributes
 HexCode: 000600000003490007
 attribute_name_index='0006' (#6)
 attribute_length='00000003' (3)
+element_value {
     tag='49' (I)
     const_value_index='0007' (#7: 18)
+}
 </div>
 
 
@@ -654,7 +670,7 @@ constant_pool
     ... ...
     |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
     |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
-    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D6556697369626C65416E6E6F746174696F6E73'}
+    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D65566973......'}
     |014| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
     |015| CONSTANT_Utf8 {Value='name', HexCode='0100046E616D65'}
     |016| CONSTANT_Utf8 {Value='tomcat', HexCode='010006746F6D636174'}
@@ -671,11 +687,82 @@ HexCode: 000D0000000B0001000E0001000F730010
 attribute_name_index='000D' (#13)
 attribute_length='0000000B' (11)
 num_annotations='0001' (1)
+annotation[0] {
     type_index='000E' (#14)
     num_element_value_pairs='0001' (1)
-    element_name_index='000F' (#15)
-        tag='73' (s)
-        const_value_index='0010' (#16: tomcat)
+    element_value_pairs[0] {
+        element_name_index='000F' (#15)
+        element_value {
+            tag='73' (s)
+            const_value_index='0010' (#16: tomcat)
+        }
+    }
+}
+</div>
+
+<h4>int + String</h4>
+
+<div title="MyTag.java" class="javacode">
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyTag {
+    String name();
+    int age();
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+@MyTag(name= "tomcat", age=10)
+public class HelloWorld {
+}
+</div>
+
+<div title="ClassFile: HelloWorld.class" class="plaintext">
+constant_pool_count='0016' (22)
+constant_pool
+    ... ...
+    |010| CONSTANT_Utf8 {Value='Lsample/HelloWorld;', HexCode='0100134C73616D706C652F48656C6C6F......'}
+    |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
+    |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D65566973......'}
+    |014| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
+    |015| CONSTANT_Utf8 {Value='name', HexCode='0100046E616D65'}
+    |016| CONSTANT_Utf8 {Value='tomcat', HexCode='010006746F6D636174'}
+    |017| CONSTANT_Utf8 {Value='age', HexCode='010003616765'}
+    |018| CONSTANT_Integer {Value='10', HexCode='030000000A'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|001| SourceFile:
+HexCode: 000B00000002000C
+attribute_name_index='000B' (#11)
+attribute_length='00000002' (2)
+sourcefile_index='000C' (#12)
+--->|002| RuntimeVisibleAnnotations:
+HexCode: 000D000000100001000E0002000F7300100011490012
+attribute_name_index='000D' (#13)
+attribute_length='00000010' (16)
+num_annotations='0001' (1)
+annotation[0] {
+    type_index='000E' (#14)
+    num_element_value_pairs='0002' (2)
+    element_value_pairs[0] {
+        element_name_index='000F' (#15)
+        element_value {
+            tag='73' (s)
+            const_value_index='0010' (#16: tomcat)
+        }
+    }
+    element_value_pairs[1] {
+        element_name_index='0011' (#17)
+        element_value {
+            tag='49' (I)
+            const_value_index='0012' (#18: 10)
+        }
+    }
+}
 </div>
 
 <h4>Class&lt;?&gt;</h4>
@@ -686,7 +773,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MyTag {
-    Class<?> type();
+    Class&lt;?&gt; type();
 }
 </div>
 
@@ -702,7 +789,7 @@ constant_pool
     ... ...
     |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
     |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
-    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D6556697369626C65416E6E6F746174696F6E73'}
+    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D65566973......'}
     |014| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
     |015| CONSTANT_Utf8 {Value='type', HexCode='01000474797065'}
     |016| CONSTANT_Utf8 {Value='Ljava/lang/String;', HexCode='0100124C6A6176612F6C616E672F537472696E673B'}
@@ -719,11 +806,17 @@ HexCode: 000D0000000B0001000E0001000F630010
 attribute_name_index='000D' (#13)
 attribute_length='0000000B' (11)
 num_annotations='0001' (1)
+annotation[0] {
     type_index='000E' (#14)
     num_element_value_pairs='0001' (1)
-    element_name_index='000F' (#15)
-        tag='63' (c)
-        class_info_index='0010' (#16)
+    element_value_pairs[0] {
+        element_name_index='000F' (#15)
+        element_value {
+            tag='63' (c)
+            class_info_index='0010' (#16)
+        }
+    }
+}
 </div>
 
 <h4>Enum</h4>
@@ -753,10 +846,10 @@ constant_pool
     ... ...
     |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
     |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
-    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D6556697369626C65416E6E6F746174696F6E73'}
+    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D65566973......'}
     |014| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
     |015| CONSTANT_Utf8 {Value='unit', HexCode='010004756E6974'}
-    |016| CONSTANT_Utf8 {Value='Ljava/util/concurrent/TimeUnit;', HexCode='01001F4C6A6176612F7574696C2F636F6E63757272656E742F54696D65556E69743B'}
+    |016| CONSTANT_Utf8 {Value='Ljava/util/concurrent/TimeUnit;', HexCode='01001F4C6A6176612F75......'}
     |017| CONSTANT_Utf8 {Value='HOURS', HexCode='010005484F555253'}
     ... ...
 attributes_count='0002' (2)
@@ -771,12 +864,18 @@ HexCode: 000D0000000D0001000E0001000F6500100011
 attribute_name_index='000D' (#13)
 attribute_length='0000000D' (13)
 num_annotations='0001' (1)
+annotation[0] {
     type_index='000E' (#14)
     num_element_value_pairs='0001' (1)
-    element_name_index='000F' (#15)
-        tag='65' (e)
-        type_name_index='0010' (16)
-        const_name_index='0011' (17)
+    element_value_pairs[0] {
+        element_name_index='000F' (#15)
+        element_value {
+            tag='65' (e)
+            type_name_index='0010' (#16)
+            const_name_index='0011' (#17)
+        }
+    }
+}
 </div>
 
 <h4>Array</h4>
@@ -803,7 +902,7 @@ constant_pool
     ... ...
     |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
     |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
-    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D6556697369626C65416E6E6F746174696F6E73'}
+    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D65566973......'}
     |014| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
     |015| CONSTANT_Utf8 {Value='names', HexCode='0100056E616D6573'}
     |016| CONSTANT_Utf8 {Value='tom', HexCode='010003746F6D'}
@@ -821,15 +920,25 @@ HexCode: 000D000000110001000E0001000F5B0002730010730011
 attribute_name_index='000D' (#13)
 attribute_length='00000011' (17)
 num_annotations='0001' (1)
+annotation[0] {
     type_index='000E' (#14)
     num_element_value_pairs='0001' (1)
-    element_name_index='000F' (#15)
-        tag='5B' ([)
-        num_values='0002' (2)
-        tag='73' (s)
-        const_value_index='0010' (#16: tom)
-        tag='73' (s)
-        const_value_index='0011' (#17: jerry)
+    element_value_pairs[0] {
+        element_name_index='000F' (#15)
+        element_value {
+            tag='5B' ([)
+            num_values='0002' (2)
+            element_value {
+                tag='73' (s)
+                const_value_index='0010' (#16: tom)
+            }
+            element_value {
+                tag='73' (s)
+                const_value_index='0011' (#17: jerry)
+            }
+        }
+    }
+}
 </div>
 
 <h2>Summing Up</h2>

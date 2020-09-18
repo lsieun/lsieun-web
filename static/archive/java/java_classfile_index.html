@@ -8,6 +8,14 @@
 
 <h2>Intro</h2>
 
+<p class="indented">
+    The Java Virtual Machine knows nothing of the Java programming language, only of a particular binary format, the class file format.
+    A class file contains Java Virtual Machine instructions (or bytecodes) and a symbol table, as well as other ancillary information.
+</p>
+
+<p class="indented">
+    Bytecode is nothing but the intermediate representation of Java source code which is produced by the Java compiler by compiling that source code. This byte code is an machine independent code.It is not an completely a compiled code but it is an intermediate code somewhere in the middle which is later interpreted and executed by JVM.Bytecode is a machine code for JVM.
+</p>
 
 <h2>Main Content</h2>
 
@@ -34,9 +42,38 @@
         </ul>
     </li>
     <li>
-        <a href="/archive/java/classfile/java_classfile_04_opcode_perspective.html" target="_blank">Java ClassFile: (4) Opcode Perspective</a>
+        <a href="/archive/java/classfile/java_classfile_04_attribute_perspective.html" target="_blank">Java ClassFile: (4) Attribute Perspective</a>
         <img src="/images/list.png" onclick="$(this).next().toggle()"/>
-        <ul style="display: block;">
+        <ol style="display: none;">
+            <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">AnnotationDefault Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/bootstrap_methods_attribute.html" target="_blank">BootstrapMethods Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/code_attribute.html" target="_blank">Code Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/constant_value_attribute.html" target="_blank">ConstantValue Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/deprecated_attribute.html" target="_blank">Deprecated Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/enclosing_method_attribute.html" target="_blank">EnclosingMethod Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/exceptions_attribute.html" target="_blank">Exceptions Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/inner_classes_attribute.html" target="_blank">InnerClasses Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/line_number_table_attribute.html" target="_blank">LineNumberTable Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/local_variable_table_attribute.html" target="_blank">LocalVariableTable Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/local_variable_type_table_attribute.html" target="_blank">LocalVariableTypeTable Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/method_parameters_attribute.html" target="_blank">MethodParameters Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeInvisibleAnnotations Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeVisibleAnnotations Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeInvisibleParameterAnnotations Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeVisibleParameterAnnotations Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeInvisibleTypeAnnotations Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeVisibleTypeAnnotations Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/signature_attribute.html" target="_blank">Signature Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/source_debug_extension_attribute.html" target="_blank">SourceDebugExtension Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/source_file_attribute.html" target="_blank">SourceFile Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/stack_map_table_attribute.html" target="_blank">StackMapTable Attribute</a></li>
+            <li><a href="/archive/java/classfile/attribute_perspective/synthetic_attribute.html" target="_blank">Synthetic Attribute</a></li>
+        </ol>
+    </li>
+    <li>
+        <a href="/archive/java/classfile/java_classfile_05_opcode_perspective.html" target="_blank">Java ClassFile: (5) Opcode Perspective</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul style="display: none;">
             <li><a href="/archive/java/classfile/instruction/instruction_01_overview.html" target="_blank">Opcode: (1) Overview</a></li>
             <li><a href="/archive/java/classfile/instruction/instruction_02_jvm_execution_model.html" target="_blank">Opcode: (2) JVM Execution Model</a></li>
             <li><a href="/archive/java/classfile/instruction/opcode_return.html" target="_blank">Opcode: return</a></li>
@@ -61,14 +98,6 @@
         </ul>
     </li>
     <li>
-        <a href="/archive/java/classfile/java_classfile_05_attribute_perspective.html" target="_blank">Java ClassFile: (5) Attribute Perspective</a>
-        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
-        <ul style="display: none;">
-            <li><a href="/archive/java/classfile/attribute_perspective/runtime_annotation.html" target="_blank">RuntimeVisibleAnnotations</a></li>
-            <li><a href="/archive/java/classfile/attribute_perspective/synthetic.html" target="_blank">Synthetic Attribute</a></li>
-        </ul>
-    </li>
-    <li>
         <a href="" target="_blank">Theme: Java Features</a>
         <img src="/images/list.png" onclick="$(this).next().toggle()"/>
         <ul style="display: none;">
@@ -90,7 +119,11 @@
         <ul style="display: none;">
             <li><a href="/archive/java/classfile/example/java_synthetic.html" target="_blank">Java Synthetic Examples</a></li>
             <li><a href="/archive/java/classfile/example/java_bridge_method.html" target="_blank">Java Bridge Method Examples</a></li>
+            <li><a href="/archive/java/classfile/example/classfile_stack_map_table_attribute_examples.html" target="_blank">ClassFile StackMapTable Attribute Examples</a></li>
         </ul>
+    </li>
+    <li>
+        <a href="/archive/java/classfile/the_final_thought.html" target="_blank">The Final Thought</a>
     </li>
 </ol>
 
@@ -115,6 +148,11 @@
         The Java Virtual Machine Specification, Java SE 8 Edition:
         <a class="external" href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html" target="_blank">Remote</a>
         <a href="/doc/javase/jvms/se8/index.html" target="_blank">Local</a>
+    </li>
+    <li>
+        The Java Language Specification, Java SE 8 Edition:
+        <a class="external" href="https://docs.oracle.com/javase/specs/jls/se8/html/index.html" target="_blank">Remote</a>
+        <a href="/doc/javase/jls/se8/index.html" target="_blank">Local</a>
     </li>
     <li><a class="external" href="https://www.artima.com/insidejvm/ed2/index.html" target="_blank">Online: Inside the Java Virtual Machine</a></li>
 </ul>

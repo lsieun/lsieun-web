@@ -1,0 +1,109 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">The Final Thought</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>期望目标</h2>
+
+<p class="indented">
+    我想呈现出的“作品”是什么样子的。我想达成两个阶段性的目标。
+    第一个阶段性的目标，是希望给人一条简洁的路径，能够便捷的、在较短的时间内能够对ClassFile的内容有整体上的把握；
+    第二个阶段性的目标，是希望能够在第一个阶段性目标的基础上，让人对某一个特定的主题或内容进行更深入的研究和探索。
+</p>
+
+<p class="indented">
+    为了实现第一个阶段性目标，我希望我能这样做。我希望，我能留下一些清晰的路线，或留下一些“路标”，让人能够快速的、跳跃式的学习很少的一部分内容，但能整体上把握ClassFile的整体结构。
+</p>
+
+<p class="indented">
+    为了实现第二个阶段性目标，我希望我能这样做。我希望，我能留下一些可以查阅或参考的内容。换句话说，对一部分专题内容（例如，Annotation、StackMap、Lambda）进行更深入的研究和探索，或者提供一些有价值的可以参考的代码示例。
+    我对于“查阅”或“参考”的理解是这样的，就是在有需要的时候，拿来看一看，如果不需要的时候，则可以不看。
+    相应地，对于这一部分内容的学习，我认为，一个比较好的学习方式，当自己兴趣来了，想要探究一下，一个问题究竟是什么样，那个时候再去学，是最好的时机。
+    因为我以前学习一本书，就喜欢从开头第一章开始，一点一点往后看，但可能好多东西都不是自己感兴趣的，或者是自己不了解的内容，学着学着就学不下去了。
+</p>
+
+<p class="indented">
+    我希望，我有一些核心的观念，可以在讲课的过程中，不断重复、强调，使之贯彻其中。
+</p>
+
+<ul>
+    <li>
+        第一个核心观念：<strong>这个问题，是可以被理解的</strong>。这是我的认知原点。
+        在我自己学习ClassFile的过程中，我会经常性遇到自己不懂的问题，让自己心烦意乱，学不下去，索性休息一会儿。
+        再次针对这个问题思考的时候，我会告诉自己，这个问题是可以被理解的，只是可能我没有搞清楚哪个地方而已。
+        既然这个问题是可以被理解的，那么，我需要做的就是把这个“暂时隐蔽的思路”找出来。
+    </li>
+    <li>
+        第二个核心观念：<strong>ClassFile内容的本质是“映射”</strong>。更确切地说，是从JavaFile向ClassFile的“映射”。为什么这么说呢？
+        我觉得，在大部分情况下，ClassFile内的数据并不是无缘无故的存在，它是为了与JavaFile内某一部分内容相对应而存在的。
+        从本质上来说，它们表达的是同一个事物，而JavaFile和ClassFile只是同一个事物的两种不同表现形式而已。
+        从具体的文件来说，一个<code>.class</code>文件所完成的功能，是由<code>.java</code>文件通过<code>javac</code>编译（映射）而来；
+        从抽象的规范来说，ClassFile Format是为了对Java Language的各种Feature进行支持而存在的。
+    </li>
+    <li>
+        第三个核心概念：Java的整体架构是由4部分组成。将“Java的整体架构由4部分组成”定义成一个“核心的观念”，这里有两个目的。
+        第一个目的，是希望给人提供对于Java知识的一个整体、全局的“概述、总览”（Overview）；当你学某一种类型知识的时候，能够方便的将其归纳、分类。
+        第二个目的，是强调Java programming language和Java class file format是两个相关的、但又截然不同的事物，
+        一个<code>.java</code>文件是Java programming language的具体表现形式，一个<code>.class</code>文件是Java class file format的具体表现形式。
+        我这里讲的内容就是属于Java class file format的部分，
+    </li>
+</ul>
+
+<p>
+    Java's architecture arises out of four distinct but interrelated technologies, each of which is defined by a
+    separate specification from Sun Microsystems:
+</p>
+
+<ul>
+    <li>the Java programming language</li>
+    <li>the Java class file format</li>
+    <li>the Java Application Programming Interface</li>
+    <li>the Java Virtual Machine</li>
+</ul>
+
+<p class="indented">
+    我希望的理想状态：在对ClassFile整体内容框架有了解的情况下，有能力去自己进行研究。
+</p>
+
+<p class="indented">
+
+</p>
+
+<h2>不足之处</h2>
+
+<p class="indented">
+    我的固有思维模式。我在讲一个问题的时候，是从自己的思维模式（mindset）出发的，可能与读者或观看者的思维模式是不一致的，就可能造成一种情况：自己可能认为自己讲的有条有理，但可能会让别人听的云里雾里。如果是这种情况，可以私人联系我，我再尝试尝试其它的方和您共同探讨如何理解这个问题。
+</p>
+
+<h2>意见反馈</h2>
+
+<ul>
+    <li>
+        如果您发现源代码中有错误，希望您可以发邮件给我指正。
+    </li>
+    <li>
+        如果您发现文章中有错别字，希望您可以发邮件给我指正。
+    </li>
+    <li>
+        如果您有更好地将问题阐述清楚的思路，希望您可以发邮件给我。
+    </li>
+    <li>
+        如果您有更好图片，能恰如其分地说明问题，希望您可以发邮件给我。
+    </li>
+    <li>
+        如果您有更好的代码示例，希望您可以发邮件给我。
+    </li>
+    <li>
+        总而言之，如果您有任何好的想法、思路、方案，您都可以发邮件告诉我。
+    </li>
+</ul>
+
+<h2>联系方式</h2>
+
+<ul>
+    <li>Email: 515882294@qq.com</li>
+</ul>

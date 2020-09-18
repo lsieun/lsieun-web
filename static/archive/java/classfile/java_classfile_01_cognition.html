@@ -6,3 +6,122 @@
     <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
+
+<h2>ClassFile Is Comprehensible</h2>
+
+<p class="indented">
+    这个世界形形色色，千般复杂，变化万端。
+    那么，这个世界映射到我的认知范围内，我觉得，大体上可以分为三种情况。
+    第一种情况就是，有一些事情，是我已经知晓的，已经在我的知识范围之内了；
+    第二种情况就是，有一些事情，我现在是不了解的，但是通过我的学习、努力和探索，它也是可以被理解的；
+    第三种情况就是，还有一些事情，可能是穷极一生，也是我无法理解的事物。
+</p>
+
+<p class="indented">
+    对于<code>.class</code>文件（ClassFile）来说，它是属于经过学习、探索之后，可以被理解的内容。
+    以前，我接触的一些资料或培训中，都是讲<code>.class</code>文件中存储的是二进制的字节码（bytecode），就不再往下深究了。
+    现在，我知道了<code>.class</code>文件包含的二进制的字节码（bytecode），并不是杂乱无章的，其内容是可以被理解的。
+</p>
+
+<p class="indented">
+    “ClassFile是可以被理解的”，为什么要说这个事情呢？因为这是我的认知“原点”。
+    在研究ClassFile的过程中，有的时候会遇到自己不懂的问题，心中有挫败感。
+    我会告诉自己，这个问题是可以被理解的，只是可能我没有搞清楚哪个地方而已。
+    既然这个问题是可以被理解的，那么，我需要做的就是把这个“暂时隐蔽的思路”找出来。
+</p>
+
+<h2>ClassFile With Pattern</h2>
+
+<p class="indented">
+    1991年，Erich Gamma、Richard Helm、Ralph Johnson和John Vlissides合作出版了《设计模式：可复用面向对象软件的基础》（Design Patterns - Elements of Reusable Object-Oriented Software），在这本书中共收录了23种设计模式。
+</p>
+
+<p class="indented">
+    在《设计模式》这本书中，23个具体的设计模式实例占据了最多的篇幅，但事实上，这本书最划时代的意义，在于指出编程开发活动中存在“模式”（Pattern）。在此之后，出现了以设计模式的格式来组织内容的《分析模式》，《企业架构模式》，《企业集成模式》，《xUnit测试模式》，《重构》等等质量颇高的书籍。（这段内容参考自知乎<a class="external" href="https://www.zhihu.com/question/23757906/answer/25616658" target="_blank">如何正确地使用设计模式？</a>）
+</p>
+
+<p class="indented">
+    谈到“模式”（Pattern），我以前的时候，总是搞不清楚“模式”（Pattern）到底是指什么？后来，才渐渐明白，所谓的“模式”（Pattern）就是想表达“事物的变化遵循一定的规律”，英文的解释是the regular way in which sth happens。就比如说，电子围绕了原子核在转，地球围绕着太阳在转。
+</p>
+
+<p class="indented">
+    为什么要谈到“模式”（Pattern）这个概念呢？其实，在这一部分当中，我想表达的主要观点就是，ClassFile的结构也是遵循一定的“模式”（Pattern）；而ClassFile所遵循的“模式”（Pattern）就描述在《The Java Virtual Machine Specification》文档之中。换话说，我们去学习ClassFile，就是去学习《The Java Virtual Machine Specification》当中描述的“模式”（Pattern）。然而，学习《The Java Virtual Machine Specification》并不是一件容易的事情。
+</p>
+
+<p class="indented">
+    学习《The Java Virtual Machine Specification》的难点主要有<b>三方面</b>。<b>第一方面，是源于认知程度的差异</b>，是<b>JVM文档的作者们</b>与<b>JVM文档的读者们</b>之间的认知程度的差异。
+    JVM文档的作者们，在书写JVM的文档的时候，是建立在一个全局的、完整的对JVM的认知的基础上写的，可以轻易的从一个概念引生出另外的许多其它概念；而对JVM不太了解的读者，可能在不同的概念跳转之间，迷失了自己的“方向”。
+    <b>第二方面，是源于JVM文档的书写风格</b>，也就是“严谨而简洁”的书写风格，这就导致了一个问题，它缺少足够的额外信息或示例代码来把其中一句话或一个问题给讲清楚；换句话说，它提供的知识的“密度”非常大，并没有提供足够的“空间”（这个“空间”可以理解为“时间”或“代码示例”等内容）去真正理解它的含义。
+    <b>第三方面，可能是源于不同语言的差异</b>，更进一步说，就是中文和英文之间的差异。有的人，可能就天生喜欢英文，或者对英文有天赋，而有的人，则对英文避而远之。我们知道，JVM文档是由英文写的，那可能就对于不太了解英文的中文使用造成了语言上的障碍。
+    综合以上的几个方面，可能出现的情况就是，读者在一个问题上没有搞懂，而JVM文档又在这个问题的基础上去讲解其他的概念，就很容易让人产生“放弃”的念头。
+</p>
+
+<p class="indented">
+    在这里，我想要特别说的一个问题就是，“模式”（Pattern）就是指代“数据结构”（Date Structure）。我并没有区分两个概念之间的差异，而是认为它们两者的意思是“等价”的。之所以选择“模式”（Pattern）这个概念，而没有使用“数据结构”（Date Structure）这个概念，是因为我觉得，“模式”（Pattern）这个概念更能表达出ClassFile所遵循的规律性。那么，在其它的场景当中，可能就需要去严格区分“模式”（Pattern）和“数据结构”（Date Structure）之间的差异。
+</p>
+
+<h2>Java Architecture</h2>
+
+<p>
+    Java's architecture arises out of four distinct but interrelated technologies,
+    each of which is defined by a separate specification from Sun Microsystems:
+</p>
+
+<ul>
+    <li>the Java programming language</li>
+    <li>the Java class file format</li>
+    <li>the Java Application Programming Interface</li>
+    <li>the Java Virtual Machine</li>
+</ul>
+
+<p>
+    When you write and run a Java program, you are tapping the power of these four technologies.
+    You express the program in source files written in the Java programming language, compile the source to
+    Java class files, and run the class files on a Java Virtual Machine. When you write your program, you
+    access system resources (such as I/O, for example) by calling methods in the classes that implement the
+    Java Application Programming Interface, or Java API. As your program runs, it fulfills your program's
+    Java API calls by invoking methods in class files that implement the Java API.
+</p>
+
+<h2>From Computer to Cosmos</h2>
+
+<p class="indented">
+    以上的内容当中，只是在探讨Java相关的内容。那么，与Java处在同一个层面的，可能要包含C，C++，C#，Python，Javascript等内容。
+    那么，在往高一层面来说，它们都要属于计算机科学（Computer Science）的领域。
+</p>
+
+<p class="indented">
+    计算机的出现，可以说是20世纪一个伟大的发明。
+    在这个伟大发明（计算机）的背后，隐藏着一个常常被人忽视的事实：宇宙（Cosmos）的运行机制。
+    从几千年前的古代，到现在的21世纪，宇宙的运行机制中就具足着一切可以让计算机出现的因素，一直都存在着，只是没有被人发现或发明出来。
+</p>
+
+<p class="indented">
+    比计算机科学（Computer Science）更大一层的概念，可能就是科学（Science）。
+    那么，何为“科学”？我觉得，科学（Science）的本质就是认知的一种手段。在英文里是这样解释science的：
+    the study of the physical and natural world and phenomena, especially by using systematic observation and experiment。
+    The approach of Bacon, who is considered the founder of the scientific method, was pretty straightforward:
+    observation → induction → hypothesis → test hypothesis by experiment → proof/disproof → knowledge.
+</p>
+
+<p class="indented">
+    比科学（Science）更大一层的概念，可能是认知（Cognition）。
+    在英文当中是这样解释cognition的：the process by which knowledge and understanding is developed in the mind。
+</p>
+
+<p class="indented">
+    那人类的认知（Cognition），可能就局限在地球上，再往大了说，就是局限在太阳系内，再往大了说，就是局限在银河系内。可是，在银河系之外，还有广袤无垠的宇宙（Cosmos）。
+    在英文里是这样解释cosmos的：the universe, especially when it is thought of as an ordered system，即“被视为有序体系的宇宙”。
+</p>
+
+<h2>Summing Up</h2>
+
+<p>
+    这篇文章主要是想表达三部分内容：
+</p>
+
+<ol>
+    <li>ClassFile是能够被理解的。这里说明的是一个“能”与“否”的问题，能够被理解，或者不能被理解。</li>
+    <li>到底要如何才能理解ClassFile。<code>.class</code>文件的结构是有规律的，它遵循一定的模式（Pattern），这种模式（Pattern）记录于JVM文档中。</li>
+    <li>ClassFile在整个Java知识体系当中一个的定位、位置或坐标。Java Class File Format是属于Java Architecture的一部分内容。</li>
+</ol>

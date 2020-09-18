@@ -1,0 +1,116 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">SourceFile Attribute</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    The <code>SourceFile</code> attribute is an optional fixed-length attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.<sub class="my_note" style="color:green">笔记：要理解SourceFile，需要把握两个关键词，即optional和fixed-length。其中，optional表示SourceFile可有可无，fixed-length是指SourceFile的长度是固定的。</sub>
+    There may be at most one <code>SourceFile</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.<sub class="my_note" style="color:green">笔记：在ClassFile中，只能存在一个SourceFile。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    The <code>SourceFile</code> attribute has the following format:
+</p>
+
+<div title="SourceFile_attribute" class="plaintext">
+SourceFile_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 sourcefile_index;
+}
+</div>
+
+<p>
+    The items of the <code>SourceFile_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <b>attribute_name_index</b>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "SourceFile".
+    </li>
+    <li>
+        <b>attribute_length</b>: The value of the <code>attribute_length</code> item of a <code>SourceFile_attribute</code> structure must be <b>two</b>.
+    </li>
+    <li>
+        <b>sourcefile_index</b>: The value of the <code>sourcefile_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing a string.
+    </li>
+</ul>
+
+<ul>
+    <li>
+        <code>-g</code>: Generate all debugging info
+    </li>
+    <li>
+        <code>-g:none</code>: Generate no debugging info
+    </li>
+    <li>
+        <code>-g:{lines,vars,source}</code>: Generate only some debugging info
+    </li>
+</ul>
+
+<div title="javac example" class="plaintext">
+javac -g:vars Main.java
+javac -g:vars,lines Main.java
+</div>
+
+<h2>Examples</h2>
+
+<h3>HelloWorld</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+}
+</div>
+
+<div title="Example: SourceFile" class="plaintext">
+constant_pool_count='0010' (16)
+constant_pool
+    ... ...
+    |010| CONSTANT_Utf8 {Value='Lsample/HelloWorld;', HexCode='0100134C73616D706C652F48656C6C6F576F726C643B'}
+    |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
+    |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|001| SourceFile:
+HexCode: 000B00000002000C
+attribute_name_index='000B' (11)
+attribute_length='00000002' (2)
+sourcefile_index='000C' (12)
+</div>
+
+<h3>AAA</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    //
+}
+
+class AAA {
+    // 注意，AAA定义在HelloWorld.java文件内
+}
+</div>
+
+<div title="AAA.class Attribute" class="plaintext">
+constant_pool_count='0010' (16)
+constant_pool
+    ... ...
+    |011| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
+    |012| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|001| SourceFile:
+HexCode: 000B00000002000C
+attribute_name_index='000B' (#11)
+attribute_length='00000002' (2)
+sourcefile_index='000C' (#12)
+</div>

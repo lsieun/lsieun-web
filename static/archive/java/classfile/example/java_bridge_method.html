@@ -83,4 +83,21 @@ methods
     MethodInfo {Value='compareTo:(Ljava/lang/Object;)I', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[Signature]', HexCode='0401000300040001...'}
 </div>
 
+<h2>Java Reflection</h2>
 
+<div title="HelloWorld.java" class="javacode">
+import java.lang.reflect.Method;
+
+public class HelloWorld implements Comparable&lt;HelloWorld&gt; {
+    @Override
+    public int compareTo(HelloWorld o) {
+        return 0;
+    }
+
+    public static void main(String[] args) throws NoSuchMethodException {
+        Class<?> clazz = HelloWorld.class;
+        Method method = clazz.getDeclaredMethod("compareTo", Object.class);
+        System.out.println(method.isBridge()); // true
+    }
+}
+</div>

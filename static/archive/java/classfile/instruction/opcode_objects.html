@@ -105,6 +105,54 @@ index  start_pc  length  name_and_type
     0         0       9  this:Lsample/HelloWorld;
 </div>
 
+<h3>new HelloWorld() with parameters</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private String name;
+    private int age;
+
+    public HelloWorld(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public void test() {
+        HelloWorld instance = new HelloWorld("tomcat", 10);
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='0020' (32)
+constant_pool
+    ... ...
+    |004| CONSTANT_Class {Value='sample/HelloWorld', HexCode='07001C'}
+    |005| CONSTANT_String {Value='tomcat', HexCode='08001D'}
+    |006| CONSTANT_Methodref {Value='sample/HelloWorld.&lt;init&gt;:(Ljava/lang/String;I)V', HexCode='0A0004001E'}
+    ... ...
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 2
+code_length = 13
+code = BB0004591205100AB700064CB1
+=== === ===  === === ===  === === ===
+0000: new             #4   // BB0004     || sample/HelloWorld
+0003: dup                  // 59
+0004: ldc             #5   // 1205       || tomcat
+0006: bipush          10   // 100A
+0008: invokespecial   #6   // B70006     || sample/HelloWorld.&lt;init&gt;:(Ljava/lang/String;I)V
+0011: astore_1             // 4C
+0012: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      13  this:Lsample/HelloWorld;
+    1        12       1  instance:Lsample/HelloWorld;
+</div>
+
 <h2>Instance Initializer</h2>
 
 <h3>HelloWorld extends Object</h3>

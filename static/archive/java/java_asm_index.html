@@ -1,0 +1,46 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java ASM</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    ASM is an all purpose Java bytecode manipulation and analysis framework.
+    It can be used to modify existing classes or to dynamically generate classes, directly in binary form.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        ASM framework = dynamically generate classes + modify existing classes
+    </p>
+    <p>
+        第一点，从整体上来说，ASM是一个操作bytecode的framework。
+    </p>
+    <p>
+        第二点，从用途的角度来说，ASM有两个方向，一个方向是dynamically generate classes，这是一个“从无到有”的过程，是一个从0到1的过程；另一个方向是modify existing classes，是对已经存在的东西进行修改，使之成为一个新的事物。
+    </p>
+</div>
+
+<p class="indented">
+    ASM offers similar functionality as other Java bytecode frameworks, but is focused on performance.
+    Because it was designed and implemented to be as small and as fast as possible, it is well suited for use in dynamic systems (but can of course be used in a static way too, e.g. in compilers).
+    <sub class="my_note" style="color:blue">笔记：从功能的角度来说，与其他Java bytecode frameworks相比，ASM提供的功能上是类似的；但是，ASM更注重performance，也就是ASM的执行速度更快。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Main Content</h2>
+
+
+<h2>Resources</h2>
+
+<ul>
+    <li><a class="external" href="https://asm.ow2.io" target="_blank">ASM</a></li>
+    <li><a class="external" href="https://asm.ow2.io/asm4-guide.pdf" target="_blank">ASM User Guild (PDF)</a></li>
+    <li><a class="external" href="https://asm.ow2.io/developer-guide.html" target="_blank">ASM 6 Developer Guide</a></li>
+    <li><a class="external" href="https://asm.ow2.io/faq.html" target="_blank">ASM Frequently Asked Questions</a></li>
+    <li><a class="external" href="https://gitlab.ow2.org/asm/asm" target="_blank">GitLab: ASM Source Code</a></li>
+</ul>

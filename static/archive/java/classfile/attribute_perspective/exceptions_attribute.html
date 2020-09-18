@@ -1,0 +1,109 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Exceptions Attribute</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    The <code>Exceptions</code> attribute is a variable-length attribute in the <code>attributes</code> table of a <code>method_info</code> structure.
+    The <code>Exceptions</code> attribute indicates which checked exceptions a method may throw.
+</p>
+
+<p class="indented">
+    There may be at most one <code>Exceptions</code> attribute in the <code>attributes</code> table of a <code>method_info</code> structure.
+</p>
+
+<p>
+    The <code>Exceptions</code> attribute has the following format:
+</p>
+
+<div title="Exceptions_attribute" class="plaintext">
+Exceptions_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 number_of_exceptions;
+    u2 exception_index_table[number_of_exceptions];
+}
+</div>
+
+<p>
+    The items of the <code>Exceptions_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be the <code>CONSTANT_Utf8_info</code> structure representing the string "Exceptions".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the attribute length, excluding the initial six bytes.
+    </li>
+    <li>
+        <code>number_of_exceptions</code>: The value of the <code>number_of_exceptions</code> item indicates the number of entries in the <code>exception_index_table</code>.
+    </li>
+    <li>
+        <code>exception_index_table[]</code>: Each value in the <code>exception_index_table</code> array must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Class_info</code> structure representing a class type that this method is declared to throw.
+    </li>
+</ul>
+
+<h2>Examples</h2>
+
+<div title="HelloWorld.java" class="javacode">
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+public class HelloWorld {
+    public void test() throws FileNotFoundException, IOException {
+    }
+}
+</div>
+
+<div title="Exceptions Attribute" class="plaintext">
+constant_pool_count='0016' (22)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='Code', HexCode='010004436F6465'}
+    |007| CONSTANT_Utf8 {Value='LineNumberTable', HexCode='01000F4C696E654E756D6265725461626C65'}
+    |008| CONSTANT_Utf8 {Value='LocalVariableTable', HexCode='0100124C6F63616C5661726961626C655461626C65'}
+    |009| CONSTANT_Utf8 {Value='this', HexCode='01000474686973'}
+    |010| CONSTANT_Utf8 {Value='Lsample/HelloWorld;', HexCode='0100134C73616D706C652F48656C6C6F576F726C643B'}
+    |011| CONSTANT_Utf8 {Value='test', HexCode='01000474657374'}
+    |012| CONSTANT_Utf8 {Value='Exceptions', HexCode='01000A457863657074696F6E73'}
+    |013| CONSTANT_Class {Value='java/io/FileNotFoundException', HexCode='070014'}
+    |014| CONSTANT_Class {Value='java/io/IOException', HexCode='070015'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|001| Code:
+HexCode: 00060000002B00000001
+    00000001
+    B1
+    0000
+    0002
+    000700000006000100000009
+    00080000000C0001000000010009000A0000
+attribute_name_index='0006' (#6)
+attribute_length='0000002B' (43)
+max_stack='0000' (0)
+max_locals='0001' (1)
+code_length='00000001' (1)
+code: B1
+exception_table_length='0000' (0)
+attributes_count='0002' (2)
+    LineNumberTable: 000700000006000100000009
+    LocalVariableTable: 00080000000C0001000000010009000A0000
+--->|002| Exceptions:
+HexCode: 000C000000060002000D000E
+attribute_name_index='000C' (#12)
+attribute_length='00000006' (6)
+number_of_exceptions='0002' (2)
+exception_index_table {
+    exception_index='000D' (#13)
+    exception_index='000E' (#14)
+}
+</div>

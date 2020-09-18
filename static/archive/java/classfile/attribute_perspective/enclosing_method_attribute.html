@@ -1,0 +1,171 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">EnclosingMethod Attribute</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    The <code>EnclosingMethod</code> attribute is a fixed-length attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
+    A class must have an <code>EnclosingMethod</code> attribute if and only if it represents <b>a local class</b> or <b>an anonymous class</b>.
+</p>
+
+<p class="indented">
+    There may be at most one <code>EnclosingMethod</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
+</p>
+
+<p>
+    The <code>EnclosingMethod</code> attribute has the following format:
+</p>
+
+<div title="EnclosingMethod_attribute" class="plaintext">
+EnclosingMethod_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 class_index;
+    u2 method_index;
+}
+</div>
+
+<p>
+    The items of the <code>EnclosingMethod_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool entry</code> at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "EnclosingMethod".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item must be four.
+    </li>
+    <li>
+        <code>class_index</code>: The value of the <code>class_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Class_info</code> structure representing the innermost class that encloses the declaration of the current class.
+    </li>
+    <li>
+        <code>method_index</code>: If the current class is not immediately enclosed by a method or constructor, then the value of the <code>method_index</code> item must be zero.
+    </li>
+</ul>
+
+<p class="indented">
+
+</p>
+
+<h2>Examples</h2>
+
+<h3>Local Class</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        final class LocalClass {
+            //
+        }
+    }
+}
+</div>
+
+<div title="HelloWorld$1LocalClass.class Attribute" class="plaintext">
+constant_pool_count='001D' (29)
+constant_pool
+    ... ...
+    |003| CONSTANT_Class {Value='sample/HelloWorld$1LocalClass', HexCode='070018'}
+    |004| CONSTANT_Class {Value='java/lang/Object', HexCode='070019'}
+    ... ...
+    |013| CONSTANT_Utf8 {Value='LocalClass', HexCode='01000A4C6F63616C436C617373'}
+    |014| CONSTANT_Utf8 {Value='InnerClasses', HexCode='01000C496E6E6572436C6173736573'}
+    |015| CONSTANT_Utf8 {Value='Lsample/HelloWorld$1LocalClass;', HexCode='01001F4C736......'}
+    |016| CONSTANT_Utf8 {Value='MethodParameters', HexCode='0100104D6574686F64506172616D6574657273'}
+    |017| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
+    |018| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    |019| CONSTANT_Utf8 {Value='EnclosingMethod', HexCode='01000F456E636C6F73696E674D6574686F64'}
+    |020| CONSTANT_Class {Value='sample/HelloWorld', HexCode='07001A'}
+    |021| CONSTANT_NameAndType {Value='test:()V', HexCode='0C001B001C'}
+    ... ...
+attributes_count='0003' (3)
+attributes
+--->|001| SourceFile:
+HexCode: 0011000000020012
+attribute_name_index='0011' (#17)
+attribute_length='00000002' (2)
+sourcefile_index='0012' (#18)
+--->|002| EnclosingMethod:
+HexCode: 00130000000400140015
+attribute_name_index='0013' (#19)
+attribute_length='00000004' (4)
+class_index='0014' (#20)
+method_index='0015' (#21)
+--->|003| InnerClasses:
+HexCode: 000E0000000A000100030000000D0010
+attribute_name_index='000E' (#14)
+attribute_length='0000000A' (10)
+number_of_classes='0001' (1)
+classes[0] {
+    inner_class_info_index='0003' (#3)
+    outer_class_info_index='0000' (#0)
+    inner_name_index='000D' (#13)
+    inner_class_access_flags='0010' ([ACC_FINAL])
+}
+</div>
+
+<h3>Anonymous Class</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                //
+            }
+        };
+    }
+}
+</div>
+
+<div title="HelloWorld$1.class Attribute" class="plaintext">
+constant_pool_count='001F' (31)
+constant_pool
+    ... ...
+    |003| CONSTANT_Class {Value='sample/HelloWorld$1', HexCode='07001A'}
+    ... ...
+    |014| CONSTANT_Utf8 {Value='InnerClasses', HexCode='01000C496E6E6572436C6173736573'}
+    ... ...
+    |019| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
+    |020| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    |021| CONSTANT_Utf8 {Value='EnclosingMethod', HexCode='01000F456E636C6F73696E674D6574686F64'}
+    |022| CONSTANT_Class {Value='sample/HelloWorld', HexCode='07001D'}
+    |023| CONSTANT_NameAndType {Value='test:()V', HexCode='0C001E0012'}
+    ... ...
+attributes_count='0003' (3)
+attributes
+--->|001| SourceFile:
+HexCode: 0013000000020014
+attribute_name_index='0013' (#19)
+attribute_length='00000002' (2)
+sourcefile_index='0014' (#20)
+--->|002| EnclosingMethod:
+HexCode: 00150000000400160017
+attribute_name_index='0015' (#21)
+attribute_length='00000004' (4)
+class_index='0016' (#22)
+method_index='0017' (#23)
+--->|003| InnerClasses:
+HexCode: 000E0000000A00010003000000000000
+attribute_name_index='000E' (#14)
+attribute_length='0000000A' (10)
+number_of_classes='0001' (1)
+classes[0] {
+    inner_class_info_index='0003' (#3)
+    outer_class_info_index='0000' (#0)
+    inner_name_index='0000' (#0)
+    inner_class_access_flags='0000' ([])
+}
+</div>
+
+
