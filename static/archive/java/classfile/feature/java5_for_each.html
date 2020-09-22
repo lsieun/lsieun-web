@@ -1,0 +1,234 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 5 ForEach</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Java Arrays</h2>
+
+<h3>ForEach</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private static final int[] values = {11, 22, 33, 44, 55};
+
+    public void test() {
+        for (int val : values) {
+            System.out.println(val);
+        }
+    }
+}
+</div>
+
+<div title="test()V" class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 5
+code_length = 34
+code = B200024C2BBE3D033E1D1CA200162B1D2E3604B200031504B60004840301A7FFEBB1
+=== === ===  === === ===  === === ===
+0000: getstatic       #2   // B20002     || sample/HelloWorld.values:[I
+0003: astore_1             // 4C
+0004: aload_1              // 2B
+0005: arraylength          // BE
+0006: istore_2             // 3D
+0007: iconst_0             // 03
+0008: istore_3             // 3E
+0009: iload_3              // 1D
+0010: iload_2              // 1C
+0011: if_icmpge       22   // A20016
+0014: aload_1              // 2B
+0015: iload_3              // 1D
+0016: iaload               // 2E
+0017: istore          4    // 3604
+0019: getstatic       #3   // B20003     || java/lang/System.out:Ljava/io/PrintStream;
+0022: iload           4    // 1504
+0024: invokevirtual   #4   // B60004     || java/io/PrintStream.println:(I)V
+0027: iinc       3    1    // 840301
+0030: goto            -21  // A7FFEB
+0033: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      34  this:Lsample/HelloWorld;
+    4        19       8  val:I
+</div>
+
+<h3>ArrayLength</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private static final int[] values = {11, 22, 33, 44, 55};
+
+    public void test() {
+        int[] array = values;
+        int length = array.length;
+        for (int i = 0; i < length; i++) {
+            int val = array[i];
+            System.out.println(val);
+        }
+    }
+}
+</div>
+
+<div title="test()V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 5
+code_length = 34
+code = B200024C2BBE3D033E1D1CA200162B1D2E3604B200031504B60004840301A7FFEBB1
+=== === ===  === === ===  === === ===
+0000: getstatic       #2   // B20002     || sample/HelloWorld.values:[I
+0003: astore_1             // 4C
+0004: aload_1              // 2B
+0005: arraylength          // BE
+0006: istore_2             // 3D
+0007: iconst_0             // 03
+0008: istore_3             // 3E
+0009: iload_3              // 1D
+0010: iload_2              // 1C
+0011: if_icmpge       22   // A20016
+0014: aload_1              // 2B
+0015: iload_3              // 1D
+0016: iaload               // 2E
+0017: istore          4    // 3604
+0019: getstatic       #3   // B20003     || java/lang/System.out:Ljava/io/PrintStream;
+0022: iload           4    // 1504
+0024: invokevirtual   #4   // B60004     || java/io/PrintStream.println:(I)V
+0027: iinc       3    1    // 840301
+0030: goto            -21  // A7FFEB
+0033: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      34  this:Lsample/HelloWorld;
+    1         4      30  array:[I
+    2         7      27  length:I
+    3         9      24  i:I
+    4        19       8  val:I
+</div>
+
+<h2>Java Collections</h2>
+
+<h3>ForEach</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class HelloWorld {
+    private static final List&lt;String&gt; fruits = new ArrayList<>();
+
+    static {
+        fruits.add("apple");
+        fruits.add("orange");
+    }
+
+    public void test() {
+        for (String fruit : fruits) {
+            System.out.println(fruit);
+        }
+    }
+}
+</div>
+
+<div title="test()V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 39
+code = B20002B9000301004C2BB9000401009900172BB900050100C000064DB200072CB60008A7FFE6B1
+=== === ===  === === ===  === === ===
+0000: getstatic       #2   // B20002     || sample/HelloWorld.fruits:Ljava/util/List;
+0003: invokeinterface #3 1 0 // B900030100 || java/util/List.iterator:()Ljava/util/Iterator;
+0008: astore_1             // 4C
+0009: aload_1              // 2B
+0010: invokeinterface #4 1 0 // B900040100 || java/util/Iterator.hasNext:()Z
+0015: ifeq            23   // 990017
+0018: aload_1              // 2B
+0019: invokeinterface #5 1 0 // B900050100 || java/util/Iterator.next:()Ljava/lang/Object;
+0024: checkcast       #6   // C00006     || java/lang/String
+0027: astore_2             // 4D
+0028: getstatic       #7   // B20007     || java/lang/System.out:Ljava/io/PrintStream;
+0031: aload_2              // 2C
+0032: invokevirtual   #8   // B60008     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0035: goto            -26  // A7FFE6
+0038: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      39  this:Lsample/HelloWorld;
+    2        28       7  fruit:Ljava/lang/String;
+</div>
+
+<h3>Iterator</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class HelloWorld {
+    private static final List&lt;String&gt; fruits = new ArrayList<>();
+
+    static {
+        fruits.add("apple");
+        fruits.add("orange");
+    }
+
+    public void test() {
+        Iterator&lt;String&gt; it = fruits.iterator();
+        while (it.hasNext()) {
+            String item = it.next();
+            System.out.println(item);
+        }
+    }
+}
+</div>
+
+<div title="test()V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 39
+code = B20002B9000301004C2BB9000401009900172BB900050100C000064DB200072CB60008A7FFE6B1
+=== === ===  === === ===  === === ===
+0000: getstatic       #2   // B20002     || sample/HelloWorld.fruits:Ljava/util/List;
+0003: invokeinterface #3 1 0 // B900030100 || java/util/List.iterator:()Ljava/util/Iterator;
+0008: astore_1             // 4C
+0009: aload_1              // 2B
+0010: invokeinterface #4 1 0 // B900040100 || java/util/Iterator.hasNext:()Z
+0015: ifeq            23   // 990017
+0018: aload_1              // 2B
+0019: invokeinterface #5 1 0 // B900050100 || java/util/Iterator.next:()Ljava/lang/Object;
+0024: checkcast       #6   // C00006     || java/lang/String
+0027: astore_2             // 4D
+0028: getstatic       #7   // B20007     || java/lang/System.out:Ljava/io/PrintStream;
+0031: aload_2              // 2C
+0032: invokevirtual   #8   // B60008     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0035: goto            -26  // A7FFE6
+0038: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      39  this:Lsample/HelloWorld;
+    1         9      30  it:Ljava/util/Iterator;
+    2        28       7  item:Ljava/lang/String;
+
+LocalVariableTypeTable:
+index  start_pc  length  name_and_type
+    1         9      30  it:Ljava/util/Iterator&lt;Ljava/lang/String;&gt;;
+</div>
+

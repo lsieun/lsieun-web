@@ -1,0 +1,90 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 7 Diamond Syntax</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    When we create an instance of a generic type, the righthand side of the assignment statement repeats the value of the type parameter.
+    This is usually unnecessary, as the compiler can infer the values of the type parameters.
+    In modern versions of Java, we can leave out the repeated type values in what is called <strong>diamond syntax</strong>.
+</p>
+
+<div title="example" class="javacode">
+List&lt;String&gt; list = new ArrayList&lt;&gt;();
+</div>
+
+<p class="indented">
+    This is a small improvement in the verbosity of the assignment statement—we’ve managed to save a few characters of typing.
+</p>
+
+<h2>Java 7: type inference</h2>
+
+<p class="indented">
+    When generics found their way into the Java language, they blew up the amount of the code developers had to write in order to satisfy the language syntax rules. For example:
+</p>
+
+<div title="Before Java 7" class="javacode">
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+Map&lt;String, Collection&lt;String&gt;&gt; map = new HashMap&lt;String, Collection&lt;String&gt;&gt;();
+</div>
+
+<p class="indented">
+    The Java 7 release somewhat addressed this problem by making changes in the compiler and introducing the new diamond operator <code>&lt;&gt;</code>.
+    For example:
+</p>
+
+<div title="Java 7: diamond operator" class="javacode">
+Map&lt;String, Collection&lt;String&gt;&gt; map = new HashMap&lt;&gt;();
+</div>
+
+<p class="indented">
+    The compiler is able to infer the generics type parameters from the left side and allows omitting them in the right side of the expression.
+    It was a significant progress towards making generics syntax less verbose, however the abilities of the compiler to infer generics type parameters were quite limited.
+    For example, the following code does not compile in Java 7(注：在Java 8中可以编译通过):
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.*;
+
+public class HelloWorld {
+    public static &lt;T&gt; void performAction(final Collection&lt;T&gt; actions, final Collection&lt;T&gt; defaults) {
+        // Some implementation here
+    }
+
+    public void test() {
+        Collection&lt;String&gt; strings = new ArrayList&lt;&gt;();
+        performAction(strings, Collections.emptyList());
+    }
+}
+</div>
+
+<p class="indented">
+    The Java 7 compiler cannot infer the type parameter for the <code>Collections.emptyList()</code> call and as such requires it to be passed explicitly:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+performAction(strings, Collections.&lt;String&gt;emptyList());
+</div>
+
+<h2>Java 8: type inference</h2>
+
+<p class="indented">
+    Luckily, the Java 8 release brings more enhancements into the compiler and, particularly,
+    into the <b>type inference</b> for generics so the code snippet shown above compiles successfully,
+    saving the developers from unnecessary typing.
+</p>
+
+<p class="indented">
+
+</p>
+
+
+
+

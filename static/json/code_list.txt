@@ -6,6 +6,7 @@
 2020-06-25 08:28#Certificate#Cert##/archive/cert/cert_index.html#ASN.1/X.509 Certificate/Signature.
 2020-04-30 15:53#Cryptography#Crypto##/archive/crypto/crypto_index.html#Symmetric Cryptography(DES, Triple-DES, AES), Public Key Cryptography(RSA, DH, ECC), Secure Hash Algorithm(MD5, SHA1, SHA256).
 2020-06-23 14:10#Computer Conception#Computer##/archive/computer/computer_conception.html#Computer Conception.
+2020-09-19 23:16#Java Generics#Java##/archive/java/java_generics_index.html#Java Generics/Type Erasure.
 2020-06-16 22:51#Java Network#Java##/archive/java/Java_Network.html#URL/URLConnection/Socket/ServerSocket/Proxy.
 2020-06-11 14:41#Java Radix#Java##/archive/java/Java_Radix.html#Radix.
 2020-06-10 22:19#Java Number#Java##/archive/java/Java_Number.html#BigInteger.

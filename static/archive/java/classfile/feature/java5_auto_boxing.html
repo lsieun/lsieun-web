@@ -1,0 +1,84 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 5 Auto-Boxing/Unboxing</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    Prior to JDK 5, you need to explicitly wrap a primitive value into an object and unwrap the primitive value from the wrapper object, for example,
+</p>
+
+<div title="Pre-JDK 5" class="javacode">
+// Pre-JDK 5
+Integer intObj = new Integer(5566);    // wrap an int to Integer by constructing an instance of Integer
+int i = intObj.intValue();             // unwrap Integer to int
+
+Double doubleObj = new Double(55.66);  // wrap double to Double
+double d = doubleObj.doubleValue();    // unwrap Double to double
+</div>
+
+<p class="indented">
+    The pre-JDK 5 approach involves quite a bit of codes to do the wrapping and unwrapping.
+    JDK 5 introduces a new feature called auto-boxing and auto-unboxing to resolve this problem, by delegating the compiler to do the job.
+    For example,
+</p>
+
+<h2>Examples</h2>
+
+<div title="HelloWorld.java" class="javacode">
+// JDK 5
+Integer intObj = 5566;    // auto-box from int to Integer by the compiler
+int i = intObj;           // auto-unbox from Integer to int by the compiler
+
+Double doubleObj = 55.66; // auto-box from double to Double
+double d = doubleObj;     // auto-unbox from Double to double
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Integer intObj = 5566;
+        int i = intObj;
+
+        Double doubleObj = 55.66;
+        double d = doubleObj;
+    }
+}
+</div>
+
+<div title="test()V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 6
+code_length = 26
+code = 1115BEB800024C2BB600033D140004B800064E2DB600073904B1
+=== === ===  === === ===  === === ===
+0000: sipush          5566 // 1115BE
+0003: invokestatic    #2   // B80002     || java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+0006: astore_1             // 4C
+0007: aload_1              // 2B
+0008: invokevirtual   #3   // B60003     || java/lang/Integer.intValue:()I
+0011: istore_2             // 3D
+0012: ldc2_w          #4   // 140004     || 55.66
+0015: invokestatic    #6   // B80006     || java/lang/Double.valueOf:(D)Ljava/lang/Double;
+0018: astore_3             // 4E
+0019: aload_3              // 2D
+0020: invokevirtual   #7   // B60007     || java/lang/Double.doubleValue:()D
+0023: dstore          4    // 3904
+0025: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      26  this:Lsample/HelloWorld;
+    1         7      19  intObj:Ljava/lang/Integer;
+    2        12      14  i:I
+    3        19       7  doubleObj:Ljava/lang/Double;
+    4        25       1  d:D
+</div>

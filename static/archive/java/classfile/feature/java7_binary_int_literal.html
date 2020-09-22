@@ -1,0 +1,121 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 7 Binary Integer Literal</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Binary Integer Literals with Prefix "0b"</h2>
+
+<p class="indented">
+    Before JDK 7, you can use octal values (with prefix '<code>0</code>') or hexadecimal values (with prefix '<code>0x</code>' or '<code>0X</code>').
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int val = 0xFF; // 255
+    }
+}
+</div>
+
+<div title="test()V" class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 5
+code = 1100FF3CB1
+=== === ===  === === ===  === === ===
+0000: sipush          255  // 1100FF
+0003: istore_1             // 3C
+0004: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+    1         4       1  val:I
+</div>
+
+<p class="indented">
+    In JDK 7, you can express literal values in binary with prefix '<code>0b</code>' (or '<code>0B</code>') for integral types (<code>byte</code>, <code>short</code>, <code>int</code> and <code>long</code>), similar to C/C++ language.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int number1 = 0b01010000101000101101000010100010;
+        int number2 = 0b0101_0000_1010_0010_1101_0000_1010_0010;
+        int number3 = 2_123_456;  // break the digits with underscore
+    }
+}
+</div>
+
+<div title="test()V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 4
+code_length = 10
+code = 12023C12023D12033EB1
+=== === ===  === === ===  === === ===
+0000: ldc             #2   // 1202       || 1352847522
+0002: istore_1             // 3C
+0003: ldc             #2   // 1202       || 1352847522
+0005: istore_2             // 3D
+0006: ldc             #3   // 1203       || 2123456
+0008: istore_3             // 3E
+0009: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      10  this:Lsample/HelloWorld;
+    1         3       7  number1:I
+    2         6       4  number2:I
+    3         9       1  number3:I
+</div>
+
+<h2>Underscore in Numeric Literals</h2>
+
+<p class="indented">
+    In JDK 7, You are also permitted to use underscore (<code>_</code>) to break the digits to improve the readability but you must start and end with a digit.
+</p>
+
+<div title="int, byte, short, long" class="javacode">
+// Some 32-bit 'int' literal values
+int anInt1 = 0b0101_0000_1010_0010_1101_0000_1010_0010;
+int anInt2 = 0b0011_1000;
+
+// An 8-bit 'byte' literal value. By default, literal values are 'int'.
+// Need to cast to 'byte'
+byte aByte = (byte)0b0110_1101;
+
+// A 16-bit 'short' literal value
+short aShort = (short)0b0111_0101_0000_0101;
+
+// A 64-bit 'long' literal value. Long literals requires suffix "L".
+long aLong = 0b1000_0101_0001_0110_1000_0101_0000_1010_0010_1101_0100_0101_1010_0001_0100_0101L;
+</div>
+
+<div title="float and double" class="javacode">
+int anInt = 0b10101000_01010001_01101000_01010001;
+double aDouble = 3.1415_9265;
+float  aFloat = 3.14_15_92_65f;
+</div>
+
+<h2>Summing Up</h2>
+
+<p class="indented">
+    从java class file format角度来说，它并没有引入新的“内容”，而是在Java programming language层面的语法糖（Syntax Sugar）。
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        In computer science, <b>syntactic sugar</b> is <b>syntax</b> within a programming language that is designed to make things easier to read or to express.
+        It makes the language "sweeter" for human use: things can be expressed more clearly, more concisely, or in an alternative style that some may prefer.
+    </p>
+</div>

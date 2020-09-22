@@ -1,0 +1,262 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 5 Generics Type Erasure</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Type Erasure Examples</h2>
+
+<h3>&lt;E&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld&lt;E&gt; {
+    public E item;
+}
+</div>
+
+<p>
+    在上述代码中，<code>item</code>字段的类型是<code>E</code>，经过Type Erasure之后，其类型变成了<code>java.lang.Object</code>类型，如下所示：
+</p>
+
+<div title="fields" hidden class="plaintext">
+fields_count='0001' (1)
+fields
+    FieldInfo {Value='item:Ljava/lang/Object;', AccessFlags='[ACC_PUBLIC]', Attrs='[Signature]'}
+</div>
+
+<h3>&lt;E extends Number&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld&lt;E extends Number&gt; {
+    public E item;
+}
+</div>
+
+<p>
+    在上述代码中，<code>item</code>字段的类型是<code>E</code>，经过Type Erasure之后，其类型变成了<code>java.lang.Number</code>类型，如下所示：
+</p>
+
+<div title="fields" hidden class="plaintext">
+fields_count='0001' (1)
+fields
+    FieldInfo {Value='item:Ljava/lang/Number;', AccessFlags='[ACC_PUBLIC]', Attrs='[Signature]'}
+</div>
+
+<h3>&lt;E extends Number & Runnable&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public &lt;E extends Number & Runnable&gt; void test(E item) {
+        int val = item.intValue();
+        item.run();
+    }
+}
+</div>
+
+<div title="test:(Ljava/lang/Number;)V Code Attribute" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:(Ljava/lang/Number;)V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 3
+code_length = 15
+code = 2BB600023D2BC00003B900040100B1
+=== === ===  === === ===  === === ===
+0000: aload_1              // 2B
+0001: invokevirtual   #2   // B60002     || java/lang/Number.intValue:()I
+0004: istore_2             // 3D
+0005: aload_1              // 2B
+0006: checkcast       #3   // C00003     || java/lang/Runnable
+0009: invokeinterface #4 1 0 // B900040100 || java/lang/Runnable.run:()V
+0014: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      15  this:Lsample/HelloWorld;
+    1         0      15  item:Ljava/lang/Number;
+    2         5      10  val:I
+
+LocalVariableTypeTable:
+index  start_pc  length  name_and_type
+    1         0      15  item:TE;
+</div>
+
+<h3>Type Erasure: Code</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.ArrayList;
+import java.util.List;
+
+public class HelloWorld {
+    public void test() {
+        List&lt;String&gt; list = new ArrayList&lt;&gt;();
+        list.add("hello");
+        list.add("world");
+
+        String str = list.get(0);
+    }
+}
+</div>
+
+<div title="test()V Code Signature Attribute" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 38
+code = BB000259B700034C2B1204B900050200572B1206B900050200572B03B900070200C000084DB1
+=== === ===  === === ===  === === ===
+0000: new             #2   // BB0002     || java/util/ArrayList
+0003: dup                  // 59
+0004: invokespecial   #3   // B70003     || java/util/ArrayList.&lt;init&gt;:()V
+0007: astore_1             // 4C
+0008: aload_1              // 2B
+0009: ldc             #4   // 1204       || hello
+0011: invokeinterface #5 2 0 // B900050200 || java/util/List.add:(Ljava/lang/Object;)Z
+0016: pop                  // 57
+0017: aload_1              // 2B
+0018: ldc             #6   // 1206       || world
+0020: invokeinterface #5 2 0 // B900050200 || java/util/List.add:(Ljava/lang/Object;)Z
+0025: pop                  // 57
+0026: aload_1              // 2B
+0027: iconst_0             // 03
+0028: invokeinterface #7 2 0 // B900070200 || java/util/List.get:(I)Ljava/lang/Object;
+0033: checkcast       #8   // C00008     || java/lang/String   // 这里体现了Java支持Generic一种实现手段
+0036: astore_2             // 4D
+0037: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      38  this:Lsample/HelloWorld;
+    1         8      30  list:Ljava/util/List;
+    2        37       1  str:Ljava/lang/String;
+
+LocalVariableTypeTable:
+index  start_pc  length  name_and_type
+    1         8      30  list:Ljava/util/List&lt;Ljava/lang/String;&gt;;
+</div>
+
+<h2>Bridge Method</h2>
+
+<h3>signature changed</h3>
+
+<p class="indented">
+    <b>Bridge methods</b> are necessary when a class <code>implements</code> <b>a parameterized interface</b> or <code>extends</code> <b>a parameterized superclass</b> and
+    <b>type erasure</b> changes the signature of the superclass's methods.
+</p>
+
+<div title="java.lang.Comparable" class="javacode">
+public interface Comparable&lt;T&gt; {
+    public int compareTo(T o);
+}
+</div>
+
+<div title="methods" class="plaintext">
+=== === ===  === === ===  === === ===
+methods_count='0001' (1)
+methods
+    MethodInfo {Value='compareTo:(Ljava/lang/Object;)I', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[Signature]'}
+=== === ===  === === ===  === === ===
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld implements Comparable&lt;HelloWorld&gt; {
+    @Override
+    public int compareTo(HelloWorld o) {
+        return 0;
+    }
+}
+</div>
+
+<div title="methods" class="plaintext">
+=== === ===  === === ===  === === ===
+methods_count='0003' (3)
+methods
+    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
+    MethodInfo {Value='compareTo:(Lsample/HelloWorld;)I', AccessFlags='[ACC_PUBLIC]', Attrs='[Code, MethodParameters]'}
+    MethodInfo {Value='compareTo:(Ljava/lang/Object;)I', AccessFlags='[ACC_PUBLIC,ACC_BRIDGE,ACC_SYNTHETIC]'}
+</div>
+
+<div title="compareTo:(Ljava/lang/Object;)I" class="plaintext">
+=== === ===  === === ===  === === ===
+Method compareTo:(Ljava/lang/Object;)I
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 2
+code_length = 9
+code = 2A2BC00002B60003AC
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: aload_1              // 2B
+0002: checkcast       #2   // C00002     || sample/HelloWorld
+0005: invokevirtual   #3   // B60003     || sample/HelloWorld.compareTo:(Lsample/HelloWorld;)I
+0008: ireturn              // AC
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+</div>
+
+<h3>No bridge method</h3>
+
+<p class="indented">
+    No bridge method is needed when type erasure does not change the signature of any of the methods of the parameterized supertype.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld implements Comparable&lt;Object&gt; {
+    @Override
+    public int compareTo(Object o) {
+        return 0;
+    }
+}
+</div>
+
+<div title="methods" class="plaintext">
+=== === ===  === === ===  === === ===
+methods_count='0002' (2)
+methods
+    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
+    MethodInfo {Value='compareTo:(Ljava/lang/Object;)I', AccessFlags='[ACC_PUBLIC]', Attrs='[Code, MethodParameters]'}
+=== === ===  === === ===  === === ===
+</div>
+
+<p class="indented">
+    Also, no bridge method is needed if the signatures of methods in the subtype and supertype change in the same way. This can occur when the subtype is generic itself.
+</p>
+
+<div title="Callable.java" class="javacode">
+public interface Callable &lt;V&gt; {
+    public V call();
+}
+</div>
+
+<div title="methods" class="plaintext">
+=== === ===  === === ===  === === ===
+methods_count='0001' (1)
+methods
+    MethodInfo {Value='call:()Ljava/lang/Object;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[Signature]'}
+=== === ===  === === ===  === === ===
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class Task&lt;T&gt; implements Callable&lt;T&gt; {
+    public T call() {
+        return null;
+    }
+}
+</div>
+
+<div title="methods" class="plaintext">
+=== === ===  === === ===  === === ===
+methods_count='0002' (2)
+methods
+    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
+    MethodInfo {Value='call:()Ljava/lang/Object;', AccessFlags='[ACC_PUBLIC]', Attrs='[Code, Signature]'}
+=== === ===  === === ===  === === ===
+</div>
+

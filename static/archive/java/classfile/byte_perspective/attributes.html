@@ -191,28 +191,50 @@ attribute_info {
     </tbody>
 </table>
 
-<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
-    <p>
-        IMHO：对于任何一个attribute都可以从长度、位置、数量和结构4个方面进行把握。
-    </p>
-</div>
+<p>
+    The predefined attributes are categorized into three groups according to their purpose:
+</p>
 
-<ul>
+<ol>
     <li>
-        外部视角：
+        Five attributes are critical to correct interpretation of the class file by the <b>Java Virtual Machine</b>:
         <ul>
-            <li>长度：这个attribute的长度是固定的，还是可变的？</li>
-            <li>位置：这个attribute可以出现在什么位置？ClassFile、method_info、field_info或Code。</li>
-            <li>数量：这个attribute可以出现多少次？</li>
+            <li>ConstantValue</li>
+            <li>Code</li>
+            <li>StackMapTable</li>
+            <li>Exceptions</li>
+            <li>BootstrapMethods</li>
         </ul>
     </li>
     <li>
-        内部视角：
+        Twelve attributes are critical to correct interpretation of the class file by <b>the class libraries of the Java SE platform</b>:
         <ul>
-            <li>结构：究竟是如何存储数据的？</li>
+            <li>InnerClasses</li>
+            <li>EnclosingMethod</li>
+            <li>Synthetic</li>
+            <li>Signature</li>
+            <li>RuntimeVisibleAnnotations</li>
+            <li>RuntimeInvisibleAnnotations</li>
+            <li>RuntimeVisibleParameterAnnotations</li>
+            <li>RuntimeInvisibleParameterAnnotations</li>
+            <li>RuntimeVisibleTypeAnnotations</li>
+            <li>RuntimeInvisibleTypeAnnotations</li>
+            <li>AnnotationDefault</li>
+            <li>MethodParameters</li>
         </ul>
     </li>
-</ul>
+    <li>
+        Six attributes are not critical to correct interpretation of the class file by either the Java Virtual Machine or the class libraries of the Java SE platform, but are useful for <b>tools</b>:
+        <ul>
+            <li>SourceFile</li>
+            <li>SourceDebugExtension</li>
+            <li>LineNumberTable</li>
+            <li>LocalVariableTable</li>
+            <li>LocalVariableTypeTable</li>
+            <li>Deprecated</li>
+        </ul>
+    </li>
+</ol>
 
 <ol>
     <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">AnnotationDefault Attribute</a></li>

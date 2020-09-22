@@ -1,0 +1,656 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 5 Generics Signature</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p>
+    Notation:
+</p>
+
+<ul>
+    <li>The syntax <code>[x]</code> denotes zero or one occurrences of <code>x</code>. That is, <code>x</code> is an optional symbol.</li>
+    <li>The syntax <code>{x}</code> denotes zero or more occurrences of <code>x</code>.</li>
+    <li><code>Identifier</code> denotes the name of a type, field, method, formal parameter, local variable, or type variable.</li>
+    <li></li>
+    <li></li>
+</ul>
+
+
+<p>
+    A <b>Java type signature</b> represents either <b>a reference type</b> or <b>a primitive type</b> of the Java programming language.
+</p>
+
+<div title="JavaTypeSignature" class="plaintext">
+JavaTypeSignature:
+    ReferenceTypeSignature
+    BaseType
+
+BaseType:
+    (one of) B C D F I J S Z
+</div>
+
+<p>
+    A <b>reference type signature</b> represents <b>a reference type</b> of the Java programming language, that is, a class or interface type, a type variable, or an array type.
+</p>
+
+<ul>
+    <li>A <b>class type signature</b> represents a (possibly parameterized) class or interface type.
+        A class type signature must be formulated such that it can be reliably mapped to the binary name of the class it denotes by erasing any type arguments and converting each <code>.</code> character to a <code>$</code> character.</li>
+    <li>A <b>type variable signature</b> represents a type variable.</li>
+    <li>An <b>array type signature</b> represents one dimension of an array type.</li>
+</ul>
+
+<div title="ReferenceTypeSignature" class="plaintext">
+ReferenceTypeSignature:
+    ClassTypeSignature
+    TypeVariableSignature
+    ArrayTypeSignature
+
+ClassTypeSignature:
+    L [PackageSpecifier] SimpleClassTypeSignature {ClassTypeSignatureSuffix} ;
+
+PackageSpecifier:
+    Identifier / {PackageSpecifier}
+
+SimpleClassTypeSignature:
+    Identifier [TypeArguments]
+
+TypeArguments:
+    &lt; TypeArgument {TypeArgument} &gt;
+
+TypeArgument:
+    [WildcardIndicator] ReferenceTypeSignature
+    *
+
+WildcardIndicator:
+    +
+    -
+
+ClassTypeSignatureSuffix:
+    . SimpleClassTypeSignature
+
+TypeVariableSignature:
+    T Identifier ;
+
+ArrayTypeSignature:
+    [ JavaTypeSignature
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>type argument = [WildcardIndicator] + ReferenceTypeSignature</p>
+    <p>type argument = * (wildcard)</p>
+    <p>type variable = T + Identifier + ;</p>
+</div>
+
+<p>
+    A <b>class signature</b> describes any <b>type parameters of the class</b>, and lists its (possibly parameterized) <b>direct superclass</b> and <b>direct superinterfaces</b>, if any.
+    A <b>type parameter</b> is described by its <b>name</b>, followed by any <b>class bound</b> and <b>interface bounds</b>.
+</p>
+
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        class signature = type parameters + direct superclass + direct superinterfaces
+    </p>
+    <p>
+        type parameter = name + class bound + interface bounds
+    </p>
+</div>
+
+<div title="ClassSignature" class="plaintext">
+ClassSignature:
+    [TypeParameters] SuperclassSignature {SuperinterfaceSignature}
+
+TypeParameters:
+    &lt; TypeParameter {TypeParameter} &gt;
+
+TypeParameter:
+    Identifier ClassBound {InterfaceBound}
+
+ClassBound:
+    : [ReferenceTypeSignature]
+
+InterfaceBound:
+    : ReferenceTypeSignature
+
+SuperclassSignature:
+    ClassTypeSignature
+
+SuperinterfaceSignature:
+    ClassTypeSignature
+</div>
+
+<h2>Generic Type and Type Parameter Examples</h2>
+
+<h3>&lt;E&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld&lt;E&gt; {
+}
+</div>
+
+<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |013| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |014| CONSTANT_Utf8 {Value='&lt;E:Ljava/lang/Object;&gt;Ljava/lang/Object;', HexCode='... ...'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|000| Signature:
+HexCode: 000D00000002000E
+attribute_name_index='000D' (#13)
+attribute_length='00000002' (2)
+signature_index='000E' (#14)
+... ...
+</div>
+
+<div title="ParentClass.java" class="javacode">
+public class ParentClass {
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld&lt;E&gt; extends ParentClass {
+}
+</div>
+
+<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |013| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |014| CONSTANT_Utf8 {Value='&lt;E:Ljava/lang/Object;&gt;Lsample/ParentClass;', HexCode='......'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|000| Signature:
+HexCode: 000D00000002000E
+attribute_name_index='000D' (#13)
+attribute_length='00000002' (2)
+signature_index='000E' (#14)
+... ...
+</div>
+
+<h3>&lt;E extends Number&gt;</h3>
+
+<p>
+    注意：extends之后是“类名”
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld&lt;E extends Number&gt; {
+}
+</div>
+
+<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |013| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |014| CONSTANT_Utf8 {Value='&lt;E:Ljava/lang/Number;&gt;Ljava/lang/Object;', HexCode='... ...'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|000| Signature:
+HexCode: 000D00000002000E
+attribute_name_index='000D' (#13)
+attribute_length='00000002' (2)
+signature_index='000E' (#14)
+... ...
+</div>
+
+<h3>&lt;E extends Runnable&gt;</h3>
+
+<p>
+    注意：extends之后是“接口名”
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld&lt;E extends Runnable&gt; {
+}
+</div>
+
+<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |013| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |014| CONSTANT_Utf8 {Value='&lt;E::Ljava/lang/Runnable;&gt;Ljava/lang/Object;', HexCode='... ...'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|000| Signature:
+HexCode: 000D00000002000E
+attribute_name_index='000D' (#13)
+attribute_length='00000002' (2)
+signature_index='000E' (#14)
+... ...
+</div>
+
+<p>
+    注意：这里使用了<code>E::</code>，是因为<code>E:类名:接口名</code>，而“类名”省略了，因此多了一个<code>:</code>。
+</p>
+
+<h3>&lt;E super Class&gt;</h3>
+
+<p>
+    Not useful and hence, not supported.
+</p>
+
+<p>
+    尽管我很愿意写这样一个示例，但实际上却不能通过编译。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld &lt;E super Number&gt; {
+}
+</div>
+
+<h3>&lt;E extends superclass & interface&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld&lt;E extends Number & Runnable&gt; {
+}
+</div>
+
+<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |013| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |014| CONSTANT_Utf8 {Value='&lt;E:Ljava/lang/Number;:Ljava/lang/Runnable;&gt;Ljava/lang/Object;', HexCode='... ...'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|000| Signature:
+HexCode: 000D00000002000E
+attribute_name_index='000D' (#13)
+attribute_length='00000002' (2)
+signature_index='000E' (#14)
+... ...
+</div>
+
+<h3>&lt;E extends interface2&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.io.Serializable;
+
+public class HelloWorld&lt;E extends Serializable & Runnable&gt; {
+}
+</div>
+
+<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |013| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |014| CONSTANT_Utf8 {Value='&lt;E::Ljava/io/Serializable;:Ljava/lang/Runnable;&gt;Ljava/lang/Object;',
+                         HexCode='... ...'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|000| Signature:
+HexCode: 000D00000002000E
+attribute_name_index='000D' (#13)
+attribute_length='00000002' (2)
+signature_index='000E' (#14)
+... ...
+</div>
+
+<h3>&lt;E extends superclass & interface2&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.io.Serializable;
+
+public class HelloWorld&lt;E extends Number & Serializable & Runnable&gt; {
+}
+</div>
+
+<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |013| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |014| CONSTANT_Utf8 {Value='&lt;E:Ljava/lang/Number;:Ljava/io/Serializable;:Ljava/lang/Runnable;&gt;Ljava/lang/Object;',
+                         HexCode='... ...'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|000| Signature:
+HexCode: 000D00000002000E
+attribute_name_index='000D' (#13)
+attribute_length='00000002' (2)
+signature_index='000E' (#14)
+... ...
+</div>
+
+<h3>S and U</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.io.Serializable;
+
+public class HelloWorld&lt;S extends Number, U extends Runnable&gt; extends ParentClass implements Serializable {
+    // no code
+}
+</div>
+
+<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+constant_pool_count='0016' (22)
+constant_pool
+    ... ...
+    |014| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |015| CONSTANT_Utf8 {Value='&lt;S:Ljava/lang/Number;U::Ljava/lang/Runnable;&gt;Lsample/ParentClass;Ljava/io/Serializable;',
+                         HexCode='......'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|000| Signature:
+HexCode: 000E00000002000F
+attribute_name_index='000E' (#14)
+attribute_length='00000002' (2)
+signature_index='000F' (#15)
+... ...
+</div>
+
+<h2>Type Variable Examples</h2>
+
+<h3>E item</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld&lt;E&gt; {
+    public E item;
+}
+</div>
+
+<div title="fields" class="plaintext">
+fields_count='0001' (1)
+fields
+    FieldInfo {Value='item:Ljava/lang/Object;', AccessFlags='[ACC_PUBLIC]', Attrs='[Signature]'}
+</div>
+
+<div title="item:Ljava/lang/Object; Signature Attribute" hidden class="plaintext">
+constant_pool_count='0017' (23)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |007| CONSTANT_Utf8 {Value='TE;', HexCode='01000354453B'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|000| Signature:
+HexCode: 0006000000020007
+attribute_name_index='0006' (#6)
+attribute_length='00000002' (2)
+signature_index='0007' (#7)
+</div>
+
+<h3>E[] item</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld&lt;E&gt; {
+    public E[] item;
+}
+</div>
+
+<div title="fields" class="plaintext">
+fields_count='0001' (1)
+fields
+    FieldInfo {Value='item:[Ljava/lang/Object;', AccessFlags='[ACC_PUBLIC]', Attrs='[Signature]'}
+</div>
+
+<div title="item:[Ljava/lang/Object; Signature Attribute" hidden class="plaintext">
+constant_pool_count='0017' (23)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |007| CONSTANT_Utf8 {Value='[TE;', HexCode='0100045B54453B'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|000| Signature:
+HexCode: 0006000000020007
+attribute_name_index='0006' (#6)
+attribute_length='00000002' (2)
+signature_index='0007' (#7)
+</div>
+
+
+<h2>Parameterized Type Examples</h2>
+
+<h3>Comparable</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public Comparable&lt;HelloWorld&gt; item;
+}
+</div>
+
+<div title="item:Ljava/lang/Comparable; Signature Attribute" hidden class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |007| CONSTANT_Utf8 {Value='Ljava/lang/Comparable&lt;Lsample/HelloWorld;&gt;;', HexCode='......'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|000| Signature:
+HexCode: 0006000000020007
+attribute_name_index='0006' (#6)
+attribute_length='00000002' (2)
+signature_index='0007' (#7)
+</div>
+
+<h2>Type Argument Examples</h2>
+
+<h3>&lt;Number&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.ArrayList;
+import java.util.List;
+
+public class HelloWorld {
+    public void test() {
+        List&lt;Number&gt; list = new ArrayList&lt;&gt;();
+    }
+}
+</div>
+
+<div title="test()V Code Signature Attribute" hidden class="plaintext">
+constant_pool_count='0018' (24)
+constant_pool
+    ... ...
+    |014| CONSTANT_Utf8 {Value='list', HexCode='0100046C697374'}
+    |015| CONSTANT_Utf8 {Value='Ljava/util/List;', HexCode='0100104C6A6176612F7574696C2F4C6973743B'}
+    |016| CONSTANT_Utf8 {Value='LocalVariableTypeTable', HexCode='0100164C6F63616C5661726961626C65547970655461626C65'}
+    |017| CONSTANT_Utf8 {Value='Ljava/util/List&lt;Ljava/lang/Number;&gt;;', HexCode='......'}
+    ... ...
+=== === ===  === === ===  === === ===
+attributes_count='0003' (3)
+attributes
+... ...
+--->|002| LocalVariableTypeTable:
+HexCode: 00100000000C000100080001000E00110001
+attribute_name_index='0010' (#16)
+attribute_length='0000000C' (12)
+local_variable_type_table_length='0001' (1)
+local_variable_type_table[0] {
+    start_pc='0008' (8)
+    length='0001' (1)
+    name_index='000E' (#14)
+    signature_index='0011' (#17)
+    index='0001' (1)
+}
+</div>
+
+<h3>&lt;?&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.ArrayList;
+import java.util.List;
+
+public class HelloWorld {
+    public void test() {
+        List&lt;?&gt; list = new ArrayList<>();
+    }
+}
+</div>
+
+<div title="test()V Code Signature Attribute" hidden class="plaintext">
+constant_pool_count='0018' (24)
+constant_pool
+    ... ...
+    |014| CONSTANT_Utf8 {Value='list', HexCode='0100046C697374'}
+    |015| CONSTANT_Utf8 {Value='Ljava/util/List;', HexCode='0100104C6A6176612F7574696C2F4C6973743B'}
+    |016| CONSTANT_Utf8 {Value='LocalVariableTypeTable', HexCode='0100164C6F63616C5661726961626C65547970655461626C65'}
+    |017| CONSTANT_Utf8 {Value='Ljava/util/List<*>;', HexCode='0100134C6A6176612F7574696C2F4C6973743C2A3E3B'}
+    ... ...
+=== === ===  === === ===  === === ===
+attributes_count='0003' (3)
+attributes
+... ...
+--->|002| LocalVariableTypeTable:
+HexCode: 00100000000C000100080001000E00110001
+attribute_name_index='0010' (#16)
+attribute_length='0000000C' (12)
+local_variable_type_table_length='0001' (1)
+local_variable_type_table[0] {
+    start_pc='0008' (8)
+    length='0001' (1)
+    name_index='000E' (#14)
+    signature_index='0011' (#17)
+    index='0001' (1)
+}
+</div>
+
+<h3>&lt;? extends Number&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.ArrayList;
+import java.util.List;
+
+public class HelloWorld {
+    public void test() {
+        List&lt;? extends Number&gt; list = new ArrayList&lt;&gt;();
+    }
+}
+</div>
+
+<div title="test()V Code Signature Attribute" hidden class="plaintext">
+constant_pool_count='0018' (24)
+constant_pool
+    ... ...
+    |014| CONSTANT_Utf8 {Value='list', HexCode='0100046C697374'}
+    |015| CONSTANT_Utf8 {Value='Ljava/util/List;', HexCode='0100104C6A6176612F7574696C2F4C6973743B'}
+    |016| CONSTANT_Utf8 {Value='LocalVariableTypeTable', HexCode='0100164C6F63616C5661726961626C65547970655461626C65'}
+    |017| CONSTANT_Utf8 {Value='Ljava/util/List&lt;+Ljava/lang/Number;&gt;;', HexCode='......'}
+    ... ...
+=== === ===  === === ===  === === ===
+attributes_count='0003' (3)
+attributes
+... ...
+--->|002| LocalVariableTypeTable:
+HexCode: 00100000000C000100080001000E00110001
+attribute_name_index='0010' (#16)
+attribute_length='0000000C' (12)
+local_variable_type_table_length='0001' (1)
+local_variable_type_table[0] {
+    start_pc='0008' (8)
+    length='0001' (1)
+    name_index='000E' (#14)
+    signature_index='0011' (#17)
+    index='0001' (1)
+}
+</div>
+
+<h3>&lt;? super Number&gt;</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.ArrayList;
+import java.util.List;
+
+public class HelloWorld {
+    public void test() {
+        List&lt;? super Number&gt; list = new ArrayList&lt;&gt;();
+    }
+}
+</div>
+
+<div title="test()V Code Signature Attribute" hidden class="plaintext">
+constant_pool_count='0018' (24)
+constant_pool
+    ... ...
+    |014| CONSTANT_Utf8 {Value='list', HexCode='0100046C697374'}
+    |015| CONSTANT_Utf8 {Value='Ljava/util/List;', HexCode='0100104C6A6176612F7574696C2F4C6973743B'}
+    |016| CONSTANT_Utf8 {Value='LocalVariableTypeTable', HexCode='0100164C6F63616C5661726961626C65547970655461626C65'}
+    |017| CONSTANT_Utf8 {Value='Ljava/util/List<-Ljava/lang/Number;>;', HexCode='......'}
+    ... ...
+=== === ===  === === ===  === === ===
+attributes_count='0003' (3)
+attributes
+... ...
+--->|002| LocalVariableTypeTable:
+HexCode: 00100000000C000100080001000E00110001
+attribute_name_index='0010' (#16)
+attribute_length='0000000C' (12)
+local_variable_type_table_length='0001' (1)
+local_variable_type_table[0] {
+    start_pc='0008' (8)
+    length='0001' (1)
+    name_index='000E' (#14)
+    signature_index='0011' (#17)
+    index='0001' (1)
+}
+</div>
+
+<h2>MethodSignature</h2>
+
+<div title="MethodSignature" class="plaintext">
+MethodSignature:
+    [TypeParameters] ( {JavaTypeSignature} ) Result {ThrowsSignature}
+
+Result:
+    JavaTypeSignature
+    VoidDescriptor
+
+ThrowsSignature:
+    ^ ClassTypeSignature
+    ^ TypeVariableSignature
+
+VoidDescriptor:
+    V
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static &lt;E extends Exception&gt; void test(E item, int val) throws E {
+        System.out.println(val);
+    }
+}
+</div>
+
+<div title="test:(Ljava/lang/Exception;I)V Method Signature Attribute" hidden class="plaintext">
+constant_pool_count='002A' (42)
+constant_pool
+    ... ...
+    |024| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |025| CONSTANT_Utf8 {Value='&lt;E:Ljava/lang/Exception;&gt;(TE;I)V^TE;', HexCode='......'}
+    ... ...
+attributes_count='0004' (4)
+attributes
+... ...
+--->|003| Signature:
+HexCode: 0018000000020019
+attribute_name_index='0018' (#24)
+attribute_length='00000002' (2)
+signature_index='0019' (#25)
+</div>
+
