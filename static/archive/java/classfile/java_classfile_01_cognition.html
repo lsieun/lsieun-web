@@ -20,7 +20,7 @@
 <p class="indented">
     对于<code>.class</code>文件（ClassFile）来说，它是属于经过学习、探索之后，可以被理解的内容。
     以前，我接触的一些资料或培训中，都是讲<code>.class</code>文件中存储的是二进制的字节码（bytecode），就不再往下深究了。
-    现在，我知道了<code>.class</code>文件包含的二进制的字节码（bytecode），并不是杂乱无章的，其内容是可以被理解的。
+    现在，我知道了<code>.class</code>文件包含的二进制的字节码（bytecode），并不是杂乱无章的，其内容是可以被理解的。形象的说法，就是“打开了一扇门”。
 </p>
 
 <p class="indented">
@@ -49,49 +49,80 @@
 </p>
 
 <p class="indented">
-    学习《The Java Virtual Machine Specification》的难点主要有<b>三方面</b>。<b>第一方面，是源于认知程度的差异</b>，是<b>JVM文档的作者们</b>与<b>JVM文档的读者们</b>之间的认知程度的差异。
-    JVM文档的作者们，在书写JVM的文档的时候，是建立在一个全局的、完整的对JVM的认知的基础上写的，可以轻易的从一个概念引生出另外的许多其它概念；而对JVM不太了解的读者，可能在不同的概念跳转之间，迷失了自己的“方向”。
-    <b>第二方面，是源于JVM文档的书写风格</b>，也就是“严谨而简洁”的书写风格，这就导致了一个问题，它缺少足够的额外信息或示例代码来把其中一句话或一个问题给讲清楚；换句话说，它提供的知识的“密度”非常大，并没有提供足够的“空间”（这个“空间”可以理解为“时间”或“代码示例”等内容）去真正理解它的含义。
-    <b>第三方面，可能是源于不同语言的差异</b>，更进一步说，就是中文和英文之间的差异。有的人，可能就天生喜欢英文，或者对英文有天赋，而有的人，则对英文避而远之。我们知道，JVM文档是由英文写的，那可能就对于不太了解英文的中文使用造成了语言上的障碍。
-    综合以上的几个方面，可能出现的情况就是，读者在一个问题上没有搞懂，而JVM文档又在这个问题的基础上去讲解其他的概念，就很容易让人产生“放弃”的念头。
+    在这里，我想要特别说的一个问题就是，“模式”（Pattern）就是指代Java ClassFile所遵循的“数据结构”（Data Structure）。我并没有区分两个概念之间的差异，而是认为它们两者的意思是“等价”的。之所以选择“模式”（Pattern）这个概念，而没有使用“数据结构”（Date Structure）这个概念，是因为我觉得，“模式”（Pattern）这个概念更能表达出ClassFile所遵循的规律性。那么，在其它的场景当中，可能就需要去严格区分“模式”（Pattern）和“数据结构”（Date Structure）之间的差异。
+</p>
+
+<h2>The Learning Curve</h2>
+
+<p class="indented">
+    With repetition of almost any task, learning occurs. A person becomes more efficient or effective at carrying out a task.
+    <sub class="my_note" style="color:blue">笔记：在中文语言环境中，称之为“熟能生巧”。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
 <p class="indented">
-    在这里，我想要特别说的一个问题就是，“模式”（Pattern）就是指代“数据结构”（Date Structure）。我并没有区分两个概念之间的差异，而是认为它们两者的意思是“等价”的。之所以选择“模式”（Pattern）这个概念，而没有使用“数据结构”（Date Structure）这个概念，是因为我觉得，“模式”（Pattern）这个概念更能表达出ClassFile所遵循的规律性。那么，在其它的场景当中，可能就需要去严格区分“模式”（Pattern）和“数据结构”（Date Structure）之间的差异。
+    Progress in skill learning commonly follows an S-shaped curve, with some measure of skill on the Y-axis and number of trials on the X-axis.
+    Progress is slow at first, then a subject may experience a burst of learning that produces a rapid rise on the graph.
+    <sub class="my_note" style="color:blue">笔记：在中文语言环境中，讲“熟能生巧”，但它是一个整体性的结论。而Learning Curve就是表示“熟”和“巧”之间的动态变化关系。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<h2>Java Architecture</h2>
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/learn/learning_curve.jpg" alt="The S-shaped learning curve typical of complex learning"/>
+</div>
 
-<p>
-    Java's architecture arises out of four distinct but interrelated technologies,
-    each of which is defined by a separate specification from Sun Microsystems:
+<p class="indented">
+    The S-shaped learning curve is most obvious when someone learns a highly complex task.
+    The initial part of the curve rises slowly as a person becomes familiar with basic components of a skill.
+    <sub class="my_note" style="color:blue">笔记：开始的时候，学习进度很慢</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<ul>
-    <li>the Java programming language</li>
-    <li>the Java class file format</li>
-    <li>the Java Application Programming Interface</li>
-    <li>the Java Virtual Machine</li>
-</ul>
+<p class="indented">
+    The steep ascending phase occurs when there is enough experience with rudiments<sub class="my_note" style="color:green">基本原理</sub> or simple components to start putting it all together.
+    Rapid progress follows until the skill hits a ceiling or stabilizes at a high level.
+    <sub class="my_note" style="color:blue">笔记：中期的时候，进展迅速。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
 
-<p>
-    When you write and run a Java program, you are tapping the power of these four technologies.
-    You express the program in source files written in the Java programming language, compile the source to
-    Java class files, and run the class files on a Java Virtual Machine. When you write your program, you
-    access system resources (such as I/O, for example) by calling methods in the classes that implement the
-    Java Application Programming Interface, or Java API. As your program runs, it fulfills your program's
-    Java API calls by invoking methods in class files that implement the Java API.
+<p class="indented">
+    People sometimes refer to plateaus or periods of no improvement during skill learning.
+    However, when experimenters looked for such a phenomenon, they did not find it.
+    <sub class="my_note" style="color:blue">笔记：后期的时候，趋向于稳定。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Fitts and Posner (1967) found gradual improvement with practice in almost all skills.
+    They said flatly there were "no plateaus."
+    Fred Keller of Harvard referred to the "phantom plateau" since one seldom occurred, but people believed that it did.
+    <sub class="my_note" style="color:blue">笔记：有的学者认为，所谓的“瓶颈期”并不存在，是一个人自己幻想出来的事物。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    In general, an S-shaped curve of growth levels off<sub class="my_note" style="color:green">达到平衡；趋向平稳</sub> because stability is attained,
+    a resource needed for growth is limited, or a ceiling of performance is reached.
+    <sub class="my_note" style="color:blue">笔记：所谓的“瓶颈期”，其本质上说，是资源不够的问题。也就是说，没有足够的资源让自己技能更提升一步。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Given enough time to practice any skill, one should become very good at it, then improvement stops.
+    This is a plateau of sorts, indicating maximum competence has been attained.
+    <sub class="my_note" style="color:blue">笔记：学习一件新东西，给予足够的时间，一个人就能掌握它，技能也趋于稳定。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
 <h2>From Computer to Cosmos</h2>
 
 <p class="indented">
-    以上的内容当中，只是在探讨Java相关的内容。那么，与Java处在同一个层面的，可能要包含C，C++，C#，Python，Javascript等内容。
+    Java ClassFile的内容是包含在Java领域之内的一部分。那么，与Java处在同一个层面的，可能要包含C，C++，C#，Python，Javascript等内容。
     那么，在往高一层面来说，它们都要属于计算机科学（Computer Science）的领域。
 </p>
 
 <p class="indented">
-    计算机的出现，可以说是20世纪一个伟大的发明。
+    计算机的出现，可以说是20世纪一个伟大的发明。人们常常是强调发明计算机的人是多么厉害。
     在这个伟大发明（计算机）的背后，隐藏着一个常常被人忽视的事实：宇宙（Cosmos）的运行机制。
     从几千年前的古代，到现在的21世纪，宇宙的运行机制中就具足着一切可以让计算机出现的因素，一直都存在着，只是没有被人发现或发明出来。
 </p>
@@ -117,11 +148,18 @@
 <h2>Summing Up</h2>
 
 <p>
-    这篇文章主要是想表达三部分内容：
+    这里进行一下简单的总结：
 </p>
 
-<ol>
-    <li>ClassFile是能够被理解的。这里说明的是一个“能”与“否”的问题，能够被理解，或者不能被理解。</li>
-    <li>到底要如何才能理解ClassFile。<code>.class</code>文件的结构是有规律的，它遵循一定的模式（Pattern），这种模式（Pattern）记录于JVM文档中。</li>
-    <li>ClassFile在整个Java知识体系当中一个的定位、位置或坐标。Java Class File Format是属于Java Architecture的一部分内容。</li>
-</ol>
+<ul>
+    <li>第一点，ClassFile是能够被理解的。这里说明的是一个“能”与“否”的问题，能够被理解，或者不能被理解。</li>
+    <li>第二点，到底要如何才能理解ClassFile。<code>.class</code>文件的结构是有规律的，它遵循一定的模式（Pattern），这种模式（Pattern）记录于JVM文档中。</li>
+    <li>第三点，The Learning Curve，主要是想告诉大家，本课程的内容也是希望以这种学习曲线认知梯度来呈现出来。</li>
+    <li>第四点，则主要是我个人对于认知的理解。</li>
+</ul>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://www.psywww.com/intropsych/ch07-cognition/motor-activity.html#learningcurve" target="_blank">The Learning Curve</a></li>
+</ul>

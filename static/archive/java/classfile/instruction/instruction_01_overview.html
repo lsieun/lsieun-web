@@ -444,6 +444,87 @@ do {
     For the majority of <b>typed instructions</b>, the instruction type is represented explicitly in the opcode mnemonic by a letter: <b>i</b> for an <code>int</code> operation, <b>l</b> for <code>long</code>, <b>s</b> for <code>short</code>, <b>b</b> for <code>byte</code>, <b>c</b> for <code>char</code>, <b>f</b> for <code>float</code>, <b>d</b> for <code>double</code>, and <b>a</b> for reference. Some instructions for which the type is unambiguous do not have a type letter in their mnemonic. For instance, <code>arraylength</code> always operates on an object that is an array. Some instructions, such as <code>goto</code>, an unconditional control transfer, do not operate on typed operands.
 </p>
 
+<p class="indented">
+    <b>A few instructions operate on any type</b>. The <code>dup</code> instruction, for example, duplicates the top word of a stack irrespective of its type.
+    <b>Some instructions</b>, such as <code>goto</code>, <b>don't operate on typed values</b>.
+    <b>The majority of the instructions</b>, however, <b>operate on a specific type</b>.
+    The mnemonics for most of these "typed" instructions indicate their type by a single character prefix that starts their mnemonic.
+    A few instructions, such as <code>arraylength</code> or <code>instanceof</code>, don't include a prefix because their type is obvious.
+    The <code>arraylength</code> opcode requires an array reference. The <code>instanceof</code> opcode requires an object reference.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Type prefixes of bytecode mnemonics</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>Type</th>
+        <th>Code</th>
+        <th>Example</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>byte</td>
+        <td>b</td>
+        <td>baload</td>
+        <td>load byte from array</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>short</td>
+        <td>s</td>
+        <td>saload</td>
+        <td>load short from array</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>int</td>
+        <td>i</td>
+        <td>iaload</td>
+        <td>load int from array</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>long</td>
+        <td>l</td>
+        <td>laload</td>
+        <td>load long from array</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>char</td>
+        <td>c</td>
+        <td>caload</td>
+        <td>load char from array</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>float</td>
+        <td>f</td>
+        <td>faload</td>
+        <td>load float from array</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>double</td>
+        <td>d</td>
+        <td>daload</td>
+        <td>load double from array</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>reference</td>
+        <td>a</td>
+        <td>aaload</td>
+        <td>load reference from array</td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>Compactness</h3>
+
+<p class="indented">
+    Compactness is important because it facilitates speedy transmission of class files across networks.
+    In the bytecodes stored in class files, all instructions--except two that deal with table jumping--are aligned on byte boundaries.
+    The total number of opcodes is small enough so that opcodes occupy only one byte.
+    <sub class="my_note" style="color:blue">笔记：在这里opcode占用 1 byte的空间，其目的是compactness；另外，在field或method的descriptor描述中，也体现了compactness，例如用I表示int类型、用Z表示boolean类型。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
 <h2>operand stack and local variables</h2>
 
 <p class="indented">

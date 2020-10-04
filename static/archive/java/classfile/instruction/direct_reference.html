@@ -1,0 +1,344 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Direct References</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    The ultimate goal of constant pool resolution is to replace a <b>symbolic reference</b> with a <b>direct reference</b>.
+    The form of symbolic references is well-defined in JVM Specification, but what form do direct references take?
+    As you might expect, the form of direct references is yet another decision of the designers of individual Java Virtual Machine implementations.
+    Nevertheless, there are some characteristics likely to be common among most implementations.
+</p>
+
+<p class="indented">
+    <b>Direct references to types, class variables, and class methods</b> are likely native pointers into the method area.
+    <b>A direct reference to a type</b> can simply point to the implementation-specific data structure in the method area that holds the type data.
+    <b>A direct reference to a class variable</b> can point to the class variable's value stored in the method area.
+    <b>A direct reference to a class method</b> can point to a data structure in the method area that contains the data needed to invoke the method.
+    For example, the data structure for a <b>class method</b> could include information such as whether or not the method is native.
+    If the method is native, the data structure could include a function pointer to the dynamically linked native method implementation.
+    If the method is not native, the data structure could include the method's bytecodes, max_stack, max_locals, and so on.
+    If there is a just-in-time-compiled version of the method, the data structure could include a pointer to that just-in-time-compiled native code.
+</p>
+
+<p class="indented">
+    <b>Direct references to instance variables and instance methods</b> are offsets.
+    <b>A direct reference to an instance variable</b> is likely the offset from the start of the object's image to the location of the instance variable.
+    <b>A direct reference to an instance method</b> is likely an offset into a method table.
+</p>
+
+<p class="indented">
+    Using <code>offset</code> to represent <b>direct references</b> to <b>instance variables</b> and <b>instance methods</b> depends on a predictable ordering of the <b>fields</b> in a class's object image and the <b>methods</b> in a class's <b>method table</b>.
+    Although implementation designers may choose any way of placing instance variables into an object
+    image or methods into a method table, they will almost certainly use the same way for all types.
+    Therefore, in any one implementation, the ordering of fields in an object and methods in a method table
+    is defined and predictable.
+</p>
+
+<p>
+    As an example, consider this hierarchy of three classes and one interface:
+</p>
+
+<div title="Friendly.java" class="javacode">
+public interface Friendly {
+    void sayHello();
+
+    void sayGoodbye();
+}
+</div>
+
+<div title="Dog.java" class="javacode">
+public class Dog {
+    // How many times this dog wags its tail when saying hello.
+    private int wagCount = ((int) (Math.random() * 5.0)) + 1;
+
+    public void sayHello() {
+        System.out.print("Wag");
+        for (int i = 0; i < wagCount; ++i) {
+            System.out.print(", wag");
+        }
+        System.out.println(".");
+    }
+
+    public String toString() {
+        return "Woof!";
+    }
+}
+</div>
+
+<div title="CockerSpaniel.java" class="javacode">
+public class CockerSpaniel extends Dog implements Friendly {
+    // How many times this Cocker Spaniel woofs when saying hello.
+    private int woofCount = ((int) (Math.random() * 4.0)) + 1;
+
+    // How many times this Cocker Spaniel wimpers when saying goodbye.
+    private int wimperCount = ((int) (Math.random() * 3.0)) + 1;
+
+    public void sayHello() {
+        // Wag that tail a few times.
+        super.sayHello();
+
+        System.out.print("Woof");
+        for (int i = 0; i < woofCount; ++i) {
+            System.out.print(", woof");
+        }
+        System.out.println("!");
+    }
+
+    public void sayGoodbye() {
+        System.out.print("Wimper");
+        for (int i = 0; i < wimperCount; ++i) {
+            System.out.print(", wimper");
+        }
+        System.out.println(".");
+    }
+}
+</div>
+
+<div title="Cat.java" class="javacode">
+public class Cat implements Friendly {
+    public void eat() {
+        System.out.println("Chomp, chomp, chomp.");
+    }
+
+    public void sayHello() {
+        System.out.println("Rub, rub, rub.");
+    }
+
+    public void sayGoodbye() {
+        System.out.println("Scamper.");
+    }
+
+    protected void finalize() {
+        System.out.println("Meow!");
+    }
+}
+</div>
+
+<h2>instance variables</h2>
+
+<p class="indented">
+    Assume these types are loaded into a Java Virtual Machine that organizes objects
+    by placing the <b>instance variables</b> declared in <b>superclasses</b> into the object image before those declared in <b>subclasses</b>,
+    <sub class="my_note" style="color:green">笔记：这里讲superclass和subclass之间field存储的顺序关系</sub>
+    and by placing the <b>instance variables</b> for each individual class in their order of appearance in the class file.
+    <sub class="my_note" style="color:green">笔记：这里讲同一个class内部的field存储的顺序关系</sub>
+    Assuming there are no instance variables in class <code>Object</code>, the object images for <code>Dog</code>, <code>CockerSpaniel</code>, and <code>Cat</code> would appear as shown in the following Picture.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/some_object_images.png" alt="some_object_images.png"/>
+</div>
+
+<p class="indented">
+    In this figure, the object image for <code>CockerSpaniel</code> best illustrates this particular virtual machine's approach to laying out objects.
+    The instance variable for <code>Dog</code>, the superclass, appears before the instance variables for <code>CockerSpaniel</code>, the subclass.
+    The instance variables of <code>CockerSpaniel</code> appear in order of declaration: <code>woofCount</code> first, then <code>wimperCount</code>.
+</p>
+
+<p class="indented">
+    Note that the <code>wagCount</code> instance variable appears at offset one in both <code>Dog</code> and <code>CockerSpaniel</code>.
+    In this implementation of the Java Virtual Machine, a symbolic reference to the <code>wagCount</code> field of class <code>Dog</code> would be resolved to direct reference that is an offset of one.
+    Regardless of whether the actual object being referred to was a <code>Dog</code>, a <code>CockerSpaniel</code>, or any other subclass of <code>Dog</code>, the <code>wagCount</code> instance variable would always appear at offset one in the object image.
+</p>
+
+<h2>method tables</h2>
+
+<p class="indented">
+    A similar pattern emerges in <b>method tables</b>.
+    A method table entry is associated in some way with data structures in the method area that contain sufficient data to enable the virtual machine to invoke the method.
+    Assume that in the Java Virtual Machine implementation being described here, <b>method tables</b> are <b>arrays of native pointers into the method area</b>.
+    The data structures that the method table entries point to are similar to the data structures described above for class methods.
+    Assume that the particular Java Virtual Machine implementation that loads these types organizes its method tables
+    by placing methods for superclasses into the method table before those for subclasses,
+    <sub class="my_note" style="color:green">笔记：这里讲在method table中，superclass的method要放置在subclass的method的前面。</sub>
+    and by placing pointers for each class in the order the methods appear in the class file.
+    <sub class="my_note" style="color:green">笔记：这里讲在method table中，同一个class内部，method是按出现的顺序排列。</sub>
+    The exception to the ordering is that methods that methods overridden by a subclass appear in the slot where the overridden method first appears in a superclass.
+    <sub class="my_note" style="color:green">笔记：这里讲了一种例外的情况，这是subclass覆盖superclass的方法。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The way this virtual machine would organize the <b>method table</b> for class <code>Dog</code> is shown in the following figure.
+    In this figure, the method table entries that point to methods defined in class <code>Object</code> are shown in dark gray.
+    Entries that point to methods defined in <code>Dog</code> are shown in light gray.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/the_method_table_for_class_dog.png" alt="the_method_table_for_class_dog.png"/>
+</div>
+
+<p class="indented">
+    Note that <b>only non-private instance methods</b> appear in this <b>method table</b>.
+    <b>Class methods</b>, which are invoked via the <code>invokestatic</code> instruction, need not appear here,
+    because they are statically bound and don't need the extra indirection of a method table.
+    <b>Private methods</b> and <b>instance initialization methods</b> need not appear
+    here because they are invoked via the <code>invokespecial</code> instruction and are therefore statically bound.
+    Only methods that are invoked with <code>invokevirtual</code> or <code>invokeinterface</code> appear in this method table.
+</p>
+
+<p class="indented">
+    By looking at the source code, you can see that <code>Dog</code> overrides the <code>toString()</code> method defined in class <code>Object</code>.
+    In <code>Dog</code>'s method table, the <code>toString()</code> method appears only once, in the same slot (offset seven) in which it appears in the method table for Object.
+    The pointer residing at offset seven in <code>Dog</code>'s method table points to the data for <code>Dog</code>'s implementation of <code>toString()</code>.
+    In this implementation of the Java Virtual Machine, the pointer to the method data for <code>toString()</code> will appear at offset seven for every method table of every class.
+</p>
+
+<p class="indented">
+    Below the methods declared in <code>Object</code>, which appear first in this method table, come the methods declared in <code>Dog</code> that don't override any method in <code>Object</code>.
+    There is only one such method, <code>sayHello()</code>, which has the method table offset 11.
+    All of <code>Dog</code>'s subclasses will either inherit or override this implementation of <code>sayHello()</code>,
+    and some version of <code>sayHello()</code> will always appear at offset 11 of any subclass of <code>Dog</code>.
+</p>
+
+<p class="indented">
+    The following figure shows the method table for <code>CockerSpaniel</code>.
+    Note that because <code>CockerSpaniel</code> declares <code>sayHello()</code> and <code>sayGoodbye()</code>,
+    the pointers for those methods point to the data for <code>CockerSpaniel</code>'s implementation of those methods.
+    Because <code>CockerSpaniel</code> inherits <code>Dog</code>'s implementation of <code>toString()</code>,
+    the pointer for that method (which is still at offset seven) points the data for <code>Dog</code>'s implementation of that method.
+    <code>CockerSpaniel</code> inherits all other methods from Object, so the pointers for those methods point directly into <code>Object</code>'s type data.
+    Note also that <code>sayHello()</code> is sitting at offset eleven, the same offset it has in <code>Dog</code>'s method table.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/the_method_table_for_class_cocker_spaniel.png" alt="the_method_table_for_class_cocker_spaniel.png"/>
+</div>
+
+<p class="indented">
+    When the virtual machine resolves a <b>symbolic reference</b> (a <code>CONSTANT_Methodref_info</code> entry) to the <code>toString()</code> method of any class,
+    the direct reference is method table offset seven.
+    When the virtual machine resolves a <b>symbolic reference</b> to the <code>sayHello()</code> method of <code>Dog</code> or any of its subclasses,
+    the <b>direct reference</b> is method table offset eleven.
+    When the virtual machine resolves a <b>symbolic reference</b> to the <code>sayGoodbye()</code> method of <code>CockerSpaniel</code> or any of its subclasses,
+    the <code>direct reference</code> is the method table offset twelve.
+</p>
+
+<p class="indented">
+    Once a <b>symbolic reference</b> to an <b>instance method</b> is resolved to a <code>method table</code> offset,
+    the virtual machine must still actually invoke the method.
+    To invoke an <b>instance method</b>, the virtual machine goes through <b>the object</b> to get at the <b>method table</b> for the object's class.
+    Given a reference to an object, every virtual machine implementation must have some way to get at the type data for that object's class.
+    In addition, given a reference to an object, the method table (a part of the type data for the object's class) is usually very quickly accessible.
+    Once the virtual machine has the <b>method table</b> for the <b>object's class</b>, it uses the <code>offset</code> to find the actual method to invoke.
+</p>
+
+<h3>interface method</h3>
+
+<p class="indented">
+    The virtual machine can always depend on method table offsets when it has a reference of a class type (a <code>CONSTANT_Methodref_info</code> entry).
+    If the <code>sayHello()</code> method appears in offset seven in class <code>Dog</code>, it will appear in offset seven in any subclass of <code>Dog</code>.
+    The same is not true, however, if the reference is of an interface type (a <code>CONSTANT_InterfaceMethodref_info</code> entry).
+    With direct references to instance methods accessed through an interface reference there is no guaranteed method table offset.
+    Consider the method table for class <code>Cat</code>, shown in the following figure.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/the_method_table_for_class_cat.png" alt="the_method_table_for_class_cat.png"/>
+</div>
+
+<p class="indented">
+    Note that both <code>Cat</code> and <code>CockerSpaniel</code> implement the <code>Friendly</code> interface.
+    A variable of type <code>Friendly</code> could hold a reference to a <code>Cat</code> object or a <code>CockerSpaniel</code> object.
+    With that reference, your program could invoke <code>sayHello()</code> or <code>sayGoodbye()</code> on a <code>Cat</code>, a <code>CockerSpaniel</code>,
+    or any other object whose class implements the <code>Friendly</code> interface.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        CockerSpaniel cs = new CockerSpaniel();
+        cs.sayHello();
+
+        Dog dog = cs;
+        dog.sayHello();
+
+        Friendly fr = (Friendly) dog;
+        // Invoke sayGoodbye() on a CockerSpaniel object through a reference of type Friendly.
+        fr.sayGoodbye();
+
+        fr = new Cat();
+        // Invoke sayGoodbye() on a Cat object through a reference of type Friendly.
+        fr.sayGoodbye();
+    }
+}
+</div>
+
+<div title="test()V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 44
+code = BB000259B700034C2BB600042B4D2CB600052CC000064E2DB900070100BB000859B700094E2DB900070100B1
+=== === ===  === === ===  === === ===
+0000: new             #2   // BB0002     || sample/CockerSpaniel
+0003: dup                  // 59
+0004: invokespecial   #3   // B70003     || sample/CockerSpaniel.&lt;init&gt;:()V
+0007: astore_1             // 4C
+0008: aload_1              // 2B
+0009: invokevirtual   #4   // B60004     || sample/CockerSpaniel.sayHello:()V
+0012: aload_1              // 2B
+0013: astore_2             // 4D
+0014: aload_2              // 2C
+0015: invokevirtual   #5   // B60005     || sample/Dog.sayHello:()V
+0018: aload_2              // 2C
+0019: checkcast       #6   // C00006     || sample/Friendly
+0022: astore_3             // 4E
+0023: aload_3              // 2D
+0024: invokeinterface #7 1 0 // B900070100 || sample/Friendly.sayGoodbye:()V
+0029: new             #8   // BB0008     || sample/Cat
+0032: dup                  // 59
+0033: invokespecial   #9   // B70009     || sample/Cat.&lt;init&gt;:()V
+0036: astore_3             // 4E
+0037: aload_3              // 2D
+0038: invokeinterface #7 1 0 // B900070100 || sample/Friendly.sayGoodbye:()V
+0043: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      44  this:Lsample/HelloWorld;
+    1         8      36  cs:Lsample/CockerSpaniel;
+    2        14      30  dog:Lsample/Dog;
+    3        23      21  fr:Lsample/Friendly;
+</div>
+
+<p class="indented">
+    Local variable <code>fr</code> invokes <code>sayGoodbye()</code> on both a <code>CockerSpaniel</code> object and a <code>Cat</code> object.
+    The same constant pool entry, a <code>CONSTANT_InterfaceMethodref_info</code> entry, is used to invoke this method on both objects.
+    But when the virtual machine resolves the <b>symbolic reference</b> to <code>sayHello()</code>,
+    it can't just save a method table offset and expect that offset to always work in future uses of the constant pool entry.
+</p>
+
+<p class="indented">
+    The trouble is that classes that implement the <code>Friendly</code> interface aren't guaranteed to have a common superclass that also implements <code>Friendly</code>.
+    As a result, the methods declared in <code>Friendly</code> aren't guaranteed to be in the same place in all method tables.
+    If you compare the method table for <code>CockerSpaniel</code> against the method table for <code>Cat</code>, for example,
+    you'll see that in <code>CockerSpaniel</code>, <code>sayHello()</code>'s pointer occupies offset 11.
+    But in <code>Cat</code>, <code>sayHello()</code> occupies offset 12.
+    Likewise, <code>CockerSpaniel</code>'s <code>sayGoodbye()</code> method pointer resides in offset 12,
+    but <code>Cat</code>'s <code>sayGoodbye()</code> method pointer resides at offset 13.
+</p>
+
+<p class="indented">
+    Thus, whenever the Java Virtual Machine invokes a method from an <b>interface reference</b>,
+    it must search the method table of the object's class until it finds the appropriate method.
+    This is why invoking <b>instance methods on interface references</b> can be significantly slower than invoking <b>instance methods on class references</b>.
+    Virtual machine implementations can attempt to be smart, of course, about how they search through a method table.
+    For example, an implementation could save the last index at which they found the method and try there first the next time.
+    Or an implementation could build data structures during preparation that help them search through method tables given an interface reference.
+    Nevertheless, invoking a method given an interface reference will almost certainly be to some extent slower than invoking a method given a class reference.
+</p>
+
+
+
+
+
+

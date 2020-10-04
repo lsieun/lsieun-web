@@ -6,27 +6,23 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>Intro</h2>
+<h2>Introduction</h2>
 
-<p class="indented">
-    The Java Virtual Machine knows nothing of the Java programming language, only of a particular binary format, the class file format.
-    A class file contains Java Virtual Machine instructions (or bytecodes) and a symbol table, as well as other ancillary information.
-</p>
-
-<p class="indented">
-    Bytecode is nothing but the intermediate representation of Java source code which is produced by the Java compiler by compiling that source code. This byte code is an machine independent code.It is not an completely a compiled code but it is an intermediate code somewhere in the middle which is later interpreted and executed by JVM.Bytecode is a machine code for JVM.
-</p>
+<ul>
+    <li><a href="/archive/java/classfile/java_classfile_intro.html" target="_blank">课程介绍</a>：主要内容、适合人群、课程规划</li>
+    <li><a href="/archive/java/classfile/java_classfile_00_preparation.html" target="_blank">准备工作</a>：JDK、IDE、Source Code</li>
+</ul>
 
 <h2>Main Content</h2>
 
 <ol>
-    <li><a href="/archive/java/classfile/java_classfile_00_preparement.html" target="_blank">Java ClassFile: (0) Preparement</a></li>
     <li><a href="/archive/java/classfile/java_classfile_01_cognition.html" target="_blank">Java ClassFile: (1) Cognition</a></li>
     <li><a href="/archive/java/classfile/java_classfile_02_concept.html" target="_blank">Java ClassFile: (2) Concept</a></li>
     <li>
         <a href="/archive/java/classfile/java_classfile_03_byte_perspective.html" target="_blank">Java ClassFile: (3) Byte Perspective</a>
         <img src="/images/list.png" onclick="$(this).next().toggle()"/>
         <ul style="display: none;">
+            <li><a href="/archive/java/classfile/byte_perspective/reinvent_the_wheel.html" target="_blank">Reinvent The Wheel</a></li>
             <li><a href="/archive/java/classfile/byte_perspective/magic_number.html" target="_blank">Magic Number</a></li>
             <li><a href="/archive/java/classfile/byte_perspective/compiler_version.html" target="_blank">Compiler Version</a></li>
             <li><a href="/archive/java/classfile/byte_perspective/constant_pool_01.html" target="_blank">Constant Pool: (1) Intro</a></li>
@@ -83,6 +79,7 @@
             <li><a href="/archive/java/classfile/instruction/opcode_objects.html" target="_blank">Opcode: Objects</a></li>
             <li><a href="/archive/java/classfile/instruction/opcode_fields.html" target="_blank">Opcode: Fields</a></li>
             <li><a href="/archive/java/classfile/instruction/opcode_methods.html" target="_blank">Opcode: Methods</a></li>
+            <li><a href="/archive/java/classfile/instruction/direct_reference.html" target="_blank">Direct References</a></li>
             <li><a href="/archive/java/classfile/instruction/method_invocation_and_return.html" target="_blank">How JVM handles method invocation and return</a></li>
             <li><a href="/archive/java/classfile/instruction/lambdas_in_java_bytecode.html" target="_blank">Lambdas in Java Bytecode</a></li>
             <li><a href="/archive/java/classfile/instruction/opcode_array.html" target="_blank">Opcode: Array</a></li>
@@ -117,16 +114,22 @@
         </ul>
     </li>
     <li>
-        <a href="" target="_blank">Examples</a>
+        <a href="" target="_blank">Code Examples</a>
         <img src="/images/list.png" onclick="$(this).next().toggle()"/>
         <ul style="display: none;">
-            <li><a href="/archive/java/classfile/example/java_synthetic.html" target="_blank">Java Synthetic Examples</a></li>
-            <li><a href="/archive/java/classfile/example/java_bridge_method.html" target="_blank">Java Bridge Method Examples</a></li>
-            <li><a href="/archive/java/classfile/example/classfile_stack_map_table_attribute_examples.html" target="_blank">ClassFile StackMapTable Attribute Examples</a></li>
+            <li><a href="/archive/java/classfile/example/java_bridge_method.html" target="_blank">Bridge Method Examples</a></li>
+            <li><a href="/archive/java/classfile/example/java_method_overload.html" target="_blank">Method Overload Examples</a></li>
+            <li><a href="/archive/java/classfile/example/classfile_stack_map_table_attribute_examples.html" target="_blank">StackMapTable Attribute Examples</a></li>
+            <li><a href="/archive/java/classfile/example/java_synthetic.html" target="_blank">Synthetic Class/Field/Method Examples</a></li>
         </ul>
     </li>
     <li>
         <a href="/archive/java/classfile/the_final_thought.html" target="_blank">The Final Thought</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul style="display: none;">
+            <li><a href="/archive/java/classfile/the_ignored.html" target="_blank">The Ignored</a></li>
+            <li><a href="/archive/java/classfile/java_classfile_glossary.html" target="_blank">Glossary</a></li>
+        </ul>
     </li>
 </ol>
 
@@ -137,9 +140,10 @@
 </p>
 
 <ul>
-    <li><a href="/archive/java/classfile/project/hexutils.html" target="_blank">HexUtils</a></li>
-    <li><a href="/archive/java/classfile/project/readutils.html" target="_blank">ReadUtils</a></li>
-    <li><a href="/archive/java/classfile/project/bytedashboard.html" target="_blank">ByteDashboard</a></li>
+    <li><a href="/archive/java/classfile/project/bytedashboard.html" target="_blank">ByteDashboard.java</a></li>
+    <li><a href="/archive/java/classfile/project/hexutils.html" target="_blank">HexUtils.java</a></li>
+    <li><a href="/archive/java/classfile/project/visitor_pattern.html" target="_blank">InstructionList.java、InstructionChain.java</a></li>
+    <li><a href="/archive/java/classfile/project/readutils.html" target="_blank">ReadUtils.java</a></li>
     <li><a href="/archive/java/classfile/project/visitor_pattern.html" target="_blank">Visitor Pattern</a></li>
 </ul>
 

@@ -1,5 +1,5 @@
 <!-- 标题 -->
-<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java ClassFile Introduction</span></h1>
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">准备工作</span></h1>
 <!-- 内容 -->
 
 <div style="text-align: right">
@@ -7,18 +7,7 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>准备工作</h2>
-
-<ol>
-    <li>github的repo的下载</li>
-    <li>准备知识</li>
-    <li>适合的人群</li>
-    <li>参考文档</li>
-    <li>有些内容是可以选学的。</li>
-    <li><input type="checkbox" /> 生成各个小文件<code>.clz</code>，又可以合并成大文件</li>
-</ol>
-
-<h3>Software</h3>
+<h2>Software</h2>
 
 <p>
     软件准备：
@@ -28,8 +17,8 @@
     <li>
         <input type="checkbox" checked/> JDK 8 (<a class="external" href="https://www.oracle.com/java/technologies/javase-downloads.html" target="_blank">Download Page</a>)
         <ul>
-            <li><input type="checkbox" checked/> JDK 7 (<a class="external" href="https://www.oracle.com/java/technologies/javase/javase7-archive-downloads.html" target="_blank">Download Page</a>) </li>
-            <li><input type="checkbox" checked/> JDK 6 (<a class="external" href="https://www.oracle.com/java/technologies/javase-java-archive-javase6-downloads.html" target="_blank">Download Page</a>) </li>
+            <li><input type="checkbox"/> JDK 7 (<a class="external" href="https://www.oracle.com/java/technologies/javase/javase7-archive-downloads.html" target="_blank">Download Page</a>) </li>
+            <li><input type="checkbox"/> JDK 6 (<a class="external" href="https://www.oracle.com/java/technologies/javase-java-archive-javase6-downloads.html" target="_blank">Download Page</a>) </li>
         </ul>
     </li>
     <li><input type="checkbox" checked/> IDEA Community Edition 2020.2 (<a class="external" href="https://www.jetbrains.com/idea/download/other.html" target="_blank">Download Page</a>)</li>
@@ -37,7 +26,7 @@
     <li><input type="checkbox" checked/> Git</li>
 </ul>
 
-<h3>Git Configuration</h3>
+<h2>Git Configuration</h2>
 
 <p class="indented">
     <b>CR</b> and <b>LF</b> are control characters, respectively coded <code>0x0D</code> (13 decimal) and <code>0x0A</code> (10 decimal).
@@ -121,59 +110,9 @@ git config --global core.autocrlf false
     In general, it's a best practice to set the <code>core.autocrlf</code> setting to one of the values other than <code>false</code>, depending on which environment you're working in.
 </p>
 
-<h3>Source Code</h3>
+<h2>Source Code</h2>
 
 <div title="github repository" class="plaintext">
 git clone https://github.com/lsieun/java8-classfile-tutorial
 </div>
 
-<h2>学习阶段</h2>
-
-<p>
-    学习ClassFile的两个阶段：
-</p>
-
-<p>
-    第一个阶段，有如下几个层次
-</p>
-
-<ol>
-    <li>元认知</li>
-    <li>ClassFile基本结构</li>
-    <li>从byte角度来解析ClassFile</li>
-    <li>extensions</li>
-    <li>解析bytecode</li>
-</ol>
-
-<p>
-    第二个阶段
-</p>
-
-<ol>
-    <li>Java-Agent</li>
-    <li>使用Javassist</li>
-    <li>使用ASM</li>
-</ol>
-
-<p class="indented">
-    第一个阶段，是针对Java ClassFile的内部原理的解析，注重于“是什么”；第二阶段，是对Java ClassFile原理的运用，注重于“怎么用”。
-</p>
-
-<p class="indented">
-    简单来说，第一个阶段是讲原理，第二个阶段是讲应用。第一个阶段的内容，是第二个阶段内容的基础，用一种形象的说法来讲就是“有九阳神功护体，学什么武功都特别快”。
-    换句话说，学会了第一个阶段的内容，再学第二阶段的内容就是驾轻就熟（赶着轻载的车走在熟路上）。
-</p>
-
-<h2>学习的难点</h2>
-
-<ul>
-    <li>
-        没有合适的例子。ClassFile上涉及到各种结构（table），人人都可以在JVM Specification中看到。具体来说，针对某一种结构（table），它需要的各种子结构在JVM Specification当中都有描述，但所缺乏的就是有一个恰当的例子来进行说明。
-    </li>
-    <li>
-        没有合适的工具。如果在只有一个十六进制工具的情况下，要学习ClassFile的内容是有点困难的，但是，有恒心还是能做到的。一个合适的工具，能够简化认知的过程。
-    </li>
-    <li>
-        学习ClassFile，是一个长期浸染的过程。换句话说，学习的过程，是一个“见怪不怪”的过程。
-    </li>
-</ul>

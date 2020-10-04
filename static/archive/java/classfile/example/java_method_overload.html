@@ -1,0 +1,421 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java Method Overload Examples</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        Override，是SuperClass和SubClass内同一个方法（方法名相同、参数相同）之间的关系。
+    </p>
+    <p>
+        Overload，是同一个Class内不同方法（方法名相同、参数不相同）之间的关系。
+    </p>
+</div>
+
+<p class="indented">
+    这部分内容的代码是参考自《深入理解Java虚拟机：JVM高级特性与最佳实践（第3版）》的“第8章 虚拟机字节码执行引擎”的“8.3.2 分派”部分。
+</p>
+
+<h2>Method Overload Resolution</h2>
+
+<div title="StaticDispatch.java" class="javacode">
+public class StaticDispatch {
+    static abstract class Human {
+    }
+
+    static class Man extends Human {
+    }
+
+    static class Woman extends Human {
+    }
+
+    public void sayHello(Human guy) {
+        System.out.println("hello,guy!");
+    }
+
+    public void sayHello(Man guy) {
+        System.out.println("hello,gentleman!");
+    }
+
+    public void sayHello(Woman guy) {
+        System.out.println("hello,lady!");
+    }
+
+    public static void main(String[] args) {
+        Human man = new Man();
+        Human woman = new Woman();
+        StaticDispatch sr = new StaticDispatch();
+        sr.sayHello(man);   // 关注点：这里输出什么呢？
+        sr.sayHello(woman); // 关注点：这里输出什么呢？
+    }
+}
+</div>
+
+<div title="Run output" hidden class="plaintext">
+hello,guy!
+hello,guy!
+</div>
+
+<p class="indented">
+    其实，对于究竟调用哪个方法，在opcode层面进行观察，能够帮助我们更好的理解其中的原因。
+</p>
+
+<div title="main:([Ljava/lang/String;)V" class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 35
+code = BB000759B700084CBB000959B7000A4DBB000B59B7000C4E2D2BB6000D2D2CB6000DB1
+=== === ===  === === ===  === === ===
+0000: new             #7   // BB0007     || sample/StaticDispatch$Man
+0003: dup                  // 59
+0004: invokespecial   #8   // B70008     || sample/StaticDispatch$Man.&lt;init&gt;:()V
+0007: astore_1             // 4C
+0008: new             #9   // BB0009     || sample/StaticDispatch$Woman
+0011: dup                  // 59
+0012: invokespecial   #10  // B7000A     || sample/StaticDispatch$Woman.&lt;init&gt;:()V
+0015: astore_2             // 4D
+0016: new             #11  // BB000B     || sample/StaticDispatch
+0019: dup                  // 59
+0020: invokespecial   #12  // B7000C     || sample/StaticDispatch.&lt;init&gt;:()V
+0023: astore_3             // 4E
+0024: aload_3              // 2D
+0025: aload_1              // 2B
+0026: invokevirtual   #13  // B6000D     || sample/StaticDispatch.sayHello:(Lsample/StaticDispatch$Human;)V
+0029: aload_3              // 2D
+0030: aload_2              // 2C
+0031: invokevirtual   #13  // B6000D     || sample/StaticDispatch.sayHello:(Lsample/StaticDispatch$Human;)V
+0034: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      35  args:[Ljava/lang/String;
+    1         8      27  man:Lsample/StaticDispatch$Human;
+    2        16      19  woman:Lsample/StaticDispatch$Human;
+    3        24      11  sr:Lsample/StaticDispatch;
+</div>
+
+<p>
+    对于上述main中的代码，可以修改成以下这种方式，则更能说明问题：
+</p>
+
+<div title="修改main方法" class="javacode">
+import java.util.Random;
+
+Human human = (new Random()).nextBoolean() ? new Man() : new Woman();
+StaticDispatch sr = new StaticDispatch();
+sr.sayHello(human);
+</div>
+
+<div title="Method main:([Ljava/lang/String;)V" class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 45
+code = BB000759B70008B6000999000DBB000A59B7000BA7000ABB000C59B7000D4CBB000E59B7000F4D2C2BB60010B1
+=== === ===  === === ===  === === ===
+0000: new             #7   // BB0007     || java/util/Random
+0003: dup                  // 59
+0004: invokespecial   #8   // B70008     || java/util/Random.&lt;init&gt;:()V
+0007: invokevirtual   #9   // B60009     || java/util/Random.nextBoolean:()Z
+0010: ifeq            13   // 99000D
+0013: new             #10  // BB000A     || sample/StaticDispatch$Man
+0016: dup                  // 59
+0017: invokespecial   #11  // B7000B     || sample/StaticDispatch$Man.&lt;init&gt;:()V
+0020: goto            10   // A7000A
+0023: new             #12  // BB000C     || sample/StaticDispatch$Woman
+0026: dup                  // 59
+0027: invokespecial   #13  // B7000D     || sample/StaticDispatch$Woman.&lt;init&gt;:()V
+0030: astore_1             // 4C
+0031: new             #14  // BB000E     || sample/StaticDispatch
+0034: dup                  // 59
+0035: invokespecial   #15  // B7000F     || sample/StaticDispatch.&lt;init&gt;:()V
+0038: astore_2             // 4D
+0039: aload_2              // 2C
+0040: aload_1              // 2B
+0041: invokevirtual   #16  // B60010     || sample/StaticDispatch.sayHello:(Lsample/StaticDispatch$Human;)V
+0044: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      45  args:[Ljava/lang/String;
+    1        31      14  human:Lsample/StaticDispatch$Human;
+    2        39       6  sr:Lsample/StaticDispatch;
+</div>
+
+<h2>Method Overload Priority</h2>
+
+<div title="Overload.java" class="javacode">
+import java.io.Serializable;
+
+public class Overload {
+    public static void sayHello(Object arg) {
+        System.out.println("hello Object");
+    }
+
+    public static void sayHello(int arg) {
+        System.out.println("hello int");
+    }
+
+    public static void sayHello(long arg) {
+        System.out.println("hello long");
+    }
+
+    public static void sayHello(Character arg) {
+        System.out.println("hello Character");
+    }
+
+    public static void sayHello(char arg) {
+        System.out.println("hello char");
+    }
+
+    public static void sayHello(char... arg) {
+        System.out.println("hello char ...");
+    }
+
+    public static void sayHello(Serializable arg) {
+        System.out.println("hello Serializable");
+    }
+
+    public static void main(String[] args) {
+        sayHello('a');
+    }
+}
+</div>
+
+<div title="Run output" hidden class="plaintext">
+hello char
+</div>
+
+<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 6
+code = 1061B8000BB1
+=== === ===  === === ===  === === ===
+0000: bipush          97   // 1061
+0002: invokestatic    #11  // B8000B     || sample/Overload.sayHello:(C)V
+0005: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  args:[Ljava/lang/String;
+</div>
+
+<p>
+    接下来，注释掉<code>sayHello(char arg)</code>方法，就会调用<code>sayHello(int arg)</code>方法：
+</p>
+
+<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 6
+code = 1061B8000AB1
+=== === ===  === === ===  === === ===
+0000: bipush          97   // 1061
+0002: invokestatic    #10  // B8000A     || sample/Overload.sayHello:(I)V
+0005: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  args:[Ljava/lang/String;
+</div>
+
+<p>
+    接下来，再注释掉<code>sayHello(int arg)</code>方法，就会调用<code>sayHello(long arg)</code>方法：
+</p>
+
+<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 1
+code_length = 7
+code = 140009B8000BB1
+=== === ===  === === ===  === === ===
+0000: ldc2_w          #9   // 140009     || 97
+0003: invokestatic    #11  // B8000B     || sample/Overload.sayHello:(J)V
+0006: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       7  args:[Ljava/lang/String;
+</div>
+
+<p>
+    接下来，再注释掉<code>sayHello(long arg)</code>方法，就会调用<code>sayHello(Character arg)</code>方法：
+</p>
+
+<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 9
+code = 1061B80008B80009B1
+=== === ===  === === ===  === === ===
+0000: bipush          97   // 1061
+0002: invokestatic    #8   // B80008     || java/lang/Character.valueOf:(C)Ljava/lang/Character;
+0005: invokestatic    #9   // B80009     || sample/Overload.sayHello:(Ljava/lang/Character;)V
+0008: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  args:[Ljava/lang/String;
+</div>
+
+<p>
+    接下来，再注释掉<code>sayHello(Character arg)</code>方法，就会调用<code>sayHello(Serializable arg)</code>方法：
+</p>
+
+<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 9
+code = 1061B80007B80008B1
+=== === ===  === === ===  === === ===
+0000: bipush          97   // 1061
+0002: invokestatic    #7   // B80007     || java/lang/Character.valueOf:(C)Ljava/lang/Character;
+0005: invokestatic    #8   // B80008     || sample/Overload.sayHello:(Ljava/io/Serializable;)V
+0008: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  args:[Ljava/lang/String;
+</div>
+
+<p>
+    接下来，再注释掉<code>sayHello(Serializable arg)</code>方法，就会调用<code>sayHello(Object arg)</code>方法：
+</p>
+
+<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 9
+code = 1061B80006B80007B1
+=== === ===  === === ===  === === ===
+0000: bipush          97   // 1061
+0002: invokestatic    #6   // B80006     || java/lang/Character.valueOf:(C)Ljava/lang/Character;
+0005: invokestatic    #7   // B80007     || sample/Overload.sayHello:(Ljava/lang/Object;)V
+0008: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  args:[Ljava/lang/String;
+</div>
+
+<p>
+    接下来，再注释掉<code>sayHello(Object arg)</code>方法，就会调用<code>sayHello(char... arg)</code>方法：
+</p>
+
+<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 1
+code_length = 12
+code = 04BC055903106155B80005B1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: newarray        5    // BC05       || char
+0003: dup                  // 59
+0004: iconst_0             // 03
+0005: bipush          97   // 1061
+0007: castore              // 55
+0008: invokestatic    #5   // B80005     || sample/Overload.sayHello:([C)V
+0011: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      12  args:[Ljava/lang/String;
+</div>
+
+<h2>Method Override</h2>
+
+<div title="DynamicDispatch.java" class="javacode">
+public class DynamicDispatch {
+    static abstract class Human {
+        protected abstract void sayHello();
+    }
+
+    static class Man extends Human {
+        @Override
+        protected void sayHello() {
+            System.out.println("man say hello");
+        }
+    }
+
+    static class Woman extends Human {
+        @Override
+        protected void sayHello() {
+            System.out.println("woman say hello");
+        }
+    }
+
+    public static void main(String[] args) {
+        Human man = new Man();
+        man.sayHello();
+
+        Human woman = new Woman();
+        woman.sayHello();
+    }
+}
+</div>
+
+<div title="Run output" hidden class="plaintext">
+man say hello
+woman say hello
+</div>
+
+<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 25
+code = BB000259B700034C2BB60004BB000559B700064D2CB60004B1
+=== === ===  === === ===  === === ===
+0000: new             #2   // BB0002     || sample/DynamicDispatch$Man
+0003: dup                  // 59
+0004: invokespecial   #3   // B70003     || sample/DynamicDispatch$Man.&lt;init&gt;:()V
+0007: astore_1             // 4C
+0008: aload_1              // 2B
+0009: invokevirtual   #4   // B60004     || sample/DynamicDispatch$Human.sayHello:()V
+0012: new             #5   // BB0005     || sample/DynamicDispatch$Woman
+0015: dup                  // 59
+0016: invokespecial   #6   // B70006     || sample/DynamicDispatch$Woman.&lt;init&gt;:()V
+0019: astore_2             // 4D
+0020: aload_2              // 2C
+0021: invokevirtual   #4   // B60004     || sample/DynamicDispatch$Human.sayHello:()V
+0024: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      25  args:[Ljava/lang/String;
+    1         8      17  man:Lsample/DynamicDispatch$Human;
+    2        20       5  woman:Lsample/DynamicDispatch$Human;
+</div>

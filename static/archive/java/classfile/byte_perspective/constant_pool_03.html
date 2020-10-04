@@ -345,6 +345,18 @@ CONSTANT_NameAndType_info {
     </p>
 </div>
 
+<p>
+    A <b>field descriptor</b> is a string that indicates the field's type.
+    A <b>method descriptor</b> is a string that indicates the method's return type and the number, order, and types of its parameters.
+</p>
+
+<p>
+    The symbolic references contained in the constant pool involve three special kinds of strings: fully qualified names, simple names, and descriptors.
+    All symbolic references include the fully qualified name of a class or interface.
+    <b>Symbolic references to fields</b> include <b>a simple field name</b> and <b>field descriptor</b> in addition to <b>a fully qualified type name</b>.
+    <b>Symbolic references to methods</b> include <b>a simple method name</b> and <b>method descriptor</b> in addition to <b>a fully qualified name</b>.
+</p>
+
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static void main(String[] args) {

@@ -1,0 +1,63 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">cd</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/windows/windows_commands.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Syntax</h2>
+
+<div title="Syntax" class="plaintext">
+cd [/d] [&lt;drive&gt;:][&lt;path&gt;]
+cd [..]
+chdir [/d] [&lt;drive&gt;:][&lt;path&gt;]
+chdir [..]
+</div>
+
+<h2>Parameters</h2>
+
+<ul>
+    <li>
+        <code>/d</code>: Changes <b>the current drive</b> as well as <b>the current directory</b> for a drive.
+    </li>
+    <li>
+        <code>&lt;drive&gt;:</code>: Specifies the drive to display or change (if different from the current drive).
+    </li>
+    <li>
+        <code>&lt;path&gt;</code>: Specifies the path to the directory that you want to display or change.
+    </li>
+    <li>
+        <code>[..]</code>: Specifies that you want to change to the parent folder.
+    </li>
+    <li>
+        <code>/?</code>: Displays help at the command prompt.
+    </li>
+</ul>
+
+<h2>Examples</h2>
+
+<p>
+    To return to the root directory, the top of the directory hierarchy for a drive:
+</p>
+
+<div title="return to the root directory" class="plaintext">
+cd\
+</div>
+
+<p>
+    To change the default directory on a drive that is different from the one you are on:
+</p>
+
+<div title="change the default directory" class="plaintext">
+cd [&lt;drive&gt;:[&lt;directory&gt;]]
+</div>
+
+<p>
+    To verify the change to the directory, type:
+</p>
+
+<div title="verify the change to the directory" class="plaintext">
+cd [&lt;drive&gt;:]
+</div>

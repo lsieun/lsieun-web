@@ -171,7 +171,7 @@ from    to  target  type
    0     6       9  java/lang/InterruptedException
 </div>
 
-<h2>什么情况下没有Code Attribute</h2>
+<h2>With and Without Code Attribute</h2>
 
 <p class="indented">
     If the method is either <code>native</code> or <code>abstract</code>, its <code>method_info</code> structure must not have a <code>Code</code> attribute in its <code>attributes</code> table.
@@ -185,9 +185,10 @@ from    to  target  type
         为什么讲这部分内容？
     </p>
     <p>
-        我暂时不回答这个问题，让我来先举一个生活中的例子：“有没有钱”和“钱怎么花”，这两个问题，虽然都是关于钱的，但却是两个截然不同的问题。
+        先来举一个生活中的例子：“有没有钱”和“钱怎么花”，这是两句话，它们有一定的关联，也有些许的差异。
         如果没有钱，则不会去考虑“钱怎么花”的问题；如果有钱，才会进一步涉及到“钱要怎么花”。
-        从逻辑的角度来说，一件事物的“有和无”，要优先于该事物的“具体表现形式”。因为要先有了这个事物，才能去研究它；如果没有这个事物，则没有办法对它进行研究。
+        “有没有钱”，则侧重于强调一件事物的“有和无”；“钱怎么花”，则更加注重于事物的“具体表现形式”。
+        更宽泛的说，要先有了一件事物，才能去研究它；如果没有这样一件事物，则没有办法对它进行研究。
     </p>
     <p>
         “什么情况下没有Code Attribute”，其实就是在探讨Code Attribute的“有和无”的问题，至于Code Attribute的结构中包含哪些数据则是“具体表现形式”的问题。
@@ -205,6 +206,10 @@ from    to  target  type
 <p class="indented">
     <code>System</code>类的<code>currentTimeMillis()</code>方法是一个native method，它不带有<code>Code</code>属性。
 </p>
+
+<div title="System.class" class="plaintext">
+MethodInfo {Value='currentTimeMillis:()J', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_NATIVE]', Attrs='[]'}
+</div>
 
 <h3>abstract method</h3>
 

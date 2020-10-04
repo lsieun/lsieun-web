@@ -1,0 +1,228 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Reinvent The Wheel</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    To <b>reinvent the wheel</b> is to duplicate a basic method that has already previously been created or optimized by others.
+</p>
+
+<p class="indented">
+    In software development, <b>reinventing the wheel</b> is often necessary in order to work around software licensing incompatibilities or around technical limitations present in parts or modules provided by third parties.
+</p>
+
+<p class="indented">
+    <b>Reinventing the square wheel</b> is the practice of unnecessarily engineering artifacts that provide functionality already provided by existing standard artifacts (reinventing the wheel) and ending up with a worse result than the standard (a square wheel). This is <b>an anti-pattern</b> which occurs when the engineer is unaware or contemptuous of the standard solution or does not understand the problem or the standard solution sufficiently to avoid problems overcome by the standard. It is mostly an affliction of inexperienced engineers, or the second-system effect.
+</p>
+
+<h2>From User to user_info</h2>
+
+<div title="User.java" class="javacode">
+public class User {
+    public int id;
+    public String name;
+}
+</div>
+
+<div title="user_info" class="plaintext">
+user_info {
+    u2 id;
+    u2 length;
+    u1 name_bytes[length];
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">user_info example</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">00 03<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">id=2</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 06<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">length=6</span></span>
+        <span class="w3-tooltip w3-hover-blue">E5 BC A0 E9 A3 9E<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">name=张飞</span></span>
+    </div>
+</div>
+
+<div title="Z_A_Write_User.java" class="javacode">
+import lsieun.utils.FileUtils;
+
+public class Z_A_Write_User {
+    public static void main(String[] args) {
+        String relative_path = "fun/user_info.bin";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        User user = new User(3, "张飞");
+        System.out.println(user);
+        byte[] bytes = FunUtils.toBytes(user);
+
+        FileUtils.writeBytes(filepath, bytes);
+        System.out.println("file://" + filepath);
+    }
+}
+</div>
+
+<div title="Z_B_Read_User.java" class="javacode">
+import lsieun.utils.ByteDashboard;
+import lsieun.utils.FileUtils;
+
+public class Z_B_Read_User {
+    public static void main(String[] args) {
+        String relative_path = "fun/user_info.bin";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        byte[] bytes = FileUtils.readBytes(filepath);
+        ByteDashboard bd = new ByteDashboard(bytes);
+        User user = FunUtils.parseUser(bd);
+
+        System.out.println(user);
+    }
+}
+</div>
+
+<h2>From Company to company_info</h2>
+
+<div title="Company.java" class="javacode">
+public class Company {
+    public int count;
+    public User[] users;
+}
+</div>
+
+<div title="company_info" class="plaintext">
+company_info {
+    u2 count;
+    user_info users[count];
+}
+</div>
+
+<div class="w3-panel w3-card w3-light-grey">
+    <p onclick="$(this).next().toggle()">company_info example</p>
+    <div class="w3-code notranslate" style="display: block;">
+        <span class="w3-tooltip w3-hover-blue">00 03<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">count=3</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 01<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">id=1</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 06<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">length=6</span></span>
+        <span class="w3-tooltip w3-hover-blue">E5 88 98 E5 A4 87<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">name=刘备</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 02<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">id=2</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 06<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">length=6</span></span>
+        <span class="w3-tooltip w3-hover-blue">E5 85 B3 E7 BE BD<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">name=关羽</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 03<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">id=3</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 06<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">length=6</span></span>
+        <span class="w3-tooltip w3-hover-blue">E5 BC A0 E9 A3 9E<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">name=张飞</span></span>
+    </div>
+</div>
+
+<div title="Z_C_Write_Company.java" class="javacode">
+import lsieun.utils.FileUtils;
+
+public class Z_C_Write_Company {
+    public static void main(String[] args) {
+        String relative_path = "fun/company_info.bin";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        User user1 = new User(1, "刘备");
+        User user2 = new User(2, "关羽");
+        User user3 = new User(3, "张飞");
+        User[] users = new User[]{user1, user2, user3};
+        Company company = new Company(3, users);
+        System.out.println(company);
+
+        byte[] bytes = FunUtils.toBytes(company);
+        FileUtils.writeBytes(filepath, bytes);
+        System.out.println("file://" + filepath);
+    }
+}
+</div>
+
+<div title="Z_D_Read_Company.java" class="javacode">
+import lsieun.utils.ByteDashboard;
+import lsieun.utils.FileUtils;
+
+public class Z_D_Read_Company {
+    public static void main(String[] args) {
+        String relative_path = "fun/company_info.bin";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        byte[] bytes = FileUtils.readBytes(filepath);
+        ByteDashboard bd = new ByteDashboard(bytes);
+        Company company = FunUtils.parseCompany(bd);
+
+        System.out.println(company);
+    }
+}
+</div>
+
+<h2>FunUtils.java</h2>
+
+<div title="HelloWorld.java" class="javacode">
+import lsieun.utils.ByteDashboard;
+import lsieun.utils.ByteUtils;
+
+import java.nio.charset.StandardCharsets;
+
+public class FunUtils {
+    public static byte[] toBytes(int value, int byte_count) {
+        if (byte_count < 0 || byte_count > Integer.BYTES) {
+            throw new IllegalArgumentException("byte_count is illegal: " + byte_count);
+        }
+
+        byte[] bytes = new byte[byte_count];
+        for (int i = 0; i < byte_count; i++) {
+            int newValue = value >> (i * 8);
+            byte b = (byte) (newValue & 0xff);
+            bytes[byte_count - 1 - i] = b;
+        }
+
+        return bytes;
+    }
+
+    public static byte[] toBytes(String value) {
+        byte[] value_bytes = value.getBytes(StandardCharsets.UTF_8);
+        byte[] length_bytes = toBytes(value_bytes.length, 2);
+        return ByteUtils.concatenate(length_bytes, value_bytes);
+    }
+
+    public static byte[] toBytes(User user) {
+        byte[] id_bytes = FunUtils.toBytes(user.id, 2);
+        byte[] name_bytes = FunUtils.toBytes(user.name);
+        return ByteUtils.concatenate(id_bytes, name_bytes);
+    }
+
+    public static User parseUser(ByteDashboard bd) {
+        byte[] id_bytes = bd.nextN(2);
+        int id = ByteUtils.bytesToInt(id_bytes);
+
+        byte[] name_length_bytes = bd.nextN(2);
+        int name_length = ByteUtils.bytesToInt(name_length_bytes);
+        byte[] name_bytes = bd.nextN(name_length);
+        String name = new String(name_bytes, StandardCharsets.UTF_8);
+        return new User(id, name);
+    }
+
+    public static byte[] toBytes(Company company) {
+        int count = company.count;
+        User[] users = company.users;
+
+        byte[] count_bytes = FunUtils.toBytes(count, 2);
+        byte[] company_bytes = ByteUtils.concatenate(new byte[0], count_bytes);
+
+        for (User u : users) {
+            byte[] user_bytes = toBytes(u);
+            company_bytes = ByteUtils.concatenate(company_bytes, user_bytes);
+        }
+        return company_bytes;
+    }
+
+    public static Company parseCompany(ByteDashboard bd) {
+        byte[] count_bytes = bd.nextN(2);
+        int count = ByteUtils.bytesToInt(count_bytes);
+
+        User[] users = new User[count];
+        for (int i = 0; i < count; i++) {
+            users[i] = parseUser(bd);
+        }
+        return new Company(count, users);
+    }
+}
+</div>
