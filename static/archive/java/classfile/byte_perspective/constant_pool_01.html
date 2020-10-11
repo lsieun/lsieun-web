@@ -7,7 +7,7 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>ClassFile</h2>
+<h2>Constant Pool in ClassFile</h2>
 
 <p>
     A class file consists of a single <code>ClassFile</code> structure:
@@ -48,12 +48,18 @@ ClassFile {
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
+        IMHO: Constant Pool是一个“资源仓库”。
+    </p>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
         IMHO: Magic Number是为了区分不同产品（PDF、PNG、ClassFile）之间的差异，而Compiler Version则是为了区分同一个产品在不同版本之间的差异。
         接下来的Constant Pool、Class Info、Fields、Methods和Attributes则是实实在在的映射<code>.java</code>文件当中的内容。
     </p>
 </div>
 
-<h2>The Constant Pool</h2>
+<h2>The Concrete Constant</h2>
 
 <p class="indented">
     All <code>constant_pool</code> table entries have the following general format:
@@ -83,7 +89,7 @@ cp_info {
     <tr class="w3-hover-blue">
         <td>1</td>
         <td>CONSTANT_Utf8</td>
-        <td>UTF-8编码的字符串</td>
+        <td>Modified UTF-8编码的字符串</td>
     </tr>
     <tr class="w3-hover-blue">
         <td>2</td>
@@ -172,7 +178,13 @@ cp_info {
     </tr>
 </table>
 
-
-<h2>Class Name & Internal Name</h2>
-
 <h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一点，Constant Pool是一个“资源仓库”。</li>
+    <li>第二点，Constant Pool一共支持14种具体的常量，根据其<code>tag</code>进行判断。</li>
+</ul>

@@ -1,0 +1,192 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassFile</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>ClassFile</h2>
+
+<h3>Field Members</h3>
+
+<p>
+    <code>ClassFile.java</code>是对JVM文档中<code>ClassFile Structure</code>在Java Code层面的映射。
+</p>
+
+<div title="ClassFile.java" class="javacode">
+public final class ClassFile extends Node {
+    public MagicNumber magic_number;
+    public CompilerVersion compiler_version;
+    public ConstantPool constant_pool;
+    public ClassInfo class_info;
+    public Fields fields;
+    public Methods methods;
+    public Attributes attributes;
+}
+</div>
+
+<div title="ClassFile Structure" hidden class="plaintext">
+ClassFile {
+    ------------------------------------------------------------------------
+    u4             magic;                                 // Magic Number部分
+    ------------------------------------------------------------------------
+    u2             minor_version;
+    u2             major_version;                         // Version部分
+    ------------------------------------------------------------------------
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];  // 常量池部分
+    ------------------------------------------------------------------------
+    u2             access_flags;
+    u2             this_class;                            // Class Info部分
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    ------------------------------------------------------------------------
+    u2             fields_count;
+    field_info     fields[fields_count];                 // fields部分
+    ------------------------------------------------------------------------
+    u2             methods_count;
+    method_info    methods[methods_count];               // methods部分
+    ------------------------------------------------------------------------
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];         // attributes部分
+    ------------------------------------------------------------------------
+}
+</div>
+
+<h3>Starting Point</h3>
+
+<p class="indented">
+    在<code>ClassFile</code>当中，有一个<code>public static ClassFile parse(byte[] bytes)</code>方法，它是使用ClassFile的起点。
+</p>
+
+<div title="ClassFile.java parse method" class="javacode">
+    public static ClassFile parse(byte[] bytes) {
+        ByteDashboard bd = new ByteDashboard(bytes);
+        return new ClassFile(bd);
+    }
+</div>
+
+<p class="indented">
+    当有一个<code>.class</code>文件，我们将文件里的内容读取到一个<code>byte[]</code>中，然后将这个<code>byte[]</code>对象传入<code>parse</code>方法中，就可以得到一个<code>ClassFile</code>对象。
+</p>
+
+<div title="parse example" class="javacode">
+// 第一步，输入参数
+String relative_path = "sample/HelloWorld.class";
+
+// 第二步，读取数据
+String filepath = FileUtils.getFilePath(relative_path);
+byte[] bytes = ReadUtils.readByPath(filepath);
+
+// 第三步，生成ClassFile对象
+ClassFile classfile = ClassFile.parse(bytes);
+</div>
+
+<h2>SuperClass: Node</h2>
+
+<p class="indented">
+    与<code>ClassFile</code>相关的大部分类文件，都继承自<code>Node</code>父类。在<code>Node</code>类，定义了两个字段（<code>bytes</code>和<code>value</code>）和一个方法（<code>hex()</code>）。
+</p>
+
+<div title="Node.java" class="javacode">
+public abstract class Node {
+    public byte[] bytes;
+    public String value;
+
+    public String hex() {
+        return HexUtils.toHex(this.bytes);
+    }
+}
+</div>
+
+<ul>
+    <li><code>byte[] bytes</code>: 记录一个结构（例如，field_info）对应的二进制数据</li>
+    <li><code>String value</code>: 记录一个结构的字符串表示形式（其主要目的是为了显示方便）</li>
+    <li><code>hex()</code>: 将<code>byte[] bytes</code>显示为十六进制形式。</li>
+</ul>
+
+<div title="MagicNumber.java" class="javacode">
+public final class MagicNumber extends Node {
+    public MagicNumber(ByteDashboard bd) {
+        super.bytes = bd.nextN(4); // 注意：将数据存储进父类（Node）的bytes字段
+
+        int magic = ByteUtils.bytesToInt(bytes, 0);
+        if (magic != JVMConst.JVM_CLASSFILE_MAGIC) {
+            throw new RuntimeException("It is not a Java .class file");
+        }
+    }
+
+    public void accept(Visitor v) {
+        v.visitMagicNumber(this);
+    }
+}
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: 我对于单词node的理解，它表示“节点”，英文描述为a place on the stem of a plant from which a branch or leaf grows。在ClassFile Structure这个语境下，我个人认为，magic、minor_version、major_version都是属于整个ClassFile的节点。
+    </p>
+</div>
+
+<h2>No Getter or Setter</h2>
+
+<p>
+    除了<code>ClassFile</code>类，其它与Java ClassFile相关的类，普遍上都没有Getter和Setter方法。
+</p>
+
+<div title="CompilerVersion.java" class="javacode">
+public final class CompilerVersion extends Node {
+    public final int minor_version;
+    public final int major_version;
+
+    public CompilerVersion(ByteDashboard bd) {
+        byte[] minor_version_bytes = bd.nextN(2);
+        byte[] major_version_bytes = bd.nextN(2);
+
+        this.minor_version = ByteUtils.bytesToInt(minor_version_bytes);
+        this.major_version = ByteUtils.bytesToInt(major_version_bytes);
+        super.bytes = ByteUtils.concatenate(minor_version_bytes, major_version_bytes);
+    }
+
+    public void accept(Visitor v) {
+        v.visitCompilerVersion(this);
+    }
+
+}
+</div>
+
+<p class="indented">
+    其主要目的是保持与JVM文档中名称的一致性。例如，在JVM文档中，有minor_version和major_version，那么，在代码中也使用minor_version和major_version的名字，并没有使用getMinorVersion()和getMajorVersion()的Getter形式。
+</p>
+
+<p class="indented">
+    针对这个问题，可能不同的人有不同的见解。往好的地方说，注重实用，与JVM文档保持一致；往坏的地方说，就是不遵守代码规范。因此，这个问题，主要是体现个人对它的理解了。
+</p>
+
+<h2>Visitor Pattern</h2>
+
+<p>
+    在对Java ClassFile的数据进行处理时，我们使用了Visitor Pattern。我对于Visitor Pattern的理解如下：
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        Visitor Pattern ＝ 真实数据 + 表现形式
+    </p>
+</div>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一，<code>ClassFile.java</code>，从fields的角度来说，它是对JVM文档中<code>ClassFile Structure</code>在Java Code层面的映射；从method的角度来说，它是解析<code>.class</code>文件数据的起点。</li>
+    <li>第二，在项目当中，诸多与ClassFile Structure相关的类，它们的父类都是<code>Node.java</code>。</li>
+    <li>第三，在项目当中，很少使用到Getter和Setter方法。</li>
+    <li>第四，在项目当中，为了能够将“数据”和“具体表现”形式分开，因此使用了Visitor Pattern。</li>
+</ul>

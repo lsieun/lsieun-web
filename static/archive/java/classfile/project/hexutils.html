@@ -7,11 +7,216 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<p>
-    在不同的操作系统上，要查看一个文件的十六进制形式可能要用到不同的工具或命令。
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        <code>HexUtils.java</code>的本质就是为了方便进行<code>byte[]</code>和十六进制字符串之间的转换。
+    </p>
+</div>
+
+<p class="indented">
+    在不同的操作系统上，要查看一个文件的十六进制形式可能要用到不同的工具或命令。HexUtils的目的，就是不依赖于各个操作系统，能够查看<code>byte[]</code>的十六进制表示形式，也能够将十六进制字符串转换成<code>byte[]</code>。
 </p>
 
+<h2>Usage</h2>
+
+<h3>From byte array to Hex</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import lsieun.utils.HexFormat;
+import lsieun.utils.HexUtils;
+
+public class HelloWorld {
+    public static void main(String[] args) {
+        int length = 256;
+        byte[] bytes = new byte[length];
+        for (int i = 0; i < length; i++) {
+            bytes[i] = (byte) i;
+        }
+
+        String hex = HexUtils.format(bytes, HexFormat.FORMAT_FF_COLON_FF_16);
+        System.out.println(hex);
+    }
+}
+</div>
+
+<div title="Run Output" hidden class="plaintext">
+00:01:02:03:04:05:06:07:08:09:0A:0B:0C:0D:0E:0F
+10:11:12:13:14:15:16:17:18:19:1A:1B:1C:1D:1E:1F
+20:21:22:23:24:25:26:27:28:29:2A:2B:2C:2D:2E:2F
+30:31:32:33:34:35:36:37:38:39:3A:3B:3C:3D:3E:3F
+40:41:42:43:44:45:46:47:48:49:4A:4B:4C:4D:4E:4F
+50:51:52:53:54:55:56:57:58:59:5A:5B:5C:5D:5E:5F
+60:61:62:63:64:65:66:67:68:69:6A:6B:6C:6D:6E:6F
+70:71:72:73:74:75:76:77:78:79:7A:7B:7C:7D:7E:7F
+80:81:82:83:84:85:86:87:88:89:8A:8B:8C:8D:8E:8F
+90:91:92:93:94:95:96:97:98:99:9A:9B:9C:9D:9E:9F
+A0:A1:A2:A3:A4:A5:A6:A7:A8:A9:AA:AB:AC:AD:AE:AF
+B0:B1:B2:B3:B4:B5:B6:B7:B8:B9:BA:BB:BC:BD:BE:BF
+C0:C1:C2:C3:C4:C5:C6:C7:C8:C9:CA:CB:CC:CD:CE:CF
+D0:D1:D2:D3:D4:D5:D6:D7:D8:D9:DA:DB:DC:DD:DE:DF
+E0:E1:E2:E3:E4:E5:E6:E7:E8:E9:EA:EB:EC:ED:EE:EF
+F0:F1:F2:F3:F4:F5:F6:F7:F8:F9:FA:FB:FC:FD:FE:FF
+</div>
+
+<h3>From Hex to byte array</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import lsieun.utils.HexFormat;
+import lsieun.utils.HexUtils;
+
+public class HelloWorld {
+    public static void main(String[] args) {
+        String hex = "00:01:02:03:04:05:06:07:08:09:0A:0B:0C:0D:0E:0F";
+        byte[] bytes = HexUtils.parse(hex, HexFormat.FORMAT_FF_COLON_FF);
+    }
+}
+</div>
+
+<h2>Sources</h2>
+
+<h3>HexUtils.java</h3>
+
 <p>
-    HexUtils的目的，就是不依赖于各个操作系统，能够查看<code>byte[]</code>的十六进制表示形式，也能够将十六进制字符串转换成<code>byte[]</code>。
+    在<code>HexUtils.java</code>有两种类型的方法：format和parse。
 </p>
 
+<ul>
+    <li>
+        <code>format</code>: 是为了将<code>byte[]</code>转换为十六进制字符串。
+    </li>
+    <li>
+        <code>parse</code>:是为了将十六进制字符串转换为<code>byte[]</code>。
+    </li>
+</ul>
+
+<div title="HexUtils.java" hidden class="javacode">
+import java.util.Formatter;
+
+public class HexUtils {
+
+    public static String format(byte[] bytes, HexFormat format) {
+        String separator = format.separator;
+        int bytes_column = format.columns;
+        return format(bytes, separator, bytes_column);
+    }
+
+    public static String format(byte[] bytes, String separator, int bytes_column) {
+        if (bytes == null || bytes.length < 1) return "";
+
+        StringBuilder sb = new StringBuilder();
+        Formatter fm = new Formatter(sb);
+
+        int length = bytes.length;
+        for (int i = 0; i < length - 1; i++) {
+            int val = bytes[i] & 0xFF;
+            fm.format("%02X", val);
+            if (bytes_column > 0 && (i + 1) % bytes_column == 0) {
+                fm.format("%n");
+            } else {
+                fm.format("%s", separator);
+            }
+        }
+        {
+            int val = bytes[length - 1] & 0xFF;
+            fm.format("%02X", val);
+        }
+
+        return sb.toString();
+    }
+
+    public static byte[] parse(String str, HexFormat format) {
+        char[] chars = format.separator.toCharArray();
+        return parse(str, chars);
+    }
+
+    public static byte[] parse(String str, char[] chars) {
+        int length = str.length();
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            char ch = str.charAt(i);
+            if (is_in(ch, chars)) {
+                continue;
+            }
+            sb.append(ch);
+        }
+        String hex_str = sb.toString();
+        return parse(hex_str);
+    }
+
+    public static boolean is_in(char ch, char[] chars) {
+        for (char item : chars) {
+            if (item == ch) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static byte[] parse(String hex_str) {
+        int length = hex_str.length();
+        int count = length / 2;
+
+        byte[] bytes = new byte[count];
+        for (int i = 0; i < count; i++) {
+            String item = hex_str.substring(2 * i, 2 * i + 2);
+            int val = Integer.parseInt(item, 16);
+            bytes[i] = (byte) val;
+        }
+        return bytes;
+    }
+
+    public static String toHex(byte[] bytes) {
+        return format(bytes, HexFormat.FORMAT_FF_FF);
+    }
+}
+</div>
+
+<p class="indented">
+    在<code>HexUtils.java</code>中，从实现逻辑上来说，它主要依赖于两个概念：分隔符（<code>separator</code>）和一行当中的字符数（<code>bytes_column</code>）。在使用<code>format</code>的时候，会使用到<code>separator</code>和<code>bytes_column</code>；在使用<code>parse</code>的时候，会使用到<code>separator</code>。
+</p>
+
+<h3>HexFormat.java</h3>
+
+<p class="indented">
+    <code>HexFormat.java</code>本质是对于<code>separator</code>和<code>bytes_column</code>的封装。
+</p>
+
+<div title="HexFormat.java" hidden class="javacode">
+public enum HexFormat {
+    FORMAT_FF_FF("", 0),
+    FORMAT_FF_FF_8("", 8),
+    FORMAT_FF_FF_16("", 16),
+    FORMAT_FF_FF_32("", 32),
+
+    FORMAT_FF_SPACE_FF(" ", 0),
+    FORMAT_FF_SPACE_FF_8(" ", 8),
+    FORMAT_FF_SPACE_FF_16(" ", 16),
+    FORMAT_FF_SPACE_FF_32(" ", 32),
+
+    FORMAT_FF_COLON_FF(":", 0),
+    FORMAT_FF_COLON_FF_8(":", 8),
+    FORMAT_FF_COLON_FF_16(":", 16),
+    FORMAT_FF_COLON_FF_32(":", 32),
+    ;
+
+    public final String separator;
+    public final int columns;
+
+    HexFormat(String separator, int columns) {
+        this.separator = separator;
+        this.columns = columns;
+    }
+}
+</div>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一，我们展示了如何使用<code>HexUtils</code>。<code>HexUtils.java</code>的本质就是为了方便进行<code>byte[]</code>和十六进制字符串之间的转换。</li>
+    <li>第二，我们从代码层面讲解了它的实现逻辑。</li>
+</ul>

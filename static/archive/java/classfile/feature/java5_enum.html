@@ -7,17 +7,431 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>Main Content</h2>
+<h2>enum type</h2>
+
+<div title="Day.java" class="javacode">
+public enum Day {
+    SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
+    THURSDAY, FRIDAY, SATURDAY
+}
+</div>
+
+<p class="indented">
+    A class member that does not appear in the source code must be marked using a <code>Synthetic</code> attribute, or else it must have its <code>ACC_SYNTHETIC</code> flag set.
+</p>
+
+<p class="indented">
+    The only exceptions to this requirement are compiler-generated methods which are not considered implementation artifacts, namely <b>the instance initialization method</b>(<code>&lt;init&gt;</code>) representing a default constructor of the Java programming language, <b>the class initialization method</b>(<code>&lt;cinit&gt;</code>), and the <code>Enum.values()</code> and <code>Enum.valueOf()</code> methods.
+</p>
+
+<h3>ClassInfo</h3>
+
+<div title="class_info" class="plaintext">
+constant_pool_count='0047' (71)
+constant_pool
+    ... ...
+    |004| CONSTANT_Class {Value='sample/Day', HexCode='070039'}
+    ... ...
+    |022| CONSTANT_Class {Value='java/lang/Enum', HexCode='070043'}
+    ... ...
+class_info='4031000400160000'
+    access_flags='4031' ([ACC_PUBLIC,ACC_FINAL,ACC_SUPER,ACC_ENUM])
+    this_class='0004' (#4)
+    super_class='0016' (#22)
+    interfaces_count='0000' (0)
+    interfaces='' ([])
+</div>
+
+<p>
+    注意两点：
+</p>
 
 <ul>
-    <li>注意父类是谁</li>
-    <li>注意字段代表ACC_ENUM标识</li>
-    <li>注意生成新的字段$VALUES</li>
-    <li></li>
-    <li></li>
+    <li>第一点，<code>Day</code>带有<code>ACC_FINAL</code>和<code>ACC_ENUM</code>标识。</li>
+    <li>第二点，<code>Day</code>的父类是<code>java.lang.Enum</code>。</li>
 </ul>
 
-<h2>switch Enum</h2>
+<h3>fields</h3>
 
+<div title="fields" class="plaintext">
+fields_count='0008' (8)
+fields
+    FieldInfo {Value='SUNDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='MONDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='TUESDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='WEDNESDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='THURSDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='FRIDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='SATURDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='$VALUES:[Lsample/Day;', AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_FINAL,ACC_SYNTHETIC]', Attrs='[]'}
+</div>
 
+<p>
+    一方面，我们需要注意：<code>SUNDAY</code>~<code>SATURDAY</code>这些字段的类型是<code>Day</code>，它们带有<code>ACC_PUBLIC</code>、<code>ACC_STATIC</code>、<code>ACC_FINAL</code>和<code>ACC_ENUM</code>标识。
+</p>
 
+<p>
+    另一方面，我们需要注意：<code>$VALUES</code>的类型是<code>Day[]</code>（不相同），这个字段带有<code>ACC_PRIVATE</code>（不相同）、<code>ACC_STATIC</code>、<code>ACC_FINAL</code>和<code>ACC_SYNTHETIC</code>（不相同）标识。
+</p>
+
+<h3>methods</h3>
+
+<div title="methods" class="plaintext">
+methods_count='0004' (4)
+methods
+    MethodInfo {Value='values:()[Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC]', Attrs='[Code]'}
+    MethodInfo {Value='valueOf:(Ljava/lang/String;)Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC]', Attrs='[Code, MethodParameters]'}
+    MethodInfo {Value='&lt;init&gt;:(Ljava/lang/String;I)V', AccessFlags='[ACC_PRIVATE]', Attrs='[Code, MethodParameters, Signature]'}
+    MethodInfo {Value='&lt;clinit&gt;:()V', AccessFlags='[ACC_STATIC]', Attrs='[Code]'}
+</div>
+
+<h4>init</h4>
+
+<p>
+    这里是<code>Day</code>的instance initialization method(<code>&lt;init&gt;</code>)，它的标识是<code>ACC_PRIVATE</code>，说明不能从类的外部创建<code>Day</code>对象；另外，它接收两个参数，第一个参数是<code>String</code>类型，第二个参数是<code>int</code>类型。
+</p>
+
+<div title="instance initialization method" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method &lt;init&gt;:(Ljava/lang/String;I)V
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 3
+code_length = 7
+code = 2A2B1CB70006B1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A         这里是this对象
+0001: aload_1              // 2B         这里是第一个参数，String类型
+0002: iload_2              // 1C         这里是第二个参数，int类型
+0003: invokespecial   #6   // B70006     || java/lang/Enum.&lt;init&gt;:(Ljava/lang/String;I)V
+0006: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       7  this:Lsample/Day;
+</div>
+
+<p>
+    从上面的instruction中，可以看到调用了<code>Enum</code>类的构造方法。
+</p>
+
+<div title="Enum.java" class="javacode">
+protected Enum(String name, int ordinal) {
+    this.name = name;
+    this.ordinal = ordinal;
+}
+</div>
+
+<h4>clinit</h4>
+
+<p>
+    这里是<code>Day</code>的class initialization method(<code>&lt;cinit&gt;</code>)，它主要负责对类里面定义的静态字段进行赋值。
+</p>
+
+<div title="class initialization method" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method &lt;clinit&gt;:()V
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 0
+code_length = 144
+code = BB000459120703B70008B30009BB00045912......
+=== === ===  === === ===  === === ===    这里是初始化Day.SUNDAY
+0000: new             #4   // BB0004     || sample/Day
+0003: dup                  // 59
+0004: ldc             #7   // 1207       || SUNDAY
+0006: iconst_0             // 03
+0007: invokespecial   #8   // B70008     || sample/Day.&lt;init&gt;:(Ljava/lang/String;I)V
+0010: putstatic       #9   // B30009     || sample/Day.SUNDAY:Lsample/Day;
+=== === ===  === === ===  === === ===    这里是初始化Day.MONDAY
+0013: new             #4   // BB0004     || sample/Day
+0016: dup                  // 59
+0017: ldc             #10  // 120A       || MONDAY
+0019: iconst_1             // 04
+0020: invokespecial   #8   // B70008     || sample/Day.&lt;init&gt;:(Ljava/lang/String;I)V
+0023: putstatic       #11  // B3000B     || sample/Day.MONDAY:Lsample/Day;
+=== === ===  === === ===  === === ===    这里是初始化Day.TUESDAY
+0026: new             #4   // BB0004     || sample/Day
+0029: dup                  // 59
+0030: ldc             #12  // 120C       || TUESDAY
+0032: iconst_2             // 05
+0033: invokespecial   #8   // B70008     || sample/Day.&lt;init&gt;:(Ljava/lang/String;I)V
+0036: putstatic       #13  // B3000D     || sample/Day.TUESDAY:Lsample/Day;
+=== === ===  === === ===  === === ===    这里是初始化Day.WEDNESDAY
+0039: new             #4   // BB0004     || sample/Day
+0042: dup                  // 59
+0043: ldc             #14  // 120E       || WEDNESDAY
+0045: iconst_3             // 06
+0046: invokespecial   #8   // B70008     || sample/Day.&lt;init&gt;:(Ljava/lang/String;I)V
+0049: putstatic       #15  // B3000F     || sample/Day.WEDNESDAY:Lsample/Day;
+=== === ===  === === ===  === === ===    这里是初始化Day.THURSDAY
+0052: new             #4   // BB0004     || sample/Day
+0055: dup                  // 59
+0056: ldc             #16  // 1210       || THURSDAY
+0058: iconst_4             // 07
+0059: invokespecial   #8   // B70008     || sample/Day.&lt;init&gt;:(Ljava/lang/String;I)V
+0062: putstatic       #17  // B30011     || sample/Day.THURSDAY:Lsample/Day;
+=== === ===  === === ===  === === ===    这里是初始化Day.FRIDAY
+0065: new             #4   // BB0004     || sample/Day
+0068: dup                  // 59
+0069: ldc             #18  // 1212       || FRIDAY
+0071: iconst_5             // 08
+0072: invokespecial   #8   // B70008     || sample/Day.&lt;init&gt;:(Ljava/lang/String;I)V
+0075: putstatic       #19  // B30013     || sample/Day.FRIDAY:Lsample/Day;
+=== === ===  === === ===  === === ===    这里是初始化Day.SATURDAY
+0078: new             #4   // BB0004     || sample/Day
+0081: dup                  // 59
+0082: ldc             #20  // 1214       || SATURDAY
+0084: bipush          6    // 1006
+0086: invokespecial   #8   // B70008     || sample/Day.&lt;init&gt;:(Ljava/lang/String;I)V
+0089: putstatic       #21  // B30015     || sample/Day.SATURDAY:Lsample/Day;
+=== === ===  === === ===  === === ===    这里是创建Day[]数组，用于存放7个具体数据，最后存储到Day.SATURDAY$VALUES
+0092: bipush          7    // 1007
+0094: anewarray       #4   // BD0004     || sample/Day
+=== === ===  === === ===  === === ===    这里是存放SUNDAY到0位置
+0097: dup                  // 59
+0098: iconst_0             // 03
+0099: getstatic       #9   // B20009     || sample/Day.SUNDAY:Lsample/Day;
+0102: aastore              // 53
+=== === ===  === === ===  === === ===    这里是存放MONDAY到1位置
+0103: dup                  // 59
+0104: iconst_1             // 04
+0105: getstatic       #11  // B2000B     || sample/Day.MONDAY:Lsample/Day;
+0108: aastore              // 53
+=== === ===  === === ===  === === ===    这里是存放TUESDAY到2位置
+0109: dup                  // 59
+0110: iconst_2             // 05
+0111: getstatic       #13  // B2000D     || sample/Day.TUESDAY:Lsample/Day;
+0114: aastore              // 53
+=== === ===  === === ===  === === ===    这里是存放WEDNESDAY到3位置
+0115: dup                  // 59
+0116: iconst_3             // 06
+0117: getstatic       #15  // B2000F     || sample/Day.WEDNESDAY:Lsample/Day;
+0120: aastore              // 53
+=== === ===  === === ===  === === ===    这里是存放THURSDAY到4位置
+0121: dup                  // 59
+0122: iconst_4             // 07
+0123: getstatic       #17  // B20011     || sample/Day.THURSDAY:Lsample/Day;
+0126: aastore              // 53
+=== === ===  === === ===  === === ===    这里是存放FRIDAY到5位置
+0127: dup                  // 59
+0128: iconst_5             // 08
+0129: getstatic       #19  // B20013     || sample/Day.FRIDAY:Lsample/Day;
+0132: aastore              // 53
+=== === ===  === === ===  === === ===    这里是存放SATURDAY到6位置
+0133: dup                  // 59
+0134: bipush          6    // 1006
+0136: getstatic       #21  // B20015     || sample/Day.SATURDAY:Lsample/Day;
+0139: aastore              // 53
+=== === ===  === === ===  === === ===    最后将整个Day[]存储到Day.SATURDAY$VALUES字段内
+0140: putstatic       #1   // B30001     || sample/Day.$VALUES:[Lsample/Day;
+0143: return               // B1
+=== === ===  === === ===  === === ===
+</div>
+
+<h4>values()</h4>
+
+<div title="values()" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method values:()[Lsample/Day;
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 0
+code_length = 10
+code = B20001B60002C00003B0
+=== === ===  === === ===  === === ===
+0000: getstatic       #1   // B20001     || sample/Day.$VALUES:[Lsample/Day;
+0003: invokevirtual   #2   // B60002     || [Lsample/Day;.clone:()Ljava/lang/Object;
+0006: checkcast       #3   // C00003     || [Lsample/Day;
+0009: areturn              // B0
+=== === ===  === === ===  === === ===
+</div>
+
+<h4>valueOf()</h4>
+
+<div title="valueOf()" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method valueOf:(Ljava/lang/String;)Lsample/Day;
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 1
+code_length = 10
+code = 12042AB80005C00004B0
+=== === ===  === === ===  === === ===
+0000: ldc             #4   // 1204       || sample/Day  这是Day.class
+0002: aload_0              // 2A         这里是第一个参数，String类型
+0003: invokestatic    #5   // B80005     || java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+0006: checkcast       #4   // C00004     || sample/Day
+0009: areturn              // B0
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      10  name:Ljava/lang/String;
+</div>
+
+<h2>switch enum type</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void tellItLikeItIs(Day day) {
+        switch (day) {
+            case MONDAY:
+                System.out.println("Mondays are bad.");
+                break;
+
+            case FRIDAY:
+                System.out.println("Fridays are better.");
+                break;
+
+            case SATURDAY:
+            case SUNDAY:
+                System.out.println("Weekends are best.");
+                break;
+
+            default:
+                System.out.println("Midweek days are so-so.");
+                break;
+        }
+    }
+}
+</div>
+
+<h3>HelloWorld$1.class</h3>
+
+<h4>class_info</h4>
+
+<div title="class_info" hidden class="plaintext">
+constant_pool_count='002F' (47)
+constant_pool
+    ... ...
+    |009| CONSTANT_Class {Value='sample/HelloWorld$1', HexCode='070021'}
+    |010| CONSTANT_Class {Value='java/lang/Object', HexCode='070023'}
+    ... ...
+class_info='10200009000A0000'
+    access_flags='1020' ([ACC_SUPER,ACC_SYNTHETIC])
+    this_class='0009' (#9)
+    super_class='000A' (#10)
+    interfaces_count='0000' (0)
+    interfaces='' ([])
+</div>
+
+<p>
+    注意，<code>HelloWorld$1</code>带有<code>ACC_SYNTHETIC</code>标识。
+</p>
+
+<h4>fields</h4>
+
+<p>
+    在<code>HelloWorld$1</code>有一个字段<code>$SwitchMap$sample$Day</code>，其类型是<code>int[]</code>；同时，该字段带有<code>ACC_STATIC</code>、<code>ACC_FINAL</code>和<code>ACC_SYNTHETIC</code>标识。
+</p>
+
+<div title="fields" hidden class="plaintext">
+fields_count='0001' (1)
+fields
+    FieldInfo {Value='$SwitchMap$sample$Day:[I', AccessFlags='[ACC_STATIC,ACC_FINAL,ACC_SYNTHETIC]', Attrs='[]'}
+</div>
+
+<h4>methods</h4>
+
+<div title="methods" hidden class="plaintext">
+methods_count='0001' (1)
+methods
+    MethodInfo {Value='&lt;clinit&gt;:()V', AccessFlags='[ACC_STATIC]', Attrs='[Code]'}
+</div>
+
+<div title="clinit" hidden class="plaintext">
+=== === ===  === === ===  === === ===    创建数组，存储到HelloWorld$1.$SwitchMap$sample$Day字段
+0000: invokestatic    #1   // B80001     || sample/Day.values:()[Lsample/Day;
+0003: arraylength          // BE
+0004: newarray        10   // BC0A       || int
+0006: putstatic       #2   // B30002     || sample/HelloWorld$1.$SwitchMap$sample$Day:[I
+=== === ===  === === ===  === === ===    将int[]中MONDAY.ordinal()位置的值设置为1
+0009: getstatic       #2   // B20002     || sample/HelloWorld$1.$SwitchMap$sample$Day:[I
+0012: getstatic       #3   // B20003     || sample/Day.MONDAY:Lsample/Day;
+0015: invokevirtual   #4   // B60004     || sample/Day.ordinal:()I
+0018: iconst_1             // 04
+0019: iastore              // 4F
+0020: goto            4    // A70004
+=== === ===  === === ===  === === ===
+0023: astore_0             // 4B
+=== === ===  === === ===  === === ===    将int[]中FRIDAY.ordinal()位置的值设置为2
+0024: getstatic       #2   // B20002     || sample/HelloWorld$1.$SwitchMap$sample$Day:[I
+0027: getstatic       #6   // B20006     || sample/Day.FRIDAY:Lsample/Day;
+0030: invokevirtual   #4   // B60004     || sample/Day.ordinal:()I
+0033: iconst_2             // 05
+0034: iastore              // 4F
+0035: goto            4    // A70004
+=== === ===  === === ===  === === ===
+0038: astore_0             // 4B
+=== === ===  === === ===  === === ===    将int[]中SATURDAY.ordinal()位置的值设置为3
+0039: getstatic       #2   // B20002     || sample/HelloWorld$1.$SwitchMap$sample$Day:[I
+0042: getstatic       #7   // B20007     || sample/Day.SATURDAY:Lsample/Day;
+0045: invokevirtual   #4   // B60004     || sample/Day.ordinal:()I
+0048: iconst_3             // 06
+0049: iastore              // 4F
+0050: goto            4    // A70004
+=== === ===  === === ===  === === ===
+0053: astore_0             // 4B
+=== === ===  === === ===  === === ===    将int[]中SUNDAY.ordinal()位置的值设置为4
+0054: getstatic       #2   // B20002     || sample/HelloWorld$1.$SwitchMap$sample$Day:[I
+0057: getstatic       #8   // B20008     || sample/Day.SUNDAY:Lsample/Day;
+0060: invokevirtual   #4   // B60004     || sample/Day.ordinal:()I
+0063: iconst_4             // 07
+0064: iastore              // 4F
+0065: goto            4    // A70004
+=== === ===  === === ===  === === ===
+0068: astore_0             // 4B
+=== === ===  === === ===  === === ===
+0069: return               // B1
+=== === ===  === === ===  === === ===
+</div>
+
+<h3>HelloWorld.class</h3>
+
+<div title="tellItLikeItIs:(Lsample/Day;)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method tellItLikeItIs:(Lsample/Day;)V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 2
+code_length = 82
+code = B200022BB600032EAA00000000000041......
+=== === ===  === === ===  === === ===
+0000: getstatic       #2   // B20002     || sample/HelloWorld$1.$SwitchMap$sample$Day:[I
+0003: aload_1              // 2B         这里是传入的参数，Day类型
+0004: invokevirtual   #3   // B60003     || sample/Day.ordinal:()I
+0007: iaload               // 2E
+0008: tableswitch     65   // AA000000000000410000000100000004000000200000002B0000003600000036
+      {
+              1: 32
+              2: 43
+              3: 54
+              4: 54
+        default: 65
+      }
+=== === ===  === === ===  === === ===    打印MONDAY分支
+0040: getstatic       #4   // B20004     || java/lang/System.out:Ljava/io/PrintStream;
+0043: ldc             #5   // 1205       || Mondays are bad.
+0045: invokevirtual   #6   // B60006     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0048: goto            33   // A70021
+=== === ===  === === ===  === === ===    打印FRIDAY分支
+0051: getstatic       #4   // B20004     || java/lang/System.out:Ljava/io/PrintStream;
+0054: ldc             #7   // 1207       || Fridays are better.
+0056: invokevirtual   #6   // B60006     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0059: goto            22   // A70016
+=== === ===  === === ===  === === ===    打印SATURDAY和SUNDAY分支
+0062: getstatic       #4   // B20004     || java/lang/System.out:Ljava/io/PrintStream;
+0065: ldc             #8   // 1208       || Weekends are best.
+0067: invokevirtual   #6   // B60006     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0070: goto            11   // A7000B
+=== === ===  === === ===  === === ===    打印default分支
+0073: getstatic       #4   // B20004     || java/lang/System.out:Ljava/io/PrintStream;
+0076: ldc             #9   // 1209       || Midweek days are so-so.
+0078: invokevirtual   #6   // B60006     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0081: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      82  this:Lsample/HelloWorld;
+    1         0      82  day:Lsample/Day;
+</div>

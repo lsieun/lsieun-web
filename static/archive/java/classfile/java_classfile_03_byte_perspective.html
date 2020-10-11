@@ -7,17 +7,128 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>Content</h2>
+<h2>80%的内容</h2>
+
+<p class="indented">
+    在<a href="/archive/java/classfile/java_classfile_intro.html" target="_blank">课程介绍</a>当中，我们讲到“Byte Perspective、Attribute Perspective和Opcode Perspective这三部分，是本课程的核心内容。学了这三部分内容，相当于学完了整个课程的80%的内容。”但我们没有详细的讲解各个部分都是针对哪些内容来讲解的。
+</p>
+
+<h3>第3章 Byte Perspective</h3>
+
+<p class="indented">
+    第3章《Byte Perspective》是按照ClassFile Structure来进行讲解的。它对应于《The Java Virtual Machine Specification, Java SE 8 Edition》的“Chapter 4. The class File Format”中的从“4.1. The ClassFile Structure”到“4.6. Methods”的内容。
+</p>
+
+<div title="ClassFile Structure" hidden class="plaintext">
+ClassFile {
+    ------------------------------------------------------------------------
+    u4             magic;                                 // Magic Number部分
+    ------------------------------------------------------------------------
+    u2             minor_version;
+    u2             major_version;                         // Version部分
+    ------------------------------------------------------------------------
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];  // 常量池部分
+    ------------------------------------------------------------------------
+    u2             access_flags;
+    u2             this_class;                            // Class Info部分
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    ------------------------------------------------------------------------
+    u2             fields_count;
+    field_info     fields[fields_count];                 // fields部分
+    ------------------------------------------------------------------------
+    u2             methods_count;
+    method_info    methods[methods_count];               // methods部分
+    ------------------------------------------------------------------------
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];         // attributes部分
+    ------------------------------------------------------------------------
+}
+</div>
+
+<p class="indented">
+    这里的标题“Byte Perspective”，就是表明我们在研究Java ClassFile的过程当中，是以1个byte（<code>u1</code>），或2个byte（<code>u2</code>），或4个byte（<code>u4</code>），或8个byte（<code>u8</code>）来进行处理的。
+</p>
+
+<h3>第4章 Attribute Perspective</h3>
+
+<p class="indented">
+    第4章《Attribute Perspective》主要是介绍23个Attributes。它对应于《The Java Virtual Machine Specification, Java SE 8 Edition》的“Chapter 4. The class File Format”中的“4.7. Attributes”部分的内容。
+</p>
+
+<p class="indented">
+    在这23个属性中，有的非常简单，有的特别难以理解，将它们综合到一起进行讲解，它们就会形成相当大的一部分内容，因此将它们归并成单独的一章。这里的标题“Attribute Perspective”就是与“4.7. Attributes”相呼应而生的。
+</p>
+
+<h3>第5章 Opcode Perspective</h3>
+
+<p class="indented">
+    第5章《Opcode Perspective》对应于《The Java Virtual Machine Specification, Java SE 8 Edition》的“Chapter 6. The Java Virtual Machine Instruction Set”的内容。
+</p>
+
+<p class="indented">
+    A Java Virtual Machine <b>instruction</b> consists of <b>an opcode</b> specifying the operation to be performed, followed by <b>zero or more operands</b> embodying values to be operated upon.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        instruction = opcode + operand
+    </p>
+</div>
+
+<p class="indented">
+    这里标题“Opcode Perspective”中的“opcode”就是与“Chapter 6. The Java Virtual Machine Instruction Set”中的“instruction”相对应。
+</p>
+
+<h3>All in All</h3>
+
+<p class="indented">
+    总的来说，本课程的内容相当于《The Java Virtual Machine Specification, Java SE 8 Edition》的“Chapter 4. The class File Format”和“Chapter 6. The Java Virtual Machine Instruction Set”两个章节的内容。
+</p>
+
+<p class="indented">
+    对于《The Java Virtual Machine Specification, Java SE 8 Edition》的其它章节的内容，总结如下：
+</p>
 
 <ul>
-    <li><a href="/archive/java/classfile/byte_perspective/magic_number.html" target="_blank">Magic Number</a></li>
-    <li><a href="/archive/java/classfile/byte_perspective/compiler_version.html" target="_blank">Compiler Version</a></li>
-    <li><a href="/archive/java/classfile/byte_perspective/constant_pool_01.html" target="_blank">Constant Pool: (1) Intro</a></li>
-    <li><a href="/archive/java/classfile/byte_perspective/constant_pool_02.html" target="_blank">Constant Pool: (2) Structure</a></li>
-    <li><a href="/archive/java/classfile/byte_perspective/constant_pool_03.html" target="_blank">Constant Pool: (3) Mapping</a></li>
-    <li><a href="/archive/java/classfile/byte_perspective/constant_pool_04.html" target="_blank">Constant Pool: (4) The Last</a></li>
-    <li><a href="/archive/java/classfile/byte_perspective/class_info.html" target="_blank">Class Info</a></li>
-    <li><a href="/archive/java/classfile/byte_perspective/fields.html" target="_blank">Fields</a></li>
-    <li><a href="/archive/java/classfile/byte_perspective/methods.html" target="_blank">Methods</a></li>
-    <li><a href="/archive/java/classfile/byte_perspective/attributes.html" target="_blank">Attributes</a></li>
+    <li>Chapter 1. Introduction，并没有实质的内容。</li>
+    <li>Chapter 2. The Structure of the Java Virtual Machine，是从一个“静态”的视角出发，用一个非常简洁的语言介绍了JVM的组成结构。我们在讲第5章《Opcode Perspective》的时候，会涉及其中的“2.5. Run-Time Data Areas”和“2.6. Frames”，但并不是我们的学习重点。</li>
+    <li>Chapter 3. Compiling for the Java Virtual Machine，主要是介绍一些代码示例，来演示从java code向instruction set转换的结果。这里内容需要学会Chapter 6. The Java Virtual Machine Instruction Set的内容之后才能容易理解。</li>
+    <li>Chapter 5. Loading, Linking, and Initializing，是从一个“动态”的视角出发，讲述JVM从启动、运行、退出的一个过程。我们在讲第5章《Opcode Perspective》的时候，也会涉及到“5.1. The Run-Time Constant Pool”和“5.4. Linking”内的一小部分内容，也不是我们课程的重点内容。</li>
 </ul>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        这里主要有两个目的：
+    </p>
+    <ul>
+        <li>第一个目的，从课程本身来说，让大家对课程的内容规划有一个了解。</li>
+        <li>第二个目的，让课程的内容与JVM的文档对应起来，大家如果遇到问题，可以找相应的JVM文档部分进行参考。</li>
+    </ul>
+</div>
+
+<h2>学习曲线</h2>
+
+<p class="indented">
+    第3章《Byte Perspective》（本章内容）是处于积累知识、缓慢进展的阶段，处于“Slow Beginning”的阶段。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/learn/learning_curve.jpg" alt="The S-shaped learning curve typical of complex learning"/>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>这里的目的是：</p>
+    <ul>
+        <li>如果是一个bytecode内容的初学者，不建议大家直接跳过本章的内容；或者说，不建立大家直接跳到第5章进行学习。</li>
+        <li>如果是一个对bytecode内容已经有所了解的、有经验的从业人员，可以选择性的学习或者跳过某些内容。</li>
+    </ul>
+</div>
+
+<h2>资料查询</h2>
+
+<p class="indented">
+    在学习本章内容的时候，建议大家经常查阅《The Java Virtual Machine Specification, Java SE 8 Edition》的“Chapter 4. The class File Format”内容。
+</p>

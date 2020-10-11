@@ -7,6 +7,8 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<h2>reinvent the wheel</h2>
+
 <p class="indented">
     To <b>reinvent the wheel</b> is to duplicate a basic method that has already previously been created or optimized by others.
 </p>
@@ -19,7 +21,31 @@
     <b>Reinventing the square wheel</b> is the practice of unnecessarily engineering artifacts that provide functionality already provided by existing standard artifacts (reinventing the wheel) and ending up with a worse result than the standard (a square wheel). This is <b>an anti-pattern</b> which occurs when the engineer is unaware or contemptuous of the standard solution or does not understand the problem or the standard solution sufficiently to avoid problems overcome by the standard. It is mostly an affliction of inexperienced engineers, or the second-system effect.
 </p>
 
-<h2>From User to user_info</h2>
+<h2>本节内容的目的</h2>
+
+<p class="indented">
+    javac，可以将一个<code>.java</code>文件编译成<code>.class</code>文件；相应地，javap，可以将一个<code>.class</code>文件转换成一个适合于阅读的文本形式。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/from_javac_to_javap.png" alt="from javac to javap"/>
+</div>
+
+<p class="indented">
+    我们将javac编译的过程称之为“①”，将javap反编译的过程称之为“②”。那么，在后续的课程中，本质上都是在重复②的过程。也就是说，我们以<code>.class</code>文件为起点，来研究它里面的数据的结构和内容。
+</p>
+
+<p class="indented">
+    对于①过程来说，它是由javac完成的，其具体过程，我们不得而知。本节内容主要是对于①进行一个拙劣的模仿。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/user_info_and_company_info.png" alt="user_info and company_info"/>
+</div>
+
+<h2>Example</h2>
+
+<h3>From User to user_info</h3>
 
 <div title="User.java" class="javacode">
 public class User {
@@ -39,7 +65,7 @@ user_info {
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">user_info example</p>
     <div class="w3-code notranslate" style="display: block;">
-        <span class="w3-tooltip w3-hover-blue">00 03<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">id=2</span></span>
+        <span class="w3-tooltip w3-hover-blue">00 03<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">id=3</span></span>
         <span class="w3-tooltip w3-hover-blue">00 06<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">length=6</span></span>
         <span class="w3-tooltip w3-hover-blue">E5 BC A0 E9 A3 9E<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">name=张飞</span></span>
     </div>
@@ -50,13 +76,12 @@ import lsieun.utils.FileUtils;
 
 public class Z_A_Write_User {
     public static void main(String[] args) {
-        String relative_path = "fun/user_info.bin";
-        String filepath = FileUtils.getFilePath(relative_path);
-
         User user = new User(3, "张飞");
         System.out.println(user);
         byte[] bytes = FunUtils.toBytes(user);
 
+        String relative_path = "fun/user_info.bin";
+        String filepath = FileUtils.getFilePath(relative_path);
         FileUtils.writeBytes(filepath, bytes);
         System.out.println("file://" + filepath);
     }
@@ -71,17 +96,16 @@ public class Z_B_Read_User {
     public static void main(String[] args) {
         String relative_path = "fun/user_info.bin";
         String filepath = FileUtils.getFilePath(relative_path);
-
         byte[] bytes = FileUtils.readBytes(filepath);
+
         ByteDashboard bd = new ByteDashboard(bytes);
         User user = FunUtils.parseUser(bd);
-
         System.out.println(user);
     }
 }
 </div>
 
-<h2>From Company to company_info</h2>
+<h3>From Company to company_info</h3>
 
 <div title="Company.java" class="javacode">
 public class Company {
@@ -118,9 +142,6 @@ import lsieun.utils.FileUtils;
 
 public class Z_C_Write_Company {
     public static void main(String[] args) {
-        String relative_path = "fun/company_info.bin";
-        String filepath = FileUtils.getFilePath(relative_path);
-
         User user1 = new User(1, "刘备");
         User user2 = new User(2, "关羽");
         User user3 = new User(3, "张飞");
@@ -128,6 +149,8 @@ public class Z_C_Write_Company {
         Company company = new Company(3, users);
         System.out.println(company);
 
+        String relative_path = "fun/company_info.bin";
+        String filepath = FileUtils.getFilePath(relative_path);
         byte[] bytes = FunUtils.toBytes(company);
         FileUtils.writeBytes(filepath, bytes);
         System.out.println("file://" + filepath);
@@ -143,17 +166,16 @@ public class Z_D_Read_Company {
     public static void main(String[] args) {
         String relative_path = "fun/company_info.bin";
         String filepath = FileUtils.getFilePath(relative_path);
-
         byte[] bytes = FileUtils.readBytes(filepath);
+
         ByteDashboard bd = new ByteDashboard(bytes);
         Company company = FunUtils.parseCompany(bd);
-
         System.out.println(company);
     }
 }
 </div>
 
-<h2>FunUtils.java</h2>
+<h3>FunUtils.java</h3>
 
 <div title="HelloWorld.java" class="javacode">
 import lsieun.utils.ByteDashboard;

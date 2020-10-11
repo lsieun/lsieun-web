@@ -35,8 +35,14 @@
 
 <h2>Limitations of the Java Virtual Machine</h2>
 
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.11" target="_blank">4.11. Limitations of the Java Virtual Machine</a>部分。
+    </p>
+</div>
+
 <p>
-    The following limitations of the Java Virtual Machine are implicit in the class file format:
+    The following limitations of the Java Virtual Machine are implicit in <b>the class file format</b>:
 </p>
 
 <h3>count in ClassFile</h3>
@@ -244,3 +250,13 @@ index  start_pc  length  name_and_type
     1        10       1  multi_array:[[[[Ljava/lang/Object;
 </div>
 
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一点，对JavaFile和ClassFile在结构上的差异。</li>
+    <li>第二点，从ClassFile Structure的角度来理解JVM中的“局限性”。</li>
+</ul>

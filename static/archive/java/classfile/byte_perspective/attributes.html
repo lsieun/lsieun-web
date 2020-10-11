@@ -7,7 +7,7 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>Attributes</h2>
+<h2>Attributes in ClassFile</h2>
 
 <div title="ClassFile" class="plaintext">
 ClassFile {
@@ -198,6 +198,8 @@ attribute_info {
 <ol>
     <li>
         Five attributes are critical to correct interpretation of the class file by the <b>Java Virtual Machine</b>:
+        <sub class="my_note" style="color:blue">笔记：这里是由Java Architecture中的JVM使用。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
         <ul>
             <li>ConstantValue</li>
             <li>Code</li>
@@ -208,6 +210,8 @@ attribute_info {
     </li>
     <li>
         Twelve attributes are critical to correct interpretation of the class file by <b>the class libraries of the Java SE platform</b>:
+        <sub class="my_note" style="color:blue">笔记：这里是由Java Architecture中的Java API使用。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
         <ul>
             <li>InnerClasses</li>
             <li>EnclosingMethod</li>
@@ -225,6 +229,8 @@ attribute_info {
     </li>
     <li>
         Six attributes are not critical to correct interpretation of the class file by either the Java Virtual Machine or the class libraries of the Java SE platform, but are useful for <b>tools</b>:
+        <sub class="my_note" style="color:blue">笔记：这里是由debug tools使用。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
         <ul>
             <li>SourceFile</li>
             <li>SourceDebugExtension</li>
@@ -234,32 +240,6 @@ attribute_info {
             <li>Deprecated</li>
         </ul>
     </li>
-</ol>
-
-<ol>
-    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">AnnotationDefault Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/bootstrap_methods_attribute.html" target="_blank">BootstrapMethods Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/code_attribute.html" target="_blank">Code Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/constant_value_attribute.html" target="_blank">ConstantValue Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/deprecated_attribute.html" target="_blank">Deprecated Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/enclosing_method_attribute.html" target="_blank">EnclosingMethod Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/exceptions_attribute.html" target="_blank">Exceptions Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/inner_classes_attribute.html" target="_blank">InnerClasses Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/line_number_table_attribute.html" target="_blank">LineNumberTable Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/local_variable_table_attribute.html" target="_blank">LocalVariableTable Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/local_variable_type_table_attribute.html" target="_blank">LocalVariableTypeTable Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/method_parameters_attribute.html" target="_blank">MethodParameters Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeInvisibleAnnotations Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeVisibleAnnotations Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeInvisibleParameterAnnotations Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeVisibleParameterAnnotations Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeInvisibleTypeAnnotations Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/annotation_attribute.html" target="_blank">RuntimeVisibleTypeAnnotations Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/signature_attribute.html" target="_blank">Signature Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/source_debug_extension_attribute.html" target="_blank">SourceDebugExtension Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/source_file_attribute.html" target="_blank">SourceFile Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/stack_map_table_attribute.html" target="_blank">StackMapTable Attribute</a></li>
-    <li><a href="/archive/java/classfile/attribute_perspective/synthetic_attribute.html" target="_blank">Synthetic Attribute</a></li>
 </ol>
 
 <h2>Defining and Naming New Attributes</h2>
@@ -299,3 +279,13 @@ attribute_info {
 </p>
 
 <h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一点，介绍了<code>attribute_info</code>的基本结构。</li>
+    <li>第二点，在JVM 8 Specification版本中，一共定义了23个属性，在这里只是简单介绍，没有讲解细节。</li>
+    <li>第三点，JVM对于新的、不认知的Attribute要如何处理。</li>
+</ul>

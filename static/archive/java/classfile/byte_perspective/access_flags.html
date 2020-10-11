@@ -11,7 +11,7 @@
     <tr class="w3-green">
         <th>Flag Value</th>
         <th>Class Flag</th>
-        <th>Field</th>
+        <th>Field Flag</th>
         <th>Method Flag</th>
     </tr>
     <tr class="w3-hover-blue">
@@ -112,6 +112,125 @@
     </tr>
 </table>
 
+<h2>ACC_XXX</h2>
 
+<h3>0x0002~0x0008</h3>
 
+<p>
+    对于Class来说，它并不支持<code>ACC_PRIVATE</code>、<code>ACC_PROTECTED</code>和<code>ACC_STATIC</code>标识。
+</p>
 
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static class InnerClass {
+        //
+    }
+}
+</div>
+
+<p>
+    对于上面的代码，<code>InnerClass</code>会带有<code>ACC_STATIC</code>标识吗？
+</p>
+
+<div title="HelloWorld$InnerClass" hidden class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |002| CONSTANT_Class {Value='sample/HelloWorld$InnerClass', HexCode='070011'}
+    |003| CONSTANT_Class {Value='java/lang/Object', HexCode='070012'}
+    ... ...
+class_info='0021000200030000'
+    access_flags='0021' ([ACC_PUBLIC,ACC_SUPER]) // 注意，这里没有ACC_STATIC标识
+    this_class='0002' (#2)
+    super_class='0003' (#3)
+    interfaces_count='0000' (0)
+    interfaces='' ([])
+</div>
+
+<h3>0x0020</h3>
+
+<p>
+    <code>0x0020</code>，对于Class来说，它表示<code>ACC_SUPER</code>；对于Field来说，它还没有定义；对于Method来说，它表示<code>ACC_SYNCHRONIZED</code>。
+</p>
+
+<h3>0x0040</h3>
+
+<p>
+    <code>0x0040</code>，对于Class来说，它还没有定义；对于Field来说，它表示<code>ACC_VOLATILE</code>；对于Method来说，它表示<code>ACC_BRIDGE</code>。
+</p>
+
+<h3>0x0080</h3>
+
+<p>
+    <code>0x0080</code>，对于Class来说，它还没有定义；对于Field来说，它表示<code>ACC_TRANSIENT</code>；对于Method来说，它表示<code>ACC_VARARGS</code>。
+</p>
+
+<h2>Relations between ACC_XXXs</h2>
+
+<h3>Class</h3>
+
+<p class="indented">
+    A class file must not have both its <code>ACC_FINAL</code> and <code>ACC_ABSTRACT</code> flags set (JLS §8.1.1.2).
+</p>
+
+<p class="indented">
+    If the <code>ACC_INTERFACE</code> flag is set, the <code>ACC_ABSTRACT</code> flag must also be set, and the <code>ACC_FINAL</code>, <code>ACC_SUPER</code>, and <code>ACC_ENUM</code> flags set must not be set.
+</p>
+
+<p class="indented">
+    If the <code>ACC_INTERFACE</code> flag is not set, any of the other flags may be set except <code>ACC_ANNOTATION</code>.
+    An annotation type must have its <code>ACC_ANNOTATION</code> flag set. If the <code>ACC_ANNOTATION</code> flag is set, the <code>ACC_INTERFACE</code> flag must also be set.
+</p>
+
+<h3>Field</h3>
+
+<p class="indented">
+    <b>Each field of a class</b> may have at most one of its <code>ACC_PUBLIC</code>, <code>ACC_PRIVATE</code>, and <code>ACC_PROTECTED</code> flags set (JLS §8.3.1), and must not have both its <code>ACC_FINAL</code> and <code>ACC_VOLATILE</code> flags set (JLS §8.3.1.4).
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        The Java <code>volatile</code> keyword is used to mark a Java variable as "being stored in main memory".
+        More precisely that means, that every read of a volatile variable will be read from the computer's main memory, and not from the CPU cache, and that every write to a volatile variable will be written to main memory, and not just to the CPU cache.
+    </p>
+</div>
+
+<p class="indented">
+    <b>Fields of interfaces</b> must have their <code>ACC_PUBLIC</code>, <code>ACC_STATIC</code>, and <code>ACC_FINAL</code> flags set; they may have their <code>ACC_SYNTHETIC</code> flag set and must not have any of the other flags set.
+</p>
+
+<h3>Method</h3>
+
+<p class="indented">
+    <b>Methods of classes</b> may have any of the flags set. However, each method of a class may have at most one of its <code>ACC_PUBLIC</code>, <code>ACC_PRIVATE</code>, and <code>ACC_PROTECTED</code> flags set (JLS §8.4.3).
+</p>
+
+<p class="indented">
+    <b>Methods of interfaces</b> may have any of the flags set except <code>ACC_PROTECTED</code>, <code>ACC_FINAL</code>, <code>ACC_SYNCHRONIZED</code>, and <code>ACC_NATIVE</code> (JLS §9.4).
+    In a class file whose version number is less than 52.0, each method of an interface must have its <code>ACC_PUBLIC</code> and <code>ACC_ABSTRACT</code> flags set;
+    in a class file whose version number is 52.0 or above, each method of an interface must have exactly one of its <code>ACC_PUBLIC</code> and <code>ACC_PRIVATE</code> flags set.
+</p>
+
+<p class="indented">
+    If a method of a class or interface has its <code>ACC_ABSTRACT</code> flag set, it must not have any of its <code>ACC_PRIVATE</code>, <code>ACC_STATIC</code>, <code>ACC_FINAL</code>, <code>ACC_SYNCHRONIZED</code>, <code>ACC_NATIVE</code>, or <code>ACC_STRICT</code> flags set.
+</p>
+
+<p class="indented">
+    Each <b>instance initialization method</b> (§2.9) may have at most one of its <code>ACC_PUBLIC</code>, <code>ACC_PRIVATE</code>, and <code>ACC_PROTECTED</code> flags set, and may also have its <code>ACC_VARARGS</code>, <code>ACC_STRICT</code>, and <code>ACC_SYNTHETIC</code> flags set, but must not have any of the other flags set.
+</p>
+
+<p class="indented">
+    <b>Class and interface initialization methods</b> are called implicitly by the Java Virtual Machine.
+    The value of their <code>access_flags</code> item is ignored except for the setting of the <code>ACC_STRICT</code> flag.
+</p>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一点，注意<code>access_flags</code>在Class、Field和Method层面具体取值的差异。</li>
+    <li>第二点，在具体的使用场景中，<code>access_flags</code>的各个具体值之间有相互制约性。</li>
+</ul>

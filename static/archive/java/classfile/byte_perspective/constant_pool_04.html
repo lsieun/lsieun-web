@@ -9,14 +9,54 @@
 
 <h2>Constant Pool Index</h2>
 
-<p class="indented">
-    When a Java file is compiled, all references to variables and methods are stored in the class's constant pool as a symbolic reference. A symbolic reference is a logical reference not a reference that actually points to a physical memory location.
+<div title="ClassFile" class="plaintext">
+ClassFile {
+    u4             magic;
+    u2             minor_version;
+    u2             major_version;
+    ------------------------------------------------------------------------
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];    本节内容关注点
+    ------------------------------------------------------------------------
+    u2             access_flags;
+    u2             this_class;
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    u2             fields_count;
+    field_info     fields[fields_count];
+    u2             methods_count;
+    method_info    methods[methods_count];
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<p>
+    The value of the <code>constant_pool_count</code> item is equal to <b>the number of entries in the <code>constant_pool</code></b> table plus <b>one</b>.
+    A <code>constant_pool</code> index is considered valid if it is greater than <b>zero</b> and less than <code>constant_pool_count</code>, with the exception for constants of type <code>long</code> and <code>double</code>.
 </p>
 
+<p>
+    The <code>constant_pool</code> table is indexed from <code>1</code> to <code>constant_pool_count - 1</code>.
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        与Java中语言习惯不同，这个容量计数是从1而不是0开始的。在Class文件格式规范制定之时，设计者将第0项常量空出来是有特殊考虑的，这样做的目的在于，如果后面某些指向常量池的索引值的数据在特定情况下需要表达“不引用任何一个常量池项目”的含义，可以把索引值设置为0来表示。Class文件结构中只有常量池的容量计数是从1开始，对于其他集合类型，包括接口索引集合、字段表集合、方法表集合等的容量计数都与一般习惯相同，是从0开始。——周志明的《深入理解Java虚拟机：JVM高级特性与最佳实践（第3版）》
+    </p>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: 在解析Constant Pool的时候，<code>constant_pool</code>是从<code>1</code> to <code>constant_pool_count - 1</code>；但是，在实际使用Constant Pool的内容时候，它的有效索引是从<code>0</code> 到 <code>constant_pool_count - 1</code>，一共是<code>constant_pool_count</code>。
+    </p>
+</div>
+
+<h2>Literals and Symbolic Reference</h2>
+
 <p class="indented">
-    For each type it loads, a Java virtual machine must store a constant pool.
     A constant pool is an ordered set of constants used by the type, including <b>literals</b> (string, integer, and floating point constants) and <b>symbolic references</b> to types, fields, and methods.
-    Entries in the constant pool are referenced by index, much like the elements of an array.
     Because it holds symbolic references to all types, fields, and methods used by a type, the constant pool plays a central role in the dynamic linking of Java programs.
 </p>
 
@@ -47,21 +87,25 @@
     </li>
 </ul>
 
-<div title="CONSTANT_Class_info" class="plaintext">
+<p class="indented">
+    另外，需要注意的一点是，对于symbolic reference来说，它也会有一些<code>index</code>指向Constant Pool，这个时候需要注意该<code>index</code>位置的Constant的类型。
+</p>
+
+<div title="CONSTANT_Class_info" hidden class="plaintext">
 CONSTANT_Class_info {
     u1 tag;
     u2 name_index; --&gt; CONSTANT_Utf8_info
 }
 </div>
 
-<div title="CONSTANT_String_info" class="plaintext">
+<div title="CONSTANT_String_info" hidden class="plaintext">
 CONSTANT_String_info {
     u1 tag;
     u2 string_index; --&gt; CONSTANT_Utf8_info
 }
 </div>
 
-<div title="CONSTANT_Fieldref_info" class="plaintext">
+<div title="CONSTANT_Fieldref_info" hidden class="plaintext">
 CONSTANT_Fieldref_info {
     u1 tag;
     u2 class_index; --&gt; CONSTANT_Class_info
@@ -69,7 +113,7 @@ CONSTANT_Fieldref_info {
 }
 </div>
 
-<div title="CONSTANT_Methodref_info" class="plaintext">
+<div title="CONSTANT_Methodref_info" hidden class="plaintext">
 CONSTANT_Methodref_info {
     u1 tag;
     u2 class_index; --&gt; CONSTANT_Class_info
@@ -77,7 +121,7 @@ CONSTANT_Methodref_info {
 }
 </div>
 
-<div title="CONSTANT_InterfaceMethodref_info" class="plaintext">
+<div title="CONSTANT_InterfaceMethodref_info" hidden class="plaintext">
 CONSTANT_InterfaceMethodref_info {
     u1 tag;
     u2 class_index; --&gt; CONSTANT_Class_info
@@ -85,7 +129,7 @@ CONSTANT_InterfaceMethodref_info {
 }
 </div>
 
-<div title="CONSTANT_NameAndType_info" class="plaintext">
+<div title="CONSTANT_NameAndType_info" hidden class="plaintext">
 CONSTANT_NameAndType_info {
     u1 tag;
     u2 name_index; --&gt; CONSTANT_Utf8_info
@@ -93,7 +137,7 @@ CONSTANT_NameAndType_info {
 }
 </div>
 
-<div title="CONSTANT_MethodHandle_info" class="plaintext">
+<div title="CONSTANT_MethodHandle_info" hidden class="plaintext">
 CONSTANT_MethodHandle_info {
     u1 tag;
     u1 reference_kind; --&gt; must be in the range 1 to 9
@@ -101,20 +145,54 @@ CONSTANT_MethodHandle_info {
 }
 </div>
 
-<div title="CONSTANT_MethodType_info" class="plaintext">
+<div title="CONSTANT_MethodType_info" hidden class="plaintext">
 CONSTANT_MethodType_info {
     u1 tag;
     u2 descriptor_index; --&gt; CONSTANT_Utf8_info
 }
 </div>
 
-<div title="CONSTANT_InvokeDynamic_info" class="plaintext">
+<div title="CONSTANT_InvokeDynamic_info" hidden class="plaintext">
 CONSTANT_InvokeDynamic_info {
     u1 tag;
     u2 bootstrap_method_attr_index; --&gt; a valid index into the bootstrap_methods array of the bootstrap method table
     u2 name_and_type_index; --&gt; CONSTANT_NameAndType_info
 }
 </div>
+
+<h2>From Symbolic Reference to Direct Reference</h2>
+
+<p class="indented">
+    When a Java file is compiled, all references to fields and methods are stored in the class's constant pool as a <b>symbolic reference</b>.
+    A <b>symbolic reference</b> is <b>a logical reference</b> not a reference that actually points to a <b>physical memory location</b>.
+    <sub class="my_note" style="color:blue">笔记：从“静态”的角度来说，从class文件的角度来说，对于字段和方法的引用会被存储成symbolic reference。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    At some point during the running of a program, if a particular <b>symbolic reference</b> is to be used, it must be resolved.
+    <b>Resolution</b> is the process of finding the entity identified by the <b>symbolic reference</b> and replacing the <b>symbolic reference</b> with a <b>direct reference</b>.
+    Because all symbolic references reside in the constant pool, this process is often called <b>constant pool resolution</b>.
+    <sub class="my_note" style="color:blue">笔记：从“动态”的角度来说，从JVM运行的角度来说，这些symbol reference需要被解析成direct reference。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    Linking involves not only the replacement of symbolic references with direct ones, it also involves checking for <b>correctness and permission</b>. The checking of symbolic references for existence and access permission is performed during resolution. For example, when a Java virtual machine resolves a <code>getstatic</code> instruction to a field of another class, the Java virtual machine checks to make sure that:
+</p>
+
+<ul>
+    <li>The other class exists.</li>
+    <li>This class has permission to access the other class.</li>
+    <li>The named field exists in the other class.</li>
+    <li>The field has the expected type (symbolic references to fields include the field type).</li>
+    <li>This class has permission to access the field.</li>
+    <li>That the field is really static--a class variable and not an instance variable.</li>
+</ul>
+
+<p>
+    If any of these checks fail, an error is thrown and resolution fails. Otherwise, the <b>symbolic reference</b> is replaced by the <b>direct reference</b> and resolution succeeds.
+</p>
 
 <h2>two entries Constant</h2>
 
@@ -145,3 +223,14 @@ CONSTANT_Double_info {
     Note: <b>In retrospect, making 8-byte constants take two constant pool entries was a poor choice.</b>
 </p>
 
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一点，就是对于Constant Pool内index的理解，尤其要注意long和double的情况。</li>
+    <li>第二点，就是对于Constant Pool内的Constant分为两类，即literal和symbol reference。</li>
+    <li>第三点，在<code>.class</code>文件内，Constant Pool的symbol reference，在JVM运行的过程中，需要转换为direct reference（physical memory location）后，才能进行使用。</li>
+</ul>

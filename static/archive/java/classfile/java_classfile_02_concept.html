@@ -228,6 +228,12 @@ javac -g:vars,lines Main.java
     </li>
 </ul>
 
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: <code>javap -p -v HelloWorld.class</code>是经常使用到的命令。
+    </p>
+</div>
+
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     private static int add(int a, int b) {
@@ -243,7 +249,7 @@ javac -g HelloWorld.java
 
 <h3>no option</h3>
 
-<div title="javap" class="plaintext">
+<div title="javap" hidden class="plaintext">
 $ javap HelloWorld.class
 Compiled from "HelloWorld.java"
 public class sample.HelloWorld {
@@ -251,75 +257,115 @@ public class sample.HelloWorld {
 }
 </div>
 
-<h3>javap -s</h3>
+<h3>javap -p</h3>
 
-<div title="javap -s" class="plaintext">
-$ javap -s HelloWorld.class
+<div title="javap -p" hidden class="plaintext">
+$ javap -p HelloWorld.class
 Compiled from "HelloWorld.java"
-public class sample.HelloWorld {
-  public sample.HelloWorld();
-    descriptor: ()V
+public class HelloWorld {
+  public HelloWorld();
+  private static int add(int, int);
 }
 </div>
 
 <h3>javap -c</h3>
 
-<div title="javap -c" class="plaintext">
-$ javap -c HelloWorld.class
+<div title="javap -p -c" hidden class="plaintext">
+$ javap -p -c HelloWorld.class
 Compiled from "HelloWorld.java"
-public class sample.HelloWorld {
-  public sample.HelloWorld();
+public class HelloWorld {
+  public HelloWorld();
     Code:
        0: aload_0
        1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V
        4: return
+
+  private static int add(int, int);
+    Code:
+       0: iload_0
+       1: iload_1
+       2: iadd
+       3: istore_2
+       4: iload_2
+       5: ireturn
 }
 </div>
 
 <h3>javap -l</h3>
 
-<div title="javap -l" class="plaintext">
-$ javap -l HelloWorld.class
+<div title="javap -p -l" hidden class="plaintext">
+$ javap -p -l HelloWorld.class
 Compiled from "HelloWorld.java"
-public class sample.HelloWorld {
-  public sample.HelloWorld();
+public class HelloWorld {
+  public HelloWorld();
     LineNumberTable:
-      line 3: 0
+      line 1: 0
     LocalVariableTable:
       Start  Length  Slot  Name   Signature
-          0       5     0  this   Lsample/HelloWorld;
+          0       5     0  this   LHelloWorld;
+
+  private static int add(int, int);
+    LineNumberTable:
+      line 3: 0
+      line 4: 4
+    LocalVariableTable:
+      Start  Length  Slot  Name   Signature
+          0       6     0     a   I
+          0       6     1     b   I
+          4       2     2   sum   I
+}
+</div>
+
+<h3>javap -s</h3>
+
+<div title="javap -p -s" hidden class="plaintext">
+$ javap -p -s HelloWorld.class
+Compiled from "HelloWorld.java"
+public class HelloWorld {
+  public HelloWorld();
+    descriptor: ()V
+
+  private static int add(int, int);
+    descriptor: (II)I
 }
 </div>
 
 <h3>javap -v</h3>
 
-<div title="javap -v" class="plaintext">
-$ javap -v HelloWorld.class
-Classfile /D:/git-repo/java8-classfile-tutorial/target/classes/sample/HelloWorld.class
-  Last modified 2020-9-25; size 263 bytes
-  MD5 checksum 701f765fabb6a98f6054e21865fadddd
+<div title="javap -p -v" hidden class="plaintext">
+$ javap -p -v HelloWorld.class
+Classfile /D:/git-repo/java8-classfile-tutorial/target/test/HelloWorld.class
+  Last modified 2020-10-5; size 373 bytes
+  MD5 checksum a4ef324e7c6e9bd90baba2ea2213fa1a
   Compiled from "HelloWorld.java"
-public class sample.HelloWorld
+public class HelloWorld
   minor version: 0
   major version: 52
   flags: ACC_PUBLIC, ACC_SUPER
 Constant pool:
-   #1 = Methodref          #3.#12         // java/lang/Object."&lt;init&gt;":()V
-   #2 = Class              #13            // sample/HelloWorld
-   #3 = Class              #14            // java/lang/Object
+   #1 = Methodref          #3.#19         // java/lang/Object."&lt;init&gt;":()V
+   #2 = Class              #20            // HelloWorld
+   #3 = Class              #21            // java/lang/Object
    #4 = Utf8               &lt;init&gt;
    #5 = Utf8               ()V
    #6 = Utf8               Code
    #7 = Utf8               LineNumberTable
-   #8 = Utf8               add
-   #9 = Utf8               (II)I
-  #10 = Utf8               SourceFile
-  #11 = Utf8               HelloWorld.java
-  #12 = NameAndType        #4:#5          // "&lt;init&gt;":()V
-  #13 = Utf8               sample/HelloWorld
-  #14 = Utf8               java/lang/Object
+   #8 = Utf8               LocalVariableTable
+   #9 = Utf8               this
+  #10 = Utf8               LHelloWorld;
+  #11 = Utf8               add
+  #12 = Utf8               (II)I
+  #13 = Utf8               a
+  #14 = Utf8               I
+  #15 = Utf8               b
+  #16 = Utf8               sum
+  #17 = Utf8               SourceFile
+  #18 = Utf8               HelloWorld.java
+  #19 = NameAndType        #4:#5          // "&lt;init&gt;":()V
+  #20 = Utf8               HelloWorld
+  #21 = Utf8               java/lang/Object
 {
-  public sample.HelloWorld();
+  public HelloWorld();
     descriptor: ()V
     flags: ACC_PUBLIC
     Code:
@@ -328,23 +374,38 @@ Constant pool:
          1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V
          4: return
       LineNumberTable:
-        line 3: 0
+        line 1: 0
       LocalVariableTable:
         Start  Length  Slot  Name   Signature
-            0       5     0  this   Lsample/HelloWorld;
+            0       5     0  this   LHelloWorld;
+
+  private static int add(int, int);
+    descriptor: (II)I
+    flags: ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: iload_0
+         1: iload_1
+         2: iadd
+         3: istore_2
+         4: iload_2
+         5: ireturn
+      LineNumberTable:
+        line 3: 0
+        line 4: 4
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       6     0     a   I
+            0       6     1     b   I
+            4       2     2   sum   I
 }
 SourceFile: "HelloWorld.java"
 </div>
 
-<h3>javap -p</h3>
-
-<div title="javap -p" class="plaintext">
-$ javap -p HelloWorld.class
-Compiled from "HelloWorld.java"
-public class sample.HelloWorld {
-  public sample.HelloWorld();
-  private static int add(int, int);
-}
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        NOTE: 在上面的输出内容中有<code>#1</code>的标识，它表示指向Constant pool的第1项内容。更广泛的说，<code>#n</code>表示指向Constant pool的第<code>n</code>项内容。
+    </p>
 </div>
 
 <h2>References</h2>

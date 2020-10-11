@@ -7,6 +7,10 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<p class="indented">
+    在Constant Pool当中，具体包含了14个Constant类型。在解释每一个Constant类型的时候，主要从3个方面着手：table的结构、十六进制的示例、Java代码。
+</p>
+
 <h2>CP (1-6)</h2>
 
 <h3>CONSTANT_Utf8(1)</h3>
@@ -470,6 +474,12 @@ public class HelloWorld {
     </div>
 </div>
 
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: 我们知道，在Class里有两种类型的成员（Member），即field member和method member。针对这两种成员（field Member和method Member），JVM在处理的时候，想用一种统一的方式来表述，于是出现这样一个三元组：类名（class）、名称（field name或method name，统称为name）和类型描述符（descriptor）。那么，将name和descriptor放到一起，就组成了CONSTANT_NameAndType这个结构。
+    </p>
+</div>
+
 <h2>CP (15-18)</h2>
 
 <div title="HelloWorld.java" class="javacode">
@@ -488,6 +498,22 @@ public class HelloWorld  {
 
 <h3>CONSTANT_MethodHandle(15)</h3>
 
+<p>
+    The <code>CONSTANT_MethodHandle_info</code> structure is used to represent a <b>method handle</b>:
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: method handle就是指向一个具体方法的“控制杆”，它可以随时对该方法进行调用。一个形象的例子，就是你可以按下“<a href="javascript:void(0);" onclick="$('#warship_div').toggle();">控制器</a>”，然后会发射导弹。
+    </p>
+</div>
+
+<div id="warship_div" style="display: none;" class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/vehicle/ship/tool_handle.jpg" alt="handle"/>
+    <img class="w3-image w3-center" src="/images/vehicle/ship/war_ship.jpg" alt="war ship"/>
+</div>
+
+
 <div title="CONSTANT_MethodHandle_info" class="plaintext">
 CONSTANT_MethodHandle_info {
     u1 tag;
@@ -505,7 +531,21 @@ CONSTANT_MethodHandle_info {
     </div>
 </div>
 
+<div title="解析后的结果" class="plaintext">
+CONSTANT_MethodHandle {Value='invokestatic sample/HelloWorld.lambdiseMe:()Ljava/lang/String;', HexCode='0F060021'}
+</div>
+
 <h3>CONSTANT_MethodType(16)</h3>
+
+<p>
+    The <code>CONSTANT_MethodType_info</code> structure is used to represent a <b>method type</b>:
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: method type，就是方法的描述符（descriptor），它包括方法接受的参数和返回值。
+    </p>
+</div>
 
 <div title="CONSTANT_MethodType_info" class="plaintext">
 CONSTANT_MethodType_info {
@@ -522,7 +562,15 @@ CONSTANT_MethodType_info {
     </div>
 </div>
 
+<div title="解析后的结果" class="plaintext">
+CONSTANT_MethodType {Value='()Ljava/lang/String;', HexCode='10000E'}
+</div>
+
 <h3>CONSTANT_InvokeDynamic(18)</h3>
+
+<p>
+    The <code>CONSTANT_InvokeDynamic_info</code> structure is used by an <code>invokedynamic</code> instruction to specify a bootstrap method, the dynamic invocation name, the argument and return types of the call, and optionally, a sequence of additional constants called static arguments to the bootstrap method.
+</p>
 
 <div title="CONSTANT_InvokeDynamic_info" class="plaintext">
 CONSTANT_InvokeDynamic_info {
@@ -539,6 +587,10 @@ CONSTANT_InvokeDynamic_info {
         <span class="w3-tooltip w3-hover-blue">00 00<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">bootstrap_method_attr_index</span></span>
         <span class="w3-tooltip w3-hover-blue">00 1C<span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag w3-round-xlarge">name_and_type_index</span></span>
     </div>
+</div>
+
+<div title="解析后的结果" class="plaintext">
+CONSTANT_InvokeDynamic {Value='#0:get:()Ljava/util/function/Supplier;', HexCode='120000001C'}
 </div>
 
 <h2>Summing Up</h2>

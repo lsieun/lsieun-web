@@ -95,9 +95,17 @@
     </tr>
 </table>
 
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld  {
+    public int intValue = 32768; // CONSTANT_Integer_info
+    public long longValue = 65538L; // CONSTANT_Long_info
+    public float floatValue = 3.14F; // CONSTANT_Float_info
+    public double doubleValue = 6.28D; // CONSTANT_Double_info
+}
+</div>
+
 <p class="indented">
-    在上面的表格中，我们并没有看到Java programming language中的<code>byte</code>、<code>short</code>、<code>char</code>和<code>boolean</code>这些类型在Java class file format当中得到体现。
-    其中的原因是：<code>byte</code>、<code>short</code>、<code>char</code>和<code>boolean</code>这些在Java programming language存在的类型，在Java class file format当中都被当作<code>int</code>(<code>CONSTANT_Integer_info</code>)来处理了。
+    在上面的表格中，我们并没有看到Java programming language中的<code>byte</code>、<code>short</code>、<code>char</code>和<code>boolean</code>这些类型在Java class file format当中得到体现。换句话说，在Java class file format当中，并没有出现<code>CONSTANT_Byte_info</code>、<code>CONSTANT_Short_info</code>、<code>CONSTANT_Char_info</code>或<code>CONSTANT_Boolean_info</code>这样的结构。这个问题，要从opcode角度才能回答。
 </p>
 
 <h3>CP (8): CONSTANT_String_info</h3>
@@ -329,6 +337,17 @@ CONSTANT_NameAndType_info {
     preceded by <code>L</code> and followed by a <b>semicolon</b>.
 </p>
 
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        做一个比喻。在《火影忍者》中鸣人有一个忍术叫“<a href="javascript:void(0);" onclick="$('#shadow_clone_technique_div').toggle();">影分身之术</a>”，使用查克拉制造出有实体的分身，具有独立于施术者本体的意识和一定的抗击打能力，解除后分身的记忆和经验会回到本体。
+        当描述一个广泛意义的类时，使用Internal Name，这就相当于“本体”；当描述一个具体的变量的时候，就使用<code>L&lt;InternalName&gt;;</code>这种形式，它则相当于“分身”。
+    </p>
+</div>
+
+<div id="shadow_clone_technique_div" class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/cartoon/naruto/shadow_clone_technique.gif" alt="Shadow Clone Technique"/>
+</div>
+
 <p class="indented">
     To elaborate on why there is no terminating <code>]</code> - this code is to allow the JNI/JVM to quickly identify a method and its signature. It's intended to be as compact as possible to make parsing fast (=as few characters as possible), so <code>[</code> is used for an array which is pretty straightforward (what better symbol to use?).
 </p>
@@ -347,8 +366,39 @@ CONSTANT_NameAndType_info {
 
 <p>
     A <b>field descriptor</b> is a string that indicates the field's type.
+</p>
+
+<div title="field_info" class="plaintext">
+field_info {
+    u2             access_flags;
+    u2             name_index;
+    u2             descriptor_index;
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/classfile_field_info.png" alt="field_info"/>
+</div>
+
+<p>
     A <b>method descriptor</b> is a string that indicates the method's return type and the number, order, and types of its parameters.
 </p>
+
+<div title="method_info" class="plaintext">
+method_info {
+    u2             access_flags;
+    u2             name_index;
+    u2             descriptor_index;
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/classfile_method_info.png" alt="method_info"/>
+</div>
 
 <p>
     The symbolic references contained in the constant pool involve three special kinds of strings: fully qualified names, simple names, and descriptors.
@@ -383,6 +433,16 @@ public class HelloWorld {
     </p>
 </div>
 
+<p>
+
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        NOTE: 我们在这里提到descriptor和signature两个概念的差异。顺便提一句，在后续的内容当中，还会介绍由signature的概念引出的bridge method。
+    </p>
+</div>
+
 <h3>CP (15-18)</h3>
 
 <div title="HelloWorld.java" class="javacode">
@@ -400,8 +460,17 @@ public class HelloWorld  {
 </div>
 
 <p>
-    目前，先不讲。
+    暂时，先不讲这部分内容。因为这部分内容，需要结合<code>invokedynamic</code>指令才能讲清楚。
 </p>
 
 <h2>Summing Up</h2>
 
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一点，从全篇内容的角度来说，主要在<code>.class</code>内定义的Constant与<code>.java</code>文件内的哪一部分相对应。</li>
+    <li>第二点，在Java Language中，使用Fully Qualified Class Name；在Java Class File Format中，使用Internal Name。</li>
+    <li>第三点，为了能够统一描述field和method，出现了descriptor的概念；另外，也注意descriptor与signature的区别。</li>
+</ul>

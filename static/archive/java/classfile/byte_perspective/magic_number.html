@@ -41,6 +41,10 @@ ClassFile {
     <code>0xCAFEBABE</code> is <b>3405691582</b> in decimal.
 </p>
 
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/magic/magic_trick.gif" alt="magic trick"/>
+</div>
+
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
         IMHO: Magic Number是为了区分不同产品（PDF、PNG、ClassFile）之间的差异。
@@ -57,7 +61,7 @@ ClassFile {
 
 <ul>
     <li><b>PDF</b> Files will start with the magic text <b>%PDF</b> –> Hex (<code>25 50 44 46</code>)</li>
-    <li><b>PNG</b> Files will start with the magic text <b>.PNG</b> –> Hex (<code>89 50 4E 47</code>)</li>
+    <li><b>PNG</b> Files will start with the magic text <b>PNG</b> –> Hex (<code>89 50 4E 47</code>)</li>
     <li><b>Java class</b> Files will start with the magic text <b>Êþº¾</b> –> Hex (<code>CAFEBABE</code>)</li>
 </ul>
 
@@ -130,6 +134,29 @@ ClassFile {
     <li>2011年8月30日，仅仅加入Google数月之后的James Gosling就在个人博客上宣布离开Google</li>
     <li>2020年，James Gosling是65岁。</li>
 </ul>
+
+<div id="grateful_dead_logo" style="display: none;" class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/music/grateful_dead.jpg" alt="Grateful Dead Logo"/>
+</div>
+
+<p class="indented">
+    <a href="javascript:void(0);" onclick="$('#grateful_dead_logo').toggle();">这张图</a>是Grateful Dead乐队的一张专辑的图片。关于“Grateful Dead”名字的来历，有下面一段英文描述。它讲了一个小的故事场景：有一个人死去了，另外一个人，出于怜悯之情，为死去的那个人举办了葬礼，死去的那个人的灵魂对这个人心存感激之情，那么Grateful Dead就指“已经死去的、心怀感激之情的那个人的灵魂”。这与中文翻译后的“感恩而死”差距就非常大。
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        The name "Grateful Dead" was chosen from a dictionary. According to Phil Lesh, "[Jerry Garcia] picked up an old Britannica World Language Dictionary ... [and] ... In that silvery elf-voice he said to me, 'Hey, man, how about the Grateful Dead?'" The definition there was "the soul of a dead person, or his angel, showing gratitude to someone who, as an act of charity, arranged their burial".
+    </p>
+</div>
+
+<p class="indented">
+    对于Grateful Dead的形象，IMHO，可能与《海贼王》中<a href="javascript:void(0);" onclick="$('#brook_div').toggle();">布鲁克</a>的形象有点类似。
+</p>
+
+<div id="brook_div" style="display: none;" class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/cartoon/one_piece/brook_after_two_years.jpg" alt="One Piece Brook"/>
+</div>
+
 
 <h2>Change Magic Number</h2>
 
@@ -217,3 +244,7 @@ FEEDBABE (feed babe)
     <li>第一点，Magic Number的值是<code>0xCAFEBABE</code>。</li>
     <li>第二点，如果修改了Magic Number的值，就会出现<code>ClassFormatError</code>的错误。</li>
 </ul>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/magic/magic_trick_rabbit.jpg" alt="magic trick"/>
+</div>

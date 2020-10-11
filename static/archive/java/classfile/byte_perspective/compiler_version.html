@@ -38,11 +38,27 @@ ClassFile {
 
 <p class="indented">
     The values of the <code>minor_version</code> and <code>major_version</code> items are the minor and major version numbers of this class file.
-    Together, a major and a minor version number determine the version of the class file format.
+    Together, <b>a major and a minor version number</b> determine <b>the version of the class file format</b>.
     If a class file has major version number <code>M</code> and minor version number <code>m</code>, we denote the version of its class file format as <code>M.m</code>.
     Thus, class file format versions may be ordered lexicographically,<sub class="my_note" style="color:green">笔记：lexicographically 词典顺序</sub> for example, 1.5 < 2.0 < 2.1.
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
+
+<div title="CompilerVersion.java" class="javacode">
+public final class CompilerVersion extends Node {
+    public final int minor_version;
+    public final int major_version;
+
+    public CompilerVersion(ByteDashboard bd) {
+        byte[] minor_version_bytes = bd.nextN(2);
+        byte[] major_version_bytes = bd.nextN(2);
+
+        this.minor_version = ByteUtils.bytesToInt(minor_version_bytes);
+        this.major_version = ByteUtils.bytesToInt(major_version_bytes);
+        super.bytes = ByteUtils.concatenate(minor_version_bytes, major_version_bytes);
+    }
+}
+</div>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
@@ -53,7 +69,7 @@ ClassFile {
 <h2>Major Version</h2>
 
 <p class="indented">
-    The first version of Java class files is major version 45 and minor version 3 and are valid for JDK 1 & 1.1. I don’t know why versions start with 45 and a short research on Google gave me no answer. However, we have to accept this. For class files for Java 1.2 and later the minor version is always 0, and the major version is incremented for each Java version.
+    <b>The first version of Java class files is major version 45</b> and minor version 3 and are valid for JDK 1 & 1.1. I don’t know why versions start with 45 and a short research on Google gave me no answer. However, we have to accept this. For class files for Java 1.2 and later <b>the minor version is always 0, and the major version is incremented for each Java version</b>.
 </p>
 
 
@@ -62,6 +78,11 @@ ClassFile {
         <th>Java Version</th>
         <th>Major Version(Decimal)</th>
         <th>Major Version(Hex)</th>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Java SE 15</td>
+        <td>59</td>
+        <td>0x3B</td>
     </tr>
     <tr class="w3-hover-blue">
         <td>Java SE 14</td>
@@ -138,6 +159,12 @@ ClassFile {
 <p class="indented">
     Java的主版本(Major Version)是从45开始，JDK 1.1之后的每个JDK大版本发布主版本号向上加1（JDK 1.0~1.1使用了45.0~45.3的版本号）。
 </p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: jdk_version ＝ major_version - 44
+    </p>
+</div>
 
 <h2>Change Compiler Version</h2>
 
@@ -317,6 +344,6 @@ error: Target option 1.5 is no longer supported. Use 1.6 or later.
 </p>
 
 <ul>
-    <li>第一点，Compiler Version是为了区分不同版本的<code>javac</code>编译后生成的ClassFile文件。</li>
+    <li>第一点，<code>minor_version</code>和<code>major_version</code>是为了区分不同版本的ClassFile文件。</li>
     <li>第二点，如果使用<code>java</code>运行更高版本<code>javac</code>编译的ClassFile文件，就会出现<code>UnsupportedClassVersionError</code>的错误。</li>
 </ul>

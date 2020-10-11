@@ -7,7 +7,7 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>Class Info</h2>
+<h2>Class Info in ClassFile</h2>
 
 <div title="ClassFile" class="plaintext">
 ClassFile {
@@ -81,6 +81,12 @@ ClassFile {
 </div>
 
 <h2>access_flags</h2>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下表的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.1-200-E.1" target="_blank">Table 4.1-A. Class access and property modifiers</a>部分。
+    </p>
+</div>
 
 <table class="w3-table-all w3-hoverable w3-centered">
     <tr class="w3-green">
@@ -174,7 +180,29 @@ ClassFile {
     <code>access_flags</code>中一共有16个标志位可以使用，当前只定义了其中8个，没有使用到的标志位要求一律为<code>0</code>。
 </p>
 
+<p class="indented">
+    All bits of the <code>access_flags</code> item not assigned are reserved for future use.
+    They should be set to <b>zero</b> in generated class files and should be ignored by Java Virtual Machine implementations.
+</p>
+
 <h3>ACC_SUPER</h3>
+
+<p class="indented">
+    The <code>ACC_SUPER</code> flag indicates which of two alternative semantics is to be expressed by the <code>invokespecial</code> instruction if it appears in this class or interface.
+    <sub class="my_note" style="color:green">笔记：第一，从标识本身来说，ACC_SUPER有两个可选的语义。</sub>
+    Compilers to the instruction set of the Java Virtual Machine should set the <code>ACC_SUPER</code> flag.
+    <sub class="my_note" style="color:green">笔记：第二，从编译器的角度来说，Compiler有义务给class文件设置ACC_SUPER标识。</sub>
+    In Java SE 8 and above, the Java Virtual Machine considers the <code>ACC_SUPER</code> flag to be set in every class file, regardless of the actual value of the flag in the class file and the version of the class file.
+    <sub class="my_note" style="color:green">笔记：第三，从JVM的角度来说，在Java8及以上，不管class文件有没有ACC_SUPER标识，JVM都会认为已经设置了ACC_SUPER标识。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The <code>ACC_SUPER</code> flag exists for backward compatibility with code compiled by older compilers for the Java programming language.
+    In JDK releases prior to 1.0.2, the compiler generated <code>access_flags</code> in which the flag now representing <code>ACC_SUPER</code> had no assigned meaning, and Oracle's Java Virtual Machine implementation ignored the flag if it was set.（在<a class="external" href="https://stackoverflow.com/a/8950564" target="_blank">StackOverflow</a>上有对于这个问题的讨论）
+    <sub class="my_note" style="color:blue">笔记：ACC_SUPER标识的存在，是为了解决兼容性的问题；在JDK 1.0.2版本之前，不存在ACC_SUPER标识。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
 
 <div title="HelloWorld.java" class="javacode">
 class HelloWorld {
@@ -191,8 +219,8 @@ constant_pool
     ... ...
 class_info='0020000200030000'
     access_flags='0020' ([ACC_SUPER])
-    this_class='0002' (2)
-    super_class='0003' (3)
+    this_class='0002' (#2)
+    super_class='0003' (#3)
     interfaces_count='0000' (0)
     interfaces='' ([])
 </div>
@@ -214,13 +242,25 @@ constant_pool
     ... ...
 class_info='0420000200030000'
     access_flags='0420' ([ACC_SUPER,ACC_ABSTRACT])
-    this_class='0002' (2)
-    super_class='0003' (3)
+    this_class='0002' (#2)
+    super_class='0003' (#3)
     interfaces_count='0000' (0)
     interfaces='' ([])
 </div>
 
 <h3>ACC_INTERFACE</h3>
+
+<p class="indented">
+    An interface is distinguished by the <code>ACC_INTERFACE</code> flag being set. If the <code>ACC_INTERFACE</code> flag is not set, this class file defines a class, not an interface.
+</p>
+
+<p class="indented">
+    If the <code>ACC_INTERFACE</code> flag is set, the <code>ACC_ABSTRACT</code> flag must also be set, and the <code>ACC_FINAL</code>, <code>ACC_SUPER</code>, and <code>ACC_ENUM</code> flags set must not be set.
+</p>
+
+<p class="indented">
+    If the <code>ACC_INTERFACE</code> flag is not set, any of the other flags may be set except <code>ACC_ANNOTATION</code>.
+</p>
 
 <div title="HelloWorld.java" class="javacode">
 interface HelloWorld {
@@ -236,8 +276,8 @@ constant_pool
     ... ...
 class_info='0600000100020000'
     access_flags='0600' ([ACC_INTERFACE,ACC_ABSTRACT])
-    this_class='0001' (1)
-    super_class='0002' (2)
+    this_class='0001' (#1)
+    super_class='0002' (#2)
     interfaces_count='0000' (0)
     interfaces='' ([])
 </div>
@@ -259,13 +299,17 @@ constant_pool
     ... ...
 class_info='0030000200030000'
     access_flags='0030' ([ACC_FINAL,ACC_SUPER])
-    this_class='0002' (2)
-    super_class='0003' (3)
+    this_class='0002' (#2)
+    super_class='0003' (#3)
     interfaces_count='0000' (0)
     interfaces='' ([])
 </div>
 
 <h3>ACC_ENUM</h3>
+
+<p class="indented">
+    The <code>ACC_ENUM</code> flag indicates that this class or its superclass is declared as an enumerated type.
+</p>
 
 <div title="HelloWorld.java" class="javacode">
 enum HelloWorld {
@@ -286,8 +330,8 @@ constant_pool
     ... ...
 class_info='4030000400070000'
     access_flags='4030' ([ACC_FINAL,ACC_SUPER,ACC_ENUM])
-    this_class='0004' (4)
-    super_class='0007' (7) // 注意：这里指向了java.lang.Enum类
+    this_class='0004' (#4)
+    super_class='0007' (#7) // 注意：这里指向了java.lang.Enum类
     interfaces_count='0000' (0)
     interfaces='' ([])
 </div>
@@ -297,6 +341,22 @@ class_info='4030000400070000'
 </p>
 
 <h3>ACC_ANNOTATION</h3>
+
+<p class="indented">
+    An interface is distinguished by the <code>ACC_INTERFACE</code> flag being set. If the <code>ACC_INTERFACE</code> flag is not set, this class file defines a class, not an interface.
+</p>
+
+<p class="indented">
+    If the <code>ACC_INTERFACE</code> flag is set, the <code>ACC_ABSTRACT</code> flag must also be set, and the <code>ACC_FINAL</code>, <code>ACC_SUPER</code>, and <code>ACC_ENUM</code> flags set must not be set.
+</p>
+
+<p class="indented">
+    If the <code>ACC_INTERFACE</code> flag is not set, any of the other flags may be set except <code>ACC_ANNOTATION</code>.
+</p>
+
+<p class="indented">
+    An annotation type must have its <code>ACC_ANNOTATION</code> flag set. If the <code>ACC_ANNOTATION</code> flag is set, the <code>ACC_INTERFACE</code> flag must also be set.
+</p>
 
 <div title="HelloWorld.java" class="javacode">
 @interface HelloWorld {
@@ -310,12 +370,12 @@ constant_pool
     |002| CONSTANT_Class {Value='java/lang/Object', HexCode='070007'}
     |003| CONSTANT_Class {Value='java/lang/annotation/Annotation', HexCode='070008'}
     ... ...
-class_info='26000001000200010003'
-    access_flags='2600' ([ACC_INTERFACE,ACC_ABSTRACT,ACC_ANNOTATION])
-    this_class='0001' (1)
-    super_class='0002' (2)
+class_info='26010001000200010003'
+    access_flags='2601' ([ACC_PUBLIC,ACC_INTERFACE,ACC_ABSTRACT,ACC_ANNOTATION])
+    this_class='0001' (#1)
+    super_class='0002' (#2)
     interfaces_count='0001' (1)
-    interfaces='0003' ([3])  // 注意：这里自动实现了java.lang.annotation.Annotation接口
+    interfaces='0003' ([#3])  // 注意：这里自动实现了java.lang.annotation.Annotation接口
 </div>
 
 <p>
@@ -339,13 +399,17 @@ constant_pool
     ... ...
 class_info='0021000200030000'
     access_flags='0021' ([ACC_PUBLIC,ACC_SUPER])
-    this_class='0002' (2)
-    super_class='0003' (3)
+    this_class='0002' (#2)
+    super_class='0003' (#3)
     interfaces_count='0000' (0)
     interfaces='' ([])
 </div>
 
 <h3>ACC_SYNTHETIC</h3>
+
+<p class="indented">
+    The <code>ACC_SYNTHETIC</code> flag indicates that this class or interface was generated by a compiler and does not appear in source code.
+</p>
 
 <p>
     示例代码源自于<a class="external" href="https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html" target="_blank">这里</a>
@@ -431,6 +495,8 @@ class_info='0020000300040000'
 
 <h2>super_class</h2>
 
+<h3>java.lang.Object</h3>
+
 <p>
     读取JDK当中的<code>java.lang.Object</code>的字节内容：
 </p>
@@ -451,8 +517,8 @@ constant_pool
     ... ...
 class_info='0021001100000000'
     access_flags='0021' ([ACC_PUBLIC,ACC_SUPER])
-    this_class='0011' (17)
-    super_class='0000' (0)
+    this_class='0011' (#17)
+    super_class='0000' (#0)
     interfaces_count='0000' (0)
     interfaces='' ([])
 </div>
@@ -461,7 +527,65 @@ class_info='0021001100000000'
     同时，这也说明一件事情：对于<code>constant_pool</code>来说，<code>0</code>是一个有效的索引值。
 </p>
 
+<h3>enum type</h3>
+
+<p>
+    The direct superclass of an enum type <code>E</code> is <code>Enum&lt;E&gt;</code>. (源自于《The Java<sup>&reg;</sup> Language Specification Java SE 8 Edition》的8.9. Enum Types部分。)
+</p>
+
+<div title="Day.java" class="javacode">
+public enum Day {
+    SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
+    THURSDAY, FRIDAY, SATURDAY
+}
+</div>
+
+<p>
+    单纯的从代码层面，我们无法知道<code>Day</code>（enum type）的父类是<code>Enum&lt;E&gt;</code>。但是，我们可以从bytecode层面中，来验证这一部分的知识。
+</p>
+
+<div title="Day.class super_class" class="plaintext">
+constant_pool_count='0047' (71)
+constant_pool
+    ... ...
+    |022| CONSTANT_Class {Value='java/lang/Enum', HexCode='070043'}
+    ......
+class_info='4031000400160000'
+    access_flags='4031' ([ACC_PUBLIC,ACC_FINAL,ACC_SUPER,ACC_ENUM])
+    this_class='0004' (#4)
+    super_class='0016' (#22)
+    interfaces_count='0000' (0)
+    interfaces='' ([])
+</div>
+
+<div title="Day.java 换种写法，会报错" class="javacode">
+// error: Classes cannot directly extend 'java.lang.Enum'
+public enum Day extends Enum&lt;Day&gt; { // 注意，这里多了extends Enum&lt;Day&gt;
+    SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
+    THURSDAY, FRIDAY, SATURDAY
+}
+</div>
+
 <h2>interfaces</h2>
+
+<h3>No Interfaces</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+
+}
+</div>
+
+<div title="HelloWorld.class interfaces_count" class="plaintext">
+class_info='0021000200030000'
+    access_flags='0021' ([ACC_PUBLIC,ACC_SUPER])
+    this_class='0002' (#2)
+    super_class='0003' (#3)
+    interfaces_count='0000' (0)
+    interfaces='' ([])
+</div>
+
+<h3>Interfaces</h3>
 
 <div title="HelloWorld.java" class="javacode">
 import java.io.Serializable;
@@ -471,7 +595,7 @@ public class HelloWorld implements Cloneable, Serializable {
 }
 </div>
 
-<div title="Example: interfaces" class="plaintext">
+<div title="HelloWorld.class interfaces" class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -482,17 +606,51 @@ constant_pool
     ... ...
 class_info='002100020003000200040005'
     access_flags='0021' ([ACC_PUBLIC,ACC_SUPER])
-    this_class='0002' (2)
-    super_class='0003' (3)
+    this_class='0002' (#2)
+    super_class='0003' (#3)
     interfaces_count='0002' (2)
-    interfaces='00040005' ([4, 5])
+    interfaces='00040005' ([#4,#5])
+</div>
+
+<h3>annotation type</h3>
+
+<p>
+    The direct superinterface of every annotation type is <code>java.lang.annotation.Annotation</code>.（源自于《The Java<sup>&reg;</sup> Language Specification Java SE 8 Edition》的9.6. Annotation Types部分。）
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public @interface HelloWorld {
+
+}
+</div>
+
+<div title="HelloWorld.class interfaces" class="plaintext">
+constant_pool_count='0009' (9)
+constant_pool
+    |001| CONSTANT_Class {Value='sample/HelloWorld', HexCode='070006'}
+    |002| CONSTANT_Class {Value='java/lang/Object', HexCode='070007'}
+    |003| CONSTANT_Class {Value='java/lang/annotation/Annotation', HexCode='070008'}
+    ... ...
+class_info='26010001000200010003'
+    access_flags='2601' ([ACC_PUBLIC,ACC_INTERFACE,ACC_ABSTRACT,ACC_ANNOTATION])
+    this_class='0001' (#1)
+    super_class='0002' (#2)
+    interfaces_count='0001' (1)
+    interfaces='0003' ([#3])
 </div>
 
 <h2>Summing Up</h2>
 
 <p>
-    本节的主要内容就是为了介绍<code>access_flags</code>、<code>this_class</code>、<code>super_class</code>和<code>interfaces</code>这四部分信息。
+    总结：
 </p>
+
+<ul>
+    <li>第一点，主要介绍<code>access_flags</code>、<code>this_class</code>、<code>super_class</code>和<code>interfaces</code>这四部分信息。</li>
+    <li>第二点，在<code>access_flags</code>这部分，从两方面展开，一方面是说<code>access_flags</code>可以取哪些值，另一方面，以Java代码为主，讲如何生成不同的<code>ACC_XXX</code>标识。Java代码的这方面内容，也就是JavaFile向ClassFile进行的“映射”。</li>
+    <li>第三点，在<code>super_class</code>这部分，它是指示出当前类的父类信息；特别要注意<code>java.lang.Object</code>和enum type的父类信息。</li>
+    <li>第四点，在<code>interfaces</code>这部分，它是指示出当前类实现的接口信息；特别要注意annotation type实现的接口。</li>
+</ul>
 
 <div class="w3-display-container w3-center">
     <img class="w3-image w3-center" src="/images/java/classfile/classfile_classinfo.png" alt="ClassInfo"/>
