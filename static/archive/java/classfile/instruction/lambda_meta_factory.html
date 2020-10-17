@@ -1,0 +1,359 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">LambdaMetafactory</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Examples</h2>
+
+<h3>Runnable</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.lang.invoke.*;
+
+public class HelloWorld {
+    public static void main(String[] args) throws Throwable {
+        // 第一步，FunctionalInterface的信息
+        MethodType invoked_class_type = MethodType.methodType(Runnable.class);
+        String invoked_method_name = "run";
+        MethodType invoked_method_type = MethodType.methodType(void.class);
+
+        // 第二步，寻找一个具体的实现方法
+        MethodHandles.Lookup caller = MethodHandles.lookup();
+        System.out.println("caller: " + caller);
+        MethodType target_method_type = MethodType.methodType(void.class);
+        MethodHandle target_method_handle = caller.findStatic(HelloWorld.class, "print", target_method_type);
+        System.out.println("target method handle: " + target_method_handle);
+
+        // 第三步，生成CallSite对象（形象的来说，我们组装了一件武器）
+        MethodType instantiated_method_type = MethodType.methodType(void.class);
+        CallSite site = LambdaMetafactory.metafactory(
+                caller,
+                invoked_method_name,
+                invoked_class_type,
+                invoked_method_type,
+                target_method_handle,
+                instantiated_method_type);
+
+        // 第四步，以FunctionalInterface的视角，来调用具体的实现方法
+        MethodHandle factory = site.getTarget();
+        System.out.println("factory method handle: " + factory);
+        Runnable r = (Runnable) factory.invoke();
+        r.run();
+    }
+
+    private static void print() {
+        System.out.println("hello world");
+    }
+}
+</div>
+
+<p class="indented">
+    我们将<code>HelloWorld.java</code>当中的<code>main</code>方法，复制到<code>GoodBoy.java</code>内。
+</p>
+
+<div title="GoodBoy.java" class="javacode">
+import java.lang.invoke.*;
+
+public class GoodBoy {
+    public static void main(String[] args) throws Throwable {
+        // 第一步，FunctionalInterface的信息
+        MethodType invoked_class_type = MethodType.methodType(Runnable.class);
+        String invoked_method_name = "run";
+        MethodType invoked_method_type = MethodType.methodType(void.class);
+
+        // 第二步，寻找一个具体的实现方法
+        MethodHandles.Lookup caller = MethodHandles.lookup();
+        System.out.println("caller: " + caller);
+        MethodType target_method_type = MethodType.methodType(void.class);
+        MethodHandle target_method_handle = caller.findStatic(HelloWorld.class, "print", target_method_type); // error
+        System.out.println("target method handle: " + target_method_handle);
+
+        // 第三步，生成CallSite对象（形象的来说，我们组装了一件武器）
+        MethodType instantiated_method_type = MethodType.methodType(void.class);
+        CallSite site = LambdaMetafactory.metafactory(
+                caller,
+                invoked_method_name,
+                invoked_class_type,
+                invoked_method_type,
+                target_method_handle,
+                instantiated_method_type);
+
+        // 第四步，以FunctionalInterface的视角，来调用具体的实现方法
+        MethodHandle factory = site.getTarget();
+        System.out.println("factory method handle: " + factory);
+        Runnable r = (Runnable) factory.invoke();
+        r.run();
+    }
+}
+</div>
+
+<p class="indented">
+    运行<code>GoodBoy.java</code>的<code>main</code>方法，会出现错误。出错误的原因：我们试图在<code>GoodBoy.java</code>中去访问<code>HelloWorld.java</code>中的私有（private）方法<code>print</code>。如果我们将<code>HelloWorld.java</code>中的<code>print</code>方法修改为<code>public</code>，就不会出现错误了。
+</p>
+
+<h3>Supplier</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.lang.invoke.*;
+import java.util.function.Supplier;
+
+public class HelloWorld {
+    public static void main(String[] args) throws Throwable {
+        // 第一步，FunctionalInterface的信息
+
+        MethodType invoked_class_type = MethodType.methodType(Supplier.class);
+        String invoked_method_name = "get";
+        MethodType invoked_method_type = MethodType.methodType(Object.class);
+
+        // 第二步，寻找一个具体的实现方法
+        MethodHandles.Lookup caller = MethodHandles.lookup();
+        System.out.println("caller: " + caller);
+        MethodType target_method_type = MethodType.methodType(String.class);
+        MethodHandle target_method_handle = caller.findStatic(HelloWorld.class, "info", target_method_type);
+        System.out.println("target method handle: " + target_method_handle);
+
+        // 第三步，生成CallSite对象（形象的来说，我们组装了一件武器）
+        MethodType instantiated_method_type = MethodType.methodType(String.class);
+        CallSite site = LambdaMetafactory.metafactory(
+                caller,
+                invoked_method_name,
+                invoked_class_type,
+                invoked_method_type,
+                target_method_handle,
+                instantiated_method_type);
+
+        // 第四步，以FunctionalInterface的视角，来调用具体的实现方法
+        MethodHandle factory = site.getTarget();
+        System.out.println("factory method handle: " + factory);
+        Supplier&lt;?&gt; s = (Supplier&lt;?&gt;) factory.invoke();
+        Object result = s.get();
+        System.out.println(result);
+    }
+
+    public static String info() {
+        return "Hello Java";
+    }
+}
+</div>
+
+<h3>Consumer</h3>
+
+<p>
+    这个示例代码参考自<a class="external" href="https://stackoverflow.com/a/46874622" target="_blank">StackOverflow</a>。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.lang.invoke.*;
+import java.util.function.Consumer;
+
+public class HelloWorld {
+    public static void main(String[] args) throws Throwable {
+        Consumer&lt;String&gt; consumer = s -> System.out.println("CONSUMED: " + s + ".");
+        consumer.accept("foo");
+
+        // 第一步，FunctionalInterface的信息
+        // we must return consumer, no closure -> no additional parameters
+        MethodType call_site_type = MethodType.methodType(Consumer.class);
+        String functional_interface_method_name = "accept";
+        // Because of the type erasure we must use Object here
+        // instead of String (Consumer&lt;String&gt; -> Consumer).
+        MethodType functional_interface_method_type = MethodType.methodType(void.class, Object.class);
+
+        // 第二步，寻找一个具体的实现方法
+        MethodHandles.Lookup caller = MethodHandles.lookup();
+        System.out.println("caller: " + caller);
+        MethodType lambda_body_method_type = MethodType.methodType(void.class, String.class);
+        MethodHandle lambda_body_method_handle = caller.findStatic(HelloWorld.class, "lambda$main$0", lambda_body_method_type);
+        System.out.println("lambda body method handle: " + lambda_body_method_handle);
+
+        // 第三步，生成CallSite对象（形象的来说，我们组装了一件武器）
+        MethodType actual_method_type = MethodType.methodType(void.class, String.class);
+        CallSite site = LambdaMetafactory.metafactory(
+                // provided by invokedynamic:
+                caller, functional_interface_method_name, call_site_type,
+                // additional bootstrap method arguments:
+                functional_interface_method_type,
+                lambda_body_method_handle,
+                actual_method_type);
+
+        // 第四步，以FunctionalInterface的视角，来调用具体的实现方法
+        MethodHandle factory = site.getTarget();
+        System.out.println("factory method handle: " + factory);
+        Consumer&lt;String&gt; c = (Consumer&lt;String&gt;) factory.invoke();
+
+        c.accept("foo");
+        c.accept("bar");
+    }
+}
+</div>
+
+<h3>BiFunction</h3>
+
+<p>
+    这个示例代码参考自<a class="external" href="https://stackoverflow.com/a/57244388" target="_blank">StackOverflow</a>。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.lang.invoke.*;
+import java.util.function.BiFunction;
+
+public class HelloWorld {
+    public static void testFunctionWithParameter() throws Throwable {
+        // 第一步，FunctionalInterface的信息
+        MethodType functional_interface_type = MethodType.methodType(BiFunction.class);
+        String invoked_method_name = "apply";
+        MethodType invoked_method_type = MethodType.methodType(Object.class, Object.class, Object.class);
+
+        // 第二步，寻找一个具体的实现方法
+        MethodHandles.Lookup caller = MethodHandles.lookup();
+        MethodType target_method_type = MethodType.methodType(String.class, String.class);
+        MethodHandle target_method_handle = caller.findVirtual(SimpleBean.class, "simpleFunction", target_method_type);
+
+        // 第三步，生成CallSite对象（形象的来说，我们组装了一件武器）
+        MethodType actual_method_type = MethodType.methodType(String.class, SimpleBean.class, String.class);
+        CallSite site = LambdaMetafactory.metafactory(
+                caller, invoked_method_name, functional_interface_type,
+                invoked_method_type,
+                target_method_handle,
+                actual_method_type
+        );
+
+        // 第四步，以FunctionalInterface的视角，来调用具体的实现方法
+        BiFunction&lt;SimpleBean, String, String&gt; func = (BiFunction&lt;SimpleBean, String, String&gt;) site.getTarget().invokeExact();
+        SimpleBean simpleBean = new SimpleBean();
+        System.out.println(func.apply(simpleBean, "FOO"));
+    }
+
+    public static void main(String[] args) throws Throwable {
+        testFunctionWithParameter();
+    }
+}
+
+class SimpleBean {
+    public String simpleFunction(String str) {
+        return "The parameter was " + str;
+    }
+}
+</div>
+
+<h2>LambdaMetafactory</h2>
+
+<div title="LambdaMetafactory.java" class="javacode">
+    public static CallSite metafactory(MethodHandles.Lookup caller,
+                                       String invokedName,
+                                       MethodType invokedType,
+                                       MethodType samMethodType,
+                                       MethodHandle implMethod,
+                                       MethodType instantiatedMethodType)
+            throws LambdaConversionException {
+        AbstractValidatingLambdaMetafactory mf;
+        mf = new InnerClassLambdaMetafactory(caller, invokedType, // 第一步，找到InnerClassLambdaMetafactory类
+                                             invokedName, samMethodType,
+                                             implMethod, instantiatedMethodType,
+                                             false, EMPTY_CLASS_ARRAY, EMPTY_MT_ARRAY);
+        mf.validateMetafactoryArgs();
+        return mf.buildCallSite(); // 第二步，找到该类的buildCallSite方法
+    }
+</div>
+
+<div title="InnerClassLambdaMetafactory.java" class="javacode">
+    CallSite buildCallSite() throws LambdaConversionException {
+        final Class&lt;?&gt; innerClass = spinInnerClass(); // 第三步，找到spinInnerClass()方法
+        ......
+    }
+
+    private Class<?> spinInnerClass() throws LambdaConversionException {
+        String[] interfaces;
+        String samIntf = samBase.getName().replace('.', '/');
+        // ......
+
+        cw.visit(CLASSFILE_VERSION, ACC_SUPER + ACC_FINAL + ACC_SYNTHETIC,
+                 lambdaClassName, null,
+                 JAVA_LANG_OBJECT, interfaces);
+
+        // Generate final fields to be filled in by constructor
+        for (int i = 0; i < argDescs.length; i++) {
+            FieldVisitor fv = cw.visitField(ACC_PRIVATE + ACC_FINAL,
+                                            argNames[i],
+                                            argDescs[i],
+                                            null, null);
+            fv.visitEnd();
+        }
+
+        generateConstructor();
+        // ......
+
+        // Forward the SAM method
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, samMethodName,
+                                          samMethodType.toMethodDescriptorString(), null, null);
+        mv.visitAnnotation("Ljava/lang/invoke/LambdaForm$Hidden;", true);
+        new ForwardingMethodGenerator(mv).generate(samMethodType);
+
+        // Forward the bridges
+        // ......
+
+        cw.visitEnd();
+
+        // Define the generated class in this VM.
+        final byte[] classBytes = cw.toByteArray();
+
+        // If requested, dump out to a file for debugging purposes
+        // ......
+
+        return UNSAFE.defineAnonymousClass(targetClass, classBytes, null);
+    }
+</div>
+
+<div title="第一步" class="plaintext">
+invokedynamic    ---->    CONSTANT_InvokeDynamic    ---->    LambdaMetafactory.metafactory()
+   (Code)                    (Constant Pool)                        (BootstrapMethods)
+</div>
+
+<div title="第二步" class="plaintext">
+理解LambdaMetafactory.metafactory()方法的6个参数的含义
+</div>
+
+<div title="第三步" class="plaintext">
+从LambdaMetafactory.metafactory()方法的源代码入手，找到新生成的.class文件，如何输出出来。
+</div>
+
+<div title="第四步，OpenJDK/JVM实现" class="plaintext">
+
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.Random;
+import java.util.function.BiFunction;
+
+public class HelloWorld {
+    public static int add(int a, int b) {
+        return a + b;
+    }
+
+    public static int sub(int a, int b) {
+        return a - b;
+    }
+
+    public static void test(BiFunction&lt;Integer, Integer, Integer&gt; func, int a, int b) {
+        System.out.println(func.getClass());
+        Integer result = func.apply(a, b);
+        System.out.println(result);
+    }
+
+    public static void main(String[] args) {
+        Random rand = new Random();
+        boolean flag = rand.nextBoolean();
+        HelloWorld.test(flag ? HelloWorld::add : HelloWorld::sub, 20, 5);
+    }
+}
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://bboylin.github.io/2019/08/19/how-lambda-works/" target="_blank">24号程序猿: How Lambda Works</a></li>
+</ul>

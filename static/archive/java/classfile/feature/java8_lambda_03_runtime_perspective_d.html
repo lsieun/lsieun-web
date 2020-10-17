@@ -1,0 +1,366 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 8 Lambda: (3) Runtime Perspective<br/>(D)-The Last</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>多研究些问题，少谈些“主义”。——胡适</p>
+    <p>
+        在整理这部分内容时候，我参考了一些文章。其中，涉及到了许多的概念，在读文章的过程中，我需要时不时的去翻到“概念”定义的地方，来重新审视自己的理解；不然的话，很容易在多个概念之间，迷失自己的“方向”。
+    </p>
+    <p>
+        后来，我想起了“多研究些问题，少谈些主义”这句话。于是，决定拿出一个具体的问题来研究，而不去牵扯太多的概念。
+    </p>
+</div>
+
+<h2>Translation strategy</h2>
+
+<p class="indented">
+    There are a number of ways we might represent <b>a lambda expression</b> in <b>bytecode</b>, such as inner classes, method handles, dynamic proxies, and others.
+    <sub class="my_note" style="color:blue">笔记：将lambda expression转换成bytecode，有多种不同的方法可以选择。</sub>
+    Each of these approaches has pros and cons.
+    <sub class="my_note" style="color:blue">笔记：每一种方法，都有自己的优势和劣势。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    In selecting a strategy, there are two competing goals:
+    <b>maximizing flexibility for future optimization</b> by not committing to a specific strategy, vs <b>providing stability in the classfile representation</b>.
+    <sub class="my_note" style="color:blue">笔记：在选择具体实现方法的时候，有两个主要衡量指标，一方面是要保证现有classfile结构的稳定性，另一方面是保证对将来的未知功能的可扩展性。使用invokedynamic的方式，能够帮助我们同时实现这两个目标。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    We can achieve both of these goals by using the <code>invokedynamic</code> feature from <a class="external" href="https://jcp.org/en/jsr/detail?id=292" target="_blank">JSR 292</a>
+    to separate <b>the binary representation of lambda creation in the bytecode</b> from <b>the mechanics of evaluating the lambda expression at runtime</b>.
+    <sub class="my_note" style="color:blue">笔记：在这里要区分开两个概念，一个是“在classfile当中，如何表达lambda expression，以何种结构进行存储”，另一个是“在JVM运行过程中，如何解析classfile中lambda expression”。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        lambda expression(Java Language) --&gt; invokedynamic(Java Class File Format) --&gt; how to execute at runtime(JVM)
+    </p>
+</div>
+
+<p class="indented">
+    The use of <code>invokedynamic</code> lets us defer the selection of a <b>translation strategy</b> until run time.
+    <sub class="my_note" style="color:green">笔记：使用invokedynamic的好处在于，它延迟了做选择的时机。做什么选择呢？就是选择使用哪一种具体的translation strategy。如果不使用invokedynamic，那就需要在compile time，对多个具体的translation strategy做出选择；如果使用invokedynamic，那就可以等到程序运行的时候（run time）再来做出选择。</sub>
+    The runtime implementation is free to select a strategy dynamically to evaluate the lambda expression.
+    <sub class="my_note" style="color:green">笔记：在程序运行的时候（run time），不同厂家的JVM可以自由的选择实现方式。</sub>
+    The runtime implementation choice is hidden behind a standardized (i.e., part of the platform specification) API for lambda construction,
+    so that the static compiler can emit calls to this API, and JRE implementations can choose their preferred implementation strategy.
+    <sub class="my_note" style="color:green">笔记：对于lambda expression借助invokedynamic来实现，可以从两个层面来考虑其好处。从classfile层面来说，它们使用标准化的API；从具体JVM来说，它们可以选择自己喜欢的实现方式。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        举一个形象的例子来说明。有一个小男孩儿，大概5、6岁的样子，在他前面有三样东西，三者之中只能选择一个：一大袋糖果、一个阿拉丁神灯、一张百万元支票。
+    </p>
+    <p>
+        “有一个小男孩儿，大概5、6岁的样子”，就是我们这里讲的compile time；小男孩面临的三个选择“一大袋糖果、一个阿拉丁神灯、一张百万元支票”，就对应于我们实现lambda expression的具体方法，比如说inner classes、method handles和dynamic proxies。
+    </p>
+    <p>
+        那么，invokedynamic相当于什么呢？invokedynamic相当于将做选择的时机推迟20年，也就是等小男孩长到25、26岁的时候再做选择，这个时候就相当于run time。但是，invokedynamic本身并不是属于“三个选择”，它只是推迟了做决定的时机而已。
+    </p>
+</div>
+
+<p class="indented">
+    When the compiler encounters a lambda expression, it first lowers (desugars) the lambda body into a method
+    whose argument list and return type match that of the lambda expression,
+    possibly with some additional arguments (for values captured from the lexical scope, if any.)
+    <sub class="my_note" style="color:green">笔记：第一步，将lambda expression转换成一个具体的method。</sub>
+    At the point at which the lambda expression would be captured,
+    it generates an <code>invokedynamic</code> call site, which, when invoked, returns an instance of the functional interface to which the lambda is being converted.
+    This call site is called the <b>lambda factory</b> for a given lambda.
+    The dynamic arguments to the lambda factory are the values captured from the lexical scope.
+    <sub class="my_note" style="color:green">笔记：第二步，在lambda expression的位置生成invokedynamic指令。我们可以将invokedynamic指令所在的位置称之为lambda factory。</sub>
+    The bootstrap method of the lambda factory is a standardized method in the Java language runtime library, called the <code>LambdaMetafactory.metafactory()</code>.
+    The static bootstrap arguments capture information known about the lambda at compile time (the <b>functional interface</b> to which it will be converted,
+    <b>a method handle</b> for the desugared lambda body,
+    information about whether the SAM type is serializable, etc.)
+    <sub class="my_note" style="color:green">笔记：第三步，在invokedynamic和“lambda expression转换后的具体方法”之间还是存在一定差距的，把两者进行连接的就是bootstrap method。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    <b>Method references</b> are treated the same way as <b>lambda expressions</b>,
+    except that most method references do not need to be desugared into a new method;
+    we can simply load a constant method handle for the referenced method and pass that to the <code>metafactory</code>.
+</p>
+
+<h2>Lambda body desugaring</h2>
+
+<p class="indented">
+    The first step of translating lambdas into bytecode is desugaring the lambda body into a method.
+</p>
+
+<h3>"stateless" lambdas</h3>
+
+<p class="indented">
+    The simplest form of lambda expression to translate is one that captures no state from its enclosing scope (a stateless lambda):
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.ArrayList;
+import java.util.List;
+
+public class HelloWorld {
+    private static final List&lt;String&gt; colorList;
+
+    static {
+        colorList = new ArrayList&lt;&gt;();
+        colorList.add("Red");
+        colorList.add("Green");
+        colorList.add("Blue");
+    }
+
+    public static void test() {
+        List&lt;String&gt; list = colorList;
+        list.forEach(s -> System.out.println(s));
+    }
+}
+</div>
+
+<div title="HelloWorld.class" class="plaintext">
+methods_count='0004' (4)
+methods
+    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
+    MethodInfo {Value='test:()V', AccessFlags='[ACC_PUBLIC,ACC_STATIC]', Attrs='[Code]'}
+    MethodInfo {Value='lambda$test$0:(Ljava/lang/String;)V',
+                AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_SYNTHETIC]',
+                Attrs='[Code, MethodParameters]'}
+    MethodInfo {Value='&lt;clinit&gt;:()V', AccessFlags='[ACC_STATIC]', Attrs='[Code]'}
+</div>
+
+<p class="indented">
+    The natural signature of the lambda is <code>(Ljava/lang/String;)V</code>.
+    The compiler desugars the lambda body into a static(<code>ACC_STATIC</code>) method whose signature is the natural signature,
+    and generates a name(<code>lambda$test$0</code>) for the desugared body.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    // ......
+
+    public static void test() {
+        List&lt;String&gt; list = colorList;
+        list.forEach( [lambda for lambda$test$0 as Block] );
+    }
+
+    private static void lambda$test$0(String s) {
+        System.out.println(s);
+    }
+}
+</div>
+
+<h3>lambdas capturing immutable values</h3>
+
+<p class="indented">
+    The other form of lambda expression involves capture of enclosing final (or effectively final) <b>local variables</b>,
+    and/or fields from enclosing instances (which we can treat as capture of the final enclosing <code>this</code> reference).
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.List;
+
+public class HelloWorld {
+    public static void test() {
+        List&lt;Person&gt; list = null;
+        int bottom = 5, top = 10;
+        list.removeIf( p -> (p.size >= bottom && p.size <= top) );
+    }
+}
+</div>
+
+<p class="indented">
+    Here, our lambda captures the final local variables <code>bottom</code> and <code>top</code> from the enclosing scope.
+</p>
+
+<p class="indented">
+    The signature of the desugared method will be the natural signature <code>(Person)Z</code> with some extra arguments prepended at the front of the argument list.
+    The compiler has some latitude as to how these extra arguments are represented;
+    they could be prepended individually, boxed into a frame class, boxed into an array, etc.
+    The simplest approach is to prepend them individually:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.List;
+
+public class HelloWorld {
+    public static void test() {
+        List&lt;Person&gt; list = null;
+        int bottom = 5, top = 10;
+        list.removeIf( [ lambda for lambda$test$0 as Predicate capturing (bottom, top) ] );
+    }
+
+    private static boolean lambda$test$0(int bottom, int top, Person p) {
+        return (p.size >= bottom && p.size <= top);
+    }
+}
+</div>
+
+<p class="indented">
+    Alternately, the captured values (<code>bottom</code> and <code>top</code>) could be boxed into a frame or an array;
+    the key is agreement between the types of the extra arguments as they appear in the signature of the desugared lambda method,
+    and the types as they appear as (dynamic) arguments to the lambda factory.
+    Since the compiler is in control of both of these, and they are generated at the same time,
+    the compiler has some flexibility in how captured arguments are packaged.
+</p>
+
+<h2>Capturing vs Non-Capturing Lambdas</h2>
+
+<p class="indented">
+    A lambda expression is said to be capturing if it either access instance variables of it's enclosing class or local variables (final or effectively final) from it's enclosing scope.
+</p>
+
+<p class="indented">
+    A non-capturing lambda doesn't use any variables from outside.
+</p>
+
+<p class="indented">
+    Non-capturing lambdas generally are considered more efficient than the capturing ones as they are evaluated only once.
+</p>
+
+<p class="indented">
+
+</p>
+
+<h2>Serialization</h2>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Consumer;
+
+public class HelloWorld {
+    public static void test() {
+        Consumer&lt;String&gt; c = s -> System.out.println(s);
+        c.accept("hello lambda");
+    }
+}
+</div>
+
+<p>
+    如果Lambda表达式写成<code>Consumer&lt;String&gt; c = (Consumer&lt;String&gt; & Serializable) s -> System.out.println(s);</code>。
+</p>
+
+
+<div title="HelloWorld.java" class="javacode">
+import java.io.Serializable;
+import java.util.function.Consumer;
+
+public class HelloWorld {
+    public static void test() {
+        Consumer&lt;String&gt; c = (Consumer&lt;String&gt; & Serializable) s -> System.out.println(s);
+        c.accept("hello lambda");
+    }
+}
+</div>
+
+<div title="methods" hidden class="plaintext">
+methods_count='0004' (4)
+methods
+    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
+    MethodInfo {Value='test:()V', AccessFlags='[ACC_PUBLIC,ACC_STATIC]', Attrs='[Code]'}
+    MethodInfo {Value='$deserializeLambda$:(Ljava/lang/invoke/SerializedLambda;)Ljava/lang/Object;',
+                AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_SYNTHETIC]', Attrs='[Code]'}
+    MethodInfo {Value='lambda$test$3ad24db3$1:(Ljava/lang/String;)V',
+                AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_SYNTHETIC]', Attrs='[Code, MethodParameters]'}
+</div>
+
+<p>
+    它调用的是<code>LambdaMetafactory.altMetafactory()</code>。
+</p>
+
+<div title="BootstrapMethods" hidden class="plaintext">
+constant_pool_count='007C' (124)
+constant_pool
+    ......
+    |056| CONSTANT_Utf8 {Value='BootstrapMethods', HexCode='010010426F6F7473747261704D6574686F6473'}
+    |057| CONSTANT_MethodHandle {Value='invokestatic java/lang/invoke/LambdaMetafactory.altMetafactory:(
+            Ljava/lang/invoke/MethodHandles$Lookup;
+            Ljava/lang/String;
+            Ljava/lang/invoke/MethodType;
+            [Ljava/lang/Object;
+        )Ljava/lang/invoke/CallSite;', HexCode='0F06005B'}
+    |058| CONSTANT_MethodType {Value='(Ljava/lang/Object;)V', HexCode='10004E'}
+    |059| CONSTANT_MethodHandle {Value='invokestatic sample/HelloWorld.lambda$test$3ad24db3$1:(Ljava/lang/String;)V',
+                                 HexCode='0F06005C'}
+    |060| CONSTANT_MethodType {Value='(Ljava/lang/String;)V', HexCode='100031'}
+    |061| CONSTANT_Integer {Value='5', HexCode='0300000005'}
+    |062| CONSTANT_Integer {Value='0', HexCode='0300000000'}
+    ......
+attributes_count='0003' (3)
+attributes
+......
+--->|002| BootstrapMethods:
+HexCode: 003800000010000100390005003A003B003C003D003E
+attribute_name_index='0038' (#56)
+attribute_length='00000010' (16)
+num_bootstrap_methods='0001' (1)
+bootstrap_methods[0] {
+    bootstrap_method_ref='0039' (#57)
+    num_bootstrap_arguments='0005' (5)
+    bootstrap_arguments='003A003B003C003D003E' ([#58,#59,#60,#61,#62])
+}
+</div>
+
+<h2>重复的lambda表达式</h2>
+
+<p class="indented">
+    下面的代码中，在一个循环中重复生成调用lambda表达式，只会生成同一个lambda对象， 因为只有同一个invokedynamic指令。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+for (int i = 0; i<100; i++){
+	Consumer&lt;String&gt; c = s -> System.out.println(s);
+	System.out.println(c.hashCode());
+}
+</div>
+
+<p class="indented">
+    但是下面的代码会生成两个lambda对象, 因为它会生成两个invokedynamic指令。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+Consumer&lt;String&gt; c = s -> System.out.println(s);
+System.out.println(c.hashCode());
+Consumer&lt;String&gt; c2 = s -> System.out.println(s);
+System.out.println(c2.hashCode());
+</div>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+
+
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="http://cr.openjdk.java.net/~briangoetz/lambda/lambda-translation.html" target="_blank">OpenJDK: Translation of Lambda Expressions</a>，这篇文章是openjdk网站上2012年写的，现在是2020年，过去8年了，它的内容还是有借鉴意义</li>
+    <li><a class="external" href="https://colobu.com/2014/11/06/secrets-of-java-8-lambda/" target="_blank">Java 8 Lambda 揭秘</a></li>
+    <li><a class="external" href="https://www.logicbig.com/tutorials/core-java-tutorial/java-8-enhancements/java-capturing-lambda.html" target="_blank">Capturing vs Non-Capturing Lambdas</a></li>
+</ul>
+

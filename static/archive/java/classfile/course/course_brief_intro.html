@@ -1,0 +1,82 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">课程简介</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>课程主题</h2>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        简单而言，我们的课程标题是“Java 8 ClassFile”，其中“ClassFile”就是我们课程主题，而“Java 8”则是表明我们是在Java 8的基础上进行研究。
+    </p>
+</div>
+
+<p class="indented">
+    我们知道，一个<code>.java</code>文件经过<code>javac</code>编译之后，会生成<code>.class</code>文件。<code>.class</code>文件就是一个具体的Java ClassFile，它就是我们研究的主题。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/javac_from_java_to_class.jpeg" alt="javac"/>
+
+</div>
+
+<p class="indented">
+    那么，对一个具体的<code>.class</code>文件（Java ClassFile），我们要研究什么呢？我们要研究就是这个<code>.class</code>文件（Java ClassFile）的存储结构。Java ClassFile的结构如下图所示。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/java_classfile_structure.png" alt="ClassFile structure"/>
+</div>
+
+<p class="indented">
+    本课程内容的依据和研究范围。本课程内容的主要依据是《The Java Virtual Machine Specification, Java SE 8 Edition》，其研究范围限定在JVM文档的Chapter 4. The class File Format和Chapter 6. The Java Virtual Machine Instruction Set。
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>本小节目的：</p>
+    <ul>
+        <li>第一，方便大家快速了解本课程主要讲什么。本课程主要讲<code>.class</code>文件的结构。</li>
+        <li>第二，了解本课程讲解内容的依据。JVM文档（Java 8）。</li>
+        <li>第二，了解本课程讲解内容的范围。Java class File Format和JVM Instruction Set。</li>
+    </ul>
+</div>
+
+<h2>面向人群</h2>
+
+<p>
+    适合学习本课程的人群：
+</p>
+
+<ul>
+    <li>
+        学习动机：
+        <ul>
+            <li>出于工作需要，想要使用bytecode的类库（例如ASM、Javassist），但对bytecode不熟悉的从业工作者。本课程是对bytecode技术的原理讲解，而ASM等类库是对bytecode技术的运用，学完本课程有助于读者尽快掌握ASM的使用。用一种形象的说法来讲就是“有九阳神功护体，学什么武功都特别快”。</li>
+            <li>出于兴趣爱好，想要对JVM中bytecode有深入理解的技术追求者。</li>
+        </ul>
+    </li>
+    <li>对于Java的I/O概念或知识有基本的理解。因为本课程研究的主题就是<code>.class</code>文件，需要通过Java I/O相关的API将文件的字节内容读取出来，才能进一步的对它的数据结构进行分析。</li>
+    <li>一定的英语阅读能力。一方面，JVM的文档是用英文写的，我们想要了解其中包含的观点、想法和思路，就必不可少的要读文档当中的内容。另一方面，英文也是帮助读者获取信息的有效手段，在网络上，除了中文的文章，更多的是用英语来分享信息。</li>
+</ul>
+
+<p>
+    不适合本课程的人群：
+</p>
+
+<ul>
+    <li>刚刚接触Java基础知识的从业人员。因为要理解本课程的内容，需要一定的基础知识和实践操作经验，刚接触Java基础知识的从业人员理解起来会有比较大的难度。</li>
+    <li>想要快速提升薪资的从业人员。因为本课程的内容是研究的JVM层面的一些内容，并不是应用层面的技术，它能加深你对底层技术的理解程度，但并不能马上就应用起来，需要长期时间的积累，才能有所成果。</li>
+</ul>
+
+
+
+
+
+
+
+
+

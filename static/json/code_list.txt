@@ -1,4 +1,5 @@
 2020-08-01 09:08#Java ClassFile#Java##/archive/java/java_classfile_index.html#Java ClassFile.
+2020-10-15 16:16#Java Invoke#Java##/archive/java/java_invoke_index.html#Java Invoke.
 2020-09-24 22:19#JDK Tools#Java##/archive/java/jdk_tools_index.html#javac/java/javap.
 2020-09-11 16:00#Java ASM#Java##/archive/java/java_asm_index.html#Java ASM.
 2020-09-11 19:24#Java Agent#Java##/archive/java/java_agent_index.html.html#Java Agent.

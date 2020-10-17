@@ -1,0 +1,176 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 8 Lambda: (3) Runtime Perspective<br/>(A)-invokedynamic</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        invokedynamic --&gt; CONSTANT_InvokeDynamic --&gt; BootstrapMethods
+    </p>
+    <ul>
+        <li>invokedynamic是属于Code/opcode层面的概念</li>
+        <li>CONSTANT_InvokeDynamic是属于Constant Pool层面的概念</li>
+        <li>BootstrapMethods是属于Attributes层面的概念</li>
+    </ul>
+</div>
+
+<h2>Code: invokedynamic</h2>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/opcode_invokedynamic.png" alt="Rotation"/>
+</div>
+
+<h2>Constant Pool: CONSTANT_InvokeDynamic</h2>
+
+<div title="CONSTANT_InvokeDynamic_info" class="plaintext">
+CONSTANT_InvokeDynamic_info {
+    u1 tag;
+    u2 bootstrap_method_attr_index;
+    u2 name_and_type_index;
+}
+</div>
+
+<h2>Attributes: BootstrapMethods</h2>
+
+<h2>The Problem</h2>
+
+<p class="indented">
+    Invoke Dynamic (Also known as Indy) was part of <a class="external" href="https://jcp.org/en/jsr/detail?id=292" target="_blank">JSR 292</a> intended to enhance the JVM support for dynamically typed languages.
+    After its first release in Java 7, the <code>invokedynamic</code> opcode is used quite extensively by dynamic JVM-based languages like JRuby and even statically typed languages like Java.
+</p>
+
+<p class="indented">
+    Before Java 7, the JVM only had four method invocation types:
+    <code>invokevirtual</code> to call normal class methods,
+    <code>invokestatic</code> to call static methods,
+    <code>invokeinterface</code> to call interface methods,
+    and <code>invokespecial</code> to call constructors or private methods.
+</p>
+
+<p class="indented">
+    <b>
+        Despite their differences, all these invocations share one simple trait:
+        They have a few predefined steps to complete each method call, and we can't enrich these steps with our custom behaviors.
+    </b>
+</p>
+
+<p class="indented">
+    There are two main workarounds for this limitation: One at compile-time and the other at runtime.
+    The former is usually used by languages like Scala or Koltin and the latter is the solution of choice for JVM-based dynamic languages like JRuby.
+</p>
+
+<p class="indented">
+    The runtime approach is usually reflection-based and consequently, inefficient.
+</p>
+
+<p class="indented">
+    On the other hand, the compile-time solution is usually relying on code-generation at compile-time.
+    This approach is more efficient at runtime.
+    However, it's somewhat brittle and also may cause a slower startup time as there's more bytecode to process.
+</p>
+
+<p class="indented">
+    Now that we've got a better understanding of the problem, let's see how the solution works internally.
+</p>
+
+<h2>Under the Hood</h2>
+
+<p class="indented">
+    When the JVM sees an <code>invokedynamic</code> opcode for the first time, it calls a special method known as the <b>bootstrap method</b> to initialize the invocation process:
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/invokedynamic_bootstrap_method.svg" alt="Rotation"/>
+</div>
+
+<p>
+    The <b>bootstrap method</b> is a normal piece of Java code that we've written to set up the invocation process. Therefore, it can contain any logic.
+</p>
+
+<p class="indented">
+    Once the bootstrap method completes normally, it should return an instance of <code>CallSite</code>.
+    This <code>CallSite</code> encapsulates the following pieces of information:
+</p>
+
+<ul>
+    <li>A pointer to the actual logic that JVM should execute. This should be represented as a <code>MethodHandle</code>.</li>
+    <li>A condition representing the validity of the returned <code>CallSite</code>.</li>
+</ul>
+
+<p class="indented">
+    From now on, every time JVM sees this particular opcode again, it will skip <b>the slow path</b> and directly calls the underlying executable.
+    Moreover, the JVM will continue to skip <b>the slow path</b> until the condition in the <code>CallSite</code> changes.
+</p>
+
+<p class="indented">
+    As opposed to the Reflection API, the JVM can completely see-through <code>MethodHandles</code> and will try to optimize them, hence the better performance.
+</p>
+
+<h3>Different Types of CallSites</h3>
+
+<p class="indented">
+    Once the JVM sees <code>invokedynamic</code> for the first time, it calls <b>the bootstrap method</b>.
+    As of writing this article, <b>the lambda bootstrap method will use the <code>InnerClassLambdaMetafactory</code> to generate an inner class for the lambda at runtime</b>.
+</p>
+
+<p class="indented">
+    Then the bootstrap method encapsulates the generated inner class inside a special type of <code>CallSite</code> known as <code>ConstantCallSite</code>.
+    This type of <code>CallSite</code> would never change after setup.
+    Therefore, after the first setup for each lambda, the JVM will always use the fast path to directly call the lambda logic.
+</p>
+
+<p class="indented">
+    Although this is the most efficient type of <code>invokedynamic</code>, it's certainly not the only available option.
+    As a matter of fact, Java provides <code>MutableCallSite</code> and <code>VolatileCallSite</code> to accommodate for more dynamic requirements.
+</p>
+
+<h3>Advantages</h3>
+
+<p class="indented">
+    So, in order to implement <b>lambda expressions</b>, instead of creating <b>anonymous inner classes</b> at <b>compile-time</b>, Java creates them at <b>runtime</b> via <code>invokedynamic</code>.
+</p>
+
+<p class="indented">
+    One might argue against deferring inner class generation until runtime.
+    However, the <code>invokedynamic</code> approach has a few advantages over the simple compile-time solution.
+</p>
+
+<p class="indented">
+    First, the JVM does not generate the inner class until the first use of lambda.
+    Hence, <b>we won't pay for the extra footprint associated with the inner class before the first lambda execution.</b>
+</p>
+
+<p class="indented">
+    Additionally, much of the linkage logic is moved out from the bytecode to the bootstrap method.
+    Therefore, <b>the <code>invokedynamic</code> bytecode is usually much smaller than alternative solutions.</b>
+    The smaller bytecode can boost startup speed.
+</p>
+
+<p class="indented">
+    Suppose a newer version of Java comes with a more efficient bootstrap method implementation.
+    <b>Then our <code>invokedynamic</code> bytecode can take advantage of this improvement without recompiling.</b>
+    This way we can achieve some sort of forwarding binary compatibility.
+    Basically, we can switch between different strategies without recompilation.
+</p>
+
+<p class="indented">
+    Finally, writing the bootstrap and linkage logic in Java is usually easier than traversing an AST to generate a complex piece of bytecode.
+    So, <code>invokedynamic</code> can be (subjectively) less brittle.
+</p>
+
+<p class="indented">
+
+</p>
+<p class="indented">
+
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://www.baeldung.com/java-invoke-dynamic" target="_blank">An Introduction to Invoke Dynamic in the JVM</a></li>
+</ul>

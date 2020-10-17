@@ -1,0 +1,86 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">重新认识ClassFile</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>ClassFile是可以被理解的</h2>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        这个世界很复杂。
+    </p>
+    <p>
+        那么，把这个复杂的世界映射到我的认知范围内，我觉得，大体上可以分为三种情况。
+    </p>
+    <p>
+        第一种情况就是，有一些事情，是我已经知晓的，已经在我的知识范围之内了。
+    </p>
+    <p>
+        第二种情况就是，有一些事情，我现在是不了解的，但是通过我的学习、努力和探索，它也是可以被理解的。
+    </p>
+    <p>
+        第三种情况就是，还有一些事情，可能是穷极一生，也是我无法理解的事物。
+    </p>
+</div>
+
+<p class="indented">
+    对于<code>.class</code>文件（ClassFile）来说，我觉得，它属于第二种情况。也就是说，ClassFile是属于经过学习、探索之后，可以被理解的内容。
+</p>
+
+<p class="indented">
+    在<b>过去</b>的认知当中，我们可能知道：<code>.class</code>文件中存储的是二进制的字节码（bytecode）。在这样一个认知的基础之上，我们就不再往下深究了。
+</p>
+
+<p class="indented">
+    在<b>现在</b>，当下的时刻，我希望明确的表达出这样一种观点：ClassFile是可以被理解的。（ClassFile Is Comprehensible）
+</p>
+
+<p>
+    在这里明确的提出这种观点（ClassFile是可以被理解的），有<b>两个主要目的</b>：
+</p>
+
+<ul>
+    <li>
+        <b>第一个目的</b>，为原有的认知“打开了一扇门”。原有的认知可能告诉我们，<code>.class</code>文件中存储的是二进制的字节码（bytecode），不需要再对它进行研究了；这种观点（ClassFile是可以被理解的）则是告诉我们<code>.class</code>文件还可以继续研究下去。
+    </li>
+    <li>
+        <b>第二个目的</b>，提供一个思考的“原点”。在学习ClassFile的过程中，有的时候会遇到自己不懂的问题，心中常常会有挫败感。其实，遇到问题是正常的，遇到自己不理解的问题也是正常的。我们学习的过程，就是一个探索未知的过程。我们的观点是“ClassFile是可以被理解的”，它就像我们在学习数学的时候，知道一个方程是有解的。既然这个问题是可以被理解的，那么，我们需要做的就是把这个“暂时隐蔽的思路”找出来。
+    </li>
+</ul>
+
+<h2>ClassFile的结构是有规律的</h2>
+
+<p class="indented">
+    1991年，Erich Gamma、Richard Helm、Ralph Johnson和John Vlissides合作出版了《设计模式：可复用面向对象软件的基础》（Design Patterns - Elements of Reusable Object-Oriented Software），在这本书中共收录了23种设计模式。
+</p>
+
+<p class="indented">
+    在《设计模式》这本书中，23个具体的设计模式实例占据了最多的篇幅，但事实上，这本书最划时代的意义，在于指出编程开发活动中存在“模式”（Pattern）。在此之后，出现了以设计模式的格式来组织内容的《分析模式》，《企业架构模式》，《企业集成模式》，《xUnit测试模式》，《重构》等等质量颇高的书籍。（这段内容参考自知乎<a class="external" href="https://www.zhihu.com/question/23757906/answer/25616658" target="_blank">如何正确地使用设计模式？</a>）
+</p>
+
+<p class="indented">
+    谈到“模式”（Pattern），我以前的时候，总是搞不清楚“模式”（Pattern）到底是指什么？后来，才渐渐明白，所谓的“模式”（Pattern）就是想表达“事物的变化遵循一定的规律”，英文的解释是the regular way in which sth happens。就比如说，电子围绕了原子核在转，地球围绕着太阳在转。
+</p>
+
+<p class="indented">
+    为什么要谈到“模式”（Pattern）这个概念呢？其实，在这一部分当中，我想表达的主要观点就是，ClassFile的结构也是遵循一定的“模式”（Pattern）；而ClassFile所遵循的“模式”（Pattern）就描述在《The Java Virtual Machine Specification》文档之中。换话说，我们去学习ClassFile，就是去学习《The Java Virtual Machine Specification》当中描述的“模式”（Pattern）。然而，学习《The Java Virtual Machine Specification》并不是一件容易的事情。
+</p>
+
+<p class="indented">
+    在这里，我想要特别说的一个问题就是，“模式”（Pattern）就是指代Java ClassFile所遵循的“数据结构”（Data Structure）。我并没有区分两个概念之间的差异，而是认为它们两者的意思是“等价”的。之所以选择“模式”（Pattern）这个概念，而没有使用“数据结构”（Date Structure）这个概念，是因为我觉得，“模式”（Pattern）这个概念更能表达出ClassFile所遵循的规律性。那么，在其它的场景当中，可能就需要去严格区分“模式”（Pattern）和“数据结构”（Date Structure）之间的差异。
+</p>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一点，ClassFile是能够被理解的。这里说明的是一个“能”与“否”的问题，能够被理解，或者不能被理解。</li>
+    <li>第二点，到底要如何才能理解ClassFile。<code>.class</code>文件的结构是有规律的，它遵循一定的模式（Pattern），这种模式（Pattern）记录于JVM文档中。</li>
+</ul>

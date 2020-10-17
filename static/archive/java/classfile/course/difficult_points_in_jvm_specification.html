@@ -1,0 +1,54 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">学习难点</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>学习难点</h2>
+
+<p>
+    一个人，作为单独的个体，在学习《The Java Virtual Machine Specification》过程中，其遇到的学习难点主要体现在<b>四个方面</b>：
+</p>
+
+<ul>
+    <li>
+        <b>第一方面，是源于认知程度的差异</b>，是<b>JVM文档的作者</b>与<b>JVM文档的读者</b>之间的认知程度的差异。JVM文档的作者们，在书写JVM的文档的时候，是建立在一个全局的、完整的对JVM的认知的基础上写的，可以轻易的从一个概念引生出另外的许多其它概念；而对JVM不太了解的读者，可能在不同的概念跳转之间，迷失了自己的“方向”。
+        <sub class="my_note" style="color:blue">笔记：这是从“人”的角度来说，由于双方知识不对等造成的。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        <b>第二方面，是源于JVM文档的书写风格</b>。JVM文档是一个很“简洁”的书写风格，这就导致了一个问题，它缺少足够的信息或示例代码来把其中一句话或一个问题给讲清楚；换句话说，它提供的知识的“密度”非常大，并没有提供足够的“空间”（这个“空间”可以理解为“时间”或“代码示例”等内容）去真正理解它的含义。
+        <sub class="my_note" style="color:blue">笔记：这是从“文档”的角度来说的，由其书写风格决定的。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        <b>第三方面，可能是源于不同语言的差异</b>。更进一步说，就是中文和英文之间的差异。有的人，可能就天生喜欢英文，或者对英文有天赋，而有的人，则对英文避而远之。我们知道，JVM文档是由英文写的，那可能就对于不太了解英文的中文使用造成了语言上的障碍。
+        <sub class="my_note" style="color:blue">笔记：这是从“语言”的角度来说的，源自于母语的差异。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        <b>第四方面，针对一个具体的<code>.class</code>文件，缺少一个合适的工具对它进行研究</b>。如果在只有一个十六进制工具的情况下，要学习ClassFile的内容是有点困难的，当然，有恒心还是能做到的。一个合适的工具，能够简化认知的过程。
+        <sub class="my_note" style="color:blue">笔记：这是从“工具”的角度来说，缺少合适的工具。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ul>
+
+<h2>应对策略</h2>
+
+<ul>
+    <li>
+        第一方面，降低学习难度。理想中的学习曲线，应该是一个平缓上升的方式。初期的时候，只介绍一些主要的概念，以讲明白整体逻辑为主；后续的时候，如果有需要，再去引入必要的概念，尽量让认知梯度是一个慢慢增长的过程。
+    </li>
+    <li>
+        第二方面，提供足够的代码示例。大家可以通过观察代码执行结果、修改代码等，以实际可操作性方式去理解问题。
+    </li>
+    <li>
+        第三方面，则需要读者的英语水平，达到一个可以读懂英文文档的程度。这个要求，并不是特别的高。
+    </li>
+    <li>
+        第四方面，提供一个读取<code>.class</code>文件的Java项目，方便查看其存储结构。
+    </li>
+</ul>

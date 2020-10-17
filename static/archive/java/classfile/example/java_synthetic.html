@@ -137,7 +137,7 @@ fields
 
 <h2>Synthetic Method</h2>
 
-<h3>First Example</h3>
+<h3>First Example: InnerClass</h3>
 
 <p class="indented">
     The Java compiler must create synthetic methods on <b>nested classes</b> when their attributes specified with the <code>private</code> modifier are accessed by the <b>enclosing class</b>.
@@ -188,7 +188,7 @@ methods
     MethodInfo {Value='access$102:(Lsample/HelloWorld$InnerClass;I)I', AccessFlags='[ACC_STATIC,ACC_SYNTHETIC]'}
 </div>
 
-<h3>Second Example</h3>
+<h3>Second Example: lambda</h3>
 
 <p>
     下面的代码会将Lambda Expression(<code>(i) -> i + 5</code>)生成名为<code>lambda$main$0</code>的方法，并带有<code>ACC_SYNTHETIC</code>标志。

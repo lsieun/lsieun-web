@@ -1,0 +1,345 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java Method handles</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_method_handles.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Method handles</h2>
+
+<p class="indented">
+    <b>Method handles</b> are often described as a retrofitted version of <b>Java's reflection API</b>, but this is not what they are meant to represent.
+    While method handles can represent a method, constructor or field, they are not intended to describe properties of these class members.
+    It is for example not possible to directly extract metadata from a method handle such as modifiers or annotation values of the represented method.
+    And while method handles allow for the invocation of a referenced method, their main purpose is to be used together with an <code>invokedynamic</code> call site.
+    For gaining a better understanding of <b>method handles</b>, looking at them as <b>an imperfect replacement for the reflection API</b> is however a reasonable starting point.
+</p>
+
+<p class="indented">
+    Method handles cannot be instantiated.
+    Instead, method handles are created by using a designated lookup object.
+    These objects are themselves created by using a factory method that is provided by the <code>MethodHandles</code> class.
+    Whenever this factory is invoked, it first creates a security context which ensures that the resulting lookup object can only locate methods that are also visible to the class from which the factory method was invoked.
+    A lookup object can then be created as follows:
+</p>
+
+<div title="Example.java" class="javacode">
+class Example {
+    void doSomething() {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+    }
+    private void foo() { /* ... */ }
+}
+</div>
+
+<p class="indented">
+    As argued before, the above lookup object could only be used to locate methods that are also visible to the <code>Example</code> class such as <code>foo</code>.
+    It would for example be impossible to look up a private method of another class.
+    This is <b>a first major difference</b> to using the reflection API where private methods of outside classes can be located just as any other method and where these methods can even be invoked after marking such a method as accessible.
+    Method handles are therefore sensible of their creation context which is a first major difference to the reflection API.
+    <sub class="my_note" style="color:blue">笔记：从功能上来说，Method handles要比Java reflection API要弱一点儿。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Apart from that, a method handle is more specific than the reflection API by describing a specific type of method rather than representing just any method.
+    In a Java program, <b>a method's type</b> is a composite of both <b>the method's return type</b> and <b>the types of its parameters</b>.
+    For example, the only method of the following <code>Counter</code> class returns an <code>int</code> representing the number of characters of the only <code>String</code>-typed argument:
+    <sub class="my_note" style="color:blue">笔记：method type = return type + parameter types</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+class Counter {
+    static int count(String name) {
+        return name.length();
+    }
+}
+</div>
+
+<p class="indented">
+    A representation of this method's type can be created by using another factory.
+    This factory is found in the <code>MethodType</code> class which also represents instances of created method types.
+    Using this factory, the method type for <code>Counter::count</code> can be created
+    by handing over <b>the method's return type</b> and its <b>parameter types</b> bundled as an array:
+</p>
+
+<div title="MethodType examples" class="javacode">
+MethodType methodType = MethodType.methodType(int.class, new Class&lt;?&gt;[] {String.class});
+</div>
+
+<p class="indented">
+    By using the lookup object that was created before and the above method type,
+    it is now possible to locate a method handle that represents the <code>Counter::count</code> method as depicted in the following code:
+</p>
+
+<div title="Counter::count example" class="javacode">
+MethodType methodType = MethodType.methodType(int.class, new Class<?>[] {String.class});
+MethodHandles.Lookup lookup = MethodHandles.lookup();
+MethodHandle methodHandle = lookup.findStatic(Counter.class, "count", methodType);
+int count = (int)methodHandle.invokeExact("foo");
+assertThat(count, is(3));
+</div>
+
+<p class="indented">
+    <b>
+        At first glance, using a method handle might seem like an overly complex version of using the reflection API.
+        However, keep in mind that the direct invocation of a method using a handle is not the main intent of its use.
+    </b>
+</p>
+
+<p class="indented">
+    The main difference of the above example code and of invoking a method via the reflection API is only revealed
+    when looking into the differences of how the Java compiler translates both invocations into Java byte code.
+    When a Java program invokes a method, this method is uniquely identified by its name and by its (non-generic) parameter types and even by its return type.
+    It is for this reason that it is possible to overload methods in Java.
+    And even though the Java programming language does not allow it, the JVM does in theory allow to overload a method by its return type.
+</p>
+
+<p class="indented">
+    Following this principle, a reflective method call is executed as a common method call of the <code>Method::invoke</code> method.
+    This method is identified by its two parameters which are of the types <code>Object</code> and <code>Object[]</code>.
+    In addition to this, the method is identified by its <code>Object</code> return type.
+    Because of this signature, all arguments to this method need to always be boxed and enclosed in an array.
+    Similarly, the return value needs to be boxed if it was primitive or <code>null</code> is returned if the method was <code>void</code>.
+</p>
+
+<div title="Method::invoke" class="javacode">
+public Object invoke(Object obj, Object... args) {
+    // ......
+}
+</div>
+
+<p class="indented">
+    Method handles are the exception to this rule.
+    Instead of invoking a method handle by referring to the signature of <code>MethodHandle::invokeExact</code> signature
+    which takes an <code>Object[]</code> as its single argument and returns <code>Object</code>,
+    method handles are invoked by using a so-called polymorphic signature.
+    A polymorphic signature is created by the Java compiler dependant on the types of the actual arguments and the expected return type at a call site.
+</p>
+
+<div title="MethodHandle::invokeExact" class="javacode">
+public final native Object invokeExact(Object... args) throws Throwable;
+</div>
+
+<p>
+    For example, when invoking the method handle as above with
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+int count = (int)methodHandle.invokeExact("foo");
+</div>
+
+<div title="MethodHandle.invokeExact:(Ljava/lang/String;)I" class="plaintext">
+0033: invokevirtual   #12  // B6000C     || java/lang/invoke/MethodHandle.invokeExact:(Ljava/lang/String;)I
+0036: istore          4    // 3604
+</div>
+
+<p class="indented">
+    the Java compiler translates this invocation as if the <code>invokeExact</code> method was defined to
+    accept a single argument of type <code>String</code> and returning an <code>int</code> type.
+    Obviously, such a method does not exist and for (almost) any other method, this would result in a linkage error at runtime.
+    For method handles, the Java Virtual Machine does however recognize this signature to be polymorphic and
+    treats the invocation of the method handle as if the <code>Counter::count</code> method that the handle refers to was inset directly into the call site.
+    Thus, the method can be invoked without the overhead of boxing primitive values or the return type and without placing the argument values inside an array.
+</p>
+
+<p class="indented">
+    At the same time, when using the <code>invokeExact</code> invocation,
+    it is guaranteed to the Java virtual machine that the method handle always references a method at runtime that is compatible to the polymorphic signature.
+    For the example, the JVM expected that the referenced method actually accepts a <code>String</code> as its only argument and that it returns a primitive <code>int</code>.
+    If this constraint was not fulfilled, the execution would instead result in a runtime error.
+    However, any other method that accepts a single <code>String</code> and that returns a primitive <code>int</code> could be
+    successfully filled into the method handle's call site to replace <code>Counter::count</code>.
+</p>
+
+<p class="indented">
+    In contrast, using the <code>Counter::count</code> method handle at the following three invocations would result in runtime errors, even though the code compiles successfully:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+int count1 = methodHandle.invokeExact((Object) "foo");
+int count2 = (Integer) methodHandle.invokeExact("foo");
+methodHandle.invokeExact("foo");
+</div>
+
+<p class="indented">
+    The first statement results in an error because the argument that is handed to the handle is too general.
+    While the JVM expected a <code>String</code> as an argument to the method, the Java compiler suggested that the argument would be an <code>Object</code> type.
+    It is important to understand that the Java compiler took the casting as a hint for
+    creating a different polymorphic signature with an <code>Object</code> type as a single parameter type
+    while the JVM expected a <code>String</code> at runtime.
+    Note that this restriction also holds for handing too specific arguments,
+    for example when casting an argument to an <code>Integer</code> where the method handle required a <code>Number</code> type as its argument.
+    In the second statement, the Java compiler suggested to the runtime that
+    the handle's method would return an <code>Integer</code> wrapper type instead of the primitive <code>int</code>.
+    And without suggesting a return type at all in the third statement,
+    the Java compiler implicitly translated the invocation into a <code>void</code> method call.
+    Hence, <code>invokeExact</code> really does mean exact.
+</p>
+
+<p class="indented">
+    This restriction can sometimes be too harsh.
+    For this reason, instead of requiring an exact invocation, the method handle also allows for a more forgiving invocation
+    where conversions such as type castings and boxings are applied.
+    This sort of invocation can be applied by using the <code>MethodHandle::invoke</code> method.
+    Using this method, the Java compiler still creates a polymorphic signature.
+    This time, the Java virtual machine does however test the actual arguments and the return type
+    for compatibility at run time and converts them by applying boxings or castings, if appropriate.
+    Obviously, these transformations can sometimes add a runtime overhead.
+</p>
+
+<h2>Fields, methods and constructors: handles as a unified interface</h2>
+
+<p class="indented">
+    Other than <code>Method</code> instances of the reflection API, method handles can equally reference fields or constructors.
+    The name of the <code>MethodHandle</code> type could therefore be seen as too narrow.
+    Effectively, it does not matter what class member is referenced via a method handle at runtime
+    as long as its <code>MethodType</code>, another type with a misleading name, matches the arguments that are passed at the associated call site.
+</p>
+
+<p class="indented">
+    Using the appropriate factories of a <code>MethodHandles.Lookup</code> object, a field can be looked up to represent a getter or a setter.
+    Using getters or setters in this context does not refer to invoking an actual method that follows the Java bean specification.
+    Instead, the field-based method handle directly reads from or writes to the field but in shape of a method call via invoking the method handle.
+    By representing such field access via method handles, field access or method invocations can be used interchangeably.
+</p>
+
+<p>
+    As an example for such interchange, take the following class:
+</p>
+
+<div title="Bean.java" class="javacode">
+class Bean {
+    String value;
+    void print(String x) {
+        System.out.println(x);
+    }
+}
+</div>
+
+<p class="indented">
+    For the above <code>Bean</code> class, the following method handles can be used for either writing a string to the <code>value</code> field or for invoking the <code>print</code> method with the same string as an argument:
+</p>
+
+<div title="examples" class="javacode">
+MethodHandle fieldHandle = lookup.findSetter(Bean.class, "value", String.class);
+MethodType methodType = MethodType.methodType(void.class, new Class<?>[] {String.class});
+MethodHandle methodHandle = lookup.findVirtual(Bean.class, "print", methodType);
+</div>
+
+<p class="indented">
+    As long as the method handle call site is handed an instance of <code>Bean</code> together with a <code>String</code>
+    while returning <code>void</code>, both method handles could be used interchangeably as shown here:
+</p>
+
+<div title="examples" class="javacode">
+anyHandle.invokeExact((Bean) mybean, (String) myString);
+</div>
+
+<p class="indented">
+    Note that the polymorphic signature of the above call site does <b>not</b> match the method type of the above handle.
+    However, within Java byte code, non-static methods are invoked as if they were static methods with where the <code>this</code> reference is handed as a first, implicit argument.
+    A non-static method's nominal type does therefore diverge from its actual runtime type.
+    Similarly, access to a non-static field requires an instance to be access.
+</p>
+
+<p class="indented">
+    Similarly to fields and methods, it is possible to locate and invoke <b>constructors</b>
+    which are considered as methods with a <code>void</code> return value for their nominal type.
+    Furthermore, one can not only invoke a method directly but even invoke a super method
+    as long as this <code>super</code> method is reachable for the class from which the lookup factory was created.
+    In contrast, invoking a super method is not possible at all
+    when relying on the reflection API.
+    If required, it is even possible to return a constant value from a handle.
+</p>
+
+<h2>Performance metrics</h2>
+
+<p class="indented">
+    <b>Method handles are often described as being a more performant as the Java reflection API</b>.
+    At least for recent releases of the HotSpot virtual machine, this is not true.
+    The simplest way of proving this is <a class="external" href="https://gist.github.com/raphw/881e1745996f9d314ab0" target="_blank">writing an appropriate benchmark</a>.
+    Then again, is not all too simple to write a benchmark for a Java program which is optimized while it is executed.
+    The de facto standard for writing a benchmark has become using <a class="external" href="https://openjdk.java.net/projects/code-tools/jmh/" target="_blank">JMH</a>, a harness that ships under the OpenJDK umbrella.
+</p>
+
+<p class="indented">
+    From the benchmark, it becomes obvious that reflection is already implemented quite efficiently.
+    Modern JVMs know a concept named inflation where a frequently invoked reflective method call is replaced with runtime generated Java byte code.
+    What remains is the overhead of applying the boxing for passing arguments and receiving a return values.
+    These boxings can sometimes be eliminated by the JVM's Just-in-time compiler but this is not always possible.
+    For this reason, using method handles can be more performant than using the reflection API if method calls involve a significant amount of primitive values.
+    This does however require that the exact method signatures are already known at compile time such that the appropriate polymorphic signature can be created.
+    For most use cases of the reflection API, this guarantee can however not be given because the invoked method's types are not known at compile time.
+    In this case, using method handles does not offer any performance benefits and should not be used to replace it.
+</p>
+
+<h2>Creating an invokedynamic call site</h2>
+
+<p class="indented">
+    Normally, <code>invokedynamic</code> call sites are created by the Java compiler only when it needs to translate <b>a lambda expression</b> into <b>byte code</b>.
+    It is worthwhile to note that lambda expressions could have been implemented without <code>invokedynamic</code> call sites altogether, for example by converting them into anonymous inner classes.
+    As a main difference to the suggested approach, using <code>invokedynamic</code> delays the creation of a similar class to runtime.
+    We are looking into class creation in the next section.
+    For now, bear however in mind that <code>invokedynamic</code> does not have anything to do with class creation,
+    it only allows to delay the decision of how to dispatch a method until runtime.
+</p>
+
+<p class="indented">
+    For a better understanding of <code>invokedynamic</code> call sites, it helps to create such call sites explicitly in order to look at the mechanic in isolation.
+</p>
+
+<p class="indented">
+    Any <code>invokedynamic</code> call site eventually yields a <code>MethodHandle</code> that references the method to be invoked.
+    Instead of invoking this method handle manually, it is however up to the Java runtime to do so.
+    Because method handles have become a known concept to the Java virtual machine, these invocations are then optimized similarly to a common method call.
+    Any such method handle is received from a so-called bootstrap method which is nothing more than a plain Java method that fulfills a specific signature.
+    For a trivial example of a bootstrap method, look at the following code:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+class Bootstrapper {
+    public static CallSite bootstrap(Object... args) throws Throwable {
+        MethodType methodType = MethodType.methodType(int.class, new Class&lt;?&gt;[] {String.class});
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        MethodHandle methodHandle = lookup.findStatic(Counter.class, "count", methodType);
+        return new ConstantCallSite(methodHandle);
+    }
+}
+</div>
+
+<p class="indented">
+    For now, we do not care much about the arguments(<code>Object... args</code>) of the <code>bootstrap</code> method.
+    Instead, notice that the <code>bootstrap</code> method is <code>static</code> which is as a matter of fact a requirement.
+    Within Java byte code, an <code>invokedynamic</code> call site references the full signature of a <code>bootstrap</code> method
+    but not a specific object which could have a state and a life cycle.
+    Once the <code>invokedynamic</code> call site is invoked, control flow is handed to the referenced bootstrap method
+    which is now responsible for identifying a method handle.
+    Once this method handle is returned from the bootstrap method, it is invoked by the Java runtime.
+</p>
+
+<p class="indented">
+    As obvious from the above example, a <code>MethodHandle</code> is not returned directly from a bootstrap method.
+    Instead, the handle is wrapped inside of a <code>CallSite</code> object.
+    Whenever a bootstrap method is invoked, the <code>invokedynamic</code> call site is later permanently bound to the <code>CallSite</code> object that is returned from this method.
+    Consequently, a bootstrap method is only invoked a single time for any call site.
+    Thanks to this intermediate <code>CallSite</code> object, it is however possible to exchange the referenced <code>MethodHandle</code> at a later point.
+    For this purpose, the Java class library already offers different implementations of <code>CallSite</code>.
+    We have already seen a <code>ConstantCallSite</code> in the example code above.
+    As the name suggests, a <code>ConstantCallSite</code> always references the same method handle without a possibility of a later exchange.
+    Alternatively, it is however also possible to for example use a <code>MutableCallSite</code>
+    which allows to change the referenced <code>MethodHandle</code> at a later point in time or it is even possible to implement a custom <code>CallSite</code> class.
+</p>
+
+<p class="indented">
+
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://dzone.com/articles/dismantling-invokedynamic" target="_blank">DZone: Dismantling invokedynamic</a></li>
+</ul>

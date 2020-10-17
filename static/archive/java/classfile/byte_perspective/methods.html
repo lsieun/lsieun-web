@@ -34,13 +34,24 @@ ClassFile {
 
 <ul>
     <li>
-        <b>methods_count</b>: The value of the <code>methods_count</code> item gives the number of <code>method_info</code> structures in the methods table.
+        <b>methods_count</b>: The value of the <code>methods_count</code> item gives the number of <code>method_info</code> structures in the <code>methods</code> table.
     </li>
     <li>
-        <b>methods[]</b>:
-        Each value in the methods table must be a <code>method_info</code> structure giving a complete description of a method in this class or interface. If neither of the <code>ACC_NATIVE</code> and <code>ACC_ABSTRACT</code> flags are set in the <code>access_flags</code> item of a <code>method_info</code> structure, the Java Virtual Machine instructions implementing the method are also supplied.
-
-        The <code>method_info</code> structures represent all methods declared by this class or interface type, including <b>instance methods</b>, <b>class methods</b>, <b>instance initialization methods</b>, and <b>any class or interface initialization method</b>. The <code>methods</code> table does not include items representing methods that are inherited from superclasses or superinterfaces.
+        <b>methods[]</b>: Each value in the <code>methods</code> table must be a <code>method_info</code> structure giving a complete description of a method in this class or interface.
+        <sub class="my_note" style="color:blue">笔记：在methods[]存储的数据类型是method_info，每一个method_info都是对一个method的描述。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+        <ul>
+            <li>
+                If neither of the <code>ACC_NATIVE</code> and <code>ACC_ABSTRACT</code> flags are set in the <code>access_flags</code> item of a <code>method_info</code> structure, the Java Virtual Machine instructions implementing the method are also supplied.
+                <sub class="my_note" style="color:blue">笔记：如果当前的method_info中不带有ACC_NATIVE和ACC_ABSTRACT标识，那么该method_info就会带有Code属性。</sub>
+                <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+            </li>
+            <li>
+                The <code>method_info</code> structures represent all methods declared by this class or interface type, including <b>instance methods</b>, <b>class methods</b>, <b>instance initialization methods</b>, and <b>any class or interface initialization method</b>. The <code>methods</code> table does not include items representing methods that are inherited from superclasses or superinterfaces.
+                <sub class="my_note" style="color:blue">笔记：method_info只是描述当前类或接口中定义的方法，而不包括从父类或父接口继承的方法。</sub>
+                <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+            </li>
+        </ul>
     </li>
 </ul>
 
@@ -75,11 +86,14 @@ method_info {
 </div>
 
 <table class="w3-table-all w3-hoverable w3-centered">
+    <thead onclick="$(this).next().toggle()">
     <tr class="w3-green">
         <th>Flag Value</th>
         <th>Flag Name</th>
         <th>Interpretation</th>
     </tr>
+    </thead>
+    <tbody>
     <tr class="w3-hover-blue">
         <td><code>0x0001</code></td>
         <td>ACC_PUBLIC</td>
@@ -160,6 +174,7 @@ method_info {
         <td></td>
         <td class="w3-left-align"></td>
     </tr>
+    </tbody>
 </table>
 
 <h3>ACC_PUBLIC+</h3>
@@ -170,7 +185,7 @@ method_info {
     All other methods must be compiled with the <code>ACC_VARARGS</code> flag set to 0.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<div title="HelloWorld.java" hidden class="javacode">
 public abstract class HelloWorld  {
     void testDefault() {
         //[]
@@ -212,7 +227,7 @@ public abstract class HelloWorld  {
 }
 </div>
 
-<div title="Example" class="plaintext">
+<div title="HelloWorld.class methods" hidden class="plaintext">
 methods_count='000B' (11)
 methods
     MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
@@ -247,7 +262,7 @@ public class HelloWorld implements Comparable&lt;HelloWorld&gt; {
     在ClassFile当中，有两个<code>compareTo</code>方法，但两者的descriptor有所不同。值得注意的是第二个<code>compareTo</code>方法（<code>compareTo:(Ljava/lang/Object;)I</code>）带有<code>ACC_BRIDGE</code>标识。简单来说，它是由于Type Erase造成的。
 </p>
 
-<div title="Example: ACC_BRIDGE" class="plaintext">
+<div title="Example: ACC_BRIDGE" hidden class="plaintext">
 methods_count='0003' (3)
 methods
     MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
@@ -273,10 +288,10 @@ public interface Comparable&lt;T&gt; {
     在ClassFile中，<code>Comparable.class</code>是这样的：
 </p>
 
-<div title="Example: Comparable.class" class="plaintext">
+<div title="Example: Comparable.class" hidden class="plaintext">
 methods_count='0001' (1)
 methods
-    MethodInfo {Value='compareTo:(Ljava/lang/Object;)I', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[Signature]', HexCode='0401000300040001...'}
+    MethodInfo {Value='compareTo:(Ljava/lang/Object;)I', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[Signature]'}
 </div>
 
 <h3>ACC_NATIVE</h3>
@@ -285,8 +300,8 @@ methods
     <code>java.lang.System</code>的<code>arraycopy</code>方法
 </p>
 
-<div title="Example: ACC_NATIVE" class="plaintext">
-MethodInfo {Value='arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_NATIVE]', Attrs='[]', HexCode='0109009A009B0000'}
+<div title="Example: ACC_NATIVE" hidden class="plaintext">
+MethodInfo {Value='arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_NATIVE]', Attrs='[]'}
 </div>
 
 <h3>ACC_SYNTHETIC</h3>
@@ -294,6 +309,8 @@ MethodInfo {Value='arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V', Access
 <p>
     The <code>ACC_SYNTHETIC</code> flag indicates that this method was generated by a compiler and does not appear in source code, unless it is one of the methods named in <a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.7.8" target="_blank">JVM §4.7.8</a>.
 </p>
+
+<h4>First Example: InnerClass</h4>
 
 <p>
     在<code>HelloWorld$InnerClass.class</code>内会生成新的方法<code>access$002</code>，并带有<code>ACC_SYNTHETIC</code>标志。
@@ -312,12 +329,39 @@ public class HelloWorld {
 }
 </div>
 
-<div title="Example: ACC_SYNTHETIC" class="plaintext">
+<div title="methods ACC_SYNTHETIC" hidden class="plaintext">
 methods_count='0002' (2)
 methods
-    MethodInfo {Value='&lt;init&gt;:(Lsample/HelloWorld;)V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code, MethodParameters]', HexCode='0001000A000B0002...'}
-    MethodInfo {Value='access$002:(Lsample/HelloWorld$InnerClass;I)I', AccessFlags='[ACC_STATIC,ACC_SYNTHETIC]', Attrs='[Code]', HexCode='1008001400150001...'}
+    MethodInfo {Value='&lt;init&gt;:(Lsample/HelloWorld;)V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code, MethodParameters]'}
+    MethodInfo {Value='access$002:(Lsample/HelloWorld$InnerClass;I)I', AccessFlags='[ACC_STATIC,ACC_SYNTHETIC]', Attrs='[Code]'}
 </div>
+
+<p>
+    在<code>HelloWorld$InnerClass.class</code>内会生成<code>&lt;init&gt;</code>和<code>access$102</code>方法，并带有<code>ACC_SYNTHETIC</code>标志。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private class InnerClass { // 注意，这里是private，而不是public
+        private int value;
+    }
+
+    private void test() {
+        InnerClass instance = new InnerClass();
+        instance.value = 100;
+    }
+}
+</div>
+
+<div title="methods ACC_SYNTHETIC" hidden class="plaintext">
+methods_count='0003' (3)
+methods
+    MethodInfo {Value='&lt;init&gt;:(Lsample/HelloWorld;)V', AccessFlags='[ACC_PRIVATE]', Attrs='[Code, MethodParameters]'}
+    MethodInfo {Value='&lt;init&gt;:(Lsample/HelloWorld;Lsample/HelloWorld$1;)V', AccessFlags='[ACC_SYNTHETIC]', Attrs='[Code]'}
+    MethodInfo {Value='access$102:(Lsample/HelloWorld$InnerClass;I)I', AccessFlags='[ACC_STATIC,ACC_SYNTHETIC]', Attrs='[Code]'}
+</div>
+
+<h4>Second Example: lambda</h4>
 
 <p>
     下面的代码会将Lambda Expression(<code>(i) -> i + 5</code>)生成名为<code>lambda$main$0</code>的方法，并带有<code>ACC_SYNTHETIC</code>标志。
@@ -335,19 +379,19 @@ public class HelloWorld {
 }
 </div>
 
-<div title="Example: ACC_SYNTHETIC" class="plaintext">
+<div title="Example: ACC_SYNTHETIC" hidden class="plaintext">
 methods_count='0003' (3)
 methods
-    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]', HexCode='0001000B000C0001...'}
-    MethodInfo {Value='main:([Ljava/lang/String;)V', AccessFlags='[ACC_PUBLIC,ACC_STATIC]', Attrs='[Code, MethodParameters]', HexCode='0009001200130002...'}
-    MethodInfo {Value='lambda$main$0:(Ljava/lang/Integer;)Ljava/lang/Integer;', AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_SYNTHETIC]', Attrs='[Code, MethodParameters]', HexCode='100A001D001E0002...'}
+    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
+    MethodInfo {Value='main:([Ljava/lang/String;)V', AccessFlags='[ACC_PUBLIC,ACC_STATIC]', Attrs='[Code, MethodParameters]'}
+    MethodInfo {Value='lambda$main$0:(Ljava/lang/Integer;)Ljava/lang/Integer;', AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_SYNTHETIC]', Attrs='[Code, MethodParameters]'}
 </div>
 
 <p>
     在使用<code>javap</code>的时候，注意使用<code>-p</code>选项
 </p>
 
-<div title="javap" class="plaintext">
+<div title="javap -v -p" class="plaintext">
 $ javap -v -p HelloWorld.class
 ... ...
   private static java.lang.Integer lambda$main$0(java.lang.Integer);
@@ -416,10 +460,10 @@ public class HelloWorld {
 }
 </div>
 
-<div title="Example: init" class="plaintext">
+<div title="Example: init" hidden class="plaintext">
 methods_count='0001' (1)
 methods
-    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]', HexCode='0001000400050001...'}
+    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
 </div>
 
 <h3>&lt;clinit&gt;</h3>
@@ -432,11 +476,11 @@ public class HelloWorld {
 }
 </div>
 
-<div title="Example: clinit" class="plaintext">
+<div title="Example: clinit" hidden class="plaintext">
 methods_count='0002' (2)
 methods
-    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]', HexCode='0001000700080001...'}
-    MethodInfo {Value='&lt;clinit&gt;:()V', AccessFlags='[ACC_STATIC]', Attrs='[Code]', HexCode='0008000E00080001...'}
+    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
+    MethodInfo {Value='&lt;clinit&gt;:()V', AccessFlags='[ACC_STATIC]', Attrs='[Code]'}
 </div>
 
 <h2>Summing Up</h2>

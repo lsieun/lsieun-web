@@ -1,0 +1,164 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 8 Lambda: (2) ClassFile Perspective</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Lambda expressions</h2>
+
+<p class="indented">
+    Whenever the Java compiler translates <b>a lambda expression</b> into <b>byte code</b>,
+    it copies <b>the lambda's body</b> into <b>a private method</b> inside of the class in which the expression is defined.
+    These methods are named <code>lambda$X$Y</code> with <code>X</code> being the name of the method that contains the lambda expression
+    and with <code>Y</code> being a zero-based sequence number.
+    <b>The parameters of such a method</b> are those of the functional interface that the lambda expression implements.
+    Given that the lambda expression makes no use of non-static fields or methods of the enclosing class,
+    the method is also defined to be <code>static</code>(<code>ACC_STATIC</code>).
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Function;
+
+public class HelloWorld {
+    public static void main(String[] args) {
+        Function&lt;Integer, Integer&gt; func = item -> item + 5;
+    }
+}
+</div>
+
+<p>
+    注意，在<code>HelloWorld.class</code>文件中，生成了一个<code>lambda$main$0</code>方法，这个方法的名字符合<code>lambda$X$Y</code>的格式规则。
+</p>
+
+<div title="HelloWorld.class methods" hidden class="plaintext">
+methods_count='0003' (3)
+methods
+    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
+    MethodInfo {Value='main:([Ljava/lang/String;)V', AccessFlags='[ACC_PUBLIC,ACC_STATIC]',
+                Attrs='[Code, MethodParameters]'}
+    MethodInfo {Value='lambda$main$0:(Ljava/lang/Integer;)Ljava/lang/Integer;',
+                AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_SYNTHETIC]',
+                Attrs='[Code, MethodParameters]'}
+</div>
+
+<div title="lambda$main$0 method" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method lambda$main$0:(Ljava/lang/Integer;)Ljava/lang/Integer;
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 1
+code_length = 10
+code = 2AB600030860B80004B0
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: invokevirtual   #3   // B60003     || java/lang/Integer.intValue:()I
+0004: iconst_5             // 08
+0005: iadd                 // 60
+0006: invokestatic    #4   // B80004     || java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+0009: areturn              // B0
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      10  item:Ljava/lang/Integer;
+</div>
+
+<div title="main method" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 7
+code = BA000200004CB1
+=== === ===  === === ===  === === ===
+0000: invokedynamic   #2   // BA00020000 || #0:apply:()Ljava/util/function/Function;
+0005: astore_1             // 4C
+0006: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       7  args:[Ljava/lang/String;
+    1         6       1  func:Ljava/util/function/Function;
+</div>
+
+<p class="indented">
+    For compensation, <b>the lambda expression</b> is itself substituted by an <code>invokedynamic</code> call site.
+    On its invocation, this call site requests the binding of a factory for an instance of the functional interface.
+    As arguments to this factory, the call site supplies any values of the lambda expression's enclosing method
+    which are used inside of the expression and a reference to the enclosing instance, if required.
+    As a return type, the factory is required to provide an instance of the functional interface.
+</p>
+
+<p class="indented">
+    For bootstrapping a call site, any <code>invokedynamic</code> instruction currently delegates to the <code>LambdaMetafactory</code> class
+    which is included in the Java class library.
+    This factory is then responsible for creating a class that implements the functional interface
+    and which invokes the appropriate method that contains the lambda's body which, as described before, is stored in the original class.
+    In the future, this bootstrapping process might however change which is one of the major advantages of using <code>invokedynamic</code> for implementing lambda expressions.
+    If one day, a better suited language feature was available for implementing lambda expressions, the current implementation could simply be swapped out.
+</p>
+
+<p class="indented">
+    In order to being able to create a class that implements the functional interface, any call site representing a lambda expression provides additional arguments to the bootstrap method.
+    For the obligatory arguments, it already provides <b>the name of the functional interface's method</b>.
+    Also, it provides a <code>MethodType</code> of the factory method that the bootstrapping is supposed to yield as a result.
+    Additionally, the bootstrap method is supplied another <code>MethodType</code> that describes the signature of the functional interface's method.
+    To that, it receives a <code>MethodHandle</code> referencing the method that contains the lambda's method body.
+    Finally, the call site provides a <code>MethodType</code> of the generic signature of the functional interface's method, i.e. the signature of the method at the call site before type-erasure was applied.
+</p>
+
+<p class="indented">
+    When invoked, the bootstrap method looks at these arguments and creates an appropriate implementation of a class that implements the functional interface.
+    This class is created using the ASM library, a low-level byte code parser and writer that has become the de facto standard for direct Java byte code manipulation.
+    Besides implementing the functional interface's method, the bootstrap method also adds an appropriate constructor and a static factory method for creating instances of the class.
+    It is this factory method that is later bound to the <code>invokedyanmic</code> call site.
+    As arguments, the factory receives an instance to the lambda method's enclosing instance, in case it is accessed and also any values that are read from the enclosing method.
+</p>
+
+<p class="indented">
+    You might have noticed that the lambda expression's method body is contained in a private method which is now invoked from another class.
+    Normally, this would result in an illegal access error.
+    To overcome this limitation, the generated classes are loaded using so-called anonymous class loading.
+    Anonymous class loading can only be applied when a class is loaded explicitly by handing a byte array.
+    Also, it is not normally possible to apply anonymous class loading in user code as it is hidden away in the internal classes of the Java class library.
+    When a class is loaded using anonymous class loading, it receives a host class of which it inherits its full security context.
+    This involves both method and field access rights and the protection domain such that a lambda expression can also be generated for signed jar files.
+    Using this approch, lambda expression can be considered more secure than anonymous inner classes because private methods are never reachable from outside of a class.
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="http://cr.openjdk.java.net/~briangoetz/lambda/lambda-translation.html" target="_blank">OpenJDK: Translation of Lambda Expressions</a>，这篇文章是openjdk网站上2012年写的，现在是2020年，过去8年了，它的内容还是有借鉴意义</li>
+    <li><a class="external" href="https://dzone.com/articles/dismantling-invokedynamic" target="_blank">DZone: Dismantling invokedynamic</a></li>
+</ul>
+
+

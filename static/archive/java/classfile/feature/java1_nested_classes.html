@@ -1,0 +1,246 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 1.1 Nested Classes</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Anonymous classes</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Hello World");
+            }
+        };
+        r.run();
+    }
+}
+</div>
+
+<h3>HelloWorld.class</h3>
+
+<h4>Methods Part</h4>
+
+<p>
+    在<code>HelloWorld.class</code>中，<code>test()</code>方法的code如下所示。其中，我们注意到，创建了<code>HelloWorld$1</code>类型的对象。
+</p>
+
+<div title="HelloWorld.class test:()V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 2
+code_length = 16
+code = BB0002592AB700034C2BB900040100B1
+=== === ===  === === ===  === === ===
+0000: new             #2   // BB0002     || sample/HelloWorld$1
+0003: dup                  // 59
+0004: aload_0              // 2A
+0005: invokespecial   #3   // B70003     || sample/HelloWorld$1.&lt;init&gt;:(Lsample/HelloWorld;)V
+0008: astore_1             // 4C
+0009: aload_1              // 2B
+0010: invokeinterface #4 1 0 // B900040100 || java/lang/Runnable.run:()V
+0015: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      16  this:Lsample/HelloWorld;
+    1         9       7  r:Ljava/lang/Runnable;
+</div>
+
+<h4>Attributes Part</h4>
+
+<p>
+    在<code>HelloWorld.class</code>中，生成了一个<code>InnerClasses</code>属性。
+</p>
+
+<div title="HelloWorld.class InnerClasses" hidden class="plaintext">
+constant_pool_count='001E' (30)
+constant_pool
+    ......
+    |002| CONSTANT_Class {Value='sample/HelloWorld$1', HexCode='070015'}
+    ......
+    |007| CONSTANT_Utf8 {Value='InnerClasses', HexCode='01000C496E6E6572436C6173736573'}
+    ......
+attributes_count='0002' (2)
+attributes
+......
+--->|001| InnerClasses:
+HexCode: 00070000000A00010002000000000000
+attribute_name_index='0007' (#7)
+attribute_length='0000000A' (10)
+number_of_classes='0001' (1)
+classes[0] {
+    inner_class_info_index='0002' (#2)
+    outer_class_info_index='0000' (#0)
+    inner_name_index='0000' (#0)
+    inner_class_access_flags='0000' ([])
+}
+</div>
+
+<h3>HelloWorld$1.class</h3>
+
+<h4>ClassInfo Part</h4>
+
+<p>
+    在<code>HelloWorld$1.class</code>的Class Info信息中，我们可以看到这个类实现了<code>Runnable</code>接口。
+</p>
+
+<div title="HelloWorld$1.class ClassInfo" hidden class="plaintext">
+constant_pool_count='002D' (45)
+constant_pool
+    ......
+    |006| CONSTANT_Class {Value='sample/HelloWorld$1', HexCode='070022'}
+    |007| CONSTANT_Class {Value='java/lang/Object', HexCode='070023'}
+    |008| CONSTANT_Class {Value='java/lang/Runnable', HexCode='070024'}
+    ......
+class_info='00200006000700010008'
+    access_flags='0020' ([ACC_SUPER])
+    this_class='0006' (#6)
+    super_class='0007' (#7)
+    interfaces_count='0001' (1)
+    interfaces='0008' ([#8])
+</div>
+
+<h4>Fields Part</h4>
+
+<p>
+    在<code>HelloWorld$1.class</code>的Fields信息中，我们可以看到这个类有一个<code>this$0</code>字段，该字段带有<code>ACC_FINAL</code>和<code>ACC_SYNTHETIC</code>标识。
+</p>
+
+<div title="HelloWorld$1.class Fields" hidden class="plaintext">
+constant_pool_count='002D' (45)
+constant_pool
+    ......
+    |009| CONSTANT_Utf8 {Value='this$0', HexCode='010006746869732430'}
+    |010| CONSTANT_Utf8 {Value='Lsample/HelloWorld;', HexCode='0100134C73616D706C652F48656C6C6F576F726C643B'}
+    ......
+fields_count='0001' (1)
+fields
+|000| this$0:Lsample/HelloWorld;
+HexCode: 10100009000A0000
+access_flags='1010'([ACC_FINAL,ACC_SYNTHETIC])
+name_index='0009'(#9)
+descriptor_index='000A'(#10)
+attributes_count='0000'(0)
+</div>
+
+<h4>Methods Part</h4>
+
+<p>
+    在<code>HelloWorld$1.class</code>的Methods信息中，我们可以看到这个类有两个方法，一个是<code>&lt;init&gt;</code>方法，另一个是<code>run</code>方法。
+</p>
+
+<div title="HelloWorld$1.class methods" hidden class="plaintext">
+methods_count='0002' (2)
+methods
+    MethodInfo {Value='&lt;init&gt;:(Lsample/HelloWorld;)V', AccessFlags='[]', Attrs='[Code, MethodParameters]'}
+    MethodInfo {Value='run:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
+</div>
+
+<p>
+    在<code>HelloWorld$1.class</code>中，<code>&lt;init&gt;</code>方法的主要作用为<code>this$0</code>字段赋值。
+</p>
+
+<div title="HelloWorld$1.class init method" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method &lt;init&gt;:(Lsample/HelloWorld;)V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 2
+code_length = 10
+code = 2A2BB500012AB70002B1
+=== === ===  === === ===  === === ===    // 给HelloWorld$1.this$0字段赋值
+0000: aload_0              // 2A
+0001: aload_1              // 2B
+0002: putfield        #1   // B50001     || sample/HelloWorld$1.this$0:Lsample/HelloWorld;
+=== === ===  === === ===  === === ===    // 调用父类的构造函数
+0005: aload_0              // 2A
+0006: invokespecial   #2   // B70002     || java/lang/Object.&lt;init&gt;:()V
+0009: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      10  this:Lsample/HelloWorld$1;
+    1         0      10  this$0:Lsample/HelloWorld;
+</div>
+
+<p>
+    在<code>HelloWorld$1.class</code>中，<code>run</code>方法的主要作用打印<b>"Hello World"</b>。
+</p>
+
+<div title="HelloWorld$1.class run method" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method run:()V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 1
+code_length = 9
+code = B200031204B60005B1
+=== === ===  === === ===  === === ===
+0000: getstatic       #3   // B20003     || java/lang/System.out:Ljava/io/PrintStream;
+0003: ldc             #4   // 1204       || Hello World
+0005: invokevirtual   #5   // B60005     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0008: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld$1;
+</div>
+
+<h4>Attributes Part</h4>
+
+<p>
+    在<code>HelloWorld$1.class</code>的Attributes信息中，我们特别关注其中的两个属性，一个是<code>EnclosingMethod</code>属性，另一个是<code>InnerClasses</code>属性。
+</p>
+
+<div title="HelloWorld$1.class Attributes" hidden class="plaintext">
+constant_pool_count='002D' (45)
+constant_pool
+    ......
+    |006| CONSTANT_Class {Value='sample/HelloWorld$1', HexCode='070022'}
+    ......
+    |017| CONSTANT_Utf8 {Value='InnerClasses', HexCode='01000C496E6E6572436C6173736573'}
+    ......
+    |022| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
+    |023| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    |024| CONSTANT_Utf8 {Value='EnclosingMethod', HexCode='01000F456E636C6F73696E674D6574686F64'}
+    |025| CONSTANT_Class {Value='sample/HelloWorld', HexCode='070025'}
+    |026| CONSTANT_NameAndType {Value='test:()V', HexCode='0C00260015'}
+    ......
+attributes_count='0003' (3)
+attributes
+--->|000| SourceFile:
+HexCode: 0016000000020017
+attribute_name_index='0016' (#22)
+attribute_length='00000002' (2)
+sourcefile_index='0017' (#23)
+--->|001| EnclosingMethod:
+HexCode: 0018000000040019001A
+attribute_name_index='0018' (#24)  // EnclosingMethod
+attribute_length='00000004' (4)
+class_index='0019' (#25)           // sample/HelloWorld
+method_index='001A' (#26)          // test:()V
+--->|002| InnerClasses:
+HexCode: 00110000000A00010006000000000000
+attribute_name_index='0011' (#17)          // InnerClasses
+attribute_length='0000000A' (10)
+number_of_classes='0001' (1)
+classes[0] {
+    inner_class_info_index='0006' (#6)     // sample/HelloWorld$1
+    outer_class_info_index='0000' (#0)     // 没有直接的外部类，它是定义在方法内的类
+    inner_name_index='0000' (#0)           // 这本是一个匿名类，没有显式的名字
+    inner_class_access_flags='0000' ([])
+}
+</div>
+
+<h2>Summing Up</h2>
+
+

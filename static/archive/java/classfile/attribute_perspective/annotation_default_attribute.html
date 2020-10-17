@@ -1,0 +1,672 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">AnnotationDefault Attribute</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p>
+    在下面的代码中，<code>MyTag.java</code>是一个annotation type。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/annotation_type_example_mytag.png" alt="annotation_type"/>
+</div>
+
+<p>
+    其中的<code>String name()</code>和<code>int age()</code>都是用一个<code>method_info</code>结构来表示。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/annotation_type_example_method_info.png" alt="method_info"/>
+</div>
+
+<p>
+    对于<code>String name()</code>的<code>default "tomcat"</code>部分，是<code>AnnotationDefault</code>结构来表示；对于<code>int age()</code>的<code>default 12</code>也是用<code>AnnotationDefault</code>结构来表示。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/annotation_type_example_annotation_default.png" alt="AnnotationDefault"/>
+</div>
+
+<h2>AnnotationDefault</h2>
+
+<p class="indented">
+    The <code>AnnotationDefault</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of certain <code>method_info</code> structures, namely those representing elements of annotation types.
+</p>
+
+<p class="indented">
+    The <code>AnnotationDefault</code> attribute records the <code>default</code> value for the element represented by the <code>method_info</code> structure.
+</p>
+
+<p class="indented">
+    There may be <b>at most one</b> <code>AnnotationDefault</code> attribute in the <code>attributes</code> table of a <code>method_info</code> structure which represents an element of an annotation type.
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：variable-length</li>
+        <li>位置：method_info</li>
+        <li>数量：1</li>
+    </ul>
+</div>
+
+<p class="indented">
+
+</p>
+
+<p>
+    The <code>AnnotationDefault</code> attribute has the following format:
+</p>
+
+<div title="AnnotationDefault_attribute" class="plaintext">
+AnnotationDefault_attribute {
+    u2            attribute_name_index;
+    u4            attribute_length;
+    element_value default_value;
+}
+</div>
+
+<p>
+    The items of the <code>AnnotationDefault_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "AnnotationDefault".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
+    </li>
+    <li>
+        <code>default_value</code>: The <code>default_value</code> item represents the default value of the annotation type element represented by the <code>method_info</code> structure enclosing this <code>AnnotationDefault</code> attribute.
+    </li>
+</ul>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        对于<code>element_value</code>的类型，可以参考<a href="/archive/java/classfile/attribute_perspective/element_value_structure.html" target="_blank">这里</a>。
+    </p>
+</div>
+
+<h2>Examples</h2>
+
+<h3>const_value_index</h3>
+
+<div title="element_value" class="plaintext">
+element_value {
+    u1 tag;
+    u2 const_value_index;
+}
+</div>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>tag Item</th>
+        <th>Type</th>
+        <th>value Item</th>
+        <th>Constant Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>B</td>
+        <td>byte</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>C</td>
+        <td>char</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>D</td>
+        <td>double</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Double</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>F</td>
+        <td>float</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Float</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>I</td>
+        <td>int</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>J</td>
+        <td>long</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Long</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>S</td>
+        <td>short</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Z</td>
+        <td>boolean</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>s</td>
+        <td>String</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Utf8</td>
+    </tr>
+    </tbody>
+</table>
+
+<div title="MyTag.java" class="javacode">
+public @interface MyTag {
+//    byte testByte() default 10;
+//    char testChar() default 20;
+//    double testDouble() default 6.28D;
+//    float testFloat() default 3.14F;
+//    int testInt() default 30;
+//    long testLong() default 60;
+//    short testShort() default 40;
+//    boolean testBoolean() default true;
+//    String testString() default "HelloWorld";
+
+    String name() default "tomcat";
+    int age() default 12;
+}
+</div>
+
+<div title="methods" hidden class="plaintext">
+methods_count='0002' (2)
+methods
+    MethodInfo {Value='name:()Ljava/lang/String;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]'}
+    MethodInfo {Value='age:()I', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]'}
+</div>
+
+<div title="name:()Ljava/lang/String;" hidden class="plaintext">
+constant_pool_count='0010' (16)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='AnnotationDefault', HexCode='010011416E6E6F746174696F6E44656661756C74'}
+    |007| CONSTANT_Utf8 {Value='tomcat', HexCode='010006746F6D636174'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|000| AnnotationDefault:
+HexCode: 000600000003730007
+attribute_name_index='0006' (#6)
+attribute_length='00000003' (3)
+element_value {
+    tag='73' (s)
+    const_value_index='0007' (#7: tomcat)
+}
+</div>
+
+<div title="age:()I" hidden class="plaintext">
+constant_pool_count='0010' (16)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='AnnotationDefault', HexCode='010011416E6E6F746174696F6E44656661756C74'}
+    ... ...
+    |010| CONSTANT_Integer {Value='12', HexCode='030000000C'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|000| AnnotationDefault:
+HexCode: 00060000000349000A
+attribute_name_index='0006' (#6)
+attribute_length='00000003' (3)
+element_value {
+    tag='49' (I)
+    const_value_index='000A' (#10: 12)
+}
+</div>
+
+<h3>enum_const_value</h3>
+
+<div title="element_value" class="plaintext">
+element_value {
+    u1 tag;
+    {   u2 type_name_index;
+        u2 const_name_index;
+    } enum_const_value;
+}
+</div>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>tag Item</th>
+        <th>Type</th>
+        <th>value Item</th>
+        <th>Constant Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>e</td>
+        <td>Enum type</td>
+        <td>enum_const_value</td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+
+<div title="Day.java" class="javacode">
+public enum Day {
+    SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
+    THURSDAY, FRIDAY, SATURDAY
+}
+</div>
+
+<div title="MyTag.java" class="javacode">
+public @interface MyTag {
+    Day when() default Day.FRIDAY;
+}
+</div>
+
+<div title="methods" hidden class="plaintext">
+methods_count='0001' (1)
+methods
+    MethodInfo {Value='when:()Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]'}
+</div>
+
+<div title="when:()Lsample/Day; AnnotationDefault" hidden class="plaintext">
+constant_pool_count='000E' (14)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='AnnotationDefault', HexCode='010011416E6E6F746174696F6E44656661756C74'}
+    |007| CONSTANT_Utf8 {Value='Lsample/Day;', HexCode='01000C4C73616D706C652F4461793B'}
+    |008| CONSTANT_Utf8 {Value='FRIDAY', HexCode='010006465249444159'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|000| AnnotationDefault:
+HexCode: 0006000000056500070008
+attribute_name_index='0006' (#6)
+attribute_length='00000005' (5)
+element_value {
+    tag='65' (e)
+    type_name_index='0007' (#7)
+    const_name_index='0008' (#8)
+}
+</div>
+
+<h3>class_info_index</h3>
+
+<div title="element_value" class="plaintext">
+element_value {
+    u1 tag;
+    u2 class_info_index;
+}
+</div>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>tag Item</th>
+        <th>Type</th>
+        <th>value Item</th>
+        <th>Constant Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>c</td>
+        <td>Class</td>
+        <td>class_info_index</td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+
+<h4>Object.class</h4>
+
+<div title="MyTag.java" class="javacode">
+public @interface MyTag {
+    Class&lt;?&gt; type() default Object.class;;
+}
+</div>
+
+<div title="methods" hidden class="plaintext">
+methods_count='0001' (1)
+methods
+    MethodInfo {Value='type:()Ljava/lang/Class;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault, Signature]'}
+</div>
+
+<div title="type:()Ljava/lang/Class; AnnotationDefault" hidden class="plaintext">
+constant_pool_count='000F' (15)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='AnnotationDefault', HexCode='010011416E6E6F746174696F6E44656661756C74'}
+    |007| CONSTANT_Utf8 {Value='Ljava/lang/Object;', HexCode='0100124C6A6176612F6C616E672F4F626A6563743B'}
+    |008| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |009| CONSTANT_Utf8 {Value='()Ljava/lang/Class&lt;*&gt;;', HexCode='01001628294C6A6176612F6C616E672F436C6173733C2A3E3B'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|000| AnnotationDefault:
+HexCode: 000600000003630007
+attribute_name_index='0006' (#6)
+attribute_length='00000003' (3)
+element_value {
+    tag='63' (c)
+    class_info_index='0007' (#7)
+}
+
+--->|001| Signature:
+HexCode: 0008000000020009
+attribute_name_index='0008' (#8)
+attribute_length='00000002' (2)
+signature_index='0009' (#9)
+</div>
+
+<h4>int.class</h4>
+
+<div title="MyTag.java" class="javacode">
+public @interface MyTag {
+    Class<?> type() default int.class;
+}
+</div>
+
+<div title="type:()Ljava/lang/Class; AnnotationDefault" hidden class="plaintext">
+constant_pool_count='000F' (15)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='AnnotationDefault', HexCode='010011416E6E6F746174696F6E44656661756C74'}
+    |007| CONSTANT_Utf8 {Value='I', HexCode='01000149'}
+    |008| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |009| CONSTANT_Utf8 {Value='()Ljava/lang/Class&lt;*&gt;;', HexCode='01001628294C6A6176612F6C616E672F436C6173733C2A3E3B'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|000| AnnotationDefault:
+HexCode: 000600000003630007
+attribute_name_index='0006' (#6)
+attribute_length='00000003' (3)
+element_value {
+    tag='63' (c)
+    class_info_index='0007' (#7)
+}
+
+--->|001| Signature:
+HexCode: 0008000000020009
+attribute_name_index='0008' (#8)
+attribute_length='00000002' (2)
+signature_index='0009' (#9)
+</div>
+
+<h4>void.class</h4>
+
+<div title="MyTag.java" class="javacode">
+public @interface MyTag {
+    Class&lt;?&gt; type() default void.class;
+}
+</div>
+
+<div title="type:()Ljava/lang/Class; AnnotationDefault" hidden class="plaintext">
+constant_pool_count='000F' (15)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='AnnotationDefault', HexCode='010011416E6E6F746174696F6E44656661756C74'}
+    |007| CONSTANT_Utf8 {Value='V', HexCode='01000156'}
+    |008| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |009| CONSTANT_Utf8 {Value='()Ljava/lang/Class&lt;*&gt;;', HexCode='01001628294C6A6176612F6C616E672F436C6173733C2A3E3B'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|000| AnnotationDefault:
+HexCode: 000600000003630007
+attribute_name_index='0006' (#6)
+attribute_length='00000003' (3)
+element_value {
+    tag='63' (c)
+    class_info_index='0007' (#7)
+}
+
+--->|001| Signature:
+HexCode: 0008000000020009
+attribute_name_index='0008' (#8)
+attribute_length='00000002' (2)
+signature_index='0009' (#9)
+</div>
+
+<h4>Void.class</h4>
+
+<div title="MyTag.java" class="javacode">
+public @interface MyTag {
+    Class&lt;?&gt; type() default Void.class;
+}
+</div>
+
+<div title="type:()Ljava/lang/Class; AnnotationDefault" hidden class="plaintext">
+constant_pool_count='000F' (15)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='AnnotationDefault', HexCode='010011416E6E6F746174696F6E44656661756C74'}
+    |007| CONSTANT_Utf8 {Value='Ljava/lang/Void;', HexCode='0100104C6A6176612F6C616E672F566F69643B'}
+    |008| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
+    |009| CONSTANT_Utf8 {Value='()Ljava/lang/Class&lt;*&gt;;', HexCode='01001628294C6A6176612F6C616E672F436C6173733C2A3E3B'}
+    ... ...
+attributes_count='0002' (2)
+attributes
+--->|000| AnnotationDefault:
+HexCode: 000600000003630007
+attribute_name_index='0006' (#6)
+attribute_length='00000003' (3)
+element_value {
+    tag='63' (c)
+    class_info_index='0007' (#7)
+}
+
+--->|001| Signature:
+HexCode: 0008000000020009
+attribute_name_index='0008' (#8)
+attribute_length='00000002' (2)
+signature_index='0009' (#9)
+</div>
+
+<h3>annotation_value</h3>
+
+<div title="element_value" class="plaintext">
+element_value {
+    u1 tag;
+    annotation annotation_value;
+}
+</div>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        对于<code>annotation</code>的类型，可以参考<a href="/archive/java/classfile/attribute_perspective/annotation_structure.html" target="_blank">这里</a>。
+    </p>
+</div>
+
+<div title="annotation" class="plaintext">
+annotation {
+    u2 type_index;
+    u2 num_element_value_pairs;
+    {   u2            element_name_index;
+        element_value value;
+    } element_value_pairs[num_element_value_pairs];
+}
+</div>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>tag Item</th>
+        <th>Type</th>
+        <th>value Item</th>
+        <th>Constant Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>@</td>
+        <td>Annotation type</td>
+        <td>annotation_value</td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+
+<div title="UserInfo.java" class="javacode">
+public @interface UserInfo {
+    String name();
+    int age();
+}
+</div>
+
+<div title="MyTag.java" class="javacode">
+public @interface MyTag {
+    UserInfo user() default @UserInfo(name = "tomcat", age=12);
+}
+</div>
+
+<div title="methods" hidden class="plaintext">
+methods_count='0001' (1)
+methods
+    MethodInfo {Value='user:()Lsample/UserInfo;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]'}
+</div>
+
+<div title="user:()Lsample/UserInfo; AnnotationDefault" hidden class="plaintext">
+constant_pool_count='0011' (17)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='AnnotationDefault', HexCode='010011416E6E6F746174696F6E44656661756C74'}
+    |007| CONSTANT_Utf8 {Value='Lsample/UserInfo;', HexCode='0100114C73616D706C652F55736572496E666F3B'}
+    |008| CONSTANT_Utf8 {Value='name', HexCode='0100046E616D65'}
+    |009| CONSTANT_Utf8 {Value='tomcat', HexCode='010006746F6D636174'}
+    |010| CONSTANT_Utf8 {Value='age', HexCode='010003616765'}
+    |011| CONSTANT_Integer {Value='12', HexCode='030000000C'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|000| AnnotationDefault:
+HexCode: 00060000000F40000700020008730009000A49000B
+attribute_name_index='0006' (#6)
+attribute_length='0000000F' (15)
+element_value {
+    tag='40' (@)
+    type_index='0007' (#7)
+    num_element_value_pairs='0002' (2)
+    element_value_pairs[0] {
+        element_name_index='0008' (#8)
+        element_value {
+            tag='73' (s)
+            const_value_index='0009' (#9: tomcat)
+        }
+    }
+    element_value_pairs[1] {
+        element_name_index='000A' (#10)
+        element_value {
+            tag='49' (I)
+            const_value_index='000B' (#11: 12)
+        }
+    }
+}
+</div>
+
+<h3>array_value</h3>
+
+<div title="element_value" class="plaintext">
+element_value {
+    u1 tag;
+    {   u2            num_values;
+        element_value values[num_values];
+    } array_value;
+}
+</div>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>tag Item</th>
+        <th>Type</th>
+        <th>value Item</th>
+        <th>Constant Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>[</td>
+        <td>Array type</td>
+        <td>array_value</td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+
+<div title="MyTag.java" class="javacode">
+public @interface MyTag {
+    int[] score() default {97, 98, 99};
+}
+</div>
+
+<div title="methods" hidden class="plaintext">
+methods_count='0001' (1)
+methods
+    MethodInfo {Value='score:()[I', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]'}
+</div>
+
+<div title="score:()[I AnnotationDefault" hidden class="plaintext">
+constant_pool_count='000F' (15)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='AnnotationDefault', HexCode='010011416E6E6F746174696F6E44656661756C74'}
+    |007| CONSTANT_Integer {Value='97', HexCode='0300000061'}
+    |008| CONSTANT_Integer {Value='98', HexCode='0300000062'}
+    |009| CONSTANT_Integer {Value='99', HexCode='0300000063'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|000| AnnotationDefault:
+HexCode: 00060000000C5B0003490007490008490009
+attribute_name_index='0006' (#6)
+attribute_length='0000000C' (12)
+element_value {
+    tag='5B' ([)
+    num_values='0003' (3)
+    element_value {
+        tag='49' (I)
+        const_value_index='0007' (#7: 97)
+    }
+    element_value {
+        tag='49' (I)
+        const_value_index='0008' (#8: 98)
+    }
+    element_value {
+        tag='49' (I)
+        const_value_index='0009' (#9: 99)
+    }
+}
+</div>
+
+<h2>Summing Up</h2>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/annotation_type_example_annotation_default.png" alt="AnnotationDefault"/>
+</div>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一点，<code>AnnotationDefault</code>这个属性表示了annotation type内方法的默认值。</li>
+    <li>第二点，讲解<code>AnnotationDefault</code>属性的结构。</li>
+    <li>第三点，从代码示例的角度，来具体说明它的存储内容。</li>
+</ul>

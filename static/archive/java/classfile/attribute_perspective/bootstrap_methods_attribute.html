@@ -10,7 +10,7 @@
 <h2>Intro</h2>
 
 <p class="indented">
-    The <code>BootstrapMethods</code> attribute is a variable-length attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
+    The <code>BootstrapMethods</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
     The <code>BootstrapMethods</code> attribute records bootstrap method specifiers referenced by <code>invokedynamic</code> instructions.
 </p>
 
@@ -21,6 +21,14 @@
 <p class="indented">
     There may be at most one <code>BootstrapMethods</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
 </p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：variable-length</li>
+        <li>位置：ClassFile</li>
+        <li>数量：1</li>
+    </ul>
+</div>
 
 <p>
     The <code>BootstrapMethods</code> attribute has the following format:

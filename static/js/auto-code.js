@@ -358,7 +358,7 @@ function toCode(src_text, title, keywords, display) {
         return this.each(function () {
             let title = $(this).attr("title");
             if (title == undefined || title == null || title === "") {
-                title = "Source Code";
+                title = "examples";
             }
 
             let display = true;

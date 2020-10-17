@@ -1,0 +1,550 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 8 Lambda: (3) Runtime Perspective<br/>(B)-LambdaMetaFactory</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>LambdaMetafactory.metafactory()</h2>
+
+<div title="LambdaMetafactory.metafactory()" class="javacode">
+public static CallSite metafactory(MethodHandles.Lookup caller,
+                                   String invokedName,
+                                   MethodType invokedType,
+                                   MethodType samMethodType,
+                                   MethodHandle implMethod,
+                                   MethodType instantiatedMethodType)
+        throws LambdaConversionException {
+    AbstractValidatingLambdaMetafactory mf;
+    mf = new InnerClassLambdaMetafactory(caller, invokedType,
+                                         invokedName, samMethodType,
+                                         implMethod, instantiatedMethodType,
+                                         false, EMPTY_CLASS_ARRAY, EMPTY_MT_ARRAY);
+    mf.validateMetafactoryArgs();
+    return mf.buildCallSite();
+}
+</div>
+
+<ul>
+    <li>
+        <b>caller</b>: Represents the lookup context for the <code>invokedynamic</code>. When used with <code>invokedynamic</code>, this is stacked automatically by the VM.
+    </li>
+    <li>
+        <b>invokedName</b>: The name of the method to implement. When used with <code>invokedynamic</code>, this is provided by the <code>NameAndType</code> of the <code>InvokeDynamic</code> structure and is stacked automatically by the VM.
+    </li>
+    <li>
+        <b>invokedType</b>: The expected signature of the <code>CallSite</code>.
+        The parameter types represent the types of capture variables; the return type is the interface to implement.
+        When used with <code>invokedynamic</code>, this is provided by the <code>NameAndType</code> of the <code>InvokeDynamic</code> structure and is stacked automatically by the VM.
+        In the event that the implementation method is an <b>instance method</b> and this signature has any parameters, the first parameter in the invocation signature must correspond to the receiver.
+    </li>
+    <li>
+        <b>samMethodType</b>: Signature and return type of method to be implemented by the function object.
+    </li>
+    <li>
+        <b>implMethod</b>: A direct method handle describing the implementation method which should be called (with suitable adaptation of argument types, return types, and with captured arguments prepended to the invocation arguments) at invocation time.
+    </li>
+    <li>
+        <b>instantiatedMethodType</b>: The signature and return type that should be enforced dynamically at invocation time. This may be the same as <code>samMethodType</code>, or may be a specialization of it.
+    </li>
+</ul>
+
+<h2>Parameters</h2>
+
+<h3>Sample Code</h3>
+
+<h4>HelloWorld.java</h4>
+
+<p>
+    第一个示例：<code>HelloWorld.java</code>
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Consumer;
+
+public class HelloWorld {
+    public static void main(String[] args) {
+        Consumer&lt;String&gt; c = System.out::println;
+        c.accept("Hello");
+    }
+}
+</div>
+
+<h4>GoodBoy.java</h4>
+
+<p>
+    第二个示例：<code>GoodBoy.java</code>
+</p>
+
+<div title="GoodBoy.java" class="javacode">
+import java.util.function.Function;
+
+public class GoodBoy {
+    public static void main(String[] args) {
+        Function&lt;Integer, Integer&gt; func = item -> item + 5;
+        Integer result = func.apply(20);
+        System.out.println(result);
+    }
+}
+</div>
+
+<h4>GoodGirl.java</h4>
+
+<p>
+    第三个示例：<code>GoodGirl.java</code>
+</p>
+
+<div title="GoodGirl.java" class="javacode">
+import java.util.function.BiFunction;
+
+public class GoodGirl {
+    public static int add(int a, int b) {
+        return a + b;
+    }
+
+    public static void main(String[] args) {
+        BiFunction&lt;Integer, Integer, Integer&gt; func = GoodGirl::add;
+        Integer result = func.apply(10, 20);
+        System.out.println(result);
+    }
+}
+</div>
+
+<h3>caller</h3>
+
+<div title="LambdaMetafactory.metafactory()" class="javacode">
+public static CallSite metafactory(MethodHandles.Lookup caller,
+                                   String invokedName,
+                                   MethodType invokedType,
+                                   MethodType samMethodType,
+                                   MethodHandle implMethod,
+                                   MethodType instantiatedMethodType)
+        throws LambdaConversionException {
+    // ......
+}
+</div>
+
+<p>
+    在这里，我们只关注<code>metafactory</code>方法的第一个参数（<code>caller</code>）。
+</p>
+
+<ul>
+    <li>
+        在<code>HelloWorld.java</code>内的<b>caller</b>值: sample.HelloWorld
+    </li>
+    <li>
+        在<code>GoodBoy.java</code>内的<b>caller</b>值: sample.GoodBoy
+    </li>
+    <li>
+        在<code>GoodGirl.java</code>内的<b>caller</b>值: sample.GoodGirl
+    </li>
+</ul>
+
+<h3>invokedName and invokedType</h3>
+
+<div title="LambdaMetafactory.metafactory()" class="javacode">
+public static CallSite metafactory(MethodHandles.Lookup caller,
+                                   String invokedName,
+                                   MethodType invokedType,
+                                   MethodType samMethodType,
+                                   MethodHandle implMethod,
+                                   MethodType instantiatedMethodType)
+        throws LambdaConversionException {
+    // ......
+}
+</div>
+
+<p>
+    在这里，我们只关注<code>metafactory</code>方法的第二个参数（<code>invokedName</code>）和第三个参数（<code>invokedType</code>）。
+</p>
+
+<p class="indented">
+    <b>invokedName</b>: The name of the method to implement. When used with <code>invokedynamic</code>, this is provided by the <code>NameAndType</code> of the <code>InvokeDynamic</code> structure and is stacked automatically by the VM.
+</p>
+
+<p class="indented">
+    <b>invokedType</b>: The expected signature of the <code>CallSite</code>.
+    <sub class="my_note" style="color:green">笔记：这里讲invokedType的作用，即表示CallSite的signature。</sub>
+    The parameter types represent the types of capture variables; the return type is the interface to implement.
+    <sub class="my_note" style="color:green">笔记：从结构上来说，signature = parameter types + return type。其中，parameter types部分，代表了需要传入的参数；而return type部分，则代表着需要实现的接口（FunctionalInterface）。</sub>
+    When used with <code>invokedynamic</code>, this is provided by the <code>NameAndType</code> of the <code>InvokeDynamic</code> structure and is stacked automatically by the VM.
+    <sub class="my_note" style="color:green">笔记：这里是说明signature的来源</sub>
+    In the event that the implementation method is an <b>instance method</b> and this signature has any parameters, the first parameter in the invocation signature must correspond to the receiver.
+    <sub class="my_note" style="color:green">笔记：从结构上来说，signature = parameter types + return type。这里是说明，在什么情况下，会出现parameter types部分。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <ul>
+        <li>
+            第一，从目的上来说，<b>invokedType</b>描述的是<code>CallSite</code>的signature。
+        </li>
+        <li>
+            第二，从结构上来说，signature = parameter types + return type。
+        </li>
+        <li>
+            第三，从来源上来说，signature是由JVM提供；从细节上来说，它是从Code层面的<code>invokedynamic</code>开始，再转到ConstantPool部分的<code>CONSTANT_InvokeDynamic_info</code>，再由<code>CONSTANT_InvokeDynamic_info</code>内的<code>name_and_type_index</code>转到ConstantPool中的<code>CONSTANT_NameAndType_info</code>内容。
+        </li>
+    </ul>
+</div>
+
+<h4>HelloWorld.java</h4>
+
+<ul>
+    <li>
+        <b>invokedName</b>: accept
+    </li>
+    <li>
+        <b>invokedType</b>: (PrintStream)Consumer
+    </li>
+</ul>
+
+<div title="java.util.function.Consumer.java" hidden class="javacode">
+@FunctionalInterface
+public interface Consumer&lt;T&gt; {
+    void accept(T t); // 注意：invokedName来自于这里
+}
+</div>
+
+<div title="HelloWorld.class main:([Ljava/lang/String;)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 2
+code_length = 23
+code = B2000259B6000357BA000400004C2B1205B900060200B1
+=== === ===  === === ===  === === ===
+0000: getstatic       #2   // B20002     || java/lang/System.out:Ljava/io/PrintStream;
+0003: dup                  // 59
+0004: invokevirtual   #3   // B60003     || java/lang/Object.getClass:()Ljava/lang/Class;
+0007: pop                  // 57
+0008: invokedynamic   #4   // BA00040000 || #0:accept:(Ljava/io/PrintStream;)Ljava/util/function/Consumer;
+0013: astore_1             // 4C
+0014: aload_1              // 2B
+0015: ldc             #5   // 1205       || Hello
+0017: invokeinterface #6 2 0 // B900060200 || java/util/function/Consumer.accept:(Ljava/lang/Object;)V
+0022: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      23  args:[Ljava/lang/String;
+    1        14       9  c:Ljava/util/function/Consumer;
+</div>
+
+<div title="HelloWorld.class ConstantPool" hidden class="plaintext">
+constant_pool_count='0045' (69)
+constant_pool
+    ......
+    |004| CONSTANT_InvokeDynamic {Value='#0:#36', HexCode='1200000024'}
+    ......
+    |036| CONSTANT_NameAndType {Value='#51:#52', HexCode='0C00330034'}
+    ......
+    |051| CONSTANT_Utf8 {Value='accept', HexCode='010006616363657074'}
+    |052| CONSTANT_Utf8 {Value='(Ljava/io/PrintStream;)Ljava/util/function/Consumer;', HexCode='01003428......'}
+    ......
+</div>
+
+<h4>GoodBoy.java</h4>
+
+<ul>
+    <li>
+        <b>invokedName</b>: apply
+    </li>
+    <li>
+        <b>invokedType</b>: ()Function
+    </li>
+</ul>
+
+<div title="java.util.function.Function.java" hidden class="javacode">
+@FunctionalInterface
+public interface Function&lt;T, R&gt; {
+    R apply(T t); // 注意：invokedName来自于这里
+}
+</div>
+
+<div title="GoodBoy.class main:([Ljava/lang/String;)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 29
+code = BA000200004C2B1014B80003B900040200C000054DB200062CB60007B1
+=== === ===  === === ===  === === ===
+0000: invokedynamic   #2   // BA00020000 || #0:apply:()Ljava/util/function/Function;
+0005: astore_1             // 4C
+0006: aload_1              // 2B
+0007: bipush          20   // 1014
+0009: invokestatic    #3   // B80003     || java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+0012: invokeinterface #4 2 0 // B900040200 || java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+0017: checkcast       #5   // C00005     || java/lang/Integer
+0020: astore_2             // 4D
+0021: getstatic       #6   // B20006     || java/lang/System.out:Ljava/io/PrintStream;
+0024: aload_2              // 2C
+0025: invokevirtual   #7   // B60007     || java/io/PrintStream.println:(Ljava/lang/Object;)V
+0028: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      29  args:[Ljava/lang/String;
+    1         6      23  func:Ljava/util/function/Function;
+    2        21       8  result:Ljava/lang/Integer;
+</div>
+
+<div title="GoodBoy.class ConstantPool" hidden class="plaintext">
+constant_pool_count='0050' (80)
+constant_pool
+    ......
+    |002| CONSTANT_InvokeDynamic {Value='#0:#40', HexCode='1200000028'}
+    ......
+    |040| CONSTANT_NameAndType {Value='#55:#56', HexCode='0C00370038'}
+    ......
+    |055| CONSTANT_Utf8 {Value='apply', HexCode='0100056170706C79'}
+    |056| CONSTANT_Utf8 {Value='()Ljava/util/function/Function;', HexCode='01001F28......'}
+    ......
+</div>
+
+<h4>GoodGirl.java</h4>
+
+<ul>
+    <li>
+        <b>invokedName</b>: apply
+    </li>
+    <li>
+        <b>invokedType</b>: ()BiFunction
+    </li>
+</ul>
+
+<div title="java.util.function.BiFunction.java" hidden class="javacode">
+@FunctionalInterface
+public interface BiFunction&lt;T, U, R&gt; {
+    R apply(T t, U u); // 注意：invokedName来自于这里
+}
+</div>
+
+<div title="GoodGirl.class main:([Ljava/lang/String;)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method main:([Ljava/lang/String;)V
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 3
+code_length = 34
+code = BA000200004C2B100AB800031014B80003B900040300C000054DB200062CB60007B1
+=== === ===  === === ===  === === ===
+0000: invokedynamic   #2   // BA00020000 || #0:apply:()Ljava/util/function/BiFunction;
+0005: astore_1             // 4C
+0006: aload_1              // 2B
+0007: bipush          10   // 100A
+0009: invokestatic    #3   // B80003     || java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+0012: bipush          20   // 1014
+0014: invokestatic    #3   // B80003     || java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+0017: invokeinterface #4 3 0 // B900040300 || java/util/function/BiFunction.apply:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+0022: checkcast       #5   // C00005     || java/lang/Integer
+0025: astore_2             // 4D
+0026: getstatic       #6   // B20006     || java/lang/System.out:Ljava/io/PrintStream;
+0029: aload_2              // 2C
+0030: invokevirtual   #7   // B60007     || java/io/PrintStream.println:(Ljava/lang/Object;)V
+0033: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      34  args:[Ljava/lang/String;
+    1         6      28  func:Ljava/util/function/BiFunction;
+    2        26       8  result:Ljava/lang/Integer;
+</div>
+
+<div title="GoodGirl.class ConstantPool" hidden class="plaintext">
+constant_pool_count='004F' (79)
+constant_pool
+    ......
+    |002| CONSTANT_InvokeDynamic {Value='#0:#41', HexCode='1200000029'}
+    ......
+    |041| CONSTANT_NameAndType {Value='#56:#57', HexCode='0C00380039'}
+    ......
+    |056| CONSTANT_Utf8 {Value='apply', HexCode='0100056170706C79'}
+    |057| CONSTANT_Utf8 {Value='()Ljava/util/function/BiFunction;', HexCode='0100212829......'}
+    ......
+</div>
+
+<h3>samMethodType~instantiatedMethodType</h3>
+
+<div title="LambdaMetafactory.metafactory()" class="javacode">
+public static CallSite metafactory(MethodHandles.Lookup caller,
+                                   String invokedName,
+                                   MethodType invokedType,
+                                   MethodType samMethodType,
+                                   MethodHandle implMethod,
+                                   MethodType instantiatedMethodType)
+        throws LambdaConversionException {
+    // ......
+}
+</div>
+
+<ul>
+    <li>
+        <b>samMethodType</b>: Signature and return type of method to be implemented by the function object.
+    </li>
+    <li>
+        <b>implMethod</b>: A direct method handle describing the implementation method which should be called (with suitable adaptation of argument types, return types, and with captured arguments prepended to the invocation arguments) at invocation time.
+    </li>
+    <li>
+        <b>instantiatedMethodType</b>: The signature and return type that should be enforced dynamically at invocation time. This may be the same as <code>samMethodType</code>, or may be a specialization of it.
+    </li>
+</ul>
+
+<p>
+    在这里，我们只关注<code>metafactory</code>方法的第四个参数（<code>samMethodType</code>）、第五个参数（<code>implMethod</code>）和第六个参数（<code>instantiatedMethodType</code>）。
+</p>
+
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        Interface that has <b>single abstract method</b> (<b>SAM</b>), is known as <b>functional interface</b>.
+        Conceptually, a functional interface has exactly one abstract method.
+    </p>
+    <p>
+        因此，<code>samMethodType</code>就是functional interface中定义的abstract method的描述符。
+    </p>
+</div>
+
+<h4>HelloWorld.java</h4>
+
+<ul>
+    <li>
+        <b>samMethodType</b>: (Ljava/lang/Object;)V
+    </li>
+    <li>
+        <b>implMethod</b>: invokevirtual java/io/PrintStream.println:(Ljava/lang/String;)V
+    </li>
+    <li>
+        <b>instantiatedMethodType</b>: (Ljava/lang/String;)V
+    </li>
+</ul>
+
+<div title="HelloWorld.class BootstrapMethods" hidden class="plaintext">
+constant_pool_count='0045' (69)
+constant_pool
+    ......
+    |031| CONSTANT_Utf8 {Value='BootstrapMethods', HexCode='010010426F6F7473747261704D6574686F6473'}
+    |032| CONSTANT_MethodHandle {Value='invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
+            Ljava/lang/invoke/MethodHandles$Lookup;
+            Ljava/lang/String;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodHandle;
+            Ljava/lang/invoke/MethodType;
+        )Ljava/lang/invoke/CallSite;', HexCode='0F06002F'}
+    |033| CONSTANT_MethodType {Value='(Ljava/lang/Object;)V', HexCode='100030'}
+    |034| CONSTANT_MethodHandle {Value='invokevirtual java/io/PrintStream.println:(Ljava/lang/String;)V',
+                                 HexCode='0F050031'}
+    |035| CONSTANT_MethodType {Value='(Ljava/lang/String;)V', HexCode='100032'}
+    ......
+attributes_count='0003' (3)
+attributes
+......
+--->|002| BootstrapMethods:
+HexCode: 001F0000000C000100200003002100220023
+attribute_name_index='001F' (#31)
+attribute_length='0000000C' (12)
+num_bootstrap_methods='0001' (1)
+bootstrap_methods[0] {
+    bootstrap_method_ref='0020' (#32)
+    num_bootstrap_arguments='0003' (3)
+    bootstrap_arguments='002100220023' ([#33,#34,#35])
+}
+</div>
+
+<h4>GoodBoy.java</h4>
+
+<ul>
+    <li>
+        <b>samMethodType</b>: (Ljava/lang/Object;)Ljava/lang/Object;
+    </li>
+    <li>
+        <b>implMethod</b>: invokestatic sample/GoodBoy.lambda$main$0:(Ljava/lang/Integer;)Ljava/lang/Integer;
+    </li>
+    <li>
+        <b>instantiatedMethodType</b>: (Ljava/lang/Integer;)Ljava/lang/Integer;
+    </li>
+</ul>
+
+<div title="GoodBoy.class BootstrapMethods" hidden class="plaintext">
+constant_pool_count='0050' (80)
+constant_pool
+    ......
+    |035| CONSTANT_Utf8 {Value='BootstrapMethods', HexCode='010010426F6F7473747261704D6574686F6473'}
+    |036| CONSTANT_MethodHandle {Value='invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
+            Ljava/lang/invoke/MethodHandles$Lookup;
+            Ljava/lang/String;Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodHandle;
+            Ljava/lang/invoke/MethodType;
+        )Ljava/lang/invoke/CallSite;', HexCode='0F060034'}
+    |037| CONSTANT_MethodType {Value='(Ljava/lang/Object;)Ljava/lang/Object;', HexCode='100035'}
+    |038| CONSTANT_MethodHandle {Value='invokestatic sample/GoodBoy.lambda$main$0:(Ljava/lang/Integer;)Ljava/lang/Integer;',
+                                 HexCode='0F060036'}
+    |039| CONSTANT_MethodType {Value='(Ljava/lang/Integer;)Ljava/lang/Integer;', HexCode='10001E'}
+    ......
+attributes_count='0003' (3)
+attributes
+......
+--->|002| BootstrapMethods:
+HexCode: 00230000000C000100240003002500260027
+attribute_name_index='0023' (#35)
+attribute_length='0000000C' (12)
+num_bootstrap_methods='0001' (1)
+bootstrap_methods[0] {
+    bootstrap_method_ref='0024' (#36)
+    num_bootstrap_arguments='0003' (3)
+    bootstrap_arguments='002500260027' ([#37,#38,#39])
+}
+</div>
+
+<h4>GoodGirl.java</h4>
+
+<ul>
+    <li>
+        <b>samMethodType</b>: (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    </li>
+    <li>
+        <b>implMethod</b>: sample/GoodGirl.add:(II)I
+    </li>
+    <li>
+        <b>instantiatedMethodType</b>: (Ljava/lang/Integer;Ljava/lang/Integer;)Ljava/lang/Integer;
+    </li>
+</ul>
+
+<div title="GoodGirl.class BootstrapMethods" hidden class="plaintext">
+constant_pool_count='004F' (79)
+constant_pool
+    ......
+    |036| CONSTANT_Utf8 {Value='BootstrapMethods', HexCode='010010426F6F7473747261704D6574686F6473'}
+    |037| CONSTANT_MethodHandle {Value='invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
+            Ljava/lang/invoke/MethodHandles$Lookup;
+            Ljava/lang/String;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodType;
+            Ljava/lang/invoke/MethodHandle;
+            Ljava/lang/invoke/MethodType;
+        )Ljava/lang/invoke/CallSite;', HexCode='0F060034'}
+    |038| CONSTANT_MethodType {Value='(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;', HexCode='100035'}
+    |039| CONSTANT_MethodHandle {Value='invokestatic sample/GoodGirl.add:(II)I', HexCode='0F060036'}
+    |040| CONSTANT_MethodType {Value='(Ljava/lang/Integer;Ljava/lang/Integer;)Ljava/lang/Integer;', HexCode='100037'}
+    ......
+attributes_count='0003' (3)
+attributes
+......
+--->|002| BootstrapMethods:
+HexCode: 00240000000C000100250003002600270028
+attribute_name_index='0024' (#36)
+attribute_length='0000000C' (12)
+num_bootstrap_methods='0001' (1)
+bootstrap_methods[0] {
+    bootstrap_method_ref='0025' (#37)
+    num_bootstrap_arguments='0003' (3)
+    bootstrap_arguments='002600270028' ([#38,#39,#40])
+}
+</div>

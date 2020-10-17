@@ -22,11 +22,7 @@
     Instead, the compiler converts those Java structures into an underlying form in bytecode.
 </p>
 
-
-
-<h2>Lambda in Bytecode Perspective</h2>
-
-<h3>Static Method References</h3>
+<h2>Static Method References</h2>
 
 <p class="indented">
     In terms of bytecode, the simplest kind of <b>lambda</b> is the <b>method reference</b>.
@@ -144,12 +140,12 @@ CONSTANT_InvokeDynamic_info {
 <div title="BootstrapMethods" class="plaintext">
 BootstrapMethods:
   0: #24 invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
-            Ljava/lang/invoke/MethodHandles$Lookup;   // 由JVM 提供，是MethodHandles.Lookup类的实例
+            Ljava/lang/invoke/MethodHandles$Lookup;   // 由JVM 提供，本例中，这里是HelloWorld
             Ljava/lang/String;                        // 由JVM 提供，本例中，这里是get
             Ljava/lang/invoke/MethodType;             // 由JVM 提供，本例中，这里是Supplier
-            Ljava/lang/invoke/MethodType;             // 由Method arguments提供，本例中，它表示Supplier.get()方法的descriptor
-            Ljava/lang/invoke/MethodHandle;           // 由Method arguments提供，本例中，它表示HelloWorld.lambdiseMe()方法
-            Ljava/lang/invoke/MethodType;             // 由Method arguments提供，本例中，它表示HelloWorld.lambdiseMe()方法的descriptor
+            Ljava/lang/invoke/MethodType;             // 由Method arguments提供
+            Ljava/lang/invoke/MethodHandle;           // 由Method arguments提供
+            Ljava/lang/invoke/MethodType;             // 由Method arguments提供
         )Ljava/lang/invoke/CallSite;
     Method arguments:
       #25 ()Ljava/lang/Object;
@@ -218,7 +214,7 @@ bootstrap_arguments='0019001A001B' ([#25,#26,#27])
     Given all this work for a <b>static method</b>, though, what happens when we want to call a method on some <b>bound object</b>, such as our old friend, <code>System.out::println</code>?
 </p>
 
-<h3>Bound Instance Method References</h3>
+<h2>Bound Instance Method References</h2>
 
 <p class="indented">
     In the previous section, we saw how a <b>static method</b> was turned into a <b>functional interface</b> implementation via a <b>method reference</b>.
@@ -316,7 +312,7 @@ BootstrapMethods:
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<h3>Free Instance Method References</h3>
+<h2>Free Instance Method References</h2>
 
 <p class="indented">
     There is one last kind of method reference: <b>the free instance method reference</b>.
@@ -374,7 +370,7 @@ BootstrapMethods:
       #23 (Ljava/math/BigInteger;)Ljava/lang/String;
 </div>
 
-<h3>Inline Lambda Definitions and Lambda Lifting</h3>
+<h2>Inline Lambda Definitions and Lambda Lifting</h2>
 
 <p class="indented">
     The last kind of lambda that you can have is a <b>lambda with an inline definition</b>.
@@ -387,7 +383,7 @@ import java.util.function.Supplier;
 
 public class HelloWorld {
     public Supplier&lt;String&gt; getSupplier() {
-        return () -> "Hello World!";
+        return () -&gt; "Hello World!";
     }
 }
 </div>
@@ -461,7 +457,7 @@ public class HelloWorld {
     }
 
     public Supplier&lt;String&gt; getSupplier(String message) {
-        return () -> this.provideMessage(message);
+        return () -&gt; this.provideMessage(message);
     }
 }
 </div>
@@ -565,99 +561,9 @@ BootstrapMethods:
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<h2>Lambda in Java API Perspective</h2>
-
-<p class="indented">
-    <b>Boostrap Method</b> is a method which instantiates <code>CallSite</code> objects.
-</p>
-
-<p class="indented">
-    Each <code>invokedynamic</code> has a known <b>bootstrap method</b> given as its compile-time parameter.
-    Whenever a <code>invokedynamic</code> is processed for a first time, appropriate <b>bootstrap method</b> is invoked.
-    As result of <b>boostrap method</b> execution a <code>CallSite</code> object is created.
-    This <code>CallSite</code> object is then cached and associated by JVM to a given <code>invokedynamic</code> operation.
-    From now on, whenever particular <code>invokedynamic</code> call is to be executed, a cached <code>CallSite</code> instance is used to resolve called method.
-</p>
-
-<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
-    <p>
-        invokedynamic --&gt; bootstrap method --&gt; CallSite
-    </p>
-</div>
-
-<p class="indented">
-    Majority of boostrap methods are not written directly by Java programmer.
-    However that doesn't mean they are some rare obscure mechanism.
-    They are created by <b>javac compiler</b> whenever particular java statements are used within source.
-    String concatenation or lambda expression come to mind.
-    <sub class="my_note" style="color:blue">笔记：大部分的boostrap method是由javac生成的。</sub>
-    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
-</p>
-
-<p class="indented">
-    For example <b>lambda expression</b> could be implemented as <b>inner classes</b>.
-    For matter of fact, lambdas are presented to programmers 'as shorthand' to using inner classes.
-    However actual javac implementation, for performance reasons, avoids inner classes by generating lambda code under a static method and using <code>invokedynamic</code> to invoke this method.
-</p>
-
-<h3>LambdaMetafactory</h3>
-
-<p class="indented">
-    Methods to facilitate the creation of simple "function objects" that implement one or more interfaces by delegation to a provided <code>MethodHandle</code>.
-    These methods are typically used as <b>bootstrap methods</b> for <code>invokedynamic</code> call sites, to support the <b>lambda expression</b> and <b>method reference expression</b> features of the Java Programming Language.
-</p>
-
-<div title="LambdaMetafactory.java" class="javacode">
-public static CallSite metafactory(MethodHandles.Lookup caller,
-                                   String invokedName,
-                                   MethodType invokedType,
-                                   MethodType samMethodType,
-                                   MethodHandle implMethod,
-                                   MethodType instantiatedMethodType)
-        throws LambdaConversionException {
-    //... ...
-}
-</div>
-
-<h3>CallSite</h3>
-
-<p class="indented">
-    A <code>CallSite</code> is a holder for a variable <code>MethodHandle</code>, which is called its <code>target</code>.
-    An <code>invokedynamic</code> instruction linked to a <code>CallSite</code> delegates all calls to the site's current target.
-</p>
-
-<div title="CallSite.java" class="javacode">
-public abstract class CallSite {
-    MethodHandle target;
-}
-</div>
-
-<h3>MethodHandle</h3>
-
-<p class="indented">
-    A <b>method handle</b> is a typed, directly executable reference to an underlying method, constructor, field, or similar low-level operation, with optional transformations of arguments or return values.
-</p>
-
-<h3>MethodType</h3>
-
-<p class="indented">
-    A <b>method type</b> represents the <b>arguments and return type</b> accepted and returned by a method handle.
-    <sub class="my_note" style="color:blue">笔记：method type = return type + argument types</sub>
-    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
-</p>
-
-<p class="indented">
-    MethodType objects are sometimes derived from bytecode instructions such as <code>invokedynamic</code>, specifically from the type descriptor strings associated with the instructions in a class file's constant pool.
-    <sub class="my_note" style="color:blue">笔记：method type可以从bytecode instruction当中衍生得到。</sub>
-    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
-</p>
-
-
-
 <h2>References</h2>
 
 <ul>
     <li>《Java Closures and Lambda》中的Chapter 8 Lambdas in Java Bytecode</li>
-    <li><a class="external" href="https://en.wikipedia.org/wiki/American_Dream" target="_blank">Wiki: American Dream</a></li>
 </ul>
 

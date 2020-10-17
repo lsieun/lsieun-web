@@ -1,0 +1,52 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">annotation structure</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    The <code>annotation</code> structure has the following format:
+</p>
+
+<div title="annotation" class="plaintext">
+annotation {
+    u2 type_index;
+    u2 num_element_value_pairs;
+    {   u2            element_name_index;
+        element_value value;
+    } element_value_pairs[num_element_value_pairs];
+}
+</div>
+
+<p>
+    The items of the <code>annotation</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <b>type_index</b>: The value of the <code>type_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing a <b>field descriptor</b>. The field descriptor denotes the type of the annotation represented by this annotation structure.
+    </li>
+    <li>
+        <b>num_element_value_pairs</b>: The value of the <code>num_element_value_pairs</code> item gives the number of <code>element-value</code> pairs of the annotation represented by this <code>annotation</code> structure.
+    </li>
+    <li>
+        <b>element_value_pairs[]</b>: Each value of the <code>element_value_pairs</code> table represents a single element-value pair in the annotation represented by this <code>annotation</code> structure. Each <code>element_value_pairs</code> entry contains the following two items:
+        <ul>
+            <li>
+                <b>element_name_index</b>: The value of the <code>element_name_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure. The <code>constant_pool</code> entry denotes the name of the element of the element-value pair represented by this <code>element_value_pairs</code> entry.
+            </li>
+            <li>
+                <b>value</b>: The value of the <code>value</code> item represents the value of the element-value pair represented by this <code>element_value_pairs</code> entry.
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        对于<code>element_value</code>的类型，可以参考<a href="/archive/java/classfile/attribute_perspective/element_value_structure.html" target="_blank">这里</a>。
+    </p>
+</div>

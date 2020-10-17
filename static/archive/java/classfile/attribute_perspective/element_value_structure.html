@@ -1,0 +1,426 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">element_value structure</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>The element_value structure</h2>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.7.16.1" target="_blank">4.7.16.1. The element_value structure</a>部分。
+    </p>
+</div>
+
+<p class="indented">
+    The <code>element_value</code> structure is a discriminated union representing the value of an element-value pair. It has the following format:
+</p>
+
+<div title="element_value" class="plaintext">
+element_value {
+    u1 tag;
+    union {
+        u2 const_value_index;
+
+        {   u2 type_name_index;
+            u2 const_name_index;
+        } enum_const_value;
+
+        u2 class_info_index;
+
+        annotation annotation_value;
+
+        {   u2            num_values;
+            element_value values[num_values];
+        } array_value;
+    } value;
+}
+</div>
+
+<p>
+    The <code>tag</code> item uses a single ASCII character to indicate the type of the value of the element-value pair. This determines which item of the <code>value</code> union is in use.
+</p>
+
+<p>
+    The following table shows the valid characters for the <code>tag</code> item, the type indicated by each character, and the item used in the <code>value</code> union for each character. The table's fourth column is used in the description below of one item of the <code>value</code> union.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>tag Item</th>
+        <th>Type</th>
+        <th>value Item</th>
+        <th>Constant Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>B</td>
+        <td>byte</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>C</td>
+        <td>char</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>D</td>
+        <td>double</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Double</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>F</td>
+        <td>float</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Float</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>I</td>
+        <td>int</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>J</td>
+        <td>long</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Long</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>S</td>
+        <td>short</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Z</td>
+        <td>boolean</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>s</td>
+        <td>String</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Utf8</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>e</td>
+        <td>Enum type</td>
+        <td>enum_const_value</td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>c</td>
+        <td>Class</td>
+        <td>class_info_index</td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>@</td>
+        <td>Annotation type</td>
+        <td>annotation_value</td>
+        <td></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>[</td>
+        <td>Array type</td>
+        <td>array_value</td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Details</h2>
+
+<h3>const_value_index</h3>
+
+<p>
+    The <code>const_value_index</code> item denotes either <b>a primitive constant value</b> or a <code>String</code> literal.
+</p>
+
+<div title="element_value" class="plaintext">
+element_value {
+    u1 tag;
+    u2 const_value_index;
+}
+</div>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>tag Item</th>
+        <th>Type</th>
+        <th>value Item</th>
+        <th>Constant Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>B</td>
+        <td>byte</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>C</td>
+        <td>char</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>D</td>
+        <td>double</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Double</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>F</td>
+        <td>float</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Float</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>I</td>
+        <td>int</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>J</td>
+        <td>long</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Long</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>S</td>
+        <td>short</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>Z</td>
+        <td>boolean</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Integer</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>s</td>
+        <td>String</td>
+        <td>const_value_index</td>
+        <td>CONSTANT_Utf8</td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>enum_const_value</h3>
+
+<p>
+    The <code>enum_const_value</code> item denotes an enum constant
+</p>
+
+<div title="element_value" class="plaintext">
+element_value {
+    u1 tag;
+    {   u2 type_name_index;
+        u2 const_name_index;
+    } enum_const_value;
+}
+</div>
+
+<p>
+    The <code>enum_const_value</code> item consists of the following two items:
+</p>
+
+<ul>
+    <li>
+        <code>type_name_index</code>: The value of the <code>type_name_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry gives the internal form of the binary name of the type of the enum constant represented by this <code>element_value</code> structure.
+    </li>
+    <li>
+        <code>const_name_index</code>: The value of the <code>const_name_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry gives the simple name of the enum constant represented by this <code>element_value</code> structure.
+    </li>
+</ul>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>tag Item</th>
+        <th>Type</th>
+        <th>value Item</th>
+        <th>Constant Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>e</td>
+        <td>Enum type</td>
+        <td>enum_const_value</td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>class_info_index</h3>
+
+<p>
+    The <code>class_info_index</code> item denotes a class literal.
+</p>
+
+<div title="element_value" class="plaintext">
+element_value {
+    u1 tag;
+    u2 class_info_index;
+}
+</div>
+
+<p class="indented">
+    The <code>class_info_index</code> item must be a valid index into the <code>constant_pool</code> table. The constant_pool entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing <a href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.3.3" target="_blank">a return descriptor</a>. The return descriptor gives the type corresponding to the class literal represented by this <code>element_value</code> structure. Types correspond to class literals as follows:
+</p>
+
+<ul>
+    <li>
+        For a class literal <code>C.class</code>, where <code>C</code> is the name of a class, interface, or array type, the corresponding type is <code>C</code>.
+        The return descriptor in the <code>constant_pool</code> will be an ObjectType or an ArrayType.
+    </li>
+    <li>
+        For a class literal <code>p.class</code>, where <code>p</code> is the name of a primitive type, the corresponding type is <code>p</code>.
+        The return descriptor in the <code>constant_pool</code> will be a BaseType character.
+    </li>
+    <li>
+        For a class literal <code>void.class</code>, the corresponding type is <code>void</code>.
+        The return descriptor in the <code>constant_pool</code> will be <code>V</code>.
+    </li>
+</ul>
+
+<p class="indented">
+    For example, the class literal <code>Object.class</code> corresponds to the type <code>Object</code>, so the <code>constant_pool</code> entry is <code>Ljava/lang/Object;</code>, whereas the class literal <code>int.class</code> corresponds to the type <code>int</code>, so the <code>constant_pool</code> entry is <code>I</code>.
+</p>
+
+<p class="indented">
+    The class literal <code>void.class</code> corresponds to <code>void</code>, so the <code>constant_pool</code> entry is <code>V</code>, whereas the class literal <code>Void.class</code> corresponds to the type <code>Void</code>, so the <code>constant_pool</code> entry is <code>Ljava/lang/Void;</code>.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>tag Item</th>
+        <th>Type</th>
+        <th>value Item</th>
+        <th>Constant Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>c</td>
+        <td>Class</td>
+        <td>class_info_index</td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>annotation_value</h3>
+
+<p>
+    The <code>annotation_value</code> item denotes a "nested" annotation.
+</p>
+
+<div title="element_value" class="plaintext">
+element_value {
+    u1 tag;
+    annotation annotation_value;
+}
+</div>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        对于<code>annotation</code>的类型，可以参考<a href="/archive/java/classfile/attribute_perspective/annotation_structure.html" target="_blank">这里</a>。
+    </p>
+</div>
+
+<div title="annotation" class="plaintext">
+annotation {
+    u2 type_index;
+    u2 num_element_value_pairs;
+    {   u2            element_name_index;
+        element_value value;
+    } element_value_pairs[num_element_value_pairs];
+}
+</div>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>tag Item</th>
+        <th>Type</th>
+        <th>value Item</th>
+        <th>Constant Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>@</td>
+        <td>Annotation type</td>
+        <td>annotation_value</td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>array_value</h3>
+
+<p>
+    The <code>array_value</code> item denotes an array.
+</p>
+
+<div title="element_value" class="plaintext">
+element_value {
+    u1 tag;
+    {   u2            num_values;
+        element_value values[num_values];
+    } array_value;
+}
+</div>
+
+<p>
+    The <code>array_value</code> item consists of the following two items:
+</p>
+
+<ul>
+    <li>
+        <code>num_values</code>: The value of the <code>num_values</code> item gives the number of elements in the array represented by this <code>element_value</code> structure.
+    </li>
+    <li>
+        <code>values[]</code>: Each value in the <code>values</code> table gives the corresponding element of the array represented by this <code>element_value</code> structure.
+    </li>
+</ul>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>tag Item</th>
+        <th>Type</th>
+        <th>value Item</th>
+        <th>Constant Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>[</td>
+        <td>Array type</td>
+        <td>array_value</td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+
+
+

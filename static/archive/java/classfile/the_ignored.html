@@ -12,10 +12,249 @@
     需要以磁盘文件的形式存在。——来自于周志明的第三版
 </p>
 
-<h2>Instruction Set Summary</h2>
+<h2>Limitations of the Java Virtual Machine</h2>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.11" target="_blank">4.11. Limitations of the Java Virtual Machine</a>部分。
+    </p>
+</div>
 
 <p>
-    在《The Java Virtual Machine Specification, Java SE 8 Edition》的“2.11. Instruction Set Summary”部分对opcode进行了一个分类，如下所示：
+    The following limitations of the Java Virtual Machine are implicit in <b>the class file format</b>:
+</p>
+
+<h3>ClassFile: count</h3>
+
+<ul>
+    <li>
+        <b>The per-class or per-interface constant pool</b> is limited to 65535 entries by the 16-bit <code>constant_pool_count</code> field of the <code>ClassFile</code> structure. This acts as an internal limit on the total complexity of a single class or interface.
+    </li>
+    <li>
+        <b>The number of direct superinterfaces of a class or interface</b> is limited to 65535 by the size of the <code>interfaces_count</code> item of the <code>ClassFile</code> structure.
+    </li>
+    <li>
+        <b>The number of fields</b> that may be declared by a class or interface is limited to 65535 by the size of the <code>fields_count</code> item of the <code>ClassFile</code> structure.
+        Note that the value of the <code>fields_count</code> item of the <code>ClassFile</code> structure does not include fields that are inherited from superclasses or superinterfaces.
+    </li>
+    <li>
+        <b>The number of methods</b> that may be declared by a class or interface is limited to 65535 by the size of the <code>methods_count</code> item of the <code>ClassFile</code> structure.
+        Note that the value of the <code>methods_count</code> item of the <code>ClassFile</code> structure does not include methods that are inherited from superclasses or superinterfaces.
+    </li>
+</ul>
+
+
+<div title="ClassFile" class="plaintext">
+ClassFile {
+    u4             magic;
+    u2             minor_version;
+    u2             major_version;
+    u2             constant_pool_count;   // constant_pool_count的最大取值为65535
+    cp_info        constant_pool[constant_pool_count-1];
+    u2             access_flags;
+    u2             this_class;
+    u2             super_class;
+    u2             interfaces_count;      // interfaces_count的最大取值为65535
+    u2             interfaces[interfaces_count];
+    u2             fields_count;          // fields_count的最大取值为65535
+    field_info     fields[fields_count];
+    u2             methods_count;         // methods_count的最大取值为65535
+    method_info    methods[methods_count];
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<h3>ClassFile: names</h3>
+
+<ul>
+    <li>
+        The length of field and method names, field and method descriptors, and other constant string values (including those referenced by <code>ConstantValue</code> attributes) is limited to 65535 characters by the 16-bit unsigned length item of the <code>CONSTANT_Utf8_info</code> structure.
+        Note that the limit is on the number of bytes in the encoding and not on the number of encoded characters. UTF-8 encodes some characters using two or three bytes. Thus, strings incorporating multibyte characters are further constrained.
+    </li>
+</ul>
+
+<div title="CONSTANT_Utf8_info" class="plaintext">
+CONSTANT_Utf8_info {
+    u1 tag;
+    u2 length;          // length的最大取值为65535
+    u1 bytes[length];
+}
+</div>
+
+<h3>Method: parameters</h3>
+
+<ul>
+    <li>
+        <b>The number of method parameters</b> is limited to 255 by the definition of a method descriptor, where the limit includes one unit for <code>this</code> in the case of instance or interface method invocations.
+
+        Note that a method descriptor is defined in terms of a notion of method parameter length in which a parameter of type <code>long</code> or <code>double</code> contributes two units to the length, so parameters of these types further reduce the limit.
+    </li>
+</ul>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO：接触了多个65535之后，方法的参数最多255个，给我的第一印象是“方法可以接受的参数太少了”。但是，又想想，一个方法有255个参数，它的可读性一定不好。If you don't want to go insane with readability.
+    </p>
+</div>
+
+<p>
+    在<code>MethodParameters_attribute</code>中的<code>parameters_count</code>占用<code>u1</code>空间。
+</p>
+
+<div title="MethodParameters_attribute" class="plaintext">
+MethodParameters_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u1 parameters_count;    // the number of parameter descriptors
+    {   u2 name_index;
+        u2 access_flags;
+    } parameters[parameters_count];
+}
+</div>
+
+<p>
+    在<code>RuntimeVisibleParameterAnnotations_attribute</code>中的<code>num_parameters</code>占用<code>u1</code>空间。
+</p>
+
+<div title="RuntimeVisibleParameterAnnotations_attribute" class="plaintext">
+RuntimeVisibleParameterAnnotations_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u1 num_parameters;     // the number of formal parameters of the method
+    {   u2         num_annotations;
+        annotation annotations[num_annotations];
+    } parameter_annotations[num_parameters];
+}
+</div>
+
+<p>
+    在<code>RuntimeInvisibleParameterAnnotations_attribute</code>中的<code>num_parameters</code>占用<code>u1</code>空间。
+</p>
+
+<div title="RuntimeInvisibleParameterAnnotations_attribute" class="plaintext">
+RuntimeInvisibleParameterAnnotations_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u1 num_parameters;    // the number of formal parameters of the method
+    {   u2         num_annotations;
+        annotation annotations[num_annotations];
+    } parameter_annotations[num_parameters];
+}
+</div>
+
+<h3>Code: max_stack and max_locals</h3>
+
+<ul>
+    <li>
+        <b>The greatest number of local variables</b> in the local variables array of a frame created upon invocation of a method is limited to 65535 by the size of the <code>max_locals</code> item of the <code>Code</code> attribute giving the code of the method, and by the 16-bit local variable indexing of the Java Virtual Machine instruction set.
+
+        Note that values of type <code>long</code> and <code>double</code> are each considered to reserve two local variables and contribute two units toward the <code>max_locals</code> value, so use of local variables of those types further reduces this limit.
+    </li>
+    <li>
+        <b>The size of an operand stack in a frame</b> is limited to 65535 values by the <code>max_stack</code> field of the <code>Code</code> attribute.
+
+        Note that values of type <code>long</code> and <code>double</code> are each considered to contribute two units toward the <code>max_stack</code> value, so use of values of these types on the operand stack further reduces this limit.
+    </li>
+</ul>
+
+
+<div title="Code_attribute" class="plaintext">
+Code_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 max_stack;
+    u2 max_locals;
+    u4 code_length;
+    u1 code[code_length];
+    u2 exception_table_length;
+    {   u2 start_pc;
+        u2 end_pc;
+        u2 handler_pc;
+        u2 catch_type;
+    } exception_table[exception_table_length];
+    u2 attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<h3>Code: array</h3>
+
+<ul>
+    <li>
+        <b>The number of dimensions in an array</b> is limited to 255 by the size of the <code>dimensions</code> opcode of the <code>multianewarray</code> instruction and by the constraints imposed on the <code>multianewarray</code>, <code>anewarray</code>, and <code>newarray</code> instructions.
+    </li>
+</ul>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/opcode_multianewarray.png" alt="multianewarray"/>
+</div>
+
+<p class="indented">
+    The <code>dimensions</code> operand is <b>an unsigned byte</b> that must be greater than or equal to 1.
+    It represents the number of dimensions of the array to be created.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Object[][][][] multi_array = new Object[3][4][5][6];
+    }
+}
+</div>
+
+<div title="test:()V" class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |002| CONSTANT_Class {Value='[[[[Ljava/lang/Object;', HexCode='07000E'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 2
+code_length = 11
+code = 0607081006C50002044CB1
+=== === ===  === === ===  === === ===
+0000: iconst_3             // 06
+0001: iconst_4             // 07
+0002: iconst_5             // 08
+0003: bipush          6    // 1006
+0005: multianewarray  #2   // C5000204   || [[[[Ljava/lang/Object;
+0009: astore_1             // 4C
+0010: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      11  this:Lsample/HelloWorld;
+    1        10       1  multi_array:[[[[Ljava/lang/Object;
+</div>
+
+<h2>Instruction Set Summary</h2>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-2.html#jvms-2.11" target="_blank">2.11. Instruction Set Summary</a>部分。
+    </p>
+</div>
+
+<p class="indented">
+    A Java Virtual Machine <b>instruction</b> consists of a one-byte <b>opcode</b> specifying the operation to be performed, followed by zero or more <b>operands</b> supplying arguments or data that are used by the operation. Many <b>instructions</b> have no <b>operands</b> and consist only of an <b>opcode</b>.
+</p>
+
+<p>
+    Ignoring exceptions, the inner loop of a Java Virtual Machine interpreter is effectively
+</p>
+
+<div title="Java Virtual Machine interpreter" class="plaintext">
+do {
+    atomically calculate pc and fetch opcode at pc;
+    if (operands) fetch operands;
+    execute the action for the opcode;
+} while (there is more to do);
+</div>
+
+<p>
+    在JVM文档中对opcode进行了一个分类，如下所示：
 </p>
 
 <ul>
@@ -28,4 +267,14 @@
     <li>Method Invocation and Return Instructions</li>
     <li>Throwing Exceptions</li>
     <li>Synchronization</li>
+</ul>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一点，从ClassFile Structure的角度来理解JVM中的“局限性”。</li>
 </ul>

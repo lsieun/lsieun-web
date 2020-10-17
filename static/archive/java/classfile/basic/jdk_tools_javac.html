@@ -1,0 +1,55 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">javac</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    这里讲<code>javac</code>、<code>java</code>、<code>javap</code>与Java ClassFile之间的关系。
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        HelloWorld.java  --&gt; javac --&gt; HelloWorld.class  --&gt; java  --&gt; JVM
+    </p>
+    <p>
+        HelloWorld.class --&gt; javap  --&gt; print a human readable version of HelloWorld.class
+    </p>
+</div>
+
+<p>
+    javac has the following options:
+</p>
+
+<ul>
+    <li>
+        <code>-d &lt;directory&gt;</code>: The directory in which (or beneath which) class files should be stored.
+        By default, javac stores the <code>.class</code> files it generates in the same directory as the <code>.java</code> file that those classes were defined in.
+    </li>
+    <li>
+        <code>-g</code>: Generate all debugging info
+    </li>
+    <li>
+        <code>-g:none</code>: Generate no debugging info
+    </li>
+    <li>
+        <code>-g:{lines,vars,source}</code>: Generate only some debugging info
+    </li>
+    <li>
+        <code>-parameters</code>: Stores formal parameter names of constructors and methods in the generated class file so that the method <code>java.lang.reflect.Executable.getParameters</code> from the Reflection API can retrieve them.
+    </li>
+    <li>
+        <code>-source &lt;version&gt;</code>: Control the Java version that javac will accept.
+    </li>
+    <li>
+        <code>-target &lt;version&gt;</code>: Control the version of class files that javac will output.
+    </li>
+</ul>
+
+<div title="javac example" class="plaintext">
+javac -g:vars Main.java
+javac -g:vars,lines Main.java
+</div>

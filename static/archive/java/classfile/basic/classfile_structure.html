@@ -1,0 +1,70 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassFile Structure</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>ClassFile Structure</h2>
+
+<div title="ClassFile" class="plaintext">
+ClassFile {
+    ------------------------------------------------------------------------
+    u4             magic;                                 // Magic Number部分
+    ------------------------------------------------------------------------
+    u2             minor_version;
+    u2             major_version;                         // Version部分
+    ------------------------------------------------------------------------
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];  // 常量池部分
+    ------------------------------------------------------------------------
+    u2             access_flags;
+    u2             this_class;                            // Class Info部分
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    ------------------------------------------------------------------------
+    u2             fields_count;
+    field_info     fields[fields_count];                 // fields部分
+    ------------------------------------------------------------------------
+    u2             methods_count;
+    method_info    methods[methods_count];               // methods部分
+    ------------------------------------------------------------------------
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];         // attributes部分
+    ------------------------------------------------------------------------
+}
+</div>
+
+<p class="indented">
+    The JVM Specification describes the <b>class file format</b> using <b>tables</b>.
+    <sub class="my_note" style="color:green">笔记：第一，java class file format是由table来描述</sub>
+    Each <b>table</b> has a name and shows an ordered list of <b>items</b> that can appear in a class file.
+    Items appear in the table in the order in which they appear in the class file.
+    <sub class="my_note" style="color:green">笔记：第二，table由多个item组成。在table当中的多个item之间是有排列顺序的。</sub>
+    Each <b>item</b> has a <b>type</b>, a <b>name</b>, and a <b>count</b>.
+    <sub class="my_note" style="color:green">笔记：第三，item由type、name和count组成。</sub>
+    The <b>type</b> is either <b>a table name</b> or one of the "primitive types".
+    All values stored in items of type <code>u1</code>, <code>u2</code>, <code>u4</code>, and <code>u8</code> appear in the class file in big-endian order.
+    <sub class="my_note" style="color:green">笔记：第四，type可以是简单的类型（<code>u1</code>, <code>u2</code>, <code>u4</code>, and <code>u8</code>），也可以是其它的table类型。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<ul>
+    <li><code>u1</code>: an unsigned 8-bit integer</li>
+    <li><code>u2</code>: an unsigned 16-bit integer in big-endian byte order</li>
+    <li><code>u4</code>: an unsigned 32-bit integer in big-endian byte order</li>
+    <li><code>u8</code>: an unsigned 64-bit integer in big-endian byte order</li>
+    <li><code>table</code>: an array of variable-length items of some type.</li>
+</ul>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>总结</p>
+    <ul>
+        <li>第一点，从结构上来说，ClassFile是由magic number、compiler version、constant pool、class info、fields、methods和attributes组成。</li>
+        <li>第二点，从概念上来说，ClassFile涉及到<code>u1</code>, <code>u2</code>, <code>u4</code>, <code>u8</code>和<code>table</code>这些概念。</li>
+    </ul>
+</div>
+

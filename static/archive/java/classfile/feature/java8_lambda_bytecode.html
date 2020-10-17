@@ -1,0 +1,90 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Lambda Bytecode</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    When a source file containing lambdas is compiled, javac will compile the lambda bodies into synthetic(<code>ACC_SYNTHETIC</code>) methods that reside in the containing class.
+    These methods are <code>private</code>(<code>ACC_PRIVATE</code>) and <code>static</code>(<code>ACC_STATIC</code>), and their names will be something like <code>lambda$&lt;method&gt;$&lt;count&gt;</code> where <code>method</code> is the name of the method that contains the lambda, and <code>count</code> is a sequential counter that numbers methods from the beginning of the source file (starting from zero).
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+public class HelloWorld {
+    public static void test() {
+        Supplier&lt;String&gt; s = () -> "Hello Lambda";
+        Function&lt;Integer, Integer&gt; func = item -> item + 5;
+    }
+}
+</div>
+
+<div title="HelloWorld.class methods" class="plaintext">
+methods_count='0004' (4)
+methods
+    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
+    MethodInfo {Value='test:()V', AccessFlags='[ACC_PUBLIC,ACC_STATIC]', Attrs='[Code]'}
+    MethodInfo {Value='lambda$test$1:(Ljava/lang/Integer;)Ljava/lang/Integer;',
+                AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_SYNTHETIC]',
+                Attrs='[Code, MethodParameters]'}
+    MethodInfo {Value='lambda$test$0:()Ljava/lang/String;',
+                AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_SYNTHETIC]',
+                Attrs='[Code]'}
+</div>
+
+<p class="indented">
+    When a lambda expression is first evaluated at runtime, the lambda <code>metafactory</code> is called.
+    This produces a class that implements the lambda's functional interface.
+    It instantiates this class, takes the arguments to the functional interface method (if any), combines them with any captured values, and calls the synthetic method compiled by javac as described above.
+    This instance is referred to as a "function object" or a "proxy".
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        <a class="external" href="https://stackoverflow.com/questions/36057007/what-does-in-javac-generated-name-mean" target="_blank">StackOverflow: What does $$ in javac generated name mean?</a>
+    </p>
+    <p>
+        I've found out the meaning of a couple of them (please correct if I'm wrong):
+    </p>
+    <ul>
+        <li>
+            <code>org.example.Bar$Foo</code> refers to <code>Foo</code>, which is an inner class of <code>org.example.Bar</code>.
+        </li>
+        <li>
+            <code>org.example.Bar$1</code> refers to an anonymous class declared inside one of the methods of <code>org.example.Bar</code>.
+        </li>
+        <li>
+            <code>org.example.Bar.lambda$spam$1()</code> refers to a lambda declared inside of <code>org.example.Bar.spam()</code> method.
+        </li>
+    </ul>
+    <p>
+        However, I also found:
+    </p>
+    <ol>
+        <li><code>org.example.Bar$$Lambda$2.args$1</code></li>
+        <li><code>org.example.Bar$$Lambda$2.call()</code></li>
+        <li><code>org.example.Bar$$Lambda$7.lambdaFactory$()</code></li>
+        <li><code>org.example.Bar$$Lambda$7.get$Lambda()</code></li>
+    </ol>
+    <p>
+        What does the four name above refer to? What does double dollar (<code>$$</code>) mean?
+    </p>
+    <p class="indented">
+        It seems obvious that the double dollar (<code>$$</code>) is simply used for the special "new classes" used for lambda expressions.
+        So <code>$</code> is used to separate names for inner classes, and <code>$$</code> marks lambda-expression-based inner classes. – GhostCat
+    </p>
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://stackoverflow.com/questions/41570839/finding-a-java-lambda-from-its-mangled-name-in-a-heap-dump/41576288" target="_blank">StackOverflow: Finding a Java lambda from its mangled name in a heap dump</a></li>
+    <li><a class="external" href="https://stackoverflow.com/questions/36057007/what-does-in-javac-generated-name-mean" target="_blank">StackOverflow: What does $$ in javac generated name mean?</a></li>
+</ul>

@@ -1,0 +1,293 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Method Handles in Java</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_method_handles.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>What Are Method Handles?</h2>
+
+<p class="indented">
+    In a simpler way, <b>method handles are a low-level mechanism for finding, adapting and invoking methods.</b>
+</p>
+
+<p class="indented">Method handles are immutable and have no visible state.</p>
+
+<p>
+    For creating and using a MethodHandle, 4 steps are required:
+</p>
+
+<ul>
+    <li>Creating the lookup</li>
+    <li>Creating the method type</li>
+    <li>Finding the method handle</li>
+    <li>Invoking the method handle</li>
+</ul>
+
+<h2>Creating the Lookup</h2>
+
+<p class="indented">
+    The first thing to do when we want to create a method handle is to retrieve the lookup,
+    the factory object that is responsible for creating method handles for methods, constructors, and fields, that are visible to the lookup class.
+</p>
+
+<p class="indented">
+    Through the MethodHandles API, it's possible to create the lookup object, with different access modes.
+</p>
+
+<p class="indented">
+    Let's create the lookup that provides access to <code>public</code> methods:
+</p>
+
+<div title="MethodHandles.publicLookup()" class="javacode">
+MethodHandles.Lookup publicLookup = MethodHandles.publicLookup();
+</div>
+
+<p class="indented">
+    However, in case we want to have access also to <code>private</code> and <code>protected</code> methods, we can use, instead, the <code>lookup()</code> method:
+</p>
+
+<div title="MethodHandles.lookup()" class="javacode">
+MethodHandles.Lookup lookup = MethodHandles.lookup();
+</div>
+
+<h2>Creating a MethodType</h2>
+
+<p class="indented">
+    In order to be able to create the <code>MethodHandle</code>, the lookup object requires a definition of its type and this is achieved through the <code>MethodType</code> class.
+</p>
+
+<p class="indented">
+    In particular, <b>a MethodType represents the arguments and return type</b> accepted and returned by a method handle or passed and expected by a method handle caller.
+</p>
+
+<p class="indented">
+    The structure of a <code>MethodType</code> is simple and it's formed by <b>a return type</b> together with <b>an appropriate number of parameter types</b> that must be properly matched between a method handle and all its callers.
+</p>
+
+<p class="indented">
+    In the same way as <code>MethodHandle</code>, even the instances of a <code>MethodType</code> are immutable.
+</p>
+
+<p class="indented">
+    Let's see how it's possible to define a <code>MethodType</code> that specifies a <code>java.util.List</code> class as return type and an <b>Object array</b> as input type:
+</p>
+
+<div title="examples" class="javacode">
+MethodType mt = MethodType.methodType(List.class, Object[].class);
+</div>
+
+<p class="indented">
+    In case the method returns a primitive type or <code>void</code> as its return type, we will use the class representing those types (<code>void.class</code>, <code>int.class</code> …).
+</p>
+
+<p class="indented">
+    Let’s define a <code>MethodType</code> that returns an <code>int</code> value and accepts an <code>Object</code>:
+</p>
+
+<div title="examples" class="javacode">
+MethodType mt = MethodType.methodType(int.class, Object.class);
+</div>
+
+<h2>Finding a MethodHandle</h2>
+
+<p class="indented">
+    Once we've defined our method type, in order to create a MethodHandle, we have to find it through the lookup or publicLookup object, providing also the origin class and the method name.
+</p>
+
+<p class="indented">
+    In particular, the lookup factory provides a set of methods that allow us to find the method handle in an appropriate way considering the scope of our method.
+    Starting with the simplest scenario, let's explore the principal ones.
+</p>
+
+<h3>Method Handle for Methods</h3>
+
+<p class="indented">
+    Using the <code>findVirtual()</code> method allow us to create a <code>MethodHandle</code> for an object method.
+    Let's create one, based on the <code>concat()</code> method of the <code>String</code> class:
+</p>
+
+<div title="findVirtual" class="javacode">
+MethodType mt = MethodType.methodType(String.class, String.class);
+MethodHandle concatMH = publicLookup.findVirtual(String.class, "concat", mt);
+</div>
+
+<h3>Method Handle for Static Methods</h3>
+
+<p class="indented">
+    When we want to gain access to a static method, we can instead use the <code>findStatic()</code> method:
+</p>
+
+<div title="findStatic" class="javacode">
+MethodType mt = MethodType.methodType(List.class, Object[].class);
+MethodHandle asListMH = publicLookup.findStatic(Arrays.class, "asList", mt);
+</div>
+
+<p class="indented">
+    In this case, we created a method handle that converts an array of Objects to a List of them.
+</p>
+
+<h3>Method Handle for Constructors</h3>
+
+<p class="indented">
+    Gaining access to a constructor can be done using the <code>findConstructor()</code> method.
+</p>
+
+<p class="indented">
+    Let's create a method handles that behaves as the constructor of the <code>Integer</code> class, accepting a <code>String</code> attribute:
+</p>
+
+<div title="findConstructor" class="javacode">
+MethodType mt = MethodType.methodType(void.class, String.class);
+MethodHandle newIntegerMH = publicLookup.findConstructor(Integer.class, mt);
+</div>
+
+<h3>Method Handle for Fields</h3>
+
+<p class="indented">
+    Using a method handle it's possible to gain access also to fields.
+</p>
+
+<p class="indented">
+    Let's start defining the <code>Book</code> class:
+</p>
+
+<div title="Book.java" class="javacode">
+public class Book {
+
+    String id;
+    String title;
+
+    // constructor
+
+}
+</div>
+
+<p class="indented">
+    Having as precondition a direct access visibility between the method handle and the declared property, we can create a method handle that behaves as a getter:
+</p>
+
+<div title="findGetter" class="javacode">
+MethodHandle getTitleMH = lookup.findGetter(Book.class, "title", String.class);
+</div>
+
+<h3>Method Handle for Private Methods</h3>
+
+<p class="indented">
+    Creating a method handle for a <code>private</code> method can be done, with the help of the <code>java.lang.reflect</code> API.
+</p>
+
+<p class="indented">
+    Let's start adding a <code>private</code> method to the <code>Book</code> class:
+</p>
+
+<div title="Book.java" class="javacode">
+private String formatBook() {
+    return id + " > " + title;
+}
+</div>
+
+<p class="indented">
+    Now we can create a method handle that behaves exactly as the <code>formatBook()</code> method:
+</p>
+
+<div title="unreflect" class="javacode">
+Method formatBookMethod = Book.class.getDeclaredMethod("formatBook");
+formatBookMethod.setAccessible(true);
+
+MethodHandle formatBookMH = lookup.unreflect(formatBookMethod);
+</div>
+
+<h2>Invoking a Method Handle</h2>
+
+<p class="indented">
+    Once we've created our method handles, use them is the next step.
+    In particular, the <code>MethodHandle</code> class provides 3 different way to execute a method handle: <code>invoke()</code>, <code>invokeWithArugments()</code> and <code>invokeExact()</code>.
+</p>
+
+<h3>Invoking a Method Handle</h3>
+
+<p class="indented">
+    When using the <code>invoke()</code> method, we enforce the number of the arguments (arity) to be fixed but we allow the performing of casting and boxing/unboxing of the arguments and return types.
+</p>
+
+<p class="indented">
+    Let's see how it's possible to use the invoke() with a boxed argument:
+</p>
+
+<div title="examples" class="javacode">
+MethodType mt = MethodType.methodType(String.class, char.class, char.class);
+MethodHandle replaceMH = publicLookup.findVirtual(String.class, "replace", mt);
+
+String output = (String) replaceMH.invoke("jovo", Character.valueOf('o'), 'a');
+
+assertEquals("java", output);
+</div>
+
+<p class="indented">
+    In this case, the <code>replaceMH</code> requires char arguments, but the <code>invoke()</code> performs an unboxing on the <code>Character</code> argument before its execution.
+</p>
+
+<h3>Invoking With Arguments</h3>
+
+<p class="indented">
+    Invoking a method handle using the <code>invokeWithArguments</code> method, is the least restrictive of the three options.
+</p>
+
+<p class="indented">
+    In fact, it allows a variable arity invocation, in addition to the casting and boxing/unboxing of the arguments and of the return types.
+</p>
+
+<p class="indented">
+    Coming to practice, this allows us to create a <code>List</code> of <code>Integer</code> starting from an array of <code>int</code> values:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+MethodType mt = MethodType.methodType(List.class, Object[].class);
+MethodHandle asList = publicLookup.findStatic(Arrays.class, "asList", mt);
+
+List&lt;Integer&gt; list = (List&lt;Integer&gt;) asList.invokeWithArguments(1,2);
+
+assertThat(Arrays.asList(1,2), is(list));
+</div>
+
+<h3>Invoking Exact</h3>
+
+<p class="indented">
+    In case we want to be more restrictive in the way we execute a method handle (number of arguments and their type), we have to use the <code>invokeExact()</code> method.
+</p>
+
+<p class="indented">
+    In fact, it doesn't provide any casting to the class provided and requires a fixed number of arguments.
+</p>
+
+<p class="indented">
+    Let's see how we can sum two int values using a method handle:
+</p>
+
+<div title="examples" class="javacode">
+MethodType mt = MethodType.methodType(int.class, int.class, int.class);
+MethodHandle sumMH = lookup.findStatic(Integer.class, "sum", mt);
+
+int sum = (int) sumMH.invokeExact(1, 11);
+
+assertEquals(12, sum);
+</div>
+
+<p class="indented">
+    If in this case, we decide to pass to the <code>invokeExact</code> method a number that isn't an <code>int</code>, the invocation will lead to <code>WrongMethodTypeException</code>.
+</p>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://www.baeldung.com/java-method-handles" target="_blank">Baeldung: Method Handles in Java</a></li>
+</ul>
