@@ -36,15 +36,22 @@ ClassFile {
     <li>
         <b>fields_count</b>:
         The value of the <code>fields_count</code> item gives the number of <code>field_info</code> structures in the <code>fields</code> table.
-        The <code>field_info</code> structures represent all fields, both class variables and instance variables, declared by this class or interface type.
+        The <code>field_info</code> structures represent all fields, both <b>class variables</b> and <b>instance variables</b>, declared by this class or interface type.
     </li>
     <li>
         <b>fields[]</b>:
         Each value in the <code>fields</code> table must be a <code>field_info</code> structure giving a complete description of a field in this class or interface.
-        The <code>fields</code> table includes only those fields that are declared by this class or interface.
-        It does not include items representing fields that are inherited from superclasses or superinterfaces.
+        <b>The <code>fields</code> table includes only those fields that are declared by this class or interface.</b>
+        <b>It does not include items representing fields that are inherited from superclasses or superinterfaces.</b>
     </li>
 </ul>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static final int class_variable = 10;
+    public int instance_variable = 20;
+}
+</div>
 
 <p class="indented">
     Each field is described by a <code>field_info</code> structure. No two fields in one class file may have the same <b>name</b> and <b>descriptor</b>.
@@ -285,8 +292,14 @@ fields
 
 <h2>attributes</h2>
 
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        对于<code>field_info</code>所支持的所有<code>attributes</code>，可以参考《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.7-320" target="_blank">Table 4.7-C. Predefined class file attributes (by location)</a>部分。
+    </p>
+</div>
+
 <p>
-    对于<code>field_info</code>所支持的所有<code>attributes</code>，可以参考《The Java Virtual Machine Specification, Java SE 8 Edition》的Table 4.7-C. Predefined class file attributes (by location)部分。在这里我们只介绍一个<code>ConstantValue</code>属性。在本课程的第4章，会详细的介绍<code>ConstantValue</code>属性，这里只是举一个例子。
+    在这里我们只介绍一个<code>ConstantValue</code>属性。在本课程的第3章，会详细的介绍<code>ConstantValue</code>属性，这里只是举一个例子。
 </p>
 
 <div title="HelloWorld.java" class="javacode">

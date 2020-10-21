@@ -1,0 +1,206 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Runtime Annotations</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<h3>RuntimeVisibleAnnotations</h3>
+
+<p class="indented">
+    The <code>RuntimeVisibleAnnotations</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure.
+    The <code>RuntimeVisibleAnnotations</code> attribute records run-time visible annotations on the declaration of the corresponding class, field, or method.
+    The Java Virtual Machine must make these annotations available so they can be returned by the appropriate reflective APIs.
+</p>
+
+<p class="indented">
+    There may be at most one <code>RuntimeVisibleAnnotations</code> attribute in the attributes table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure.
+    <sub class="my_note" style="color:blue">笔记：这里是为了限定了RuntimeVisibleAnnotations的数量</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：variable-length</li>
+        <li>位置：ClassFile, field_info, method_info</li>
+        <li>数量：0或1</li>
+    </ul>
+</div>
+
+<p>
+    The <code>RuntimeVisibleAnnotations</code> attribute has the following format:
+</p>
+
+<div title="RuntimeVisibleAnnotations_attribute" class="plaintext">
+RuntimeVisibleAnnotations_attribute {
+    u2         attribute_name_index;
+    u4         attribute_length;
+    u2         num_annotations;
+    annotation annotations[num_annotations];
+}
+</div>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        对于<code>annotation</code>的类型，可以参考<a href="/archive/java/classfile/attribute_perspective/annotation_structure.html" target="_blank">这里</a>。
+    </p>
+</div>
+
+<p>
+    The items of the <code>RuntimeVisibleAnnotations_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <b>attribute_name_index</b>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "RuntimeVisibleAnnotations".
+    </li>
+    <li>
+        <b>attribute_length</b>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
+    </li>
+    <li>
+        <b>num_annotations</b>: The value of the <code>num_annotations</code> item gives the number of run-time visible annotations represented by the structure.
+    </li>
+    <li>
+        <b>annotations[]</b>: Each entry in the <code>annotations</code> table represents a single run-time visible <code>annotation</code> on a declaration.
+    </li>
+</ul>
+
+<h3>RuntimeInvisibleAnnotations</h3>
+
+<p class="indented">
+    The <code>RuntimeInvisibleAnnotations</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure.
+    The <code>RuntimeInvisibleAnnotations</code> attribute records run-time invisible annotations on the declaration of the corresponding class, method, or field.
+</p>
+
+<p class="indented">
+    There may be at most one <code>RuntimeInvisibleAnnotations</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure.
+</p>
+
+<p class="indented">
+    The <code>RuntimeInvisibleAnnotations</code> attribute is similar to the <code>RuntimeVisibleAnnotations</code> attribute, except that the annotations represented by a <code>RuntimeInvisibleAnnotations</code> attribute must not be made available for return by reflective APIs, unless the Java Virtual Machine has been instructed to retain these annotations via some implementation-specific mechanism such as a command line flag. In the absence of such instructions, the Java Virtual Machine ignores this attribute.
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：variable-length</li>
+        <li>位置：ClassFile, field_info, method_info</li>
+        <li>数量：0或1</li>
+    </ul>
+</div>
+
+<p>
+    The <code>RuntimeInvisibleAnnotations</code> attribute has the following format:
+</p>
+
+<div title="RuntimeInvisibleAnnotations_attribute" class="plaintext">
+RuntimeInvisibleAnnotations_attribute {
+    u2         attribute_name_index;
+    u4         attribute_length;
+    u2         num_annotations;
+    annotation annotations[num_annotations];
+}
+</div>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        对于<code>annotation</code>的类型，可以参考<a href="/archive/java/classfile/attribute_perspective/annotation_structure.html" target="_blank">这里</a>。
+    </p>
+</div>
+
+<p>
+    The items of the RuntimeInvisibleAnnotations_attribute structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "RuntimeInvisibleAnnotations".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
+    </li>
+    <li>
+        <code>num_annotations</code>: The value of the <code>num_annotations</code> item gives the number of run-time invisible annotations represented by the structure.
+    </li>
+    <li>
+        <code>annotations[]</code>: Each entry in the <code>annotations</code> table represents a single run-time invisible <code>annotation</code> on a declaration.
+    </li>
+</ul>
+
+<h2>Examples</h2>
+
+<div title="HelloWorld.java" class="javacode">
+@MyTag
+public class HelloWorld {
+    //
+}
+</div>
+
+<h3>First Example</h3>
+
+<div title="MyTag.java" class="javacode">
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME) // 注意，这里是RUNTIME
+public @interface MyTag {
+}
+</div>
+
+<div title="RuntimeVisibleAnnotations" hidden class="plaintext">
+constant_pool_count='0012' (18)
+constant_pool
+    ......
+    |013| CONSTANT_Utf8 {Value='RuntimeVisibleAnnotations', HexCode='01001952756E74696D6556697369626C65416E6E6F746174696F6E73'}
+    |014| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
+    ......
+attributes_count='0002' (2)
+attributes
+......
+--->|001| RuntimeVisibleAnnotations:
+HexCode: 000D000000060001000E0000
+attribute_name_index='000D' (#13)
+attribute_length='00000006' (6)
+num_annotations='0001' (1)
+annotation[0] {
+    type_index='000E' (#14)
+    num_element_value_pairs='0000' (0)
+}
+</div>
+
+<h3>Second Example</h3>
+
+<div title="MyTag.java" class="javacode">
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.CLASS) // 注意，这里是CLASS
+public @interface MyTag {
+}
+</div>
+
+<div title="RuntimeInvisibleAnnotations" hidden class="plaintext">
+constant_pool_count='0012' (18)
+constant_pool
+    ......
+    |013| CONSTANT_Utf8 {Value='RuntimeInvisibleAnnotations', HexCode='01001B52756E74696D65496E76697369626C65416E6E6F746174696F6E73'}
+    |014| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
+    ......
+attributes_count='0002' (2)
+attributes
+......
+--->|001| RuntimeInvisibleAnnotations:
+HexCode: 000D000000060001000E0000
+attribute_name_index='000D' (#13)
+attribute_length='00000006' (6)
+num_annotations='0001' (1)
+annotation[0] {
+    type_index='000E' (#14)
+    num_element_value_pairs='0000' (0)
+}
+</div>

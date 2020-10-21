@@ -182,6 +182,10 @@ class_info='0021000200030000'
     An annotation type must have its <code>ACC_ANNOTATION</code> flag set. If the <code>ACC_ANNOTATION</code> flag is set, the <code>ACC_INTERFACE</code> flag must also be set.
 </p>
 
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p><a class="external" href="https://www.javacodegeeks.com/2015/09/how-and-when-to-use-enums-and-annotations.html" target="_blank">Java Code Geeks: How and when to use Enums and Annotations</a>： Enums could be treated as a special type of classes and annotations as a special type of interfaces.</p>
+</div>
+
 <h3>Field</h3>
 
 <p class="indented">
@@ -210,6 +214,16 @@ class_info='0021000200030000'
     In a class file whose version number is less than 52.0, each method of an interface must have its <code>ACC_PUBLIC</code> and <code>ACC_ABSTRACT</code> flags set;
     in a class file whose version number is 52.0 or above, each method of an interface must have exactly one of its <code>ACC_PUBLIC</code> and <code>ACC_PRIVATE</code> flags set.
 </p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Function;
+
+public interface HelloWorld {
+    default void test() { // 会生成一个private的lambda$test$0方法
+        Function&lt;Integer, Integer&gt; func = (i) -> i + 5;
+    }
+}
+</div>
 
 <p class="indented">
     If a method of a class or interface has its <code>ACC_ABSTRACT</code> flag set, it must not have any of its <code>ACC_PRIVATE</code>, <code>ACC_STATIC</code>, <code>ACC_FINAL</code>, <code>ACC_SYNCHRONIZED</code>, <code>ACC_NATIVE</code>, or <code>ACC_STRICT</code> flags set.

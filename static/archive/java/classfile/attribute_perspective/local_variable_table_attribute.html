@@ -10,7 +10,7 @@
 <h2>Intro</h2>
 
 <p class="indented">
-    The <code>LocalVariableTable</code> attribute is an optional variable-length attribute in the <code>attributes</code> table of a <code>Code</code> attribute.
+    The <code>LocalVariableTable</code> attribute is an optional <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>Code</code> attribute.
     It may be used by debuggers to determine the value of a given local variable during the execution of a method.
 </p>
 
@@ -21,6 +21,14 @@
 <p class="indented">
     There may be no more than one <code>LocalVariableTable</code> attribute per local variable in the <code>attributes</code> table of a <code>Code</code> attribute.
 </p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：variable-length</li>
+        <li>位置：Code</li>
+        <li>数量：0或1或more</li>
+    </ul>
+</div>
 
 <p>
     The <code>LocalVariableTable</code> attribute has the following format:
@@ -113,7 +121,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...

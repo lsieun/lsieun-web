@@ -44,22 +44,6 @@ ClassFile {
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="CompilerVersion.java" class="javacode">
-public final class CompilerVersion extends Node {
-    public final int minor_version;
-    public final int major_version;
-
-    public CompilerVersion(ByteDashboard bd) {
-        byte[] minor_version_bytes = bd.nextN(2);
-        byte[] major_version_bytes = bd.nextN(2);
-
-        this.minor_version = ByteUtils.bytesToInt(minor_version_bytes);
-        this.major_version = ByteUtils.bytesToInt(major_version_bytes);
-        super.bytes = ByteUtils.concatenate(minor_version_bytes, major_version_bytes);
-    }
-}
-</div>
-
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
         IMHO: Magic Number是为了区分不同产品（PDF、PNG、ClassFile）之间的差异，而Compiler Version则是为了区分同一个产品在不同版本之间的差异。
@@ -169,20 +153,19 @@ public final class CompilerVersion extends Node {
 <h2>Change Compiler Version</h2>
 
 <div title="Change Compiler Version" class="javacode">
-import lsieun.utils.FileUtils;
-import lsieun.utils.HexUtils;
-import lsieun.utils.ReadUtils;
-
 public class D_Change_CompilerVersion {
     public static void main(String[] args) {
-        String filepath = FileUtils.getFilePath("sample/HelloWorld.class");
+        // 第一步，输入参数
+        String relative_path = "sample/HelloWorld.class";
+
+        // 第二步，读取数据
+        String filepath = FileUtils.getFilePath(relative_path);
         byte[] bytes = ReadUtils.readByPath(filepath);
 
+        // 第三步，处理数据
         String compiler_version_str = "00000035"; // 注意：这里修改为了Java 9版本
         byte[] compiler_version_bytes = HexUtils.parse(compiler_version_str);
-
         System.arraycopy(compiler_version_bytes, 0, bytes, 4, compiler_version_bytes.length);
-
         FileUtils.writeBytes(filepath, bytes);
     }
 }
@@ -208,6 +191,12 @@ Exception in thread "main" java.lang.UnsupportedClassVersionError: HelloWorld ha
     Therefore you may want to compile Java sources for an older runtime.
     You can do this simply by specifying the <code>-target</code> and <code>-source</code> version flags of the compiler.
 </p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: 针对修改version信息，有一种假想的使用场景。假设同事A使用Java 9，他编译了一个HelloWorld.class文件，然后传给了同事B；同事B使用的是Java 8，如果同事B运行HelloWorld.class文件，就会出现UnsupportedClassVersionError错误。一种解决方法，就是让同事A重新编译；另一种解决办法，就是尝试修改class文件的major version部分的信息。
+    </p>
+</div>
 
 <h2>Java Compiler Compatibility</h2>
 

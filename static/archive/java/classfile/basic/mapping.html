@@ -7,35 +7,76 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>Mapping From JavaFile to ClassFile</h2>
+<h2>Math Mapping</h2>
+
+<div class="w3-display-container w3-center">
+    <img width="400" class="w3-image w3-center" src="/images/math/map/bijection.png" alt="bijection"/>
+</div>
+
+<div>
+    $$ {x \rightarrow f \rightarrow y} $$
+</div>
+
+<h2>Java Compiler</h2>
+
+<p class="indented">
+    要将一个<code>.java</code>文件转换为一个<code>.class</code>文件，则需要用到Java Compiler(<code>javac</code>)。如果说<code>.java</code>文件则相当于\(X\)，<code>.class</code>文件则相当于\(Y\)，那么<code>javac</code>的作用就相当于\(f(x)\)，由它来实现<code>.java</code>文件内容向<code>.class</code>文件内容的映射。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/javac_from_java_to_class.jpeg" alt="javac"/>
+</div>
+
+<p class="indented">
+    更详细的说，在<code>.java</code>文件中定义的字段、定义的方法等内容一定是在<code>.class</code>文件中得到体现的。
+</p>
+
+<h2>Mapping From language to class file format</h2>
+
+<p>
+    Java's architecture arises out of four distinct but interrelated technologies:
+</p>
+
+<ul>
+    <li>the Java programming language</li>
+    <li>the Java class file format</li>
+    <li>the Java Application Programming Interface</li>
+    <li>the Java Virtual Machine</li>
+</ul>
 
 <p class="indented">
     The <b>Java Virtual Machine</b> knows nothing of the <b>Java programming language</b>, only of a particular binary format, <b>the class file format</b>.
 </p>
 
 <p class="indented">
-    <b>Bytecode</b>(Java ClassFile) is nothing but the intermediate representation of <b>Java source code</b> which is produced by the Java compiler by compiling that source code.
+    概括的来说，在Java programming language支持的语言特性必须有相应的Java class file format进行支持。
+</p>
+
+<p class="indented">
+    其中，对于Java programming language来说，它本身是一个抽象的规则，而<code>.java</code>文件是它的一种具体表现形式；对于Java class file format来说，它则是另一个抽象的规则，<code>.class</code>文件则是它的一种具体表现形式。
 </p>
 
 <div class="w3-display-container w3-center">
     <img class="w3-image w3-center" src="/images/java/classfile/mapping_from_java_file_to_class_file.png" alt="Mapping From JavaFile to ClassFile"/>
 </div>
 
+<h2>Summing Up</h2>
 
 <p>
-    我们想要强调三个观点：
+    总结：
 </p>
 
 <ul>
     <li>
-        第一点，任意一个<code>.java</code>文件都是Java programming language的一种具体表现形式；任意一个<code>.class</code>文件都是Java class file format的一种具体表现形式。
+        第一，对于一个<code>.java</code>通过javac编译成相应的<code>.class</code>文件。换句话说，javac编译过程的本质就是进行“映射”的过程，将<code>.java</code>里的内容映射成<code>.class</code>文件里的内容。
     </li>
     <li>
-        第二点，Java programming language中所提供的语言特性，必须在Java class file format层面得到支持。
+        第二，任意一个<code>.java</code>文件都是Java programming language的一种具体表现形式；任意一个<code>.class</code>文件都是Java class file format的一种具体表现形式。
     </li>
     <li>
-        第三点，对于一个<code>.java</code>通过javac编译成相应的<code>.class</code>文件，其本质是从JavaFile向ClassFile的语义映射（Mapping）。
+        第三，Java programming language中所提供的语言特性，必须在Java class file format层面得到支持，其本质是从Java programming language向Java class file format的语义映射（Mapping）。
     </li>
+
 </ul>
 
 

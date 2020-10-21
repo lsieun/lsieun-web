@@ -1,0 +1,184 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">type annotation</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    The <code>type_annotation</code> structure has the following format:
+</p>
+
+<div title="type_annotation" class="plaintext">
+type_annotation {
+    u1 target_type;
+    union {
+        type_parameter_target;
+        supertype_target;
+        type_parameter_bound_target;
+        empty_target;
+        method_formal_parameter_target;
+        throws_target;
+        localvar_target;
+        catch_target;
+        offset_target;
+        type_argument_target;
+    } target_info;
+    type_path target_path;
+    u2        type_index;
+    u2        num_element_value_pairs;
+    {   u2            element_name_index;
+        element_value value;
+    } element_value_pairs[num_element_value_pairs];
+}
+</div>
+
+<p>
+    The first three items - <code>target_type</code>, <code>target_info</code>, and <code>target_path</code> - specify the precise location of the annotated type.
+    The last three items - <code>type_index</code>, <code>num_element_value_pairs</code>, and <code>element_value_pairs[]</code> - specify the annotation's own type and element-value pairs.
+</p>
+
+<p>
+    The items of the <code>type_annotation</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>target_type</code>: The value of the <code>target_type</code> item denotes the kind of target on which the annotation appears.
+        The various kinds of target correspond to the type contexts of the Java programming language where types are used in declarations and expressions.
+    </li>
+    <li>
+        <code>target_info</code>: The value of the <code>target_info</code> item denotes precisely which type in a declaration or expression is annotated.
+    </li>
+    <li>
+        <code>target_path</code>: The value of the <code>target_path</code> item denotes precisely which part of the type indicated by <code>target_info</code> is annotated.
+    </li>
+    <li>
+        <code>type_index</code>, <code>num_element_value_pairs</code>, <code> element_value_pairs[]</code>: The meaning of these items in the <code>type_annotation</code> structure is the same as their meaning in the <code>annotation</code> structure.
+    </li>
+</ul>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption> Interpretation of target_type values</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>target_type</th>
+        <th>target_info</th>
+        <th>Kind of target</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td><code>0x00</code></td>
+        <td>type_parameter_target</td>
+        <td class="w3-left-align">type parameter declaration of generic class or interface</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x01</code></td>
+        <td>type_parameter_target</td>
+        <td class="w3-left-align">type parameter declaration of generic method or constructor</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x10</code></td>
+        <td>supertype_target</td>
+        <td class="w3-left-align">type in <code>extends</code> or <code>implements</code> clause of class declaration (including the direct superclass or direct superinterface of an anonymous class declaration), or in <code>extends</code> clause of interface declaration</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x11</code></td>
+        <td>type_parameter_bound_target</td>
+        <td class="w3-left-align">type in bound of type parameter declaration of generic class or interface</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x12</code></td>
+        <td>type_parameter_bound_target</td>
+        <td class="w3-left-align">type in bound of type parameter declaration of generic method or constructor</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x13</code></td>
+        <td>empty_target</td>
+        <td class="w3-left-align">type in field declaration</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x14</code></td>
+        <td>empty_target</td>
+        <td class="w3-left-align">return type of method, or type of newly constructed object</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x15</code></td>
+        <td>empty_target</td>
+        <td class="w3-left-align">receiver type of method or constructor</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x16</code></td>
+        <td>formal_parameter_target</td>
+        <td class="w3-left-align">type in formal parameter declaration of method, constructor, or lambda expression</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x17</code></td>
+        <td>throws_target</td>
+        <td class="w3-left-align">type in <code>throws</code> clause of method or constructor</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x40</code></td>
+        <td>localvar_target</td>
+        <td class="w3-left-align">type in local variable declaration</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x41</code></td>
+        <td>localvar_target</td>
+        <td class="w3-left-align">type in resource variable declaration</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x42</code></td>
+        <td>catch_target</td>
+        <td class="w3-left-align">type in exception parameter declaration</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x43</code></td>
+        <td>offset_target</td>
+        <td class="w3-left-align">type in <code>instanceof</code> expression</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x44</code></td>
+        <td>offset_target</td>
+        <td class="w3-left-align">type in <code>new</code> expression</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x45</code></td>
+        <td>offset_target</td>
+        <td class="w3-left-align">type in method reference expression using <code>::new</code></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x46</code></td>
+        <td>offset_target</td>
+        <td class="w3-left-align">type in method reference expression using <code>::Identifier</code></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x47</code></td>
+        <td>type_argument_target</td>
+        <td class="w3-left-align">type in cast expression</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x48</code></td>
+        <td>type_argument_target</td>
+        <td class="w3-left-align">type argument for generic constructor in new expression or explicit constructor invocation statement</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x49</code></td>
+        <td>type_argument_target</td>
+        <td class="w3-left-align">type argument for generic method in method invocation expression</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x4A</code></td>
+        <td>type_argument_target</td>
+        <td class="w3-left-align">type argument for generic constructor in method reference expression using <code>::new</code></td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>0x4B</code></td>
+        <td>type_argument_target</td>
+        <td class="w3-left-align">type argument for generic method in method reference expression using <code>::Identifier</code></td>
+    </tr>
+    </tbody>
+</table>

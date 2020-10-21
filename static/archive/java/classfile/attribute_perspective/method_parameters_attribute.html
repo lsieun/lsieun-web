@@ -10,13 +10,21 @@
 <h2>Intro</h2>
 
 <p class="indented">
-    The <code>MethodParameters</code> attribute is a variable-length attribute in the <code>attributes</code> table of a <code>method_info</code> structure.
+    The <code>MethodParameters</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>method_info</code> structure.
     A <code>MethodParameters</code> attribute records information about the formal parameters of a method, such as their names.
 </p>
 
 <p class="indented">
     There may be at most one <code>MethodParameters</code> attribute in the <code>attributes</code> table of a <code>method_info</code> structure.
 </p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：variable-length</li>
+        <li>位置：method_info</li>
+        <li>数量：0或1</li>
+    </ul>
+</div>
 
 <p>
     The <code>MethodParameters</code> attribute has the following format:
@@ -92,7 +100,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 constant_pool_count='0017' (23)
 constant_pool
     ... ...

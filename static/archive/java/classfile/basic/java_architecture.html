@@ -9,8 +9,14 @@
 
 <h2>Java Architecture</h2>
 
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《Inside the Java 2 Virtual Machine》的第一章“Introduction to Java's Architecture”部分。
+    </p>
+</div>
+
 <p>
-    Java's architecture arises out of four distinct but interrelated technologies,
+    Java's architecture arises out of four <b>distinct</b> but <b>interrelated</b> technologies,
     each of which is defined by a separate specification from Sun Microsystems:
 </p>
 
@@ -20,6 +26,27 @@
     <li>the Java Application Programming Interface</li>
     <li>the Java Virtual Machine</li>
 </ul>
+
+<h3>distinct</h3>
+
+<ul>
+    <li><a class="external" href="https://docs.oracle.com/javase/specs/jls/se8/html/index.html" target="_blank">The Java® Language Specification</a></li>
+    <li><a class="external" href="https://docs.oracle.com/javase/8/docs/api/" target="_blank">Java™ Platform, Standard Edition 8 API Specification</a></li>
+    <li><a class="external" href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html" target="_blank">The Java® Virtual Machine Specification</a></li>
+</ul>
+
+<h3>interrelated</h3>
+
+<p class="indented">
+    When you write and run a Java program, you are tapping the power of these four technologies.
+    You express the program in <b>source files</b> written in the <b>Java programming language</b>,
+    compile the source to <b>Java class files</b>, and run the class files on a <b>Java Virtual Machine</b>.
+    When you write your program, you access system resources (such as I/O, for example) by calling methods in the classes
+    that implement the <b>Java Application Programming Interface</b>, or Java API.
+    As your program runs, it fulfills your program's Java API calls by invoking methods in class files that implement the Java API.
+    <sub class="my_note" style="color:blue">笔记：在编写代码的过程当中，这四个部分紧密联系在一起。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
@@ -40,23 +67,12 @@
     </p>
 </div>
 
-<p class="indented">
-    When you write and run a Java program, you are tapping the power of these four technologies.
-    You express the program in <b>source files</b> written in the <b>Java programming language</b>,
-    compile the source to <b>Java class files</b>, and run the class files on a <b>Java Virtual Machine</b>.
-    When you write your program, you access system resources (such as I/O, for example) by calling methods in the classes
-    that implement the <b>Java Application Programming Interface</b>, or Java API.
-    As your program runs, it fulfills your program's Java API calls by invoking methods in class files that implement the Java API.
-    <sub class="my_note" style="color:blue">笔记：在编写代码的过程当中，这四个部分紧密联系在一起。</sub>
-    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
-</p>
+<h2>Summing Up</h2>
 
-<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
-    <p>总结</p>
-    <ul>
-        <li>第一点，Java Architecture由组成Java programming language、Java class file format、 Java API和JVM四个部分组成。</li>
-        <li>第二点，对这四个组成部分进行一个重要性排序。</li>
-        <li>第三点，在实际的使用当中，这四个组成部分是密不可分的。</li>
-        <li>第四点，希望Java Architecture这个概念能帮助大家“格物致知”。无论是学习本课程，还是学习其它的课程，把当前的内容放到这个Java Architecture进行审视，看看当前的内容属于哪一部分，这个内容归并到相应的“方格子”当中，以理清自己的学习思路。</li>
-    </ul>
-</div>
+<p>总结</p>
+<ul>
+    <li>第一，Java Architecture由组成Java programming language、Java class file format、 Java API和JVM四个部分组成。</li>
+    <li>第二，这四个组成部分，即相互独立，又密不可分的。</li>
+    <li>第三，这节内容的主要目的是希望给大家提供一个更广阔的“视野”。Java ClassFile是一个小的概念，比它更大的概念是Java Architecture，因此我们要明确Java ClassFile在这个更大的概念（Java Architecture）所处的位置。</li>
+</ul>
+

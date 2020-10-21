@@ -32,6 +32,10 @@ ClassFile {
 }
 </div>
 
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/classfile_classinfo.png" alt="ClassInfo"/>
+</div>
+
 <ul>
     <li>
         <b>access_flags</b>: The value of the <code>access_flags</code> item is a mask of flags used to denote <b>access permissions to</b> and <b>properties of</b> this class or interface.
@@ -76,9 +80,7 @@ ClassFile {
     </li>
 </ul>
 
-<div class="w3-display-container w3-center">
-    <img class="w3-image w3-center" src="/images/java/classfile/classfile_classinfo.png" alt="ClassInfo"/>
-</div>
+
 
 <h2>access_flags</h2>
 
@@ -307,6 +309,10 @@ class_info='0030000200030000'
 
 <h3>ACC_ENUM</h3>
 
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p><a class="external" href="https://www.javacodegeeks.com/2015/09/how-and-when-to-use-enums-and-annotations.html" target="_blank">Java Code Geeks: How and when to use Enums and Annotations</a>： Enums could be treated as a special type of classes and annotations as a special type of interfaces.</p>
+</div>
+
 <p class="indented">
     The <code>ACC_ENUM</code> flag indicates that this class or its superclass is declared as an enumerated type.
 </p>
@@ -342,6 +348,10 @@ class_info='4030000400070000'
 
 <h3>ACC_ANNOTATION</h3>
 
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p><a class="external" href="https://www.javacodegeeks.com/2015/09/how-and-when-to-use-enums-and-annotations.html" target="_blank">Java Code Geeks: How and when to use Enums and Annotations</a>： Enums could be treated as a special type of classes and annotations as a special type of interfaces.</p>
+</div>
+
 <p class="indented">
     An interface is distinguished by the <code>ACC_INTERFACE</code> flag being set. If the <code>ACC_INTERFACE</code> flag is not set, this class file defines a class, not an interface.
 </p>
@@ -370,8 +380,8 @@ constant_pool
     |002| CONSTANT_Class {Value='java/lang/Object', HexCode='070007'}
     |003| CONSTANT_Class {Value='java/lang/annotation/Annotation', HexCode='070008'}
     ... ...
-class_info='26010001000200010003'
-    access_flags='2601' ([ACC_PUBLIC,ACC_INTERFACE,ACC_ABSTRACT,ACC_ANNOTATION])
+class_info='26000001000200010003'
+    access_flags='2600' ([ACC_INTERFACE,ACC_ABSTRACT,ACC_ANNOTATION])
     this_class='0001' (#1)
     super_class='0002' (#2)
     interfaces_count='0001' (1)
@@ -529,6 +539,10 @@ class_info='0021001100000000'
 
 <h3>enum type</h3>
 
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p><a class="external" href="https://www.javacodegeeks.com/2015/09/how-and-when-to-use-enums-and-annotations.html" target="_blank">Java Code Geeks: How and when to use Enums and Annotations</a>： Enums could be treated as a special type of classes and annotations as a special type of interfaces.</p>
+</div>
+
 <p>
     The direct superclass of an enum type <code>E</code> is <code>Enum&lt;E&gt;</code>. (源自于《The Java<sup>&reg;</sup> Language Specification Java SE 8 Edition》的8.9. Enum Types部分。)
 </p>
@@ -614,6 +628,10 @@ class_info='002100020003000200040005'
 
 <h3>annotation type</h3>
 
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p><a class="external" href="https://www.javacodegeeks.com/2015/09/how-and-when-to-use-enums-and-annotations.html" target="_blank">Java Code Geeks: How and when to use Enums and Annotations</a>： Enums could be treated as a special type of classes and annotations as a special type of interfaces.</p>
+</div>
+
 <p>
     The direct superinterface of every annotation type is <code>java.lang.annotation.Annotation</code>.（源自于《The Java<sup>&reg;</sup> Language Specification Java SE 8 Edition》的9.6. Annotation Types部分。）
 </p>
@@ -654,4 +672,12 @@ class_info='26010001000200010003'
 
 <div class="w3-display-container w3-center">
     <img class="w3-image w3-center" src="/images/java/classfile/classfile_classinfo.png" alt="ClassInfo"/>
+</div>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p><a class="external" href="https://www.javacodegeeks.com/2015/09/how-and-when-to-use-enums-and-annotations.html" target="_blank">Java Code Geeks: How and when to use Enums and Annotations</a>： Enums could be treated as a special type of classes and annotations as a special type of interfaces.</p>
+    <ul>
+        <li>enum type是一种特殊的Class，表现在两方面：第一方面，它的<code>access_flags</code>带有<code>ACC_ENUM</code>标识；第二方面，它的父类不是<code>java.lang.Object</code>，而“偷偷”的继承了<code>java.lang.Enum</code>类。</li>
+        <li>annotation type是一种特殊的Interface，也表现在两方面：第一方面，它的<code>access_flags</code>带有<code>ACC_ANNOTATION</code>标识；第二方面，它“偷偷”的继承了<code>java.lang.annotation.Annotation</code>接口。</li>
+    </ul>
 </div>

@@ -55,7 +55,26 @@ ClassFile {
     </li>
 </ul>
 
-<p>
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    static {
+        // class initialization method
+    }
+
+    public HelloWorld() { // instance initialization method
+    }
+
+    public static int add(int a, int b) { // class method
+        return a + b;
+    }
+
+    public int sub(int a, int b) { // instance method
+        return a - b;
+    }
+}
+</div>
+
+<p class="indented">
     Each method, including each <b>instance initialization method</b> and <b>the class or interface initialization method</b>, is described by a <code>method_info</code> structure.
 
     No two methods in one class file may have the same <b>name</b> and <b>descriptor</b>.
@@ -313,7 +332,7 @@ MethodInfo {Value='arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V', Access
 <h4>First Example: InnerClass</h4>
 
 <p>
-    在<code>HelloWorld$InnerClass.class</code>内会生成新的方法<code>access$002</code>，并带有<code>ACC_SYNTHETIC</code>标志。
+    在下面的代码编译之后，<code>HelloWorld$InnerClass.class</code>内会生成新的方法<code>access$002</code>，并带有<code>ACC_SYNTHETIC</code>标志。
 </p>
 
 <div title="HelloWorld.java" class="javacode">
@@ -337,7 +356,7 @@ methods
 </div>
 
 <p>
-    在<code>HelloWorld$InnerClass.class</code>内会生成<code>&lt;init&gt;</code>和<code>access$102</code>方法，并带有<code>ACC_SYNTHETIC</code>标志。
+    按照下面修改代码之后，在<code>HelloWorld$InnerClass.class</code>内会生成<code>&lt;init&gt;</code>和<code>access$102</code>方法，并带有<code>ACC_SYNTHETIC</code>标志。
 </p>
 
 <div title="HelloWorld.java" class="javacode">
@@ -418,9 +437,11 @@ $ javap -v -p HelloWorld.class
 
 <h2>attributes</h2>
 
-<p>
-    对于<code>method_info</code>所支持的所有<code>attributes</code>，可以参考《The Java Virtual Machine Specification, Java SE 8 Edition》的Table 4.7-C. Predefined class file attributes (by location)部分。
-</p>
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        对于<code>method_info</code>所支持的所有<code>attributes</code>，可以参考《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.7-320" target="_blank">Table 4.7-C. Predefined class file attributes (by location)</a>部分。
+    </p>
+</div>
 
 <p>
     在这里只以<code>Code</code>属性作为示例来说明一下。

@@ -10,8 +10,20 @@
 <h2>Intro</h2>
 
 <p class="indented">
-    The <code>InnerClasses</code> attribute is a variable-length attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
+    The <code>InnerClasses</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
 </p>
+
+<p class="indented">
+    If the constant pool of a class or interface C contains at least one <code>CONSTANT_Class_info</code> entry which represents a class or interface that is not a member of a package, then there must be exactly <b>one</b> <code>InnerClasses</code> attribute in the attributes table of the <code>ClassFile</code> structure for C.
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：variable-length</li>
+        <li>位置：ClassFile</li>
+        <li>数量：0或1</li>
+    </ul>
+</div>
 
 <p>
     The <code>InnerClasses</code> attribute has the following format:
@@ -87,7 +99,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="HelloWorld.class Attribute" class="plaintext">
+<div title="HelloWorld.class Attribute" hidden class="plaintext">
 constant_pool_count='0017' (23)
 constant_pool
     ... ...
@@ -128,7 +140,7 @@ classes[1] {
 }
 </div>
 
-<div title="HelloWorld$AAA.class Attribute" class="plaintext">
+<div title="HelloWorld$AAA.class Attribute" hidden class="plaintext">
 constant_pool_count='001A' (26)
 constant_pool
     ... ...

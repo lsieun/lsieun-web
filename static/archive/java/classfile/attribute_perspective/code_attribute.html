@@ -10,12 +10,46 @@
 <h2>Intro</h2>
 
 <p class="indented">
-    The <code>Code</code> attribute is a variable-length attribute in the <code>attributes</code> table of a <code>method_info</code> structure.
+    简单的来说，当一个方法有具体的Java代码实现的时候，才会在<code>method_info</code>上生成<code>Code</code>属性。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        // 有Code属性
+    }
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public interface HelloWorld {
+    void test(); // 没有Code属性
+}
+</div>
+
+<h2>Structure</h2>
+
+<p class="indented">
+    The <code>Code</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>method_info</code> structure.
     A <code>Code</code> attribute contains the Java Virtual Machine instructions and auxiliary information for a method, including <b>an instance initialization method</b> or <b>a class or interface initialization method</b>.
     <sub class="my_note" style="color:blue">笔记：这里说明Code Attribute可以出现的位置。</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
+<p class="indented">
+    If the method is either <code>native</code> or <code>abstract</code>, its <code>method_info</code> structure must not have a <code>Code</code> attribute in its <code>attributes</code> table.
+    Otherwise, its <code>method_info</code> structure must have exactly one <code>Code</code> attribute in its <code>attributes</code> table.
+    <sub class="my_note" style="color:blue">笔记：如果方法是native或abstract，那么方法就不带有Code Attribute。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：variable-length</li>
+        <li>位置：method_info</li>
+        <li>数量：0或1</li>
+    </ul>
+</div>
 
 <p>
     The <code>Code</code> attribute has the following format:
@@ -49,9 +83,9 @@ Code_attribute {
         <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table. The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "Code".
     </li>
     <li><code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.</li>
-    <li><code>max_stack</code>: The value of the <code>max_stack</code> item gives the maximum depth of the operand stack of this method at any point during execution of the method.</li>
+    <li><code>max_stack</code>: The value of the <code>max_stack</code> item gives the maximum depth of the <b>operand stack</b> of this method at any point during execution of the method.</li>
     <li><code>max_locals</code>:
-        The value of the <code>max_locals</code> item gives the number of local variables in the local variable array allocated upon invocation of this method, including the local variables used to pass parameters to the method on its invocation.
+        The value of the <code>max_locals</code> item gives the number of <b>local variables</b> in the local variable array allocated upon invocation of this method, including the local variables used to pass parameters to the method on its invocation.
         The greatest local variable index for a value of type <code>long</code> or <code>double</code> is <code>max_locals - 2</code>. The greatest local variable index for a value of any other type is <code>max_locals - 1</code>.
     </li>
     <li>
@@ -74,7 +108,7 @@ Code_attribute {
                 The value of <code>start_pc</code> must be a valid index into the <code>code</code> array of the opcode of an instruction.
                 The value of <code>end_pc</code> either must be a valid index into the <code>code</code> array of the opcode of an instruction or must be equal to <code>code_length</code>, the length of the <code>code</code> array.
                 The value of <code>start_pc</code> must be less than the value of <code>end_pc</code>.
-                The <code>start_pc</code> is inclusive and <code>end_pc</code> is exclusive; that is, the exception handler must be active while the program counter is within the interval <code>[start_pc, end_pc)</code>.
+                <b>The <code>start_pc</code> is inclusive and <code>end_pc</code> is exclusive</b>; that is, the exception handler must be active while the program counter is within the interval <code>[start_pc, end_pc)</code>.
             </li>
             <li>
                 <code>handler_pc</code>: The value of the <code>handler_pc</code> item indicates the start of the exception handler.
@@ -111,7 +145,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V Code" class="plaintext">
+<div title="test:()V Code" hidden class="plaintext">
 constant_pool_count='0022' (34)
 constant_pool
     ... ...
@@ -151,12 +185,17 @@ attributes_count='0003' (3)
     StackMapTable: 00130000000700024907001404
 </div>
 
-<div title="test:()V Code" class="plaintext">
+<div title="test:()V Code code" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 2
 code_length = 15
 code = 140002B80004A700084C2BB60006B1
+Exception Table:
+from    to  target  type
+   0     6       9  java/lang/InterruptedException
 === === ===  === === ===  === === ===
 0000: ldc2_w          #2   // 140002     || 1000
 0003: invokestatic    #4   // B80004     || java/lang/Thread.sleep:(J)V
@@ -165,13 +204,14 @@ code = 140002B80004A700084C2BB60006B1
 0010: aload_1              // 2B
 0011: invokevirtual   #6   // B60006     || java/lang/InterruptedException.printStackTrace:()V
 0014: return               // B1
-
-Exception Table:
-from    to  target  type
-   0     6       9  java/lang/InterruptedException
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      15  this:Lsample/HelloWorld;
+    1        10       4  e:Ljava/lang/InterruptedException;
 </div>
 
-<h2>With and Without Code Attribute</h2>
+<h2>Without Code Attribute</h2>
 
 <p class="indented">
     If the method is either <code>native</code> or <code>abstract</code>, its <code>method_info</code> structure must not have a <code>Code</code> attribute in its <code>attributes</code> table.
@@ -282,7 +322,28 @@ methods
     MethodInfo {Value='test:()V', AccessFlags='[ACC_PUBLIC,ACC_STATIC]', Attrs='[Code]', HexCode='0009000300040001...'}
 </div>
 
+<p>
+    第三种情况，annotation type内的抽象方法：
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public @interface HelloWorld {
+    String name();
+}
+</div>
+
+<div title="methods" hidden class="plaintext">
+methods_count='0001' (1)
+methods
+    MethodInfo {Value='name:()Ljava/lang/String;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[]'}
+</div>
+
+
 <h2>exception_table Vs Exceptions Attribute</h2>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/code_attribute_exception_table_vs_exceptions_attribute.png" alt="exception_table vs Exceptions"/>
+</div>
 
 <p class="indented">
     对于exception来说，我的理解就是，它相当于生活当中的“意外情况”，针对不同的“意外情况”，又有了各种“保险”的产生，例如：“医疗保险”、“财产保险”。
@@ -339,11 +400,9 @@ public class HelloWorld {
 }
 </div>
 
-<div class="w3-display-container w3-center">
-    <img class="w3-image w3-center" src="/images/java/classfile/code_attribute_exception_table_vs_exceptions_attribute.png" alt="exception_table vs Exceptions"/>
-</div>
 
-<div title="test:()V Attribute" class="plaintext">
+
+<div title="test:()V Attribute" hidden class="plaintext">
 constant_pool_count='0025' (37)
 constant_pool
     ... ...

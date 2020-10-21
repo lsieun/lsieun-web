@@ -7,6 +7,70 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<h2>Intro</h2>
+
+<p class="indented">
+    The <code>SourceDebugExtension</code> attribute is an optional attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
+</p>
+
+<p class="indented">
+    There may be <b>at most one</b> <code>SourceDebugExtension</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：variable-length</li>
+        <li>位置：ClassFile</li>
+        <li>数量：0或1</li>
+    </ul>
+</div>
+
+<p>
+    The <code>SourceDebugExtension</code> attribute has the following format:
+</p>
+
+<div title="SourceDebugExtension_attribute" class="plaintext">
+SourceDebugExtension_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u1 debug_extension[attribute_length];
+}
+</div>
+
+<p>
+    The items of the <code>SourceDebugExtension_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "SourceDebugExtension".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
+    </li>
+    <li>
+        <code>debug_extension[]</code>: The <code>debug_extension</code> array holds extended debugging information which has no semantic effect on the Java Virtual Machine. The information is represented using a modified UTF-8 string with no terminating zero byte.
+    </li>
+</ul>
+
+<h2>Examples</h2>
+
 <p>
     我没有找到合适的例子。
 </p>
+
+<p>
+
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        为了方便在编译器和动态生成的Class中加入供程序员使用的自定义内容，在JDK 5时，新增了
+        SourceDebugExtension属性用于存储额外的代码调试信息。典型的场景是在进行JSP文件调试时，无法
+        通过Java堆栈来定位到JSP文件的行号。JSR 45提案为这些非Java语言编写，却需要编译成字节码并运
+        行在Java虚拟机中的程序提供了一个进行调试的标准机制，使用SourceDebugExtension属性就可以用于
+        存储这个标准所新加入的调试信息，譬如让程序员能够快速从异常堆栈中定位出原始JSP中出现问题的
+        行号。——周志明的《深入理解Java虚拟机：JVM高级特性与最佳实践（第3版）》
+    </p>
+</div>

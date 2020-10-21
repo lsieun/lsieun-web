@@ -1,0 +1,241 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Runtime Parameter Annotations</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<h3>RuntimeVisibleParameterAnnotations</h3>
+
+<p class="indented">
+    The <code>RuntimeVisibleParameterAnnotations</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of the <code>method_info</code> structure.
+    The <code>RuntimeVisibleParameterAnnotations</code> attribute records run-time visible annotations on the declarations of formal parameters of the corresponding method.
+    The Java Virtual Machine must make these annotations available so they can be returned by the appropriate reflective APIs.
+</p>
+
+<p class="indented">
+    There may be <b>at most one</b> <code>RuntimeVisibleParameterAnnotations</code> attribute in the <code>attributes</code> table of a <code>method_info</code> structure.
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：variable-length</li>
+        <li>位置：method_info</li>
+        <li>数量：0或1</li>
+    </ul>
+</div>
+
+<p>
+    The <code>RuntimeVisibleParameterAnnotations</code> attribute has the following format:
+</p>
+
+<div title="RuntimeVisibleParameterAnnotations_attribute" class="plaintext">
+RuntimeVisibleParameterAnnotations_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u1 num_parameters;
+    {   u2         num_annotations;
+        annotation annotations[num_annotations];
+    } parameter_annotations[num_parameters];
+}
+</div>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        对于<code>annotation</code>的类型，可以参考<a href="/archive/java/classfile/attribute_perspective/annotation_structure.html" target="_blank">这里</a>。
+    </p>
+</div>
+
+<p>
+    The items of the <code>RuntimeVisibleParameterAnnotations_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "RuntimeVisibleParameterAnnotations".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
+    </li>
+    <li>
+        <code>num_parameters</code>: The value of the <code>num_parameters</code> item gives the number of formal parameters of the method represented by the <code>method_info</code> structure on which the annotation occurs.
+    </li>
+    <li>
+        <code>parameter_annotations[]</code>: Each entry in the <code>parameter_annotations</code> table represents all of the run-time visible annotations on the declaration of a single formal parameter.
+        The i'th entry in the table corresponds to the i'th formal parameter in the method descriptor.
+        Each <code>parameter_annotations</code> entry contains the following two items:
+        <ul>
+            <li>
+                <code>num_annotations</code>: The value of the <code>num_annotations</code> item indicates the number of run-time visible annotations on the declaration of the formal parameter corresponding to the <code>parameter_annotations</code> entry.
+            </li>
+            <li>
+                <code>annotations[]</code>: Each entry in the <code>annotations</code> table represents a single run-time visible annotation on the declaration of the formal parameter corresponding to the <code>parameter_annotations</code> entry.
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<h3>RuntimeInvisibleParameterAnnotations</h3>
+
+<p class="indented">
+    The <code>RuntimeInvisibleParameterAnnotations</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>method_info</code> structure. The <code>RuntimeInvisibleParameterAnnotations</code> attribute records run-time invisible annotations on the declarations of formal parameters of the corresponding method.
+</p>
+
+<p class="indented">
+    There may be <b>at most one</b> <code>RuntimeInvisibleParameterAnnotations</code> attribute in the <code>attributes</code> table of a <code>method_info</code> structure.
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：variable-length</li>
+        <li>位置：method_info</li>
+        <li>数量：0或1</li>
+    </ul>
+</div>
+
+<p class="indented">
+    The <code>RuntimeInvisibleParameterAnnotations</code> attribute is similar to the <code>RuntimeVisibleParameterAnnotations</code> attribute, except that the annotations represented by a <code>RuntimeInvisibleParameterAnnotations</code> attribute must not be made available for return by reflective APIs, unless the Java Virtual Machine has specifically been instructed to retain these annotations via some implementation-specific mechanism such as a command line flag. In the absence of such instructions, the Java Virtual Machine ignores this attribute.
+</p>
+
+<p>
+    The <code>RuntimeInvisibleParameterAnnotations</code> attribute has the following format:
+</p>
+
+<div title="RuntimeInvisibleParameterAnnotations_attribute" class="plaintext">
+RuntimeInvisibleParameterAnnotations_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u1 num_parameters;
+    {   u2         num_annotations;
+        annotation annotations[num_annotations];
+    } parameter_annotations[num_parameters];
+}
+</div>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        对于<code>annotation</code>的类型，可以参考<a href="/archive/java/classfile/attribute_perspective/annotation_structure.html" target="_blank">这里</a>。
+    </p>
+</div>
+
+<p>
+    The items of the <code>RuntimeInvisibleParameterAnnotations_attribute</code> structure are as follows:
+</p>
+
+<ul>
+    <li>
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "RuntimeInvisibleParameterAnnotations".
+    </li>
+    <li>
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
+    </li>
+    <li>
+        <code>num_parameters</code>: The value of the <code>num_parameters</code> item gives the number of formal parameters of the method represented by the <code>method_info</code> structure on which the annotation occurs.
+    </li>
+    <li>
+        <code>parameter_annotations[]</code>: Each entry in the <code>parameter_annotations</code> table represents all of the run-time invisible annotations on the declaration of a single formal parameter.
+        The i'th entry in the table corresponds to the i'th formal parameter in the method descriptor.
+        Each <code>parameter_annotations</code> entry contains the following two items:
+        <ul>
+            <li>
+                <code>num_annotations</code>: The value of the <code>num_annotations</code> item indicates the number of run-time invisible annotations on the declaration of the formal parameter corresponding to the <code>parameter_annotations</code> entry.
+            </li>
+            <li>
+                <code>annotations[]</code>: Each entry in the <code>annotations</code> table represents a single run-time invisible annotation on the declaration of the formal parameter corresponding to the <code>parameter_annotations</code> entry.
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<h2>Examples</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(@MyTag String name, int age) {
+        System.out.println(name + ":" + age);
+    }
+}
+</div>
+
+<h3>First Example</h3>
+
+<div title="MyTag.java" class="javacode">
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME) // 注意，这里是RUNTIME
+public @interface MyTag {
+}
+</div>
+
+<div title="RuntimeVisibleParameterAnnotations" hidden class="plaintext">
+constant_pool_count='0036' (54)
+constant_pool
+    ......
+    |026| CONSTANT_Utf8 {Value='RuntimeVisibleParameterAnnotations', HexCode='010022......'}
+    |027| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
+    ......
+attributes_count='0003' (3)
+attributes
+......
+--->|002| RuntimeVisibleParameterAnnotations:
+HexCode: 001A00000009020001001B00000000
+attribute_name_index='001A' (#26)
+attribute_length='00000009' (9)
+num_parameters='02' (2)
+parameter_annotations[0] {
+    num_annotations='0001' (1)
+    annotation[0] {
+        type_index='001B' (#27)
+        num_element_value_pairs='0000' (0)
+    }
+}
+parameter_annotations[1] {
+    num_annotations='0000' (0)
+}
+</div>
+
+<h3>Second Example</h3>
+
+<div title="MyTag.java" class="javacode">
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.CLASS) // 注意，这里是CLASS
+public @interface MyTag {
+}
+</div>
+
+<div title="RuntimeInvisibleParameterAnnotations" hidden class="plaintext">
+constant_pool_count='0036' (54)
+constant_pool
+    ......
+    |026| CONSTANT_Utf8 {Value='RuntimeInvisibleParameterAnnotations', HexCode='010024......'}
+    |027| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
+    ......
+attributes_count='0003' (3)
+attributes
+......
+--->|002| RuntimeInvisibleParameterAnnotations:
+HexCode: 001A00000009020001001B00000000
+attribute_name_index='001A' (#26)
+attribute_length='00000009' (9)
+num_parameters='02' (2)
+parameter_annotations[0] {
+    num_annotations='0001' (1)
+    annotation[0] {
+        type_index='001B' (#27)
+        num_element_value_pairs='0000' (0)
+    }
+}
+parameter_annotations[1] {
+    num_annotations='0000' (0)
+}
+</div>
+

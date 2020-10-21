@@ -9,10 +9,96 @@
 
 <h2>源代码地址</h2>
 
-<div title="github repository" class="plaintext">
+<p>
+    项目的地址：<a class="external" href="https://github.com/lsieun/java8-classfile-tutorial" target="_blank">GitHub: java8-classfile-tutorial</a>
+</p>
+
+<p>
+    下载项目代码，主要有两种方式。
+</p>
+
+<ul>
+    <li>第一种方式，下载Zip文件。打开项目的网页，在<b>Code</b>处点击，然后选择<b>Download ZIP</b>。</li>
+    <li>第二种方式，使用git工具进行clone操作。</li>
+</ul>
+
+<div title="git clone" class="plaintext">
 git clone https://github.com/lsieun/java8-classfile-tutorial
 </div>
 
-<h2>功能介绍</h2>
+<h2>项目介绍</h2>
 
+<h3>常用的功能</h3>
 
+<p>
+    常用的功能位于项目的<code>run</code> package下，其功能描述如下：
+</p>
+
+<ul>
+    <li>
+        <code>A_File_Hex</code>: 查看一个文件内容的十六进制表示形式。
+    </li>
+    <li>
+        <code>B_ClassFile_Raw</code>: 查看一个<code>.class</code>文件的整体结构。
+    </li>
+    <li>
+        <code>B_ClassFile_Split</code>: 可以将一个<code>.class</code>文件拆分成多个不同的部分。
+    </li>
+    <li>
+        <code>C_Change_MagicNumber</code>: 可以修改一个<code>.class</code>文件的Magic Number。
+    </li>
+    <li>
+        <code>D_Change_CompilerVersion</code>: 可以修改一个<code>.class</code>文件的major version信息。
+    </li>
+    <li>
+        <code>E_ConstantPool</code>: 可以查看一个<code>.class</code>文件的常量池信息。
+    </li>
+    <li>
+        <code>F_ClassInfo</code>: 可以查看一个<code>.class</code>文件中当前类的名字、父类、实现的接口等信息。
+    </li>
+    <li>
+        <code>G_Fields</code>: 可以查看一个<code>.class</code>文件包含的字段信息。
+    </li>
+    <li>
+        <code>H_Methods</code>: 可以查看一个<code>.class</code>文件包含的方法信息。
+    </li>
+    <li>
+        <code>I_Attributes_ClassFile</code>: 可以查看一个<code>.class</code>文件在ClassFile层面的属性信息。
+    </li>
+    <li>
+        <code>I_Attributes_Field</code>: 可以查看一个<code>.class</code>文件在Field层面的属性信息。
+    </li>
+    <li>
+        <code>I_Attributes_Method</code>: 可以查看一个<code>.class</code>文件在Method层面的属性信息。
+    </li>
+    <li>
+        <code>I_Attributes_Code</code>: 可以查看一个<code>.class</code>文件在Code层面的属性信息。
+    </li>
+    <li>
+        <code>K_Code_Locals</code>: 可以查看一个<code>.class</code>文件在特定方法里的Code信息。
+    </li>
+    <li>
+        <code>L_Basic_Stack</code>: 可以查看代码在运行过程中，operand stack和local variables的变化情况。
+    </li>
+    <li>
+        <code>M_ASMStackMapFrame</code>: 它可以修改一个<code>.class</code>文件的内容，方便我们对于特定问题的研究。
+    </li>
+</ul>
+
+<h3>常用功能的代码处理逻辑</h3>
+
+<p>
+    上述代码中，所遵循的处理思路如下：
+</p>
+
+<ul>
+    <li>第一，提供一个文件的“相对路径”，将“相对路径”转换成“绝对路径”。</li>
+    <li>第二，通过Java I/O API将“绝对路径”指向的文件的内容读取出来，存放到<code>byte[]</code>中。</li>
+    <li>第三，对<code>byte[]</code>进行处理。</li>
+</ul>
+
+<h3>解析ClassFile的代码</h3>
+
+<p>
+    解析ClassFile的代码，位于<code>lsieun.classfile</code> package下。
+</p>

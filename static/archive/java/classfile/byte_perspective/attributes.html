@@ -57,7 +57,13 @@ attribute_info {
     For all attributes, the <code>attribute_name_index</code> must be a valid unsigned 16-bit index into the constant pool of the class. The <code>constant_pool</code> entry at <code>attribute_name_index</code> must be a <code>CONSTANT_Utf8_info</code> structure representing the name of the attribute. The value of the <code>attribute_length</code> item indicates the length of the subsequent information in bytes. The length does not include the initial six bytes that contain the <code>attribute_name_index</code> and <code>attribute_length</code> items.
 </p>
 
-<h2>23 Predefined Attributes</h2>
+<h2>23 Predefined Attributes(Java 8)</h2>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的表格来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.7-320" target="_blank">Table 4.7-C. Predefined class file attributes (by location)</a>部分。
+    </p>
+</div>
 
 <p>
     23 attributes are predefined by The Java 8 Virtual Machine Specification.

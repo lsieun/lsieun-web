@@ -10,6 +10,23 @@
 <h2>Intro</h2>
 
 <p class="indented">
+    <code>BootstrapMethods</code>，我个人理解，主要是在lambda出现的时候，才会在ClassFile层面存在的一个属性。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.function.Consumer;
+
+public class HelloWorld {
+    public static void main(String[] args) {
+        Consumer&lt;String&gt; c = System.out::println;
+        c.accept("Hi Lambda");
+    }
+}
+</div>
+
+<h2>Structure</h2>
+
+<p class="indented">
     The <code>BootstrapMethods</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
     The <code>BootstrapMethods</code> attribute records bootstrap method specifiers referenced by <code>invokedynamic</code> instructions.
 </p>
@@ -19,14 +36,14 @@
 </p>
 
 <p class="indented">
-    There may be at most one <code>BootstrapMethods</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
+    There may be <b>at most one</b> <code>BootstrapMethods</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
 </p>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <ul>
         <li>长度：variable-length</li>
         <li>位置：ClassFile</li>
-        <li>数量：1</li>
+        <li>数量：0或1</li>
     </ul>
 </div>
 
@@ -87,6 +104,17 @@ BootstrapMethods_attribute {
 
 <h2>Examples</h2>
 
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        invokedynamic --&gt; CONSTANT_InvokeDynamic --&gt; BootstrapMethods --&gt; LambdaMetafactory.metafactory()
+    </p>
+    <ul>
+        <li>invokedynamic是属于Code/opcode层面的概念</li>
+        <li>CONSTANT_InvokeDynamic是属于Constant Pool层面的概念</li>
+        <li>BootstrapMethods是属于Attributes层面的概念</li>
+    </ul>
+</div>
+
 <div title="HelloWorld.java" class="javacode">
 import java.util.function.Function;
 
@@ -97,9 +125,40 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<h3>Code: invokedynamic</h3>
+
+<div title="test:()V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 7
+code = BA000200004CB1
+=== === ===  === === ===  === === ===
+0000: invokedynamic   #2   // BA00020000 || #0:apply:()Ljava/util/function/Function;
+0005: astore_1             // 4C
+0006: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       7  this:Lsample/HelloWorld;
+    1         6       1  func:Ljava/util/function/Function;
+</div>
+
+<h3>Constant Pool: CONSTANT_InvokeDynamic</h3>
+
+<div title="CONSTANT_InvokeDynamic" hidden class="plaintext">
+|002| CONSTANT_InvokeDynamic {Value='#0:apply:()Ljava/util/function/Function;', HexCode='1200000020'}
+</div>
+
+<h3>Attribute: BootstrapMethods</h3>
+
+<div title="BootstrapMethods" hidden class="plaintext">
 constant_pool_count='003C' (60)
 constant_pool
+    ... ...
+    |002| CONSTANT_InvokeDynamic {Value='#0:apply:()Ljava/util/function/Function;', HexCode='1200000020'}
     ... ...
     |024| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
     |025| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
@@ -127,24 +186,7 @@ constant_pool
     ... ...
 attributes_count='0003' (3)
 attributes
---->|001| SourceFile:
-HexCode: 0018000000020019
-attribute_name_index='0018' (#24)
-attribute_length='00000002' (2)
-sourcefile_index='0019' (#25)
---->|002| InnerClasses:
-HexCode: 00370000000A
-    0001
-    0035003900360019
-attribute_name_index='0037' (#55)
-attribute_length='0000000A' (10)
-number_of_classes='0001' (1)
-classes[0] {
-    inner_class_info_index='0035' (#53)
-    outer_class_info_index='0039' (#57)
-    inner_name_index='0036' (#54)
-    inner_class_access_flags='0019' ([ACC_PUBLIC,ACC_STATIC,ACC_FINAL])
-}
+......
 --->|003| BootstrapMethods:
 HexCode: 001B0000000C
     0001
@@ -158,4 +200,5 @@ bootstrap_methods[0] {
     bootstrap_arguments='001D001E001F' ([#29,#30,#31])
 }
 </div>
+
 

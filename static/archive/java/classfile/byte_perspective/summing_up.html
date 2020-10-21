@@ -7,18 +7,40 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<p>
-    TODO:
+<h2>Mapping</h2>
+
+<p class="indented">
+    在学习Java ClassFile的过程中，“映射”是一个非常重要的学习思路。换句话说，<code>.class</code>文件中包含的内容，其中的大部分都是由相应的<code>.java</code>文件里的内容转换过来的。
 </p>
 
-<ul>
-    <li><input type="checkbox"/> JavaFile向ClassFile的映射。</li>
-    <li><input type="checkbox"/> 项目当中是如何读取ClassFile结构。</li>
-    <li><input type="checkbox"/> 项目当中run package下各个类的作用。</li>
-    <li><input type="checkbox"/> 项目当中B_ClassFile_Split，可以帮助单独处理学习其内容。</li>
-    <li><input type="checkbox"/> 按照Magic Number、Version、Constant Pool、ClassInfo、Fields、Methods内容进行总结。</li>
-    <li><input type="checkbox"/> 第一个阶段性目标，如何完成呢？</li>
-</ul>
+<div title="ClassFile" class="plaintext">
+ClassFile {
+    ------------------------------------------------------------------------
+    u4             magic;                                 // Magic Number部分
+    ------------------------------------------------------------------------
+    u2             minor_version;
+    u2             major_version;                         // Version部分
+    ------------------------------------------------------------------------
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];  // 常量池部分
+    ------------------------------------------------------------------------
+    u2             access_flags;
+    u2             this_class;                            // Class Info部分
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    ------------------------------------------------------------------------
+    u2             fields_count;
+    field_info     fields[fields_count];                 // fields部分
+    ------------------------------------------------------------------------
+    u2             methods_count;
+    method_info    methods[methods_count];               // methods部分
+    ------------------------------------------------------------------------
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];         // attributes部分
+    ------------------------------------------------------------------------
+}
+</div>
 
 <h2>JavaFile VS ClassFile</h2>
 
@@ -46,25 +68,194 @@
     </li>
 </ul>
 
-<h2>JVM文档</h2>
+<h2>ClassFile Structure</h2>
 
-<p>
-    “映射”是一个非常重要的概念。
+<h3>Magic Number and Version</h3>
+
+<p class="indented">
+    Magic Number值是<code>CAFEBABE</code>，它的目的是为了区分不同产品（PDF、PNG、ClassFile）之间的差异。
 </p>
 
-<h2>项目代码</h2>
+<p class="indented">
+    <code>major_version</code>和<code>minor_version</code>是为了区分同一个产品在不同版本之间的差异。Java的主版本(<code>major_version</code>)是从45开始，JDK 1.1的<code>major_version</code>就是45，之后的每个JDK大版本发布<code>major_version</code>会向上加1；而Java 8的<code>major_version</code>是52，对应十六进制<code>0x34</code>。如果使用低版本的<code>java</code>命令去运行更高版本<code>javac</code>编译的ClassFile文件，就会出现<code>UnsupportedClassVersionError</code>的错误。
+</p>
 
-<h3>解析class文件</h3>
+<h3>Constant Pool</h3>
 
-<h3>打印class信息</h3>
+<p class="indented">
+    在Constant Pool部分，在Java 8这个版本中，定义了14种具体类型的Constant，它由<code>tag</code>进行标识。
+</p>
 
-<h2>Summing Up</h2>
+<div title="cp_info" class="plaintext">
+cp_info {
+    u1 tag;
+    u1 info[];
+}
+</div>
 
-<p>
-    总结：
+<p class="indented">
+    在这14种具体类型的Constant中，需要大家重点理解其中的11个。不需要大家记忆每个Constant具体的结构是什么样的，而是看到它的结构之后，能够理解其中每一项内容的含义，以及如何写一段Java代码能够在<code>.class</code>文件中生成这样一个Constant。
 </p>
 
 <ul>
-    <li>第一点，对JavaFile和ClassFile在结构上的差异。</li>
-    <li>第二点，从ClassFile Structure的角度来理解JVM中的“局限性”。</li>
+    <li>
+        <b>literals</b>(5个):
+        <ul>
+            <li>CONSTANT_Utf8_info</li>
+            <li>CONSTANT_Integer_info</li>
+            <li>CONSTANT_Float_info</li>
+            <li>CONSTANT_Long_info</li>
+            <li>CONSTANT_Double_info</li>
+        </ul>
+    </li>
+    <li>
+        <b>symbolic references</b>(6个):
+        <ul>
+            <li>CONSTANT_Class_info</li>
+            <li>CONSTANT_String_info</li>
+            <li>CONSTANT_Fieldref_info</li>
+            <li>CONSTANT_Methodref_info</li>
+            <li>CONSTANT_InterfaceMethodref_info</li>
+            <li>CONSTANT_NameAndType_info</li>
+        </ul>
+    </li>
 </ul>
+
+<p class="indented">
+    剩下的3个可以暂时不考虑。在后续的内容（Lambda）当中，我们还会提到这3个常量类型，到时候我会经常用到这3个常量。
+</p>
+
+<ul>
+    <li>CONSTANT_MethodHandle_info</li>
+    <li>CONSTANT_MethodType_info</li>
+    <li>CONSTANT_InvokeDynamic_info</li>
+</ul>
+
+<p>
+    我们在Constant Pool这一部分介绍两个非常重要的概念：Internal Name和descriptor。
+</p>
+
+<ul>
+    <li>在Java programming language中的概念称之为Fully Qualified Class Name，在Java class file format当中称之为Internal name。在<code>.java</code>文件中使用<code>java.lang.String</code>，而在<code>.class</code>文件当中使用<code>java/lang/String</code>进行表示。</li>
+    <li>descriptor是为了描述field和method的类型，可以具体分成field descriptor和method descriptor，需要大家去理解它们各自的写法。</li>
+</ul>
+
+<p class="indented">
+    最后，我们讲了一下对于Constant Pool内index的理解，index有效范围是从<code>1</code>到<code>constant_pool_count - 1</code>。尤其是遇到<code>CONSTANT_Long_info</code>和<code>CONSTANT_Double_info</code>的情况要注意，它们在Constant Pool当中占用2个位置。另外，还讲了一下Constant Pool的symbol reference，在运行的时候，需要转换为direct reference（physical memory location）后，才能进行使用。
+</p>
+
+<h3>Class Info</h3>
+
+<p class="indented">
+    在这里介绍<code>access_flags</code>、<code>this_class</code>、<code>super_class</code>和<code>interfaces</code>这四部分信息。
+</p>
+
+<p class="indented">
+    在<code>access_flags</code>这部分，如果是初次接触ClassFile的结构，可以不用细看，大概有个印象就可以了。如果是已经熟悉了ClassFile的结构，可以重点记忆一下各个<code>ACC_XXX</code>的含义和如何写Java的代码才能生成相应的标识。
+</p>
+
+<p class="indented">
+    在<code>super_class</code>这部分，重点注意两个特殊情况。第一个就是，<code>java.lang.Object</code>的父类是不存在的；第二个是enum type的父类是指向<code>java.lang.Enum</code>类。
+</p>
+
+<p class="indented">
+    在<code>interfaces</code>这部分，重点是注意annotation type默认情况下实现了<code>java.lang.annotation.Annotation</code>接口。
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p><a class="external" href="https://www.javacodegeeks.com/2015/09/how-and-when-to-use-enums-and-annotations.html" target="_blank">Java Code Geeks: How and when to use Enums and Annotations</a>： Enums could be treated as a special type of classes and annotations as a special type of interfaces.</p>
+    <ul>
+        <li>enum type是一种特殊的Class，表现在两方面：第一方面，它的<code>access_flags</code>带有<code>ACC_ENUM</code>标识；第二方面，它的父类不是<code>java.lang.Object</code>，而“偷偷”的继承了<code>java.lang.Enum</code>类。</li>
+        <li>annotation type是一种特殊的Interface，也表现在两方面：第一方面，它的<code>access_flags</code>带有<code>ACC_ANNOTATION</code>标识；第二方面，它“偷偷”的继承了<code>java.lang.annotation.Annotation</code>接口。</li>
+    </ul>
+</div>
+
+<h3>Fields and Methods</h3>
+
+<p class="indented">
+    从结构上来说，<code>field_info</code>和<code>method_info</code>结构上是完全一样的。但是，从解读其含义的角度来说，两者会有相当大的差异：field和method在<code>access_flag</code>有不同的定义，在descriptor的表达也有差异，所支持的attributes上的差异则更加明显。
+</p>
+
+<div title="field_info" class="plaintext">
+field_info {
+    u2             access_flags;
+    u2             name_index;
+    u2             descriptor_index;
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<div title="method_info" class="plaintext">
+method_info {
+    u2             access_flags;
+    u2             name_index;
+    u2             descriptor_index;
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</div>
+
+<p class="indented">
+    从学习的角度上来说，<code>field_info</code>和<code>method_info</code>中<code>access_flag</code>有一个浅显的了解就可以了，对于descriptor则希望大家能够切实的理解它，能够根据descriptor的内容解读出相应的Java文件中表示的类型。
+</p>
+
+<p class="indented">
+    另外，在<code>method_info</code>这部分，必要的情况下，javac会编译生成<code>&lt;init&gt;</code>和<code>&lt;clinit&gt;</code>方法。
+</p>
+
+<h3>Attributes</h3>
+
+<p class="indented">
+    在JVM 8 Specification版本中，一共定义了23个属性，在这里只是简单介绍，在下一章当中会对各个Attribute进行讲解。
+</p>
+
+<p class="indented">
+    关于新的Attribute。其中，涉及的角色有两个：Java编译器和Java虚拟机。javac可以在编译的过程当中添加新的Attribute；JVM在处理的时候，如果能够进行处理，那么就处理，如果不能进行处理，直接忽略就可以了。
+</p>
+
+<h3>JVM Specification</h3>
+
+<p class="indented">
+    希望大家注重对于JVM官方文档的阅读。我们讲的这些内容，在JVM文档中都有“原汁原味”的描述。换句话说，学习这里的讲的内容，有助于理解JVM文档中的描述；而JVM文档的描述，又能加深对现有知识的理解程度和扩展新的知识。
+</p>
+
+<h2>Project Source Code</h2>
+
+<p class="indented">
+    解析ClassFile的代码，位于<code>lsieun.classfile</code> package下。
+</p>
+
+<h2>Practice Makes Perfect</h2>
+
+<p class="indented">
+    多注重代码的实践操作；听一听、看一看，会有一种程度的理解；动手实践一下，可能会有更深的理解。
+</p>
+
+<p class="indented">
+    古人的策略总是分“上策、中策、下策”。那么，上、中、下三策的实现会有不同资源消耗，来达成不同程度的目标。我们模仿这种思路，在这里也谈一下对Java ClassFile Structure三个层面的掌握程度，也是需要大家付出不同程度的时间和努力：
+</p>
+
+<ul>
+    <li>
+        上：能够自己写一个属于自己的类库，可以去解析一个<code>.class</code>文件。不要在乎代码写的好与坏，重要的是写出这样一套代码的过程，是检验自己的理解和加深自己理解的一个过程。在此基础上，也开发自己想要功能，因为有些功能并不是有些工具能直接提供的。Java也在不断的演进，写这样一个类库之后，可以持续的去跟进新版本Java所引入的特性或新的结构。
+    </li>
+    <li>
+        中：结合拆分之后<code>.class</code>文件，进行单独解析。项目当中有一个<code>B_ClassFile_Split</code>，它可以把一个完整<code>.class</code>文件拆分多个不同的小文件，可以在此基础上选择感兴趣的部分进行学习。
+    </li>
+    <li>
+        下：能够根据现有的项目代码，能够理解ClassFile Structure的内容。
+    </li>
+</ul>
+
+<p class="indented">
+    我在写解读<code>.class</code>文件的代码过程当中，也是写写、停停的过程，写完了一个功能，就会放置一段时间，可能过一段之后再看，发现有问题，针对不同的方面（处理问题的逻辑、代码组织结构）不断的对代码进行修改，代码迭代有两年多的时间。后来为了课程的内容，就原来的代码重新建立一个git仓库，起了现在的名字<code>java8-classfile-tutorial</code>。所以大家写自己的代码，也不要着急，也是需要一个不断迭代的过程，重点是能够加深对java class file format的一个理解。
+</p>
+
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        古人学问无遗力，少壮工夫老始成。纸上得来终觉浅,绝知此事要躬行。——出自《冬夜读书示子聿》，作者陆游。
+    </p>
+</div>
+

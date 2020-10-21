@@ -7,7 +7,11 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>ClassFile Structure</h2>
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.1" target="_blank">4.1. The ClassFile Structure</a>部分。
+    </p>
+</div>
 
 <div title="ClassFile" class="plaintext">
 ClassFile {
@@ -63,8 +67,8 @@ ClassFile {
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>总结</p>
     <ul>
-        <li>第一点，从结构上来说，ClassFile是由magic number、compiler version、constant pool、class info、fields、methods和attributes组成。</li>
-        <li>第二点，从概念上来说，ClassFile涉及到<code>u1</code>, <code>u2</code>, <code>u4</code>, <code>u8</code>和<code>table</code>这些概念。</li>
+        <li>第一，从概念上来说，ClassFile涉及到<code>u1</code>, <code>u2</code>, <code>u4</code>, <code>u8</code>和<code>table</code>这些概念。</li>
+        <li>第二，从结构上来说，ClassFile是由magic number、compiler version、constant pool、class info、fields、methods和attributes组成。</li>
     </ul>
 </div>
 

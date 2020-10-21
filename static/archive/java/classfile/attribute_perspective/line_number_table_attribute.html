@@ -10,7 +10,7 @@
 <h2>Intro</h2>
 
 <p class="indented">
-    The <code>LineNumberTable</code> attribute is an optional variable-length attribute in the <code>attributes</code> table of a <code>Code</code> attribute. It may be used by debuggers to determine which part of the <code>code</code> array corresponds to a given line number in the original source file.
+    The <code>LineNumberTable</code> attribute is an optional <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>Code</code> attribute. It may be used by debuggers to determine which part of the <code>code</code> array corresponds to a given line number in the original source file.
 </p>
 
 <p class="indented">
@@ -21,6 +21,14 @@
     There may be more than one <code>LineNumberTable</code> attribute per line of a source file in the <code>attributes</code> table of a <code>Code</code> attribute.
     That is, <code>LineNumberTable</code> attributes may together represent a given line of a source file, and need not be one-to-one with source lines.
 </p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：variable-length</li>
+        <li>位置：Code</li>
+        <li>数量：0或1或more</li>
+    </ul>
+</div>
 
 <p>
     The LineNumberTable attribute has the following format:
@@ -101,7 +109,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 0000: iconst_0             // 03
 0001: istore_1             // 3C

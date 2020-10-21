@@ -7,49 +7,13 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>Math Mapping</h2>
-
-<div class="w3-display-container w3-center">
-    <img width="400" class="w3-image w3-center" src="/images/math/map/bijection.png" alt="bijection"/>
-</div>
-
-<div>
-    $$ {x \rightarrow f \rightarrow y} $$
-</div>
-
-<h2>Java Compiler</h2>
-
-<p>
-    Java's architecture arises out of four distinct but interrelated technologies:
-</p>
-
-<ul>
-    <li>the Java programming language</li>
-    <li>the Java class file format</li>
-    <li>the Java Application Programming Interface</li>
-    <li>the Java Virtual Machine</li>
-</ul>
+<h2>CP (1): CONSTANT_Utf8</h2>
 
 <p class="indented">
-    其中，对于Java programming language来说，它本身是一个抽象的规则，而<code>.java</code>文件是它的一种具体表现形式；对于Java class file format来说，它则是另一个抽象的规则，<code>.class</code>文件则是它的一种具体表现形式。
+    除了表示数值类型（<code>CONSTANT_Integer_info</code>、<code>CONSTANT_Float_info</code>、<code>CONSTANT_Long_info</code>、<code>CONSTANT_Double_info</code>）的结构，其他的结构都是在<code>CONSTANT_Utf8_info</code>的基础上构建起来的。
 </p>
 
-<p class="indented">
-    要将<code>.java</code>文件转换为<code>.class</code>文件，则需要用到Java Compiler(<code>javac</code>)。如果说<code>.java</code>文件则相当于\(X\)，<code>.class</code>文件则相当于\(Y\)，那么<code>javac</code>的作用就相当于\(f(x)\)，由它来实现<code>.java</code>文件内容向<code>.class</code>文件内容的映射。
-</p>
-
-<div class="w3-display-container w3-center">
-    <img class="w3-image w3-center" src="/images/java/classfile/javac_from_java_to_class.jpeg" alt="javac"/>
-</div>
-
-<p class="indented">
-    更详细的说，在<code>.java</code>文件中定义的字段、定义的方法、引用的类、调用的方法等内容一定是在<code>.class</code>文件中得到体现的。
-    更概括的说，在Java programming language支持的语言特性必须有相应的Java class file format进行支持。
-</p>
-
-<h2>Mapping In ClassFile</h2>
-
-<h3>CP (1-6)</h3>
+<h2>CP (3-6)</h2>
 
 <p>
     A primitive type is predefined by the Java programming language and named by its reserved keyword:
@@ -108,7 +72,7 @@ public class HelloWorld  {
     在上面的表格中，我们并没有看到Java programming language中的<code>byte</code>、<code>short</code>、<code>char</code>和<code>boolean</code>这些类型在Java class file format当中得到体现。换句话说，在Java class file format当中，并没有出现<code>CONSTANT_Byte_info</code>、<code>CONSTANT_Short_info</code>、<code>CONSTANT_Char_info</code>或<code>CONSTANT_Boolean_info</code>这样的结构。这个问题，要从opcode角度才能回答。
 </p>
 
-<h3>CP (8): CONSTANT_String_info</h3>
+<h2>CP (8): CONSTANT_String</h2>
 
 <table class="w3-table-all w3-hoverable w3-centered">
     <caption>String</caption>
@@ -144,7 +108,7 @@ CONSTANT_Utf8_info {
 
 <br/>
 
-<h3>CP (7): CONSTANT_Class_info</h3>
+<h2>CP (7): CONSTANT_Class</h2>
 
 <table class="w3-table-all w3-hoverable w3-centered">
     <caption>Class</caption>
@@ -180,7 +144,7 @@ CONSTANT_Utf8_info {
     </p>
 </div>
 
-<h3>Internal Name</h3>
+<h2>Internal Name</h2>
 
 <p class="indented">
     首先，是概念的“映射”，在Java programming language中的概念称之为Fully Qualified Class Name，在Java class file format当中称之为Internal name。
@@ -203,7 +167,7 @@ CONSTANT_Utf8_info {
     </p>
 </div>
 
-<h3>CP (9-12): Fieldref/Methodref</h3>
+<h2>CP (9-12): Fieldref/Methodref</h2>
 
 <div title="Fieldref/Methodref" class="plaintext">
 CONSTANT_Fieldref_info {
@@ -268,7 +232,7 @@ CONSTANT_NameAndType_info {
     在<code>CONSTANT_Fieldref_info</code>、<code>CONSTANT_Methodref_info</code>和<code>CONSTANT_InterfaceMethodref_info</code>三者中都有对于<code>CONSTANT_Class_info</code>和<code>CONSTANT_NameAndType_info</code>的引用，其中<code>CONSTANT_Class_info</code>是指明是哪一个Class或者Interface，而<code>CONSTANT_NameAndType_info</code>则是指明具体的Field或Method。
 </p>
 
-<h3>Descriptors</h3>
+<h2>Descriptors</h2>
 
 <p>
     A descriptor is a string representing the type of a field or method. Descriptors are represented in the class file format using modified UTF-8 strings.
@@ -316,6 +280,11 @@ CONSTANT_NameAndType_info {
         <td class="w3-left-align">signed short</td>
     </tr>
     <tr class="w3-hover-blue">
+        <td><code>V</code></td>
+        <td>void</td>
+        <td class="w3-left-align">void</td>
+    </tr>
+    <tr class="w3-hover-blue">
         <td><code>Z</code></td>
         <td>boolean</td>
         <td class="w3-left-align">true or false</td>
@@ -339,13 +308,8 @@ CONSTANT_NameAndType_info {
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
-        做一个比喻。在《火影忍者》中鸣人有一个忍术叫“<a href="javascript:void(0);" onclick="$('#shadow_clone_technique_div').toggle();">影分身之术</a>”，使用查克拉制造出有实体的分身，具有独立于施术者本体的意识和一定的抗击打能力，解除后分身的记忆和经验会回到本体。
-        当描述一个广泛意义的类时，使用Internal Name，这就相当于“本体”；当描述一个具体的变量的时候，就使用<code>L&lt;InternalName&gt;;</code>这种形式，它则相当于“分身”。
+        当描述一个广泛意义的类型时，就使用Internal Name；当描述一个具体的变量的时候，就使用<code>L&lt;InternalName&gt;;</code>这种形式。
     </p>
-</div>
-
-<div id="shadow_clone_technique_div" class="w3-display-container w3-center">
-    <img class="w3-image w3-center" src="/images/cartoon/naruto/shadow_clone_technique.gif" alt="Shadow Clone Technique"/>
 </div>
 
 <p class="indented">
@@ -363,6 +327,8 @@ CONSTANT_NameAndType_info {
         <code>J</code> is sometimes used in other contexts to be wider than <code>I</code> as it is the next letter (similarly <code>H</code> for half int/short, or the previous letter to <code>I</code>)
     </p>
 </div>
+
+<h3>field descriptor</h3>
 
 <p>
     A <b>field descriptor</b> is a string that indicates the field's type.
@@ -382,6 +348,8 @@ field_info {
     <img class="w3-image w3-center" src="/images/java/classfile/classfile_field_info.png" alt="field_info"/>
 </div>
 
+<h3>method descriptor</h3>
+
 <p>
     A <b>method descriptor</b> is a string that indicates the method's return type and the number, order, and types of its parameters.
 </p>
@@ -400,13 +368,6 @@ method_info {
     <img class="w3-image w3-center" src="/images/java/classfile/classfile_method_info.png" alt="method_info"/>
 </div>
 
-<p>
-    The symbolic references contained in the constant pool involve three special kinds of strings: fully qualified names, simple names, and descriptors.
-    All symbolic references include the fully qualified name of a class or interface.
-    <b>Symbolic references to fields</b> include <b>a simple field name</b> and <b>field descriptor</b> in addition to <b>a fully qualified type name</b>.
-    <b>Symbolic references to methods</b> include <b>a simple method name</b> and <b>method descriptor</b> in addition to <b>a fully qualified name</b>.
-</p>
-
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static void main(String[] args) {
@@ -419,7 +380,7 @@ public class HelloWorld {
 ([Ljava/lang/String;)V
 </div>
 
-<h3>Descriptor Vs Signature</h3>
+<h2>Descriptor Vs Signature</h2>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
@@ -443,7 +404,7 @@ public class HelloWorld {
     </p>
 </div>
 
-<h3>CP (15-18)</h3>
+<h2>CP (15-18)</h2>
 
 <div title="HelloWorld.java" class="javacode">
 import java.util.function.Supplier;

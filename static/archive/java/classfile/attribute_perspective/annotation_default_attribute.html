@@ -33,7 +33,14 @@
     <img class="w3-image w3-center" src="/images/java/classfile/annotation_type_example_annotation_default.png" alt="AnnotationDefault"/>
 </div>
 
-<h2>AnnotationDefault</h2>
+<div title="MyTag.java" class="javacode">
+public @interface MyTag {
+    String name() default "tomcat";
+    int age() default 12;
+}
+</div>
+
+<h2>Structure</h2>
 
 <p class="indented">
     The <code>AnnotationDefault</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of certain <code>method_info</code> structures, namely those representing elements of annotation types.
@@ -51,7 +58,7 @@
     <ul>
         <li>长度：variable-length</li>
         <li>位置：method_info</li>
-        <li>数量：1</li>
+        <li>数量：0或1</li>
     </ul>
 </div>
 

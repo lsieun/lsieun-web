@@ -10,13 +10,21 @@
 <h2>Intro</h2>
 
 <p class="indented">
-    The <code>EnclosingMethod</code> attribute is a fixed-length attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
+    The <code>EnclosingMethod</code> attribute is a <b>fixed-length</b> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
     A class must have an <code>EnclosingMethod</code> attribute if and only if it represents <b>a local class</b> or <b>an anonymous class</b>.
 </p>
 
 <p class="indented">
-    There may be at most one <code>EnclosingMethod</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
+    There may be <b>at most one</b> <code>EnclosingMethod</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code> structure.
 </p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：fixed-length</li>
+        <li>位置：ClassFile</li>
+        <li>数量：0或1</li>
+    </ul>
+</div>
 
 <p>
     The <code>EnclosingMethod</code> attribute has the following format:
@@ -70,7 +78,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="HelloWorld$1LocalClass.class Attribute" class="plaintext">
+<div title="HelloWorld$1LocalClass.class Attribute" hidden class="plaintext">
 constant_pool_count='001D' (29)
 constant_pool
     ... ...
@@ -128,7 +136,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="HelloWorld$1.class Attribute" class="plaintext">
+<div title="HelloWorld$1.class Attribute" hidden class="plaintext">
 constant_pool_count='001F' (31)
 constant_pool
     ... ...

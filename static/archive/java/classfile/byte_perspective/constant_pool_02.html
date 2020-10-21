@@ -7,9 +7,15 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<p class="indented">
-    在Constant Pool当中，具体包含了14个Constant类型。在解释每一个Constant类型的时候，主要从3个方面着手：table的结构、十六进制的示例、Java代码。
+<p>
+    在Constant Pool当中，具体包含了14个Constant类型。在解释每一个Constant类型的时候，讲解思路是这样的：
 </p>
+
+<ul>
+    <li>第一，介绍具体常量的结构。</li>
+    <li>第二，Java代码示例，在<code>.class</code>文件中生成一个该类型的常量。</li>
+    <li>第三，将<code>byte[]</code>转换成字符串或数值类型。（CP 1~6）</li>
+</ul>
 
 <h2>CP (1-6)</h2>
 
@@ -29,7 +35,7 @@ CONSTANT_Utf8_info {
 
 <ul>
     <li>
-        <code>tag</code>: The <code>tag</code> item of the <code>CONSTANT_Utf8_info</code> structure has the value <code>CONSTANT_Utf8 (1)</code>.
+        <code>tag</code>: The <code>tag</code> item of the <code>CONSTANT_Utf8_info</code> structure has the value <code>CONSTANT_Utf8 (1)</code>.<span class="my_note" style="color:red">注意，带<code>_info</code>与不带的区别。</span>
     </li>
     <li>
         <code>length</code>: The value of the <code>length</code> item gives the number of bytes in the <code>bytes</code> array (not the length of the resulting string).
@@ -535,6 +541,12 @@ CONSTANT_MethodHandle_info {
 CONSTANT_MethodHandle {Value='invokestatic sample/HelloWorld.lambdiseMe:()Ljava/lang/String;', HexCode='0F060021'}
 </div>
 
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: 我个人的理解，CONSTANT_MethodHandle_info是CONSTANT_Methodref_info的一个“增强版”，它所“增强”的部分就是“invokestatic”（invoke*）的部分。
+    </p>
+</div>
+
 <h3>CONSTANT_MethodType(16)</h3>
 
 <p>
@@ -564,6 +576,12 @@ CONSTANT_MethodType_info {
 
 <div title="解析后的结果" class="plaintext">
 CONSTANT_MethodType {Value='()Ljava/lang/String;', HexCode='10000E'}
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO: 我个人的理解，CONSTANT_MethodType_info是CONSTANT_NameAndType_info的一个“弱化版”，它所“弱化”的部分就是缺少了“name_index”。
+    </p>
 </div>
 
 <h3>CONSTANT_InvokeDynamic(18)</h3>
@@ -596,10 +614,11 @@ CONSTANT_InvokeDynamic {Value='#0:get:()Ljava/util/function/Supplier;', HexCode=
 <h2>Summing Up</h2>
 
 <p>
-    这里涉及的内容一共归结为两点：
+    总结：
 </p>
 
 <ul>
-    <li>第一点，各个不同类型的<code>CONSTANT_XXX_Info</code>是如何解析的。</li>
-    <li>第二点，只有<code>CONSTANT_Utf8_info</code>结构的长度是可变化的，其它的<code>CONSTANT_XXX_Info</code>结构的长度是固定的。</li>
+    <li>第一，14个不同类型的<code>CONSTANT_XXX_Info</code>是如何解析的。</li>
+    <li>第二，重点掌握1~12之间的常量类型，后续的15~18常量类型会在讲Lambda的时候再次谈到。</li>
+    <li>第三，只有<code>CONSTANT_Utf8_info</code>结构的长度是可变化的，其它的<code>CONSTANT_XXX_Info</code>结构的长度是固定的。</li>
 </ul>

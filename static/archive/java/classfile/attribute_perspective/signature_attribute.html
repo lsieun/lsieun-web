@@ -10,8 +10,17 @@
 <h2>Intro</h2>
 
 <p class="indented">
-    The <code>Signature</code> attribute is a fixed-length attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure. A <code>Signature</code> attribute records a signature for a class, interface, constructor, method, or field whose declaration in the Java programming language uses type variables or parameterized types.
+    The <code>Signature</code> attribute is a <b>fixed-length</b> attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure.
+    A <code>Signature</code> attribute records a signature for a class, interface, constructor, method, or field whose declaration in the Java programming language uses <b>type variables</b> or <b>parameterized types</b>.
 </p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <ul>
+        <li>长度：fixed-length</li>
+        <li>位置：ClassFile, field_info, method_info</li>
+        <li>数量：0或1</li>
+    </ul>
+</div>
 
 <p>
     The <code>Signature</code> attribute has the following format:
