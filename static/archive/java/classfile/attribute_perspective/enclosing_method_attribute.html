@@ -46,17 +46,17 @@ EnclosingMethod_attribute {
 <ul>
     <li>
         <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
-        The <code>constant_pool entry</code> at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "EnclosingMethod".
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "EnclosingMethod".
     </li>
     <li>
-        <code>attribute_length</code>: The value of the <code>attribute_length</code> item must be four.
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item must be <b>four</b>.
     </li>
     <li>
         <code>class_index</code>: The value of the <code>class_index</code> item must be a valid index into the <code>constant_pool</code> table.
         The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Class_info</code> structure representing the innermost class that encloses the declaration of the current class.
     </li>
     <li>
-        <code>method_index</code>: If the current class is not immediately enclosed by a method or constructor, then the value of the <code>method_index</code> item must be zero.
+        <code>method_index</code>: If the current class is not immediately enclosed by a method or constructor, then the value of the <code>method_index</code> item must be <b>zero</b>.
     </li>
 </ul>
 
@@ -71,7 +71,7 @@ EnclosingMethod_attribute {
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
-        final class LocalClass {
+        class LocalClass {
             //
         }
     }
@@ -81,47 +81,28 @@ public class HelloWorld {
 <div title="HelloWorld$1LocalClass.class Attribute" hidden class="plaintext">
 constant_pool_count='001D' (29)
 constant_pool
-    ... ...
-    |003| CONSTANT_Class {Value='sample/HelloWorld$1LocalClass', HexCode='070018'}
-    |004| CONSTANT_Class {Value='java/lang/Object', HexCode='070019'}
-    ... ...
-    |013| CONSTANT_Utf8 {Value='LocalClass', HexCode='01000A4C6F63616C436C617373'}
-    |014| CONSTANT_Utf8 {Value='InnerClasses', HexCode='01000C496E6E6572436C6173736573'}
-    |015| CONSTANT_Utf8 {Value='Lsample/HelloWorld$1LocalClass;', HexCode='01001F4C736......'}
-    |016| CONSTANT_Utf8 {Value='MethodParameters', HexCode='0100104D6574686F64506172616D6574657273'}
-    |017| CONSTANT_Utf8 {Value='SourceFile', HexCode='01000A536F7572636546696C65'}
-    |018| CONSTANT_Utf8 {Value='HelloWorld.java', HexCode='01000F48656C6C6F576F726C642E6A617661'}
+    ......
     |019| CONSTANT_Utf8 {Value='EnclosingMethod', HexCode='01000F456E636C6F73696E674D6574686F64'}
     |020| CONSTANT_Class {Value='sample/HelloWorld', HexCode='07001A'}
     |021| CONSTANT_NameAndType {Value='test:()V', HexCode='0C001B001C'}
-    ... ...
+    ......
 attributes_count='0003' (3)
 attributes
---->|001| SourceFile:
-HexCode: 0011000000020012
-attribute_name_index='0011' (#17)
-attribute_length='00000002' (2)
-sourcefile_index='0012' (#18)
---->|002| EnclosingMethod:
+......
+--->|001| EnclosingMethod:
 HexCode: 00130000000400140015
 attribute_name_index='0013' (#19)
 attribute_length='00000004' (4)
 class_index='0014' (#20)
 method_index='0015' (#21)
---->|003| InnerClasses:
-HexCode: 000E0000000A000100030000000D0010
-attribute_name_index='000E' (#14)
-attribute_length='0000000A' (10)
-number_of_classes='0001' (1)
-classes[0] {
-    inner_class_info_index='0003' (#3)
-    outer_class_info_index='0000' (#0)
-    inner_name_index='000D' (#13)
-    inner_class_access_flags='0010' ([ACC_FINAL])
-}
+......
 </div>
 
 <h3>Anonymous Class</h3>
+
+<p>
+    第一种形式，匿名类定义在方法当中
+</p>
 
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
@@ -176,4 +157,36 @@ classes[0] {
 }
 </div>
 
+<p>
+    第二种形式，匿名类直接定义在类当中
+</p>
+
+<div title="HelloWorld.java Attribute" class="javacode">
+public class HelloWorld {
+    Runnable r = new Runnable() {
+        @Override
+        public void run() {
+            // do nothing
+        }
+    };
+}
+</div>
+
+<div title="HelloWorld$1.class" hidden class="plaintext">
+constant_pool_count='001D' (29)
+constant_pool
+    ......
+    |021| CONSTANT_Utf8 {Value='EnclosingMethod', HexCode='01000F456E636C6F73696E674D6574686F64'}
+    |022| CONSTANT_Class {Value='sample/HelloWorld', HexCode='07001C'}
+    ......
+attributes_count='0003' (3)
+attributes
+......
+--->|001| EnclosingMethod:
+HexCode: 00150000000400160000
+attribute_name_index='0015' (#21)
+attribute_length='00000004' (4)
+class_index='0016' (#22)
+method_index='0000' (#0)
+</div>
 

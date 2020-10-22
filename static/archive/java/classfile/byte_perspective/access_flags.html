@@ -170,7 +170,7 @@ class_info='0021000200030000'
 <h3>Class</h3>
 
 <p class="indented">
-    A class file must not have both its <code>ACC_FINAL</code> and <code>ACC_ABSTRACT</code> flags set (JLS §8.1.1.2).
+    A class file must not have both its <code>ACC_FINAL</code> and <code>ACC_ABSTRACT</code> flags set.
 </p>
 
 <p class="indented">
@@ -189,7 +189,7 @@ class_info='0021000200030000'
 <h3>Field</h3>
 
 <p class="indented">
-    <b>Each field of a class</b> may have at most one of its <code>ACC_PUBLIC</code>, <code>ACC_PRIVATE</code>, and <code>ACC_PROTECTED</code> flags set (JLS §8.3.1), and must not have both its <code>ACC_FINAL</code> and <code>ACC_VOLATILE</code> flags set (JLS §8.3.1.4).
+    <b>Each field of a class</b> may have at most one of its <code>ACC_PUBLIC</code>, <code>ACC_PRIVATE</code>, and <code>ACC_PROTECTED</code> flags set, and must not have both its <code>ACC_FINAL</code> and <code>ACC_VOLATILE</code> flags set (JLS §8.3.1.4).
 </p>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
@@ -206,11 +206,11 @@ class_info='0021000200030000'
 <h3>Method</h3>
 
 <p class="indented">
-    <b>Methods of classes</b> may have any of the flags set. However, each method of a class may have at most one of its <code>ACC_PUBLIC</code>, <code>ACC_PRIVATE</code>, and <code>ACC_PROTECTED</code> flags set (JLS §8.4.3).
+    <b>Methods of classes</b> may have any of the flags set. However, each method of a class may have at most one of its <code>ACC_PUBLIC</code>, <code>ACC_PRIVATE</code>, and <code>ACC_PROTECTED</code> flags set.
 </p>
 
 <p class="indented">
-    <b>Methods of interfaces</b> may have any of the flags set except <code>ACC_PROTECTED</code>, <code>ACC_FINAL</code>, <code>ACC_SYNCHRONIZED</code>, and <code>ACC_NATIVE</code> (JLS §9.4).
+    <b>Methods of interfaces</b> may have any of the flags set except <code>ACC_PROTECTED</code>, <code>ACC_FINAL</code>, <code>ACC_SYNCHRONIZED</code>, and <code>ACC_NATIVE</code>.
     In a class file whose version number is less than 52.0, each method of an interface must have its <code>ACC_PUBLIC</code> and <code>ACC_ABSTRACT</code> flags set;
     in a class file whose version number is 52.0 or above, each method of an interface must have exactly one of its <code>ACC_PUBLIC</code> and <code>ACC_PRIVATE</code> flags set.
 </p>
@@ -230,7 +230,7 @@ public interface HelloWorld {
 </p>
 
 <p class="indented">
-    Each <b>instance initialization method</b> (§2.9) may have at most one of its <code>ACC_PUBLIC</code>, <code>ACC_PRIVATE</code>, and <code>ACC_PROTECTED</code> flags set, and may also have its <code>ACC_VARARGS</code>, <code>ACC_STRICT</code>, and <code>ACC_SYNTHETIC</code> flags set, but must not have any of the other flags set.
+    Each <b>instance initialization method</b> may have at most one of its <code>ACC_PUBLIC</code>, <code>ACC_PRIVATE</code>, and <code>ACC_PROTECTED</code> flags set, and may also have its <code>ACC_VARARGS</code>, <code>ACC_STRICT</code>, and <code>ACC_SYNTHETIC</code> flags set, but must not have any of the other flags set.
 </p>
 
 <p class="indented">

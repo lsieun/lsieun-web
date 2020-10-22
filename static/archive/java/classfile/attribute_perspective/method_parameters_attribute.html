@@ -90,6 +90,16 @@ MethodParameters_attribute {
     </li>
 </ul>
 
+<ul>
+    <li>
+        <code>-parameters</code>: Stores formal parameter names of constructors and methods in the generated class file so that the method <code>java.lang.reflect.Executable.getParameters</code> from the Reflection API can retrieve them.
+    </li>
+</ul>
+
+<div title="javac example" class="plaintext">
+javac -parameters Main.java
+</div>
+
 <h2>Examples</h2>
 
 <div title="HelloWorld.java" class="javacode">

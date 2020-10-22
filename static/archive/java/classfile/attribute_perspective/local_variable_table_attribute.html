@@ -54,16 +54,18 @@ LocalVariableTable_attribute {
 
 <ul>
     <li>
-        <code>attribute_name_index</code>: The value of the attribute_name_index item must be a valid index into the constant_pool table. The constant_pool entry at that index must be a CONSTANT_Utf8_info structure (§4.4.7) representing the string "LocalVariableTable".
+        <code>attribute_name_index</code>: The value of the <code>attribute_name_index</code> item must be a valid index into the <code>constant_pool</code> table.
+        The <code>constant_pool</code> entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing the string "LocalVariableTable".
     </li>
     <li>
-        <code>attribute_length</code>: The value of the attribute_length item indicates the length of the attribute, excluding the initial six bytes.
+        <code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
     </li>
     <li>
-        <code>local_variable_table_length</code>: The value of the local_variable_table_length item indicates the number of entries in the local_variable_table array.
+        <code>local_variable_table_length</code>: The value of the <code>local_variable_table_length</code> item indicates the number of entries in the <code>local_variable_table</code> array.
     </li>
     <li>
-        <code>local_variable_table[]</code>: Each entry in the local_variable_table array indicates a range of code array offsets within which a local variable has a value. It also indicates the index into the local variable array of the current frame at which that local variable can be found.
+        <code>local_variable_table[]</code>: Each entry in the <code>local_variable_table</code> array indicates a range of <code>code</code> array offsets within which a local variable has a value.
+        It also indicates the <code>index</code> into the local variable array of the current frame at which that local variable can be found.
     </li>
 </ul>
 
@@ -74,9 +76,11 @@ LocalVariableTable_attribute {
 <ul>
     <li>
         <code>start_pc</code>, <code>length</code>:
-        The given local variable must have a value at indices into the <code>code</code> array in the interval <code>[start_pc, start_pc + length)</code>, that is, between <code>start_pc</code> inclusive and <code>start_pc + length</code> exclusive.
+        The given local variable must have a value at indices into the <code>code</code> array in the interval <code>[start_pc, start_pc + length)</code>,
+        that is, between <code>start_pc</code> inclusive and <code>start_pc + length</code> exclusive.
         The value of <code>start_pc</code> must be a valid index into the <code>code</code> array of this <code>Code</code> attribute and must be the index of the opcode of an instruction.
-        The value of <code>start_pc + length</code> must either be a valid index into the <code>code</code> array of this <code>Code</code> attribute and be the index of the opcode of an instruction, or it must be the first index beyond the end of that <code>code</code> array.
+        The value of <code>start_pc + length</code> must either be a valid index into the <code>code</code> array of this <code>Code</code> attribute and be the index of the opcode of an instruction,
+        or it must be the first index beyond the end of that <code>code</code> array.
     </li>
     <li>
         <code>name_index</code>: The value of the <code>name_index</code> item must be a valid index into <code>the constant_pool</code> table.
@@ -87,10 +91,19 @@ LocalVariableTable_attribute {
         The <code>constant_pool</code> entry at that index must contain a <code>CONSTANT_Utf8_info</code> structure representing <b>a field descriptor</b> which encodes the type of a local variable in the source program.
     </li>
     <li>
-        <code>index</code>: The given local variable must be at index in the local variable array of the current frame.
-        If the local variable at <code>index</code> is of type <code>double</code> or <code>long</code>, it occupies both <code>index</code> and <code>index + 1</code>.
+        <code>index</code>: The given local variable must be at <code>index</code> in the local variable array of the current frame.
+        <b>If the local variable at <code>index</code> is of type <code>double</code> or <code>long</code>, it occupies both <code>index</code> and <code>index + 1</code>.</b>
     </li>
 </ul>
+
+<div class="w3-panel w3-pale-red w3-leftbar w3-rightbar w3-border-red">
+    <p>
+        注意：<code>long</code>和<code>double</code>类型的变量，在local variable当中占用2个位置。
+    </p>
+    <p>
+        If the local variable at <code>index</code> is of type <code>double</code> or <code>long</code>, it occupies both <code>index</code> and <code>index + 1</code>.
+    </p>
+</div>
 
 <ul>
     <li>
@@ -110,6 +123,8 @@ javac -g:vars,lines Main.java
 </div>
 
 <h2>Examples</h2>
+
+<h3>First Example</h3>
 
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
@@ -184,5 +199,107 @@ local_variable_table[3] {
     descriptor_index='000D' (#13)
     index='0003' (3)
 }
+</div>
+
+<div title="test:()V Human Readable" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 4
+code_length = 7
+code = 033C043D053EB1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_1             // 3C
+0002: iconst_1             // 04
+0003: istore_2             // 3D
+0004: iconst_2             // 05
+0005: istore_3             // 3E
+0006: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       7  this:Lsample/HelloWorld;
+    1         2       5  a:I
+    2         4       3  b:I
+    3         6       1  c:I
+</div>
+
+<h3>Second Example</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int x, int y) { // 注意，添加了x和y两个参数
+        int a = 0;
+        int b = 1;
+        int c = 2;
+    }
+}
+</div>
+
+<div title="test:(II)V Human Readable" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:(II)V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 6
+code_length = 9
+code = 033E043604053605B1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_3             // 3E
+0002: iconst_1             // 04
+0003: istore          4    // 3604
+0005: iconst_2             // 05
+0006: istore          5    // 3605
+0008: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       9  this:Lsample/HelloWorld;
+    1         0       9  x:I
+    2         0       9  y:I
+    3         2       7  a:I
+    4         5       4  b:I
+    5         8       1  c:I
+</div>
+
+<h3>Third Example</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static void test(int x, int y) { // 注意，添加了static关键字
+        int a = 0;
+        int b = 1;
+        int c = 2;
+    }
+}
+</div>
+
+<div title="test:(II)V Human Readable" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:(II)V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 5
+code_length = 8
+code = 033D043E053604B1
+=== === ===  === === ===  === === ===
+0000: iconst_0             // 03
+0001: istore_2             // 3D
+0002: iconst_1             // 04
+0003: istore_3             // 3E
+0004: iconst_2             // 05
+0005: istore          4    // 3604
+0007: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       8  x:I
+    1         0       8  y:I
+    2         2       6  a:I
+    3         4       4  b:I
+    4         7       1  c:I
 </div>
 
