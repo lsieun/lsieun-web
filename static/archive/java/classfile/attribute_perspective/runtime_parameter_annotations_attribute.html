@@ -13,8 +13,14 @@
 
 <p class="indented">
     The <code>RuntimeVisibleParameterAnnotations</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of the <code>method_info</code> structure.
-    The <code>RuntimeVisibleParameterAnnotations</code> attribute records run-time visible annotations on the declarations of formal parameters of the corresponding method.
-    The Java Virtual Machine must make these annotations available so they can be returned by the appropriate reflective APIs.
+</p>
+
+<p class="indented">
+    The <code>RuntimeVisibleParameterAnnotations</code> attribute records <b>run-time visible annotations</b> on the declarations of formal parameters of the corresponding method.
+</p>
+
+<p class="indented">
+    The Java Virtual Machine must make these annotations available so they can be returned by <b>the appropriate reflective APIs</b>.
 </p>
 
 <p class="indented">
@@ -83,7 +89,11 @@ RuntimeVisibleParameterAnnotations_attribute {
 <h3>RuntimeInvisibleParameterAnnotations</h3>
 
 <p class="indented">
-    The <code>RuntimeInvisibleParameterAnnotations</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>method_info</code> structure. The <code>RuntimeInvisibleParameterAnnotations</code> attribute records run-time invisible annotations on the declarations of formal parameters of the corresponding method.
+    The <code>RuntimeInvisibleParameterAnnotations</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>method_info</code> structure.
+</p>
+
+<p class="indented">
+    The <code>RuntimeInvisibleParameterAnnotations</code> attribute records <b>run-time invisible annotations</b> on the declarations of formal parameters of the corresponding method.
 </p>
 
 <p class="indented">
@@ -99,7 +109,9 @@ RuntimeVisibleParameterAnnotations_attribute {
 </div>
 
 <p class="indented">
-    The <code>RuntimeInvisibleParameterAnnotations</code> attribute is similar to the <code>RuntimeVisibleParameterAnnotations</code> attribute, except that the annotations represented by a <code>RuntimeInvisibleParameterAnnotations</code> attribute must not be made available for return by reflective APIs, unless the Java Virtual Machine has specifically been instructed to retain these annotations via some implementation-specific mechanism such as a command line flag. In the absence of such instructions, the Java Virtual Machine ignores this attribute.
+    The <code>RuntimeInvisibleParameterAnnotations</code> attribute is similar to the <code>RuntimeVisibleParameterAnnotations</code> attribute, except that the annotations represented by a <code>RuntimeInvisibleParameterAnnotations</code> attribute must not be made available for return by <b>reflective APIs</b>,
+    unless the Java Virtual Machine has specifically been instructed to retain these annotations via some implementation-specific mechanism such as a command line flag.
+    In the absence of such instructions, the Java Virtual Machine ignores this attribute.
 </p>
 
 <p>

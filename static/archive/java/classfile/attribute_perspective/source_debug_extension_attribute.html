@@ -50,27 +50,20 @@ SourceDebugExtension_attribute {
         <code>attribute_length</code>: The value of the <code>attribute_length</code> item indicates the length of the attribute, excluding the initial six bytes.
     </li>
     <li>
-        <code>debug_extension[]</code>: The <code>debug_extension</code> array holds extended debugging information which has no semantic effect on the Java Virtual Machine. The information is represented using a modified UTF-8 string with no terminating zero byte.
+        <code>debug_extension[]</code>: The <code>debug_extension</code> array holds extended debugging information which has no semantic effect on the Java Virtual Machine. The information is represented using a <b>modified UTF-8</b> string with no terminating zero byte.
     </li>
 </ul>
 
 <h2>Examples</h2>
 
-<p>
-    我没有找到合适的例子。
-</p>
-
-<p>
-
-</p>
-
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
-        为了方便在编译器和动态生成的Class中加入供程序员使用的自定义内容，在JDK 5时，新增了
-        SourceDebugExtension属性用于存储额外的代码调试信息。典型的场景是在进行JSP文件调试时，无法
-        通过Java堆栈来定位到JSP文件的行号。JSR 45提案为这些非Java语言编写，却需要编译成字节码并运
-        行在Java虚拟机中的程序提供了一个进行调试的标准机制，使用SourceDebugExtension属性就可以用于
-        存储这个标准所新加入的调试信息，譬如让程序员能够快速从异常堆栈中定位出原始JSP中出现问题的
-        行号。——周志明的《深入理解Java虚拟机：JVM高级特性与最佳实践（第3版）》
+        为了方便在编译器和动态生成的Class中加入供程序员使用的自定义内容，在JDK 5时，新增了SourceDebugExtension属性用于存储额外的代码调试信息。典型的场景是在进行JSP文件调试时，无法通过Java堆栈来定位到JSP文件的行号。JSR 45提案为这些非Java语言编写，却需要编译成字节码并运行在Java虚拟机中的程序提供了一个进行调试的标准机制，使用SourceDebugExtension属性就可以用于存储这个标准所新加入的调试信息，譬如让程序员能够快速从异常堆栈中定位出原始JSP中出现问题的行号。——周志明的《深入理解Java虚拟机：JVM高级特性与最佳实践（第3版）》
+    </p>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        tomcat编译jsp产生的java和class文件存储在tomcat的<code>TOMCAT_HOME/work/Catalina/localhost/</code>目录下。例如：index.jsp文件编译后，生成index_jsp.java文件和index_jsp.class文件。
     </p>
 </div>

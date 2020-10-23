@@ -13,9 +13,18 @@
 
 <p class="indented">
     The <code>RuntimeVisibleTypeAnnotations</code> attribute is an <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure, or <code>Code</code> attribute.
-    The <code>RuntimeVisibleTypeAnnotations</code> attribute records run-time visible annotations on types used in the declaration of the corresponding class, field, or method, or in an expression in the corresponding method body.
-    The <code>RuntimeVisibleTypeAnnotations</code> attribute also records run-time visible annotations on type parameter declarations of generic classes, interfaces, methods, and constructors.
-    The Java Virtual Machine must make these annotations available so they can be returned by the appropriate reflective APIs.
+</p>
+
+<p class="indented">
+    The <code>RuntimeVisibleTypeAnnotations</code> attribute records <b>run-time visible annotations</b> on <b>types used</b> in the declaration of the corresponding class, field, or method, or in an expression in the corresponding method body.
+</p>
+
+<p class="indented">
+    The <code>RuntimeVisibleTypeAnnotations</code> attribute also records <b>run-time visible annotations</b> on <b>type parameter</b> declarations of generic classes, interfaces, methods, and constructors.
+</p>
+
+<p class="indented">
+    The Java Virtual Machine must make these annotations available so they can be returned by <b>the appropriate reflective APIs</b>.
 </p>
 
 <p class="indented"></p>
@@ -87,12 +96,20 @@ RuntimeVisibleTypeAnnotations_attribute {
 
 <p class="indented">
     The <code>RuntimeInvisibleTypeAnnotations</code> attribute is an <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure, or <code>Code</code> attribute.
-    The <code>RuntimeInvisibleTypeAnnotations</code> attribute records run-time invisible annotations on types used in the corresponding declaration of a class, field, or method, or in an expression in the corresponding method body.
-    The <code>RuntimeInvisibleTypeAnnotations</code> attribute also records annotations on type parameter declarations of generic classes, interfaces, methods, and constructors.
+
+
 </p>
 
 <p class="indented">
-    There may be at most one <code>RuntimeInvisibleTypeAnnotations</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure, or <code>Code</code> attribute.
+    The <code>RuntimeInvisibleTypeAnnotations</code> attribute records <b>run-time invisible annotations</b> on <b>types used</b> in the corresponding declaration of a class, field, or method, or in an expression in the corresponding method body.
+</p>
+
+<p class="indented">
+    The <code>RuntimeInvisibleTypeAnnotations</code> attribute also records annotations on <b>type parameter</b> declarations of generic classes, interfaces, methods, and constructors.
+</p>
+
+<p class="indented">
+    There may be <b>at most one</b> <code>RuntimeInvisibleTypeAnnotations</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure, or <code>Code</code> attribute.
 </p>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
@@ -147,51 +164,60 @@ RuntimeInvisibleTypeAnnotations_attribute {
 
 <h2>Examples</h2>
 
-<div title="HelloWorld.java" class="javacode">
-public class HelloWorld {
-    @MyTag
-    public int intValue;
-}
-</div>
-
-<h3>First Example</h3>
-
 <div title="MyTag.java" class="javacode">
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE_USE)
-@Retention(RetentionPolicy.RUNTIME) // 注意，这里是RUNTIME
+@Target({ElementType.TYPE_PARAMETER, ElementType.TYPE_USE})
+@Retention(RetentionPolicy.RUNTIME)
 public @interface MyTag {
 }
 </div>
 
+<h3>First Example</h3>
+
+<div title="MyTag.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        @MyTag String str = null; // 注意，MyTag修饰String类型
+    }
+}
+</div>
+
 <div title="RuntimeVisibleTypeAnnotations" hidden class="plaintext">
-constant_pool_count='0014' (20)
+constant_pool_count='0015' (21)
 constant_pool
     ......
-    |006| CONSTANT_Utf8 {Value='RuntimeVisibleTypeAnnotations', HexCode='01001D......'}
-    |007| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
+    |014| CONSTANT_Utf8 {Value='RuntimeVisibleTypeAnnotations', HexCode='01001D52756E74696D6556697369626C6554797065416E6E6F746174696F6E73'}
+    |015| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
     ......
-attributes_count='0001' (1)
+=== === ===  === === ===  === === ===
+attributes_count='0003' (3)
 attributes
---->|000| RuntimeVisibleTypeAnnotations:
-HexCode: 0006000000080001130000070000
-attribute_name_index='0006' (#6)
-attribute_length='00000008' (8)
+......
+--->|002| RuntimeVisibleTypeAnnotations:
+HexCode: 000E00000010000140000100020001000100000F0000
+attribute_name_index='000E' (#14)
+attribute_length='00000010' (16)
 num_annotations='0001' (1)
 annotations[0] {
-    target_type='13' (19)
+    target_type='40' (64)
     target_info {
-        empty_target {
+        localvar_target {
+            table_length='0001' (1)
+            table[0] {
+                start_pc='0002' (2)
+                length='0001' (1)
+                index='0001' (1)
+            }
         }
     }
     target_path {
         path_length='00' (0)
     }
-    type_index='0007' (#7)
+    type_index='000F' (#15)
     num_element_value_pairs='0000' (0)
 }
 </div>
@@ -199,41 +225,37 @@ annotations[0] {
 <h3>Second Example</h3>
 
 <div title="MyTag.java" class="javacode">
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-@Target(ElementType.TYPE_USE)
-@Retention(RetentionPolicy.CLASS) // 注意，这里是CLASS
-public @interface MyTag {
+public class HelloWorld&lt;@MyTag T&gt; {
+    //
 }
 </div>
 
 <div title="RuntimeInvisibleTypeAnnotations" hidden class="plaintext">
-constant_pool_count='0014' (20)
+constant_pool_count='0016' (22)
 constant_pool
     ......
-    |006| CONSTANT_Utf8 {Value='RuntimeInvisibleTypeAnnotations', HexCode='01001F......'}
-    |007| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
+    |017| CONSTANT_Utf8 {Value='RuntimeVisibleTypeAnnotations', HexCode='01001D52756E74696D6556697369626C6554797065416E6E6F746174696F6E73'}
+    |018| CONSTANT_Utf8 {Value='Lsample/MyTag;', HexCode='01000E4C73616D706C652F4D795461673B'}
     ......
-attributes_count='0001' (1)
+attributes_count='0003' (3)
 attributes
---->|000| RuntimeInvisibleTypeAnnotations:
-HexCode: 0006000000080001130000070000
-attribute_name_index='0006' (#6)
-attribute_length='00000008' (8)
+......
+--->|002| RuntimeVisibleTypeAnnotations:
+HexCode: 001100000009000100000000120000
+attribute_name_index='0011' (#17)
+attribute_length='00000009' (9)
 num_annotations='0001' (1)
 annotations[0] {
-    target_type='13' (19)
+    target_type='00' (0)
     target_info {
-        empty_target {
+        type_parameter_target {
+            type_parameter_index='00' (#0)
         }
     }
     target_path {
         path_length='00' (0)
     }
-    type_index='0007' (#7)
+    type_index='0012' (#18)
     num_element_value_pairs='0000' (0)
 }
 </div>

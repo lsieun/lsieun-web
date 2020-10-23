@@ -7,6 +7,12 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.7.20" target="_blank">4.7.20. The RuntimeVisibleTypeAnnotations Attribute</a>部分。
+    </p>
+</div>
+
 <p>
     The <code>type_annotation</code> structure has the following format:
 </p>
@@ -35,10 +41,35 @@ type_annotation {
 }
 </div>
 
-<p>
-    The first three items - <code>target_type</code>, <code>target_info</code>, and <code>target_path</code> - specify the precise location of the annotated type.
-    The last three items - <code>type_index</code>, <code>num_element_value_pairs</code>, and <code>element_value_pairs[]</code> - specify the annotation's own type and element-value pairs.
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        <code>target_info</code>结构可能参考《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.7.20.1" target="_blank">4.7.20.1. The target_info union</a>部分。
+    </p>
+    <p>
+        <code>type_path</code>结构可能参考《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.7.20.2" target="_blank">4.7.20.2. The type_path structure</a>部分。
+    </p>
+</div>
+
+<p class="indented">
+    The first three items - <code>target_type</code>, <code>target_info</code>, and <code>target_path</code> - specify <b>the precise location of the annotated type</b>.
+    The last three items - <code>type_index</code>, <code>num_element_value_pairs</code>, and <code>element_value_pairs[]</code> - specify <b>the annotation's own type and element-value pairs</b>.
 </p>
+
+<ul>
+    <li>
+        <b>the precise location of the annotated type</b>: <code>target_type</code>, <code>target_info</code>, and <code>target_path</code>
+    </li>
+    <li>
+        <b>the annotation's own type and element-value pairs</b>: <code>type_index</code>, <code>num_element_value_pairs</code>, and <code>element_value_pairs[]</code>
+    </li>
+</ul>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        后三者（<code>type_index</code>, <code>num_element_value_pairs</code>, and <code>element_value_pairs[]</code>）与<code>annotation</code>类型包含的内容是一样的。
+        对于<code>annotation</code>的类型，可以参考<a href="/archive/java/classfile/attribute_perspective/annotation_structure.html" target="_blank">这里</a>。
+    </p>
+</div>
 
 <p>
     The items of the <code>type_annotation</code> structure are as follows:

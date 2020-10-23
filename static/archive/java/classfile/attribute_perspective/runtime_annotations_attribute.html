@@ -13,12 +13,18 @@
 
 <p class="indented">
     The <code>RuntimeVisibleAnnotations</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure.
-    The <code>RuntimeVisibleAnnotations</code> attribute records run-time visible annotations on the declaration of the corresponding class, field, or method.
-    The Java Virtual Machine must make these annotations available so they can be returned by the appropriate reflective APIs.
 </p>
 
 <p class="indented">
-    There may be at most one <code>RuntimeVisibleAnnotations</code> attribute in the attributes table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure.
+    The <code>RuntimeVisibleAnnotations</code> attribute records <b>run-time visible annotations</b> on the declaration of the corresponding class, field, or method.
+</p>
+
+<p class="indented">
+    The Java Virtual Machine must make these annotations available so they can be returned by <b>the appropriate reflective APIs</b>.
+</p>
+
+<p class="indented">
+    There may be <b>at most one</b> <code>RuntimeVisibleAnnotations</code> attribute in the attributes table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure.
     <sub class="my_note" style="color:blue">笔记：这里是为了限定了RuntimeVisibleAnnotations的数量</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
@@ -74,15 +80,18 @@ RuntimeVisibleAnnotations_attribute {
 
 <p class="indented">
     The <code>RuntimeInvisibleAnnotations</code> attribute is a <b>variable-length</b> attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure.
-    The <code>RuntimeInvisibleAnnotations</code> attribute records run-time invisible annotations on the declaration of the corresponding class, method, or field.
 </p>
 
 <p class="indented">
-    There may be at most one <code>RuntimeInvisibleAnnotations</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure.
+    The <code>RuntimeInvisibleAnnotations</code> attribute records <b>run-time invisible annotations</b> on the declaration of the corresponding class, method, or field.
 </p>
 
 <p class="indented">
-    The <code>RuntimeInvisibleAnnotations</code> attribute is similar to the <code>RuntimeVisibleAnnotations</code> attribute, except that the annotations represented by a <code>RuntimeInvisibleAnnotations</code> attribute must not be made available for return by reflective APIs, unless the Java Virtual Machine has been instructed to retain these annotations via some implementation-specific mechanism such as a command line flag. In the absence of such instructions, the Java Virtual Machine ignores this attribute.
+    There may be <b>at most one</b> <code>RuntimeInvisibleAnnotations</code> attribute in the <code>attributes</code> table of a <code>ClassFile</code>, <code>field_info</code>, or <code>method_info</code> structure.
+</p>
+
+<p class="indented">
+    The <code>RuntimeInvisibleAnnotations</code> attribute is similar to the <code>RuntimeVisibleAnnotations</code> attribute, except that the annotations represented by a <code>RuntimeInvisibleAnnotations</code> attribute must not be made available for return by <b>reflective APIs</b>, unless the Java Virtual Machine has been instructed to retain these annotations via some implementation-specific mechanism such as a command line flag. In the absence of such instructions, the Java Virtual Machine ignores this attribute.
 </p>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">

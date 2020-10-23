@@ -99,7 +99,11 @@ attribute_info {
 </p>
 
 <ul>
-    <li>第一，如果不学习这部分内容，不影响后续内容的学习</li>
+    <li>
+        第一，如果不学习这部分内容，不影响后续内容的学习。
+        <sub class="my_note" style="color:blue">笔记：用一句玩笑的话来说，“拔牙，不影响开法拉力”。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
     <li>第二，要结合Java Language中相关的Annotation知识，才能更容易理解这部分内容</li>
 </ul>
 
@@ -113,17 +117,17 @@ attribute_info {
     </thead>
     <tbody>
     <tr class="w3-hover-blue">
+        <td>AnnotationDefault</td>
+        <td>method_info</td>
+        <td>49.0</td>
+    </tr>
+    <tr class="w3-hover-blue">
         <td>
             RuntimeVisibleAnnotations,<br/> RuntimeInvisibleAnnotations
         </td>
         <td>
             ClassFile,<br/> field_info,<br/> method_info
         </td>
-        <td>49.0</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td>AnnotationDefault</td>
-        <td>method_info</td>
         <td>49.0</td>
     </tr>
     <tr class="w3-hover-blue">
@@ -150,7 +154,7 @@ attribute_info {
 <div title="MyTag.java" class="javacode">
 public @interface MyTag {
     String name() default "tomcat"; // AnnotationDefault
-    int age() default 12;
+    int age()     default 12;       // AnnotationDefault
 }
 </div>
 
@@ -206,7 +210,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_PARAMETER, ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME) // 注意，RUNTIME可以换成CLASS
 public @interface MyTag {
 }
@@ -214,8 +218,15 @@ public @interface MyTag {
 
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
-    @MyTag // RuntimeVisibleTypeAnnotations
-    public int intValue;
+    public void test() {
+        @MyTag String str = null; // RuntimeVisibleTypeAnnotations
+    }
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld&lt;@MyTag T&gt; {
+    //
 }
 </div>
 
