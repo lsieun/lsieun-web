@@ -7,41 +7,590 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<h2>JVM Architecture</h2>
+
+<p class="indented">
+    Every Java developer knows that bytecode will be executed by the <b>JRE</b> (Java Runtime Environment).
+    But many don't know the fact that <b>JRE</b> is the implementation of <b>Java Virtual Machine</b> (JVM), which analyzes the bytecode, interprets the code, and executes it.
+    It is very important, as a developer, that we know the architecture of the JVM, as it enables us to write code more efficiently.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_architecture.png" alt="JVM Architecture Diagram"/>
+</div>
+
+<p>
+    As shown in the above architecture diagram, the JVM is divided into three main subsystems:
+</p>
+
+<ol>
+    <li>ClassLoader Subsystem</li>
+    <li>Runtime Data Area</li>
+    <li>Execution Engine</li>
+</ol>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        本部分内容来自<a class="external" href="https://dzone.com/articles/jvm-architecture-explained" target="_blank">DZone: The JVM Architecture Explained</a>
+    </p>
+</div>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        对于ClassLoader Subsystem，可以参考《The Java Virtual Machine Specification, Java SE 8 Edition》中的<a class="external" href="/doc/javase/jvms/se8/jvms-5.html" target="_blank">Chapter 5. Loading, Linking, and Initializing</a>部分。
+    </p>
+    <p>
+        对于Runtime Data Area，可以参考《The Java Virtual Machine Specification, Java SE 8 Edition》中的<a class="external" href="/doc/javase/jvms/se8/jvms-2.html#jvms-2.5" target="_blank">2.5. Run-Time Data Areas</a>部分。
+    </p>
+</div>
+
 <h2>JVM Run-Time Data Areas</h2>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
-        提及JVM Run-Time Data Areas，我想到了一篇关于“范进中举”的文章。
-    </p>
-
-    <p>
-        范进家徒四壁，穷得连一件像样的衣服都买不起，甚至吃饭都成问题，需要老丈人胡屠夫接济。胡屠夫也瞧不起女婿范进：“我自倒运，把个女儿嫁与你这现世宝，历年以来，不知累了我多少。”
-    </p>
-
-    <p>
-        后来，范进想去乡试，因没有盘费，走去同丈人商议，被胡屠户一口啐在脸上，骂了一个狗血喷头，道：“不要失了你的时了！你自己只觉得中了一个相公，就‘癞蛤蟆想吃起天鹅肉’来！我听见人说，就是中相公时，也不是你的文章，还是宗师看见你老，不过意，舍与你的。如今痴心就想中起老爷来！这些中老爷的都是天上的‘文曲星’！你不看见城里张府上那些老爷，都有万贯家私，一个个方面大耳?像你这尖嘴猴腮，也该撒抛尿自己照照！不三不四，就想天鹅屁吃！趁早收了这心，明年在我们行事里替你寻一个馆，每年寻几两银子，养活你那老不死的老娘和你老婆是正经！你问我借盘缠，我一天杀一个猪还赚不得钱把银子，都把与你去丢在水里，叫我一家老小嗑西北风！”一顿夹七夹八，骂的范进摸不着门。
-    </p>
-
-    <p>
-        辞了丈人回来，范进心里想：“宗师说我火候已到，<b>自古无场外的举人，如不进去考他一考，如何甘心?</b>”因向几个同案商议，瞒着丈人，到城里乡试。出了场，即便回家。家里已是饿了两三天。被胡屠户知道，又骂了一顿。
-    </p>
-
-    <p>
-        如《镜花缘》所言：“盖未进场，如何言中；就如人事未尽，如何言得天命。世上无论何事，若人力未尽，从无坐在家中，就能平空落下随心所欲事来。强求固属不可，至应分当行之事，坐失其机，及至事后委之于命，常人之情，往往如此。”
-    </p>
-
-    <p>
-        范进考中之时已经54岁，一直考了二十多次。如果你现在54岁，你还有勇气坚持下来吗？估计很少有这样的人。
+        《The Java Virtual Machine Specification, Java SE 8 Edition》中的<a class="external" href="/doc/javase/jvms/se8/jvms-2.html#jvms-2.5" target="_blank">2.5. Run-Time Data Areas</a>部分对于Run-Time Data Areas进行了描述。
     </p>
 </div>
 
-<p>
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_runtime_data_areas.png" alt="Java JVM Run-time Memory Areas"/>
+</div>
 
+<p>
+    These six JVM run-time memory areas can be broadly classified into two groups,
 </p>
 
-<p>
-    这是一种动态视角来看待问题。
+<ul>
+    <li>
+        <b>Managed per-thread</b> – If the memory area is uniquely allocated for every single thread created. These data area are initialized on thread start and destroyed once the thread completes.
+    </li>
+    <li>
+        <b>Shared with all threads</b> – If the memory area is common and can be accessed by all the threads. These are initialized when JVM is started and destroyed on shutdown.
+    </li>
+</ul>
+
+<h3>Program Counter (PC) Register</h3>
+
+<p class="indented">
+    The Java Virtual Machine can support many threads of execution at once.
+    <b>Each Java Virtual Machine thread has its own <code>pc</code> (program counter) register.</b>
+    At any point, each Java Virtual Machine thread is executing the code of a single method, namely the current method for that thread.
+    If that method is <b>not native</b>, the <code>pc</code> register contains the address of the Java Virtual Machine instruction currently being executed.
+    If the method currently being executed by the thread is <b>native</b>, the value of the Java Virtual Machine's pc register is undefined.
+    <sub class="my_note" style="color:blue">笔记：这是JVM文档对于pc register的描述</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
+
+<div class="w3-display-container w3-center">
+    <a href="javascript:void(0);" onclick="$(this).next().toggle()">查看图片</a>
+    <img style="display: none;" class="w3-image w3-center" src="/images/java/jvm/jvm_runtime_memory.png" alt="JVM runtime memory"/>
+</div>
+
+<p class="indented">
+    Java supports multithreading and so, a <b>program counter</b> (PC) Register is created every time a new thread is created.
+    <b>PC keeps a pointer to the current statement that is being executed in its thread.</b>
+    If the current executing method is <code>native</code>, then the value of program counter register will be undefined.
+    <sub class="my_note" style="color:blue">笔记：这是<a class="external" href="https://javapapers.com/core-java/java-jvm-run-time-data-areas/" target="_blank">Java JVM Run-time Data Areas</a>文章对于pc register的描述。我个人认为，这里的描述更容易理解一些。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/program_counter_example.gif" alt="PC"/>
+    <p>PC keeps a pointer to the current instruction that is being executed</p>
+</div>
+
+
+<h3>Java Virtual Machine Stacks</h3>
+
+<p class="indented">
+    Each Java Virtual Machine <b>thread</b> has a private <b>Java Virtual Machine stack</b>, created at the same time as the thread.
+    A <b>Java Virtual Machine stack</b> stores <b>frames</b>.
+</p>
+
+<div class="w3-display-container w3-center">
+    <a href="javascript:void(0);" onclick="$(this).next().toggle()">查看图片</a>
+    <img style="display: none;" class="w3-image w3-center" src="/images/java/jvm/jvm_runtime_memory.png" alt="JVM runtime memory"/>
+</div>
+
+<p class="indented">
+    Memory size of stacks can be of two types, fixed and varying size. Varying size can dynamically expand as per the need.
+</p>
+
+<ul>
+    <li>
+        <code>StackOverflowError</code> – this error occurs in fixed size JVM stacks, if the memory size is not sufficient during the program execution.
+    </li>
+    <li>
+        <code>OutOfMemoryError</code> – in dynamic sized stacks, while trying to expand for more memory need and there is no additional memory available to allocate and we get <code>OutOfMemoryError</code>.
+    </li>
+</ul>
+
+<h3>Heap Memory</h3>
+
+<p class="indented">
+    Heap data area is used to store <b>objects of classes and arrays</b>.
+    Heap memory is common and <b>shared across multiple threads</b>.
+    This is where the <b>garbage collector</b> comes into picture.
+</p>
+
+<div class="w3-display-container w3-center">
+    <a href="javascript:void(0);" onclick="$(this).next().toggle()">查看图片</a>
+    <img style="display: none;" class="w3-image w3-center" src="/images/java/jvm/jvm_runtime_memory.png" alt="JVM runtime memory"/>
+</div>
+
+<h3>Method Area</h3>
+
+<p class="indented">
+    In general, <b>method area</b> is a logical part of <b>heap area</b>. But that is left to the JVM implementers to decide.
+</p>
+
+<p class="indented">Method area is created at JVM startup and shared among all the threads.</p>
+
+<div class="w3-display-container w3-center">
+    <a href="javascript:void(0);" onclick="$(this).next().toggle()">查看图片</a>
+    <img style="display: none;" class="w3-image w3-center" src="/images/java/jvm/jvm_runtime_memory.png" alt="JVM runtime memory"/>
+</div>
+
+<p class="indented">
+    <b>Method area</b> stores per-class structures such as <b>the run-time constant pool</b>, <b>field and method data</b>, and <b>the code for methods and constructors</b>, including the class and instance initialization and interface initialization.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_method_area.png" alt="A class method area"/>
+</div>
+
+<ul>
+    <li>
+        <b>Runtime Constant Pool</b> contains constants used in a particular class. The constants can be of types int, float, double, and UTF-8. It also contains references to methods and fields.
+    </li>
+    <li>
+        <b>Method Code</b> is the implementation (opcodes) of all class methods.
+    </li>
+    <li>
+        <b>Attribute and Field Values</b> contain all named attributes and field values of a class. A field value points to a value stored in the runtime constant pool.
+    </li>
+</ul>
+
+<div class="w3-panel w3-border w3-border-red">
+    <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+        <p>
+            这里的内容来自《Inside the Java 2 Virtual Machine》的<a class="external" href="https://www.artima.com/insidejvm/ed2/jvmP.html" target="_blank">Chapter 5 The Java Virtual Machine</a>
+        </p>
+    </div>
+
+    <p>
+        For each type it loads, a Java Virtual Machine must store the following kinds of information in the method area:
+    </p>
+
+    <ul>
+        <li>The fully qualified name of the type</li>
+        <li>
+            The fully qualified name of <b>the type's direct superclass</b> (unless the type is an interface or class <code>java.lang.Object</code>, neither of which have a superclass)
+        </li>
+        <li>Whether or not the type is a class or an interface</li>
+        <li>The type's modifiers (some subset of <code>public</code>, <code>abstract</code>, <code>final</code>)</li>
+        <li>An ordered list of the fully qualified names of any <b>direct superinterfaces</b></li>
+        <li>The constant pool for the type</li>
+        <li>Field information</li>
+        <li>Method information</li>
+    </ul>
+
+    <p>
+        In addition to the basic type information listed above, the virtual machine must also store for each loaded type:
+    </p>
+
+    <ul>
+        <li>All <b>class (static) variables</b> declared in the type, except constants</li>
+        <li>
+            <b>A reference to class</b> <code>ClassLoader</code>
+            <ul>
+                <li>
+                    For each type it loads, a Java Virtual Machine must keep track of whether or not the type was loaded via the primordial class loader or a class loader object.
+                    For those types loaded via a class loader object, the virtual machine must store a reference to the class loader object that loaded the type.
+                    This information is stored as part of the type's data in the method area.
+                </li>
+                <li>
+                    The virtual machine uses this information during dynamic linking.
+                    When one type refers to another type, the virtual machine requests the referenced type from the same class loader that loaded the referencing type.
+                    This process of dynamic linking is also central to the way the virtual machine forms separate name spaces.
+                    To be able to properly perform dynamic linking and maintain multiple name spaces,
+                    the virtual machine needs to know what class loader loaded each type in its method area.
+                </li>
+            </ul>
+        </li>
+        <li>
+            <b>A reference to class</b> <code>Class</code>
+            <ul>
+                <li>
+                    An instance of class <code>java.lang.Class</code> is created by the Java Virtual Machine for every type it loads.
+                    The virtual machine must in some way associate a reference to the <code>Class</code> instance for a type with <b>the type's data in the method area</b>.
+                </li>
+                <li>
+                    Your Java programs can obtain and use references to <code>Class</code> objects.
+                    <ul>
+                        <li><code>Class.forName("java.lang.String");</code></li>
+                        <li><code>obj.getClass();</code></li>
+                    </ul>
+                </li>
+                <li>
+                    Given a reference to a <code>Class</code> object, you can find out information about the type by invoking methods declared in class <code>Class</code>.
+                    If you look at these methods, you will quickly realize that class <code>Class</code> gives the running application access to the information stored in the method area.
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<h3>Run-time Constant Pool</h3>
+
+<p class="indented">
+    <b>Run-time constant pool</b> is created out of the <b>method area</b> and it is created by JVM when a class or interface is created.
+</p>
+
+<p class="indented">
+    A <b>run-time constant pool</b> is a per-class or per-interface run-time representation of the <code>constant_pool</code> table in a <b>class</b> file.
+    It contains several kinds of constants, ranging from numeric literals known at compile-time to method and field references that must be resolved at run-time.
+</p>
+
+<div class="w3-display-container w3-center">
+    <a href="javascript:void(0);" onclick="$(this).next().toggle()">查看图片</a>
+    <img style="display: none;" class="w3-image w3-center" src="/images/java/jvm/jvm_runtime_memory.png" alt="JVM runtime memory"/>
+</div>
+
+<h3>Native Method Stacks</h3>
+
+<p class="indented">
+    JVM that supports native methods will have native method stacks.
+    It is used for native methods, and created per thread.
+    If the native methods cannot be loaded by a JVM then it need not have native method stacks.
+</p>
+
+<div class="w3-display-container w3-center">
+    <a href="javascript:void(0);" onclick="$(this).next().toggle()">查看图片</a>
+    <img style="display: none;" class="w3-image w3-center" src="/images/java/jvm/jvm_runtime_memory.png" alt="JVM runtime memory"/>
+</div>
+
+<h2>Frame</h2>
+
+<p class="indented">
+    <b>Frames</b> are allocated from the <b>Java Virtual Machine stack</b> of the thread creating the frame.
+</p>
+
+<p class="indented">
+    A new frame is created each time a method is invoked.
+    A frame is destroyed when its method invocation completes, whether that completion is normal or abrupt (it throws an uncaught exception).
+    <sub class="my_note" style="color:blue">笔记：这里主要讲frame和method之间的关系。对于method的调用，会生成一个frame；当method执行结束，相应的frame会销毁掉。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_stack_for_each_thread.jpg" alt="The life cycle of a frame"/>
+</div>
+
+<p class="indented">
+    Each <b>frame</b> has <b>its own array of local variables</b>, <b>its own operand stack</b>, and <b>a reference to the run-time constant pool</b> of the class of the current method.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_stack_a_frame.png" alt="Frames"/>
+</div>
+
+<p class="indented">
+    The sizes of <b>the local variable array</b> and <b>the operand stack</b> are determined at <b>compile-time</b> and
+    are supplied along with the code for the method associated with the frame.
+</p>
+
+<p class="indented">
+    The stack frame has three parts: local variables, operand stack, and frame data.
+</p>
+
+<h3>Local Variables</h3>
+
+<p class="indented">
+    Each frame contains an array of variables known as its <b>local variables</b>.
+</p>
+
+<p class="indented">
+    <b>A single local variable</b> can hold a value of type <code>boolean</code>, <code>byte</code>, <code>char</code>, <code>short</code>, <code>int</code>, <code>float</code>, <code>reference</code>, or <code>returnAddress</code>.
+    <b>A pair of local variables</b> can hold a value of type <code>long</code> or <code>double</code>.
+</p>
+
+<p class="indented">
+    <b>The length of the local variable array</b> of a frame is determined at compile-time and supplied in the binary representation of a class or interface along with the code for the method associated with the frame.
+    <sub class="my_note" style="color:blue">笔记：local variable，它的整体长度，是在compile-time决定的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    <b>Local variables are addressed by indexing.</b>
+    The index of the first local variable is <b>zero</b>.
+    An integer is considered to be an index into the local variable array if and only if that integer is between zero and one less than the size of the local variable array.
+    <sub class="my_note" style="color:blue">笔记：local variable，它的索引，是从0开始的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The Java Virtual Machine uses <b>local variables</b> to <b>pass parameters on method invocation</b>.
+    On <b>class method invocation</b>, any parameters are passed in consecutive local variables starting from local variable <code>0</code>.
+    On <b>instance method invocation</b>, local variable <code>0</code> is always used to pass a reference to the object
+    on which the instance method is being invoked (<code>this</code> in the Java programming language).
+    Any parameters are subsequently passed in consecutive local variables starting from local variable <code>1</code>.
+    <sub class="my_note" style="color:blue">笔记：local variable，它的作用，是传递方法调用的参数。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    A value of type <code>long</code> or type <code>double</code> occupies <b>two consecutive local variables</b>.
+    <b>Such a value may only be addressed using the lesser index</b>.
+    For example, a value of type <code>double</code> stored in the local variable array at index <code>n</code> actually
+    occupies the local variables with indices <code>n</code> and <code>n+1</code>;
+    however, the local variable at index <code>n+1</code> cannot be loaded from. It can be stored into.
+    However, doing so invalidates the contents of local variable <code>n</code>.
+    <sub class="my_note" style="color:blue">笔记：local variable，它对于long和double类型的特殊处理。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h3>Operand Stacks</h3>
+
+<p class="indented">
+    Each frame contains a last-in-first-out (LIFO) stack known as its <b>operand stack</b>.
+</p>
+
+<p class="indented">
+    <b>The maximum depth of the operand stack</b> of a frame is determined at compile-time and is supplied along with the code for the method associated with the frame.
+    <sub class="my_note" style="color:blue">笔记：operand stack，它的整体大小，是在compile-time决定的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    <b>The operand stack is empty when the frame that contains it is created</b>.
+    The Java Virtual Machine supplies instructions to load constants or values from <b>local variables</b> or <b>fields</b> onto the <b>operand stack</b>.
+    Other Java Virtual Machine instructions take operands from the operand stack, operate on them, and push the result back onto the operand stack.
+    The operand stack is also used to prepare parameters to be passed to methods and to receive method results.
+    <sub class="my_note" style="color:blue">笔记：operand stack，它的刚开始的时候，是空的，不存在任何数据。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    For example, the <code>iadd</code> instruction adds two <code>int</code> values together.
+    It requires that the <code>int</code> values to be added be the top two values of the operand stack, pushed there by previous instructions.
+    Both of the <code>int</code> values are popped from <b>the operand stack</b>.
+    They are added, and their sum is pushed back onto the operand stack.
+    <sub class="my_note" style="color:blue">笔记：operand stack，这里以iadd进行举例。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    <b>Values from the operand stack must be operated upon in ways appropriate to their types</b>.
+    It is not possible, for example, to push two <code>int</code> values and subsequently treat them as a <code>long</code>
+    or to push two <code>float</code> values and subsequently add them with an <code>iadd</code> instruction.
+    A small number of Java Virtual Machine instructions (the <code>dup</code> instructions and <code>swap</code>) operate on run-time data areas as raw values without regard to their specific types; these instructions are defined in such a way that they cannot be used to modify or break up individual values.
+    These restrictions on operand stack manipulation are enforced through class file verification.
+    <sub class="my_note" style="color:blue">笔记：operand stack，在使用的过程中，应保持value和opcode的类型一致。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Each entry on the operand stack can hold a value of any Java Virtual Machine type, including a value of type <code>long</code> or type <code>double</code>.
+</p>
+
+<p class="indented">
+    At any point in time, an operand stack has an associated depth,
+    where a value of type <code>long</code> or <code>double</code> contributes <b>two units</b> to the depth
+    and <b>a value of any other type</b> contributes <b>one unit</b>.
+</p>
+
+<h3>Frame Data</h3>
+
+<p class="indented">
+    In addition to the <b>local variables</b> and <b>operand stack</b>, the Java stack frame includes data to support <b>constant pool resolution</b>, <b>normal method return</b>, and <b>exception dispatch</b>.
+    This data is stored in the <b>frame data</b> portion of <b>the Java stack frame</b>.
+</p>
+
+<ul>
+    <li>
+        frame
+        <ul>
+            <li>local variables</li>
+            <li>operand stack</li>
+            <li>
+                frame data
+                <ul>
+                    <li>constant pool resolution</li>
+                    <li>normal method completion</li>
+                    <li>abrupt method completion</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<p class="indented">
+    Many instructions in the Java virtual machine's instruction set refer to <b>entries in the constant pool</b>.
+    <b>Some instructions</b> merely push constant values of type <code>int</code>, <code>long</code>, <code>float</code>, <code>double</code>, or <code>String</code> from the constant pool onto the operand stack.
+    <b>Some instructions</b> use constant pool entries to refer to classes or arrays to instantiate, fields to access, or methods to invoke.
+    <b>Other instructions</b> determine whether a particular object is a descendant of a particular class or interface specified by a constant pool entry.
+    <sub class="my_note" style="color:blue">笔记：这里围绕着frame data中的constant pool resolution展开。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Whenever the Java virtual machine encounters any of the instructions that refer to an entry in the constant pool,
+    it uses the frame data's pointer to the constant pool to access that information.
+    <b>References to types, fields, and methods</b> in the constant pool <b>are initially symbolic</b>.
+    When the virtual machine looks up a constant pool entry that refers to a class, interface, field, or method, that reference may still be symbolic.
+    If so, <b>the virtual machine must resolve the reference at that time</b>.
+    <sub class="my_note" style="color:blue">笔记：这里围绕着frame data中的constant pool resolution展开。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Aside from <b>constant pool resolution</b>, the frame data must assist the virtual machine in <b>processing a normal or abrupt method completion</b>.
+    <b>If a method completes normally</b> (by returning), the virtual machine must restore the stack frame of the invoking method.
+    It must set the <code>pc</code> register to point to the instruction in the invoking method that follows the instruction that invoked the completing method.
+    If the completing method returns a value, the virtual machine must push that value onto the operand stack of the invoking method.
+    <sub class="my_note" style="color:blue">笔记：这里围绕着frame data中的normal method completion展开。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The frame data must also contain some kind of reference to <b>the method's exception table</b>, which the virtual machine uses to process any exceptions thrown during the course of execution of the method.
+    An <b>exception table</b>, defines <b>ranges</b> within the bytecodes of a method that are protected by catch clauses.
+    Each entry in an exception table gives <b>a starting and ending position</b> of the range protected by a catch clause,
+    an <b>index</b> into the constant pool that gives the exception class being caught,
+    and <b>a starting position</b> of the catch clause's code.
+    <sub class="my_note" style="color:blue">笔记：这里围绕着frame data中的abrupt method completion展开。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="HelloWorld.java" hidden class="javacode">
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+public class HelloWorld {
+    public void test() {
+        try {
+            FileInputStream fin = new FileInputStream("/path/to/file");
+            int b = fin.read();
+        } catch (FileNotFoundException e) {
+            System.out.println("File Not Found Exception");
+        } catch (IOException e) {
+            System.out.println("IOException");
+        }
+    }
+}
+</div>
+
+<div title="test:()V Code Attribute" hidden class="plaintext">
+constant_pool_count='0037' (55)
+constant_pool
+    ......
+    |006| CONSTANT_Class {Value='java/io/FileNotFoundException', HexCode='070025'}
+    ......
+    |010| CONSTANT_Class {Value='java/io/IOException', HexCode='07002B'}
+    ......
+    |016| CONSTANT_Utf8 {Value='Code', HexCode='010004436F6465'}
+    ......
+attributes_count='0001' (1)
+attributes
+--->|000| Code:
+HexCode: 0010000000B10003000300000028BB0002591203B700044C2BB600053DA700184CB200071208B60009A7000C4CB2......
+attribute_name_index='0010' (#16)
+attribute_length='000000B1' (177)
+max_stack='0003' (3)
+max_locals='0003' (3)
+code_length='00000028' (40)
+code: BB0002591203B700044C2BB600053DA700184CB200071208B60009A7000C4CB2
+0007120BB60009B1
+exception_table_length='0002' (2)
+exception_table[0] {
+    start_pc='0000' (0)
+    end_pc='000F' (15)
+    handler_pc='0012' (18)
+    catch_type='0006' (#6)
+}
+exception_table[1] {
+    start_pc='0000' (0)
+    end_pc='000F' (15)
+    handler_pc='001E' (30)
+    catch_type='000A' (#10)
+}
+attributes_count='0003' (3)
+    LineNumberTable: 00110000002600090000000A000A000B000F00100012000C0013000D001B0010001E000E001F000F00270011
+    LocalVariableTable: 00120000002A0004000A000500160017000100130008001800190001001F00080018001A000100000028001300140000
+    StackMapTable: 001B0000000B00035207001C4B07001D08
+</div>
+
+<div title="test:()V Exception Table" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 3
+code_length = 40
+code = BB0002591203B700044C2BB600053DA700184CB200071208B60009A7000C4CB20007120BB60009B1
+Exception Table:
+from    to  target  type
+   0    15      18  java/io/FileNotFoundException
+   0    15      30  java/io/IOException
+=== === ===  === === ===  === === ===
+0000: new             #2   // BB0002     || java/io/FileInputStream
+0003: dup                  // 59
+0004: ldc             #3   // 1203       || /path/to/file
+0006: invokespecial   #4   // B70004     || java/io/FileInputStream.&lt;init&gt;:(Ljava/lang/String;)V
+0009: astore_1             // 4C
+0010: aload_1              // 2B
+0011: invokevirtual   #5   // B60005     || java/io/FileInputStream.read:()I
+0014: istore_2             // 3D
+0015: goto            24   // A70018
+0018: astore_1             // 4C
+0019: getstatic       #7   // B20007     || java/lang/System.out:Ljava/io/PrintStream;
+0022: ldc             #8   // 1208       || File Not Found Exception
+0024: invokevirtual   #9   // B60009     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0027: goto            12   // A7000C
+0030: astore_1             // 4C
+0031: getstatic       #7   // B20007     || java/lang/System.out:Ljava/io/PrintStream;
+0034: ldc             #11  // 120B       || IOException
+0036: invokevirtual   #9   // B60009     || java/io/PrintStream.println:(Ljava/lang/String;)V
+0039: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      40  this:Lsample/HelloWorld;
+    1        10       5  fin:Ljava/io/FileInputStream;
+    1        19       8  e:Ljava/io/FileNotFoundException;
+    1        31       8  e:Ljava/io/IOException;
+</div>
+
+<p class="indented">
+    When a method throws an exception, the Java virtual machine uses <b>the exception table</b> referred to by the frame data to determine how to handle the exception.
+    If the virtual machine finds a matching catch clause in the method's exception table, it transfers control to the beginning of that catch clause.
+    If the virtual machine doesn't find a matching catch clause, the method completes abruptly.
+    The virtual machine uses the information in the frame data to restore the invoking method's frame.
+    It then rethrows the same exception in the context of the invoking method.
+    <sub class="my_note" style="color:blue">笔记：这里围绕着frame data中的abrupt method completion展开。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    In addition to data to support <b>constant pool resolution</b>, <b>normal method return</b>, and <b>exception dispatch</b>,
+    the stack frame may also include other information that is <b>implementation dependent</b>, such as data to support debugging.
+    <sub class="my_note" style="color:blue">笔记：这里是说frame data中，可能还包含一些与具体implementation相关的数据。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+<p class="indented"></p>
+
+<h2>JVM Execution Model</h2>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        这部分内容是来自<a class="external" href="https://asm.ow2.io/asm4-guide.pdf" target="_blank">asm4-guide.pdf</a>的3.1.1. Execution model部分。
+    </p>
+    <p>
+        这部分内容，可以理解成前面讲解内容的一个“简略版本”。前面的内容，侧重于强调各个部分的“结构”，是属于一个相对“静态”的视角；在这里，是侧重于把一些与instruction set相关的核心概念（JVM Stack、frame、local variable和operand stack）串连到一起，是属于一个相对“动态”的视角。
+    </p>
+</div>
 
 <p class="indented">
     Inside <b>compiled classes</b> the <code>code</code> of <b>methods</b> is stored as a sequence of <b>bytecode instructions</b>.
@@ -56,20 +605,7 @@
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div class="w3-panel w3-light-grey w3-border w3-round">
-    <p>
-        第一，从操作系统（OS）的角度来说。启动的后Java虚拟机（JVM），就是操作系统（OS）中的一个进程（Process），操作系统还可以有许多其他的进程，此刻我们只关注JVM的进程。
-    </p>
-    <p>
-        第二，从JVM进程的角度来说。它本身是一个进程（Process），但它又可以包含许多的线程（Threads），而线程（Threads）是真正执行代码的载体。严格的来说，代码（Code）是在线程（Thread）当中执行的，而不是在进程（Process）当中执行的。进程（Process）是线程（Threads）的容器，真正完成代码执行的是线程（Threads），而进程（Process）则作为线程（Threads）的执行环境。 进程（Process）是操作系统（OS）资源分配的基本单位，而线程（Threads）是任务调度和执行的基本单位。一个进程（Process）当中，可以包含多个线程（Threads）；最少的情况下，一个进程也要包含一个线程。
-    </p>
-    <p>
-        第三，从JVM Thread的角度来说，在每一个Thread中都有一个自己的execution stack，而在execution stack存储的元素就是frame。
-    </p>
-    <p>
-        第四，从frame的角度来说。每一个frame都对应着一个方法的调用。在frame当中，有两个部分，一个部分是local variable，另一部分是operand stack。
-    </p>
-</div>
+
 
 <p class="indented">
     Each <b>frame</b> contains two parts: a <b>local variables</b> part and an <b>operand stack</b> part. The local variables part contains variables that can be accessed by their index, in random order. The operand stack part, as its name implies, is a stack of values that are used as operands by bytecode instructions. This means that the values in this stack can only be accessed in Last In First Out order. Do not confuse <b>the operand stack</b> and <b>the thread’s execution stack</b>: each frame in the execution stack contains its own operand stack.
@@ -117,7 +653,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="add:(II)I" class="plaintext">
+<div title="add:(II)I" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 4
@@ -148,7 +684,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="add:(II)I" class="plaintext">
+<div title="add:(II)I" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 3
@@ -169,22 +705,11 @@ index  start_pc  length  name_and_type
     2         4       2  c:I
 </div>
 
-<ul>
-    <li>
-        TODO: LocalVariableTable Attribute要介绍，它对应于Local Variables
-    </li>
-    <li>
-        TODO: start_pc, length表示了变量的作用域。
-    </li>
-    <li></li>
-    <li></li>
-</ul>
-
 <p class="indented">
     Each <b>slot</b> in the <b>local variables</b> and <b>operand stack</b> parts can hold any Java value, except <code>long</code> and <code>double</code> values. These values require two slots. This complicates the management of local variables: for instance the <code>i<sup>th</sup></code> method argument is not necessarily stored in local variable <code>i</code>. For example, calling <code>Math.max(1L, 2L)</code> creates a frame with the <code>1L</code> value in the first two local variable slots, and with the value <code>2L</code> in the third and fourth slots.
 </p>
 
-<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+<div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
         对slot概念的解读。
     </p>
@@ -213,37 +738,6 @@ index  start_pc  length  name_and_type
 
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
-    public long add(long a, long b) {
-        long c = a + b;
-        return c;
-    }
-}
-</div>
-
-<div title="add:(JJ)J" class="plaintext">
-=== === ===  === === ===  === === ===
-max_stack = 4
-max_locals = 7
-code_length = 8
-code = 1F216137051605AD
-=== === ===  === === ===  === === ===
-0000: lload_1              // 1F
-0001: lload_3              // 21
-0002: ladd                 // 61
-0003: lstore          5    // 3705
-0005: lload           5    // 1605
-0007: lreturn              // AD
-
-LocalVariableTable:
-index  start_pc  length  name_and_type
-    0         0       8  this:Lsample/HelloWorld;
-    1         0       8  a:J
-    3         0       8  b:J
-    5         5       3  c:J
-</div>
-
-<div title="HelloWorld.java" class="javacode">
-public class HelloWorld {
     public static long add(long a, long b) {
         long c = a + b;
         return c;
@@ -251,7 +745,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="add:(JJ)J" class="plaintext">
+<div title="add:(JJ)J" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 4
 max_locals = 6
@@ -272,8 +766,167 @@ index  start_pc  length  name_and_type
     4         5       3  c:J
 </div>
 
-<h2>local variable</h2>
+<h2>JVM Execution Engine</h2>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO：Execution Model是JVM为Execution Engine提供的“模块”，或者说是“结构性”的支持。
+    </p>
+</div>
+
+<p class="indented">
+    The execution engine reads the Java Byte code in the unit of instruction.
+    It is like a CPU executing the machine command one by one.
+    Each command of the byte code consists of a 1-byte OpCode and additional Operand.
+    The execution engine gets one OpCode and execute task with the Operand, and then executes the next OpCode.
+    Execution engine mainly contain 2 parts.
+</p>
+
+<ol>
+    <li>Interpreter</li>
+    <li>JIT Compiler</li>
+</ol>
+
+<p class="indented">
+    Whenever any java program is executing at the first time <b>interpreter</b> will comes into picture and
+    it converts one by one byte code instruction into machine level instruction.
+    <b>JIT compiler</b> (just in time compiler) will comes into picture from the second time onward
+    if the same java program is executing and it gives the machine level instruction to the process which are available in the buffer memory.
+    <b>The main aim of JIT compiler is to speed up the execution of java program</b>.
+</p>
+
+
+
+<h3>Interpreter</h3>
+
+<p class="indented">
+    It is responsible to read byte code and interpret into machine code (native code) and execute that machine code line by line.
+    <b>The problem with interpret</b> is it interprets every time even some method invoked multiple times which effects performance of the system.
+    To overcome this problem SUN people introduced JIT compilers in 1.1 V.
+</p>
+
+<h3>JIT Compiler</h3>
+
+<p class="indented">
+    The JIT compiler has been introduced to compensate for the disadvantages of the interpreter.
+    <b>The main purpose of JIT compiler is to improve the performance</b>.
+    Internally JIT compiler maintains a separate <b>count</b> for every method.
+    Whenever JVM across any method call, first that method will be interpreted normally by the interpreter and
+    JIT compiler increments the corresponding <b>count</b> variable.
+</p>
+
+<p class="indented">
+    This process will be continued for every method once if any method count reaches thread hold value
+    then JIT compiler identifies that method is a <b>repeatedly used method</b> (Hotspot) and
+    immediately JIT compiler compiles that method and generates corresponding native code.
+    Next time JVM come across that method call then JVM directly uses native code and executes it instead of interpreting once again,
+    so that performance of the system will be improved.
+    Threshold is varied from JVM to JVM.
+    Some advanced JIT compilers will recompile generated native code
+    if count reaches threshold value second time so that more optimized code will be generated.
+</p>
+
+<p class="indented">
+    <b>Profiler</b> which is the part of JIT compiler is responsible to identify <b>Hotspot</b>  (Repeated Used Methods).
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_execution_engine.png" alt="JVM Execution Engine"/>
+    <p>
+        JVM interprets total program line by line at least once. JIT compilation is applicable only for repeatedly invoked method but not for every method.
+    </p>
+</div>
+
+<h3>instruction set</h3>
+
+<p class="indented">
+    At the core of any Java Virtual Machine implementation is its <b>execution engine</b>.
+    <b>In the Java Virtual Machine specification, the behavior of the execution engine is defined in terms of an instruction set</b>.
+    For each instruction, the specification describes in detail <b>what</b> an implementation should do when it encounters the instruction as it executes bytecodes,
+    but says very little about <b>how</b>.
+    Implementation designers are free to decide how their implementations will execute bytecodes.
+</p>
+
+<div class="w3-display-container w3-center">
+    <a href="javascript:void(0);" onclick="$(this).next().toggle()">查看图片</a>
+    <img style="display: none;" class="w3-image w3-center" src="/images/java/jvm/jvm_architecture.png" alt="JVM Architecture"/>
+</div>
+
+<p class="indented">
+    The term "execution engine" can also be used in any of three senses: <b>an abstract specification</b>, <b>a concrete implementation</b>, or <b>a runtime instance</b>.
+    The abstract specification defines the behavior of an execution engine in terms of the instruction set.
+    Concrete implementations, which may use a variety of techniques, are either software, hardware, or a combination of both.
+    A runtime instance of an execution engine is a thread.
+</p>
+
+<p class="indented">
+    <b>Each thread of a running Java application is a distinct instance of the virtual machine's execution engine.</b>
+    From the beginning of its lifetime to the end, a thread is either executing bytecodes or native methods.
+    A thread may execute bytecodes directly, by interpreting or executing natively in silicon, or indirectly, by just-in-time compiling and executing the resulting native code.
+    A Java Virtual Machine implementation may use other threads invisible to the running application, such as a thread that performs garbage collection.
+    Such threads need not be "instances" of the implementation's execution engine.
+    All threads that belong to the running application, however, are execution engines in action.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        IMHO：instruction set（opcode）的本质，就是对于Execution Engine的行为描述。
+    </p>
+</div>
+
+<h3>opcode</h3>
 
 <p>
-    local variable对于static和non-static方法，第一个local variable要不要存储this变量呢？
+    对于opcode，可以从3个方面入手：
 </p>
+
+<ul>
+    <li>第一，opcode的作用是什么，也就是Operation和Description的描述</li>
+    <li>第二，opcode需要使用的operand。instruction = opcode + operands</li>
+    <li>第三，opcode对于Operand Stack上的值的变化影响。</li>
+</ul>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/instruction_format.png" alt="Format of Instruction Descriptions"/>
+</div>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>
+        第一，从操作系统（OS）的角度来说。启动的后Java虚拟机（JVM），就是操作系统（OS）中的一个进程（Process），操作系统还可以有许多其他的进程，此刻我们只关注JVM的进程。JVM会为Heap和Method Area分配内存区域。
+    </li>
+    <li>
+        第二，从JVM进程的角度来说。它本身是一个进程（Process），但它又可以包含许多的线程（Threads），而线程（Threads）是真正执行代码的载体。严格的来说，代码（Code）是在线程（Thread）当中执行的，而不是在进程（Process）当中执行的。进程（Process）是线程（Threads）的容器，真正完成代码执行的是线程（Threads），而进程（Process）则作为线程（Threads）的执行环境。 进程（Process）是操作系统（OS）资源分配的基本单位，而线程（Threads）是任务调度和执行的基本单位。一个进程（Process）当中，可以包含多个线程（Threads）；最少的情况下，一个进程也要包含一个线程。
+    </li>
+    <li>
+        第三，从JVM Thread的角度来说，在每一个Thread中都有一个自己的execution stack，而在execution stack存储的元素就是frame。
+    </li>
+    <li>
+        第四，从frame的角度来说。每一个frame都对应着一个方法的调用。在frame当中，有两个部分，一个部分是local variable，另一部分是operand stack。
+    </li>
+    <li>第五，从execution engine的角度来说，JVM中的class loader subsystem和runtime data area两个部分都是为Execution Engine做准备。Execution Engine主要由两部分组成，一个是Interpreter，另一个是JIT Compiler。我们的关注点是Interpreter，而不是JIT Compiler。</li>
+    <li>第六，从instruction set的角度来说，它描述的是Execution Engine所应该遵循的“行为”规范。</li>
+</ul>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        这篇文章，从整体上来说，是一个“大杂烩”。也就是说，这篇文章的内容，是从多个不同的地方截取了各自的内容来共同拼凑成的。但是，我还是希望它在表达的含义上呈现出一个整体的、连贯的思路。
+    </p>
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://www.artima.com/insidejvm/ed2/jvmP.html" target="_blank">《Inside the Java 2 Virtual Machine》 Chapter 5 The Java Virtual Machine</a></li>
+    <li><a class="external" href="https://asm.ow2.io/asm4-guide.pdf" target="_blank">ASM User Guild</a></li>
+    <li><a class="external" href="https://dzone.com/articles/jvm-architecture-explained" target="_blank">DZone: The JVM Architecture Explained</a></li>
+    <li><a class="external" href="https://javapapers.com/core-java/java-jvm-run-time-data-areas/" target="_blank">Java JVM Run-time Data Areas</a></li>
+    <li><a class="external" href="http://www.herongyang.com/JVM/Stack-Overflow-What-Is-JVM-Stack.html" target="_blank">What Is JVM Stack?</a></li>
+    <li><a class="external" href="https://indrabasak.github.io/java-runtime-memory/" target="_blank">Memories of a Java Runtime</a></li>
+    <li><a class="external" href="https://www.waytoeasylearn.com/learn/execution-engine/" target="_blank">Execution Engine</a></li>
+</ul>

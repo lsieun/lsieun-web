@@ -97,8 +97,12 @@
 <h3>Verification</h3>
 
 <p class="indented">
-    During resolution, the JVM also performs several verification checks. These checks ensure that Java language rules are followed and that the invoke instruction is safe to execute.
-    For example, the virtual machine first makes sure the symbolically referenced method exists.
+    During resolution, the JVM also performs several <b>verification checks</b>.
+    These checks ensure that Java language rules are followed and that the invoke instruction is safe to execute.
+</p>
+
+<p class="indented">
+    <b>For example</b>, the virtual machine first makes sure the symbolically referenced method exists.
     If it exists, the virtual machine checks to make sure the current class can legally access the method.
     For example, if the method is private, it must be a member of the current class.
     If any of these checks fail, the Java virtual machine throws an exception.

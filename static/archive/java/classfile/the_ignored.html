@@ -253,6 +253,13 @@ do {
 } while (there is more to do);
 </div>
 
+<p class="indented">
+    The number and size of the <b>operands</b> are determined by the <b>opcode</b>.
+    If an operand is more than one byte in size, then it is stored in big-endian order - high-order byte first.
+    For example, an unsigned 16-bit index into the local variables is stored as two unsigned bytes,
+    <code>byte1</code> and <code>byte2</code>, such that its value is <code>(byte1 << 8) | byte2</code>.
+</p>
+
 <p>
     在JVM文档中对opcode进行了一个分类，如下所示：
 </p>
@@ -268,6 +275,35 @@ do {
     <li>Throwing Exceptions</li>
     <li>Synchronization</li>
 </ul>
+
+<h2>Java Type vs ClassFile Type</h2>
+
+<h3>Constant Pool</h3>
+
+<h3>Field</h3>
+
+<h3>local variables</h3>
+
+<p class="indented">
+    Values of type <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> are converted to <code>int</code> before being stored into the local variables.
+    Values of type <code>long</code> and <code>double</code> occupy two consecutive entries in the array.
+</p>
+
+<h3>operand stack</h3>
+
+<p>
+    The virtual machine converts values of type <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> to <code>int</code> before pushing them onto the operand stack.
+</p>
+
+<h2>Compactness</h2>
+
+<p class="indented">
+    Compactness is important because it facilitates speedy transmission of class files across networks.
+    In the bytecodes stored in class files, all instructions--except two that deal with table jumping--are aligned on byte boundaries.
+    The total number of opcodes is small enough so that opcodes occupy only one byte.
+    <sub class="my_note" style="color:blue">笔记：在这里opcode占用 1 byte的空间，其目的是compactness；另外，在field或method的descriptor描述中，也体现了compactness，例如用I表示int类型、用Z表示boolean类型。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
 
 <h2>Summing Up</h2>
 

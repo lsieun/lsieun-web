@@ -21,7 +21,7 @@ public enum Day {
 </p>
 
 <p class="indented">
-    The only exceptions to this requirement are compiler-generated methods which are not considered implementation artifacts, namely <b>the instance initialization method</b>(<code>&lt;init&gt;</code>) representing a default constructor of the Java programming language, <b>the class initialization method</b>(<code>&lt;cinit&gt;</code>), and the <code>Enum.values()</code> and <code>Enum.valueOf()</code> methods.
+    The only exceptions to this requirement are compiler-generated methods which are not considered implementation artifacts, namely <b>the instance initialization method</b>(<code>&lt;init&gt;</code>) representing a default constructor of the Java programming language, <b>the class initialization method</b>(<code>&lt;clinit&gt;</code>), and the <code>Enum.values()</code> and <code>Enum.valueOf()</code> methods.
 </p>
 
 <h3>ClassInfo</h3>
@@ -125,7 +125,7 @@ protected Enum(String name, int ordinal) {
 <h4>clinit</h4>
 
 <p>
-    这里是<code>Day</code>的class initialization method(<code>&lt;cinit&gt;</code>)，它主要负责对类里面定义的静态字段进行赋值。
+    这里是<code>Day</code>的class initialization method(<code>&lt;clinit&gt;</code>)，它主要负责对类里面定义的静态字段进行赋值。
 </p>
 
 <div title="class initialization method" hidden class="plaintext">

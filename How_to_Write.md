@@ -84,7 +84,12 @@ How the Java virtual machine handles method invocation and return
 </div>
 
 <div class="w3-display-container w3-center">
-    <img class="w3-image w3-center" src="/images/crypto/aes/aes_rotation.png" alt="Rotation"/>
+    <img class="w3-image w3-center" src="/images/java/classfile/aes_rotation.png" alt="Rotation"/>
+</div>
+
+<div class="w3-display-container w3-center">
+    <a href="javascript:void(0);" onclick="$(this).next().toggle()">查看图片</a>
+    <img style="display: none;" class="w3-image w3-center" src="/images/java/jvm/jvm_runtime_memory.png" alt="JVM runtime memory"/>
 </div>
 
 <img class="w3-image" src="/images/mountains.jpg" alt="the Statue of Liberty" onclick="display_img(this)"/>
