@@ -72,6 +72,20 @@ public class HelloWorld  {
     在上面的表格中，我们并没有看到Java programming language中的<code>byte</code>、<code>short</code>、<code>char</code>和<code>boolean</code>这些类型在Java class file format当中得到体现。换句话说，在Java class file format当中，并没有出现<code>CONSTANT_Byte_info</code>、<code>CONSTANT_Short_info</code>、<code>CONSTANT_Char_info</code>或<code>CONSTANT_Boolean_info</code>这样的结构。这个问题，要从opcode角度才能回答。
 </p>
 
+<p class="indented">
+    另外，<code>boolean</code>、<code>byte</code>、<code>short</code>、<code>char</code>和<code>int</code>类型的字段在带有<code>final</code>关键字，也会生成<code>CONSTANT_Integer_info</code>类型的常量。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public final boolean flag = false;
+    public final int intValue = 1;
+    public final byte b = 2;
+    public final short s = 3;
+    public final char ch = 4;
+}
+</div>
+
 <h2>CP (8): CONSTANT_String</h2>
 
 <table class="w3-table-all w3-hoverable w3-centered">

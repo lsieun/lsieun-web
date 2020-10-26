@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>06 The Java Class File | Inside the Java 2 Virtual Machine</title>
+    <meta name="description" content="Inside the Java 2 Virtual Machine">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="main.css" type="text/css"/>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="twelve columns">
+
+            <div class="row test">
+                <h1>06 The Java Class File</h1>
+            </div>
+            <div class="u-cf"></div>
+
+            <div class="row">
+                <div class="one-third column value">
+                    <a class="button button-primary mod" href="05.html">Previous page</a>
+                </div>
+                <div class="one-third column value" style="text-align:center;">
+                    <a class="button button-primary mod" href="index.html">Table of content</a>
+                </div>
+                <div class="one-third column value">
+                    <a class="button button-primary mod u-pull-right" href="07.html">Next page</a>
+                </div>
+            </div>
+
+            <div class="content index ">
+                <div class="u-cf"></div>
+
+                <div class="waka">
+                    <hr>
+                    <h2> The Java Class File </h2>
+                    <p> The previous chapter, the first of Part II, "Java Internals," gave an overview of the Java Virtual Machine. The next four chapters will focus on different aspects of the Java Virtual Machine. This chapter takes a look at the Java class file. It describes the contents of the class file, including the structure and format of the constant pool. This chapter serves as a complete reference of the Java class file format. </p>
+                    <p> Accompanying this chapter on the CD-ROM is an applet that interactively illustrates the material presented in the chapter. The applet, named <i> Getting Loaded </i> , simulates the Java Virtual Machine loading a Java class file. At the end of this chapter, you will find a description of this applet and an instructions on how to use it. </p>
+                    <p> <em> What is a Java Class File? </em> </p>
+                    <p> The Java class file is a precisely defined binary file format for Java programs. Each Java class file represents a complete description of one Java class or interface. There is no way to put more than one class or interface into a single class file. The precise definition of the class file format ensures that any Java class file can be loaded and correctly interpreted by any Java Virtual Machine, no matter what system produced the class file or what system hosts the virtual machine. </p>
+                    <p> Although the class file is related to the Java language architecturally, it is not inextricably linked to the Java language. As shown in Figure 6-1, you could write programs in other languages and compile them to class files, or you could compile your Java programs to a different binary file format. Nevertheless, most Java programmers will likely use the class file as the primary vehicle for delivering their programs to Java Virtual Machines. </p>
+                    <p> <img src="images/fig6-1.gif" alt="figure 6-1"> </p>
+                    <p> As mentioned in earlier chapters, the Java class file is a binary stream of 8-bit bytes. Data items are stored sequentially in the class file with no padding between adjacent items. The lack of padding helps keep class files compact. Items that occupy more than one byte are split up into several consecutive bytes that appear in <i> big-endian </i> (higher bytes first) order. </p>
+                    <p> Just as your Java classes can contain varying numbers of fields, methods , method parameters, local variables , and so on, the Java class file can contain many items that vary in size or number from one class file to another. In the class file, the size or length of a variable-length item precedes the actual data for the item. This allows class file streams to be parsed from beginning to end, reading in the size of an item first followed by the item data. </p>
+                    <p> <em> What's in a Class File? </em> </p>
+                    <p> The Java class file contains everything a Java Virtual Machine needs to know about one Java class or interface. The remainder of this chapter describes the class file format using tables. Each table has a name and shows an ordered list of items that can appear in a class file. Items appear in the table in the order in which they appear in the class file. Each item has a type, a name, and a count. The type is either a table name or one of the "primitive types" shown in Table 6-1. All values stored in items of type <code> u2 </code> , <code> u4 </code> , and <code> u8 </code> appear in the class file in big-endian order. </p>
+                    <p> Table 6-1. Class file "primitive types" </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"> a single unsigned byte</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"> two unsigned bytes</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u4 </code></td>
+                            <td valign="top"> four unsigned bytes</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u8 </code></td>
+                            <td valign="top"> eight unsigned bytes</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> The major components of the class file, in their order of appearance in the class file, are shown in Table 6-2. Each of these components is described in more detail below. </p>
+                    <p> Table 6-2. Format of a <code> ClassFile </code> Table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type&amp; </strong></td>
+                            <td valign="top"><strong> #9;Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u4 </code></td>
+                            <td valign="top"><code> magic </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> minor_version </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> major_version </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> constant_pool_count </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> cp_info </code></td>
+                            <td valign="top"><code> constant_pool </code></td>
+                            <td valign="top"><code> constant_pool_count </code></td>
+                            <td valign="top"><code> - 1 </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> access_flags </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> this_class </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> super_class </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> interfaces_count </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> interfaces </code></td>
+                            <td valign="top"><code> interfaces_count </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> fields_count </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> field_info </code></td>
+                            <td valign="top"><code> fields </code></td>
+                            <td valign="top"><code> fields_count </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> methods_count </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> method_info </code></td>
+                            <td valign="top"><code> methods </code></td>
+                            <td valign="top"><code> methods_count </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> attributes_count </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> attribute_info </code></td>
+                            <td valign="top"><code> attributes </code></td>
+                            <td valign="top"><code> attributes_count </code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> magic </p>
+                    <p> The first four bytes of every Java class file are its <i> magic number </i> , 0xCAFEBABE. The magic number makes non-Java class files easier to identify. If a file doesn't start with 0xCAFEBABE, it definitely isn't a Java class file. A magic number can be chosen by a file format's designers to be any arbitrary number that isn't already in widespread use. The magic number for the Java class file was chosen back in the days when "Java" was called "Oak." According to Patrick Naughton, a key member of the original Java team, the magic number was chosen "long before the name Java was ever uttered in reference to this language. We were looking for something fun, unique, and easy to remember. It is only a coincidence that 0xCAFEBABE, an oblique reference to the cute baristas at Peet's Coffee, was foreshadowing for the name Java." </p>
+                    <p> minor_version and major_version </p>
+                    <p> The second four bytes of the class file contain the minor and major version numbers. As Java technology evolves, new features may occasionally be added to the Java class file format. Each time the class file format changes, the version numbers will change as well. To the Java Virtual Machine, the version numbers identify the format to which a particular class file adheres. Java Virtual Machines will generally be able to load class files with a given major version number and a range of minor version numbers. Java Virtual Machines must reject class files with version numbers outside their valid range. </p>
+                    <p> For class files generated by 1.0 or 1.1 compilers, the major version number is 45. The minor version number is 3. </p>
+                    <p> constant_pool_count and constant_pool </p>
+                    <p> Following the magic and version numbers in the class file is the <i> constant pool </i> . As mentioned in Chapter 5, "The Java Virtual Machine," the constant pool contains the constants associated with the class or interface defined by the file. Constants such as literal strings, final variable values, class names, and method names are stored in the constant pool. The constant pool is organized as a list of entries. A count of the number of entries in the list, <code> constant_pool_count </code> , precedes the actual list, <code> constant_pool </code> . </p>
+                    <p> Many entries in the constant pool refer to other entries in the constant pool, and many items that follow the constant pool in the class file refer back to entries in the constant pool. Throughout the class file, constant pool entries are referred to by the integer index that indicates their position in the <code> constant_pool </code> list. The first entry in the list has an index of one, the second has an index of two, and so on. Although there is no entry in the <code> constant_pool </code> list that has an index of zero, the missing zeroeth entry is included in the <code> constant_pool_count </code> . For example, if a <code> constant_pool </code> list includes fourteen entries (with indexes one through fourteen), the <code> constant_pool_count </code> would be fifteen. </p>
+                    <p> Each constant pool entry starts with a one-byte tag that indicates the type of constant making its home at that position in the list. Once a Java Virtual Machine grabs and interprets this tag, it knows what to expect after the tag. Table 6-3 shows the names and values of the constant pool tags. </p>
+                    <p> Table 6-3. Constant pool tags </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Entry Type </strong></td>
+                            <td valign="top"><strong> Tag Value </strong></td>
+                            <td valign="top"><strong> Description </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> CONSTANT_Utf8 </code></td>
+                            <td valign="top"> 1</td>
+                            <td valign="top"> A UTF-8 encoded Unicode string</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> CONSTANT_Integer </code></td>
+                            <td valign="top"> 3</td>
+                            <td valign="top"> An <code> int </code> literal value</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> CONSTANT_Float </code></td>
+                            <td valign="top"> 4</td>
+                            <td valign="top"> A <code> float </code> literal value</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> CONSTANT_Long </code></td>
+                            <td valign="top"> 5</td>
+                            <td valign="top"> A <code> long </code> literal value</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> CONSTANT_Double </code></td>
+                            <td valign="top"> 6</td>
+                            <td valign="top"> A <code> double </code> literal value</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> CONSTANT_Class </code></td>
+                            <td valign="top"> 7</td>
+                            <td valign="top"> A symbolic reference to a class or interface</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> CONSTANT_String </code></td>
+                            <td valign="top"> 8</td>
+                            <td valign="top"> A <code> String </code> literal value</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> CONSTANT_Fieldref </code></td>
+                            <td valign="top"> 9</td>
+                            <td valign="top"> A symbolic reference to a field</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> CONSTANT_Methodref </code></td>
+                            <td valign="top"> 10</td>
+                            <td valign="top"> A symbolic reference to a method declared in a class</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> CONSTANT_InterfaceMethodref </code></td>
+                            <td valign="top"> 11</td>
+                            <td valign="top"> A symbolic reference to a method declared in an interface</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> CONSTANT_NameAndType </code></td>
+                            <td valign="top"> 12</td>
+                            <td valign="top"> Part of a symbolic reference to a field or method</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> For each tag shown in Table 6-3, there is a corresponding table. The name of the table is formed by appending " <code> _info </code> " to the tag name. For example, the table that corresponds to the <code> CONSTANT_Class </code> tag is called <code> CONSTANT_Class_info </code> . The <code> CONSTANT_Utf8_info </code> table stores a compressed form of Unicode strings. The tables for the various kinds of constant pool entries are described in detail later in this chapter. </p>
+                    <p> The constant pool plays an important role in the dynamic linking of Java programs. In addition to literal constant values, the constant pool contains the following kinds of symbolic references: </p>
+                    <ul>
+                        <li> fully qualified names of classes and interfaces </li>
+                        <li> field names and descriptors </li>
+                        <li> method names and descriptors </li>
+                    </ul>
+                    <p> A <i> field </i> is an instance or class variable of the class or interface. A <i> field descriptor </i> is a string that indicates the field's type. A <i> method descriptor </i> is a string that indicates the method's return type and the number, order, and types of its parameters. The constant pool's fully qualified names and method and field descriptors are used at run time to link code in this class or interface with code and data in other classes and interfaces. The class file contains no information about the eventual memory layout of its components, so classes, fields, and methods cannot be referenced directly by the bytecodes in the class file. The Java Virtual Machine resolves the actual address of any referenced item at run time given a symbolic reference from the constant pool. For example, bytecode instructions that invoke a method give constant pool index of a symbolic reference to the method to invoke. This process of using the symbolic references in the constant pool is described in more detail in Chapter 8, "The Linking Model." </p>
+                    <p> access_flags </p>
+                    <p> The first two bytes after the constant pool, the <i> access flags </i> , reveal several pieces of information about the class or interface defined in the file. To start with, the access flags indicate whether the file defines a class or an interface. The access flags also indicate what modifiers were used in the declaration of the class or interface. Classes and interfaces can be public or abstract. Classes can be final, though final classes cannot be abstract. Interfaces can't be final. The bits used for the various flags are shown in Table 6-4. </p>
+                    <p> Table 6-4. Flag bits in the <code> access_flags </code> item of <code> ClassFile </code> tables </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Flag Name </strong></td>
+                            <td valign="top"><strong> Value </strong></td>
+                            <td valign="top"><strong> Meaning if Set </strong></td>
+                            <td valign="top"><strong> Set By </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_PUBLIC </code></td>
+                            <td valign="top"> 0x0001</td>
+                            <td valign="top"> Type is public</td>
+                            <td valign="top"> Classes and interfaces</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_FINAL </code></td>
+                            <td valign="top"> 0x0010</td>
+                            <td valign="top"> Class is final</td>
+                            <td valign="top"> Classes only</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_SUPER </code></td>
+                            <td valign="top"> 0x0020</td>
+                            <td valign="top"> Use new</td>
+                            <td valign="top"><code> invokespecial </code> semanticsClasses and
+                                interfaces
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_INTERFACE </code></td>
+                            <td valign="top"> 0x0200</td>
+                            <td valign="top"> Type is an interface, not a class</td>
+                            <td valign="top"> All interfaces, no classes</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_ABSTRACT </code></td>
+                            <td valign="top"> 0x0400</td>
+                            <td valign="top"> Type is abstract</td>
+                            <td valign="top"> All interfaces, some classes</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> The <code> ACC_SUPER </code> flag exists for backwards compatibility with Sun's older Java compilers. In Sun's older Java Virtual Machines, the <code> invokespecial </code> instruction had more relaxed semantics. All new compilers should set the <code> ACC_SUPER </code> flag. All new implementations of the Java Virtual Machine should implement the newer , stricter <code> invokespecial </code> semantics. (See the <code> invokespecial </code> instruction in Appendix A for a description of these semantics.) Sun's older compilers generate class files with the <code> ACC_SUPER </code> flag set to zero. Sun's older Java Virtual Machines ignore the flag if it is set. </p>
+                    <p> All unused bits in <code> access_flags </code> must be set to zero and ignored by Java Virtual Machine implementations. </p>
+                    <p> this_class </p>
+                    <p> The next two bytes are the <code> this_class </code> item, an index into the constant pool. The constant pool entry at position <code> this_class </code> must be a <code> CONSTANT_Class_info </code> table, which has two parts : a <code> tag </code> and a <code> name_index </code> . The tag will have the value <code> CONSTANT_Class </code> . The constant pool entry at position <code> name_index </code> will be a <code> CONSTANT_Utf8_info </code> table containing the fully qualified name of the class or interface. </p>
+                    <p> The <code> this_class </code> item provides a glimpse of how the constant pool is used. By itself, the <code> this_class </code> item is just an index into the constant pool. When a Java Virtual Machine looks up the constant pool entry at position <code> this_class </code> , it will find an entry that identifies itself via its <code> tag </code> as a <code> CONSTANT_Class_info </code> . The Java Virtual Machine knows <code> CONSTANT_Class_info </code> entries always have an index into the constant pool, called <code> name_index </code> , following their <code> tag </code> . So the virtual machine looks up the constant pool entry at position <code> name_index </code> , where it should find a <code> CONSTANT_Utf8_info </code> entry that contains the fully qualified name of the class or interface. See Figure 6-2 for a graphical depiction of this process. </p>
+                    <p> <img src="images/fig6-2.gif" alt="figure 6-2"> </p>
+                    <p> super_class </p>
+                    <p> Following <code> this_class </code> in the class file is the <code> super_class </code> item, another two-byte index into the constant pool. The constant pool entry at position <code> super_class </code> will be a <code> CONSTANT_Class_info </code> entry that refers to the fully qualified name of this class's superclass. Because the base class of every object in Java programs is the <code> java.lang.Object </code> class, the <code> super_class </code> constant pool index will be valid for every class except <code> Object </code> . For <code> Object </code> , <code> super_class </code> is a zero. For interfaces, the constant pool entry at position <code> super_class </code> is <code> java.lang.Object </code> . </p>
+                    <p> interfaces_count and interfaces </p>
+                    <p> The component that follows <code> super_class </code> starts with <code> interfaces_count </code> , a count of the number of superinterfaces directly implemented by the class or interface defined in this file. Immediately following the count is <code> interfaces </code> , an array that contains one index into the constant pool for each superinterface directly implemented by this class or interface. Each superinterface is represented by a <code> CONSTANT_Class_info </code> entry in the constant pool that refers to the fully qualified name of the interface. Only direct superinterfaces, those that appear in the <code> implements </code> clause of the class or the <code> extends </code> clause of the interface declaration, appear in this array. The superinterfaces appear in the array in the order in which they appear (left to right) in the <code> implements </code> or <code> extends </code> clause. </p>
+                    <p> fields_count and fields </p>
+                    <p> Following the interfaces component in the class file is a description of the fields declared by this class or interface. This component starts with <code> fields_count </code> , a count of the number of fields, including both class and instance variables. Following the count is a list of variable-length <code> field_info </code> tables, one for each field. (The <code> fields_count </code> indicates the number of <code> field_info </code> tables in the list.) The only fields that appear in the <code> fields </code> list are those that were declared by the class or interface defined in the file. No fields inherited from superclasses or superinterfaces appear in the <code> fields </code> list. </p>
+                    <p> Each <code> field_info </code> table reveals information about one field. The table contains the field's name, descriptor, and modifiers. If the field is declared as final, the <code> field_info </code> table also reveals the field's constant value. Some of this information is contained in the <code> field_info </code> table itself, and some is contained in constant pool locations referred to by the table. The <code> field_info </code> table is described in more detail later in this chapter. </p>
+                    <p> methods_count and methods </p>
+                    <p> Following the fields in the class file is a description of the methods declared by the class or interface. This component starts with <code> methods_count </code> , a two-byte count of the number of methods in the class or interface. The count includes only those methods that are explicitly defined by this class or interface. (It does not include any methods inherited from superclasses or superinterfaces.) Following the method count are the methods themselves , described in a list of <code> method_info </code> tables. (The <code> methods_count </code> indicates the number of <code> method_info </code> tables in the list.) </p>
+                    <p> The <code> method_info </code> table contains several pieces of information about the method, including the method's name and descriptor (its return type and argument types). If the method is not abstract, the <code> method_info </code> table includes the number of stack words required for the method's local variables, the maximum number of stack words required for the method's operand stack, a table of exceptions caught by the method, the bytecode sequence, and optional line number and local variable tables. If the method can throw any checked exceptions, the <code> method_info </code> table includes a list of those checked exceptions. The <code> method_info </code> table is described in detail later in this chapter. </p>
+                    <p> attributes_count and attributes </p>
+                    <p> The last component in the class file are the attributes, which give general information about the particular class or interface defined by the file. The attributes component starts with <code> attributes_count </code> , a count of the number of <code> attribute_info </code> tables appearing in the subsequent <code> attributes </code> list. The first item in each <code> attribute_info </code> table is an index into the constant pool of a <code> CONSTANT_Utf8_info </code> table that gives the attribute's name. </p>
+                    <p> Attributes come in many varieties. Several varieties are defined by the Java Virtual Machine specification, but anyone can create their own varieties of attributes (following certain rules) and place them into class files. Java Virtual Machine implementations must silently ignore any attributes they don't recognize. The rules surrounding the creation of new varieties of attributes are described later in this chapter. </p>
+                    <p> Attributes appear in several places in the class file, not just in the <code> attributes </code> item of the top-level <code> ClassFile </code> table. The attributes that appear in the <code> ClassFile </code> table give more information about the class or interface define by the file. Attributes that give more information about a field may be included as part of <code> field_info </code> table. Attributes that give more information about a method may be included as part of a <code> method_info </code> table. </p>
+                    <p> The Java Virtual Machine specification defines two kinds of attributes that may appear in the attributes list of the <code> ClassFile </code> table: <code> SourceCode </code> and <code> InnerClasses </code> . These two attributes are described in detail later in this chapter. </p>
+                    <p> <em> Special Strings </em> </p>
+                    <p> The symbolic references contained in the constant pool involve three special kinds of strings: fully qualified names, simple names, and descriptors. All symbolic references include the fully qualified name of a class or interface. Symbolic references to fields include a simple field name and field descriptor in addition to a fully qualified type name. Symbolic references to methods include a simple method name and method descriptor in addition to a fully qualified name. </p>
+                    <p> The same special strings are used to describe the class or interface that is defined by the class file. The class or interface name, the superclass name (if any), and the names of any superinterfaces are all given as fully qualified names. For each field declared by the class or interface, the constant pool contains a simple name and field descriptor. For each method declared by the class or interface, the constant pool contains a simple name and method descriptor. </p>
+                    <p> Fully Qualified Names </p>
+                    <p> Whenever constant pool entries refer to classes and interfaces, they give the fully qualified name of the class or interface. In the class file, fully qualified names have their dots replaced with slashes . For example, the representation of the fully qualified name of <code> java.lang.Object </code> in the class file is <code> java/lang/Object </code> . The fully qualified name of <code> java.util.Hashtable </code> in the class file is <code> java/util/Hashtable </code> . </p>
+                    <p> Simple Names </p>
+                    <p> The names of fields and methods appear in constant pool entries as simple (not fully qualified) names. For example, a constant pool entry that refers to the <code> String </code> <code> toString() </code> method of class <code> java.lang.Object </code> would give its method name as <code> "toString" </code> . A constant pool entry that refers to the <code> java.io.PrintStream </code> <code> out </code> field of class <code> java.lang.System </code> would specify the field name simply as <code> "out" </code> . </p>
+                    <p> Descriptors </p>
+                    <p> Symbolic references to fields and methods include a descriptor string in addition to a fully qualified class or interface name and a simple field or method name. A field descriptor gives the field's type. A method descriptor gives the method's return type and the number and types of the method's parameters. </p>
+                    <p> Field and method descriptors are defined by the context free grammar shown below. Nonterminals of this grammar, such as <i> FieldType </i> , are shown in italic font. Terminals, such as <code> B </code> or <code> V </code> , are shown in fixed width font. The asterisk character (*) stands for zero or more occurrences of the item that precedes it placed side by side (with no intervening white space). </p> <h4> <em> FieldDescriptor: </em> </h4>
+                    <p> <i> FieldType </i> </p>
+                    <h4> <em> ComponentType: </em> </h4>
+                    <p> <i> FieldType </i> </p>
+                    <h4> <em> FieldType: </em> </h4>
+                    <p> <i> BaseType </i> </p>
+                    <p> <i> ObjectType </i> </p>
+                    <p> <i> ArrayType </i> </p>
+                    <h4> <em> BaseType: </em> </h4>
+                    <p> <code> B </code> </p>
+                    <p> <code> C </code> </p>
+                    <p> <code> D </code> </p>
+                    <p> <code> F </code> </p>
+                    <p> <code> I </code> </p>
+                    <p> <code> J </code> </p>
+                    <p> <code> S </code> </p>
+                    <p> <code> Z </code> </p>
+                    <h4> <em> ObjectType: </em> </h4>
+                    <p> <code> L&lt;classname </code> &gt;; </p>
+                    <h4> <em> ArrayType: </em> </h4>
+                    <p> <code> [ </code> <i> ComponentType </i> </p> <h4> <em> ParameterDescriptor: </em> </h4>
+                    <p> <i> FieldType </i> </p>
+                    <h4> <em> MethodDescriptor: </em> </h4>
+                    <p> <code> ( </code> <i> ParameterDescriptor* </i> <code> ) </code> <i> ReturnDescriptor </i> </p>
+                    <h4> <em> ReturnDescriptor: </em> </h4>
+                    <p> <i> FieldType </i> </p>
+                    <p> <code> V </code> </p>
+                    <p> The meaning of each of the <i> BaseType </i> terminals is shown in Table 6-5. The <code> V </code> terminal represents methods that return <code> void </code> . </p>
+                    <p> Table 6-5. <i> BaseType </i> terminals </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Terminal </strong></td>
+                            <td valign="top"><strong> Type </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> B </code></td>
+                            <td valign="top"><code> byte </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> C </code></td>
+                            <td valign="top"><code> char </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> D </code></td>
+                            <td valign="top"><code> double </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> F </code></td>
+                            <td valign="top"><code> float </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> I </code></td>
+                            <td valign="top"><code> int </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> J </code></td>
+                            <td valign="top"><code> long </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> S </code></td>
+                            <td valign="top"><code> short </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> Z </code></td>
+                            <td valign="top"><code> boolean </code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> Some examples of field descriptors are shown in Table 6-6. </p>
+                    <p> Table 6-6. Examples of field descriptors </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Descriptor </strong></td>
+                            <td valign="top"><strong> Field Declaration </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> I </code></td>
+                            <td valign="top"><code> int i; </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> [[J </code></td>
+                            <td valign="top"><code> long[][] windingRoad; </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> [Ljava/lang/Object; </code></td>
+                            <td valign="top"><code> java.lang.Object[] stuff; </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> Ljava/util/Hashtable; </code></td>
+                            <td valign="top"><code> java.util.Hashtable ht; </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> [[[Z </code></td>
+                            <td valign="top"><code> boolean[][][] isReady; </code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> Some examples of method descriptors are shown in Table 6-7. Note that method descriptors don't include the hidden <code> this </code> parameter passed as the first argument to all instance methods. </p>
+                    <p> Table 6-7. Examples of method descriptors </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Descriptor </strong></td>
+                            <td valign="top"><strong> Method Declaration </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ()I </code></td>
+                            <td valign="top"><code> int getSize(); </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ()Ljava/lang/String; </code></td>
+                            <td valign="top"><code> String toString(); </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ([Ljava/lang/String;)V </code></td>
+                            <td valign="top"><code> void main(String[] args); </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ()V </code></td>
+                            <td valign="top"><code> void wait() </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> (JI)V </code></td>
+                            <td valign="top"><code> void wait(long timeout, int nanos) </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> (ZILjava/lang/String;II)Z </code></td>
+                            <td valign="top"><code> boolean regionMatches(boolean ignoreCase, int toOffset, String other, int ooffset, int len); </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ([BII)I </code></td>
+                            <td valign="top"><code> int read(byte[] b, int off, int len); </code>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <em> The Constant Pool </em> </p>
+                    <p> The constant pool is an ordered list of <code> cp_info </code> tables, each of which follows the general form shown in Table 6-8. The <code> tag </code> item of a <code> cp_info </code> table, an unsigned byte, indicates the table's variety and format. <code> cp_info </code> tables come in eleven varieties, each of which is described in detail in the following sections. </p>
+                    <p> Table 6-8. General form of a <code> cp_info </code> table </p> <table width="500"> <tbody> <tr> <td valign="top"> <strong> Type </strong> </td> <td valign="top"> <strong> Name </strong> </td> <td valign="top"> <strong> Count </strong> </td> </tr> <tr> <td valign="top"> <code> u1 </code> </td> <td valign="top"> <code> tag </code> </td> <td valign="top"> 1 </td> </tr> <tr> <td valign="top"> <code> u1 </code> </td> <td valign="top"> <code> info </code> </td> <td valign="top"> depends on tag value </td> </tr> </tbody> </table>
+                    <p> The CONSTANT_Utf8_info Table </p>
+                    <p> A <code> CONSTANT_Utf8_info </code> table stores one constant string value in a modified UTF-8 format. This table is used to store many different kinds of strings, including: </p>
+                    <ul>
+                        <li> string literals that get instantiated as <code> String </code> objects </li>
+                        <li> the fully qualified name of the class or interface being defined </li>
+                        <li> the fully qualified name of the superclass (if any) of the class being defined </li>
+                        <li> the fully qualified names of any superinterfaces of the class or interface being defined </li>
+                        <li> the simple names and descriptors of any fields declared by the class or interface </li>
+                        <li> the simple names and descriptors of any methods declared by the class or interface </li>
+                        <li> fully qualified names of any referenced classes and interfaces </li>
+                        <li> simple names and descriptors of any referenced fields </li>
+                        <li> simple names and descriptors of any referenced methods </li>
+                        <li> strings associated with attributes </li>
+                    </ul>
+                    <p> As you can see from the above list, there are four basic kinds of information stored in <code> CONSTANT_Utf8_info </code> tables: string literals, descriptions of the class or interface being defined, symbolic references to other classes and interfaces, and strings associated with attributes. Some examples of strings associated with attributes are: the name of the attribute, the name of the source file from which the class file was generated, and the names and descriptors of local variables. </p>
+                    <p> The UTF-8 encoding scheme allows all two-byte Unicode characters to be represented in a string, but enables ASCII characters to be represented by just one byte. Table 6-9 shows the format of a <code> CONSTANT_Utf8_info </code> table. </p>
+                    <p> Table 6-9. Format of a <code> CONSTANT_Utf8_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> tag </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> length </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> bytes </code></td>
+                            <td valign="top"><code> length </code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> tag </code> </i> </p>
+                    <p> The <code> tag </code> item has the value <code> CONSTANT_Utf8 </code> (1). </p>
+                    <p> <i> <code> length </code> </i> </p>
+                    <p> The <code> length </code> item gives the length in bytes of the subsequent <code> bytes </code> item. </p>
+                    <p> <i> <code> bytes </code> </i> </p>
+                    <p> The <code> bytes </code> item contains the characters of the string stored in a modified UTF-8 format. Characters in the range <code> '\u0001' </code> through <code> '\u007f' </code> (all the ASCII characters except the null character) are represented by one byte: </p>
+                    <p> <img src="images/fig6-sgl.gif" alt="figure 6-single"> </p>
+                    <p> The <code> null </code> character, <code> '\u0000' </code> , and the characters in the range <code> '\u0080' </code> through <code> '\u07ff' </code> are represented by two bytes: </p>
+                    <p> <img src="images/fig6-dbl.gif" alt="figure 6-double"> </p>
+                    <p> Characters in the range <code> '\u0800' </code> through <code> '\uffff' </code> are represented by three bytes: </p>
+                    <p> <img src="images/fig6-tpl.gif" alt="figure 6-triple"> </p>
+                    <p> The encoding of UTF-8 strings in the <code> bytes </code> item of <code> CONSTANT_Utf8_info </code> tables differs from the standard UTF-8 format in two ways. First, in the standard UTF-8 encoding scheme, the <code> null </code> character is represented by one byte. In a <code> CONSTANT_Utf8_info </code> table, <code> null </code> characters are represented by two bytes. This two-byte encoding of <code> null </code> s means that the <code> bytes </code> item never contains any byte equal to zero. The second way the <code> bytes </code> item of a <code> CONSTANT_Utf8_info </code> departs from the standard UTF-8 encoding is that only one-, two-, and three-byte encodings are used in the <code> bytes </code> item. The standard UTF-8 includes longer formats that aren't used in <code> CONSTANT_Utf8_info </code> tables. </p>
+                    <p> The CONSTANT_Integer_info Table </p>
+                    <p> The <code> CONSTANT_Integer_info </code> table stores a constant <code> int </code> value. This table is used only to store <code> int </code> literals. It is not used in symbolic references. Table 6-10 shows the format of a <code> CONSTANT_Integer_info </code> table. </p>
+                    <p> Table 6-10. Format of a <code> CONSTANT_Integer_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> tag </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u4 </code></td>
+                            <td valign="top"><code> bytes </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> tag </code> </i> </p>
+                    <p> The <code> tag </code> item has the value <code> CONSTANT_Integer </code> (3). </p>
+                    <p> <i> <code> bytes </code> </i> </p>
+                    <p> The <code> bytes </code> item contains the <code> int </code> value stored in big-endian order. </p>
+                    <p> The CONSTANT_Float_info Table </p>
+                    <p> The <code> CONSTANT_Float_info </code> table stores a constant <code> float </code> value. This table is used only to store <code> float </code> literals. It is not used in symbolic references. Table 6-11 shows the format of a <code> CONSTANT_Float_info </code> table. </p>
+                    <p> Table 6-11. Format of a <code> CONSTANT_Float_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> tag </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u4 </code></td>
+                            <td valign="top"><code> bytes </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> tag </code> </i> </p>
+                    <p> The <code> tag </code> item has the value <code> CONSTANT_Float </code> (4). </p>
+                    <p> <i> <code> bytes </code> </i> </p>
+                    <p> The <code> bytes </code> item contains the <code> float </code> value stored in big-endian order. For the details of the representation of <code> float </code> in the Java class file, see Chapter 14, "Floating Point Arithmetic." </p>
+                    <p> The CONSTANT_Long_info Table </p>
+                    <p> The <code> CONSTANT_Long_info </code> table stores a constant <code> long </code> value. This table is used only to store <code> long </code> literals. It is not used in symbolic references. Table 6-12 shows the format of a <code> CONSTANT_Long_info </code> table. </p>
+                    <p> As noted above, a <code> long </code> occupies two slots in the constant pool table. In the class file, a <code> long </code> entry is just followed by the next entry, but the index of the next entry is two more than that of the <code> long </code> entry. </p>
+                    <p> Table 6-12. Format of a <code> CONSTANT_Long_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> tag </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u8 </code></td>
+                            <td valign="top"><code> bytes </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> tag </code> </i> </p>
+                    <p> The <code> tag </code> item has the value <code> CONSTANT_Long </code> (5). </p>
+                    <p> <i> <code> bytes </code> </i> </p>
+                    <p> The <code> bytes </code> item contains the <code> long </code> value stored in big-endian order. </p>
+                    <p> The CONSTANT_Double_info Table </p>
+                    <p> The <code> CONSTANT_Double_info </code> table stores a constant <code> double </code> value. This table is used only to store <code> double </code> literals. It is not used in symbolic references. Table 6-13 shows the format of a <code> CONSTANT_Double_info </code> table. </p>
+                    <p> As noted above, a <code> double </code> occupies two slots in the constant pool table. In the class file, a <code> double </code> entry is just followed by the next entry, but the index of the next entry is two more than that of the <code> double </code> entry. </p>
+                    <p> Table 6-13. Format of a <code> CONSTANT_Double_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> tag </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u8 </code></td>
+                            <td valign="top"><code> bytes </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> tag </code> </i> </p>
+                    <p> The <code> tag </code> item has the value <code> CONSTANT_Double </code> (6). </p>
+                    <p> <i> <code> bytes </code> </i> </p>
+                    <p> The <code> bytes </code> item contains the <code> double </code> value stored in big-endian order. For the details of the representation of <code> double </code> in the Java class file, see Chapter 14, "Floating Point Arithmetic." </p>
+                    <p> The CONSTANT_Class_info Table </p>
+                    <p> The <code> CONSTANT_Class_info </code> table represents a class or interface in symbolic references. All symbolic references, whether they refer to a class, interface, field, or method, include a <code> CONSTANT_Class_info </code> table. Table 6-14 shows the format of a <code> CONSTANT_Class_info </code> table. </p>
+                    <p> Table 6-14. Format of a <code> CONSTANT_Class_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> tag </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> name_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> tag </code> </i> </p>
+                    <p> The <code> tag </code> item has the value <code> CONSTANT_Class </code> (7). </p>
+                    <p> <i> <code> name_index </code> </i> </p>
+                    <p> The <code> name_index </code> item gives the index of a <code> CONSTANT_Utf8_info </code> table that contains a fully qualified name of a class or interface. </p>
+                    <p> The CONSTANT_String_info Table </p>
+                    <p> A <code> CONSTANT_String_info </code> represents a literal string value, which will be represented as an instance of class <code> java.lang.String </code> . This table is only used to represent literal strings. It is not used in symbolic references. Table 6-15 shows the format of a <code> CONSTANT_String_info </code> table. </p>
+                    <p> Table 6-15. Format of a <code> CONSTANT_String_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> tag </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> string_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> tag </code> </i> </p>
+                    <p> The <code> tag </code> item has the value <code> CONSTANT_String </code> (8). </p>
+                    <p> <i> <code> string_index </code> </i> </p>
+                    <p> The <code> string_index </code> item gives the index of a <code> CONSTANT_Utf8_info </code> entry that contains the value of the literal string. </p>
+                    <p> The CONSTANT_Fieldref_info Table </p>
+                    <p> The <code> CONSTANT_Fieldref_info </code> table represents a symbolic reference to a field. Table 6-16 shows the format of a <code> CONSTANT_Fieldref_info </code> table. </p>
+                    <p> Table 6-16. Format of a <code> CONSTANT_Fieldref_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> tag </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> class_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> name_and_type_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> tag </code> </i> </p>
+                    <p> The <code> tag </code> item has the value <code> CONSTANT_Fieldref </code> (9). </p>
+                    <p> <i> <code> class_index </code> </i> </p>
+                    <p> The <code> class_index </code> gives the index of the <code> CONSTANT_Class_info </code> entry for the class that declares the referenced field. </p>
+                    <p> Note that the <code> CONSTANT_Class_info </code> specified by <code> class_index </code> must represent a class and not an interface. Although interfaces can declare fields, those fields are by definition public, static, and final. As mentioned in earlier chapters, class files do not contain symbolic references to static final fields of other classes. Instead, class files contain a copy of the constant value of any static final fields it uses. For example, if a class uses a static final field of type <code> float </code> that is declared in an interface, the class would have a <code> CONSTANT_Float_info </code> table in its own constant pool that stores the <code> float </code> value. For more information about this special treatment of static final fields, see Chapter 8, "The Linking Model." </p>
+                    <p> <i> <code> name_and_type_index </code> </i> </p>
+                    <p> The <code> name_and_type_index </code> gives the index of a <code> CONSTANT_NameAndType_info </code> entry that gives the field's simple name and descriptor. </p>
+                    <p> The CONSTANT_Methodref_info Table </p>
+                    <p> The <code> CONSTANT_Methodref_info </code> table represents a symbolic reference to a method declared in a class (not in an interface). Table 6-17 shows the format of a <code> CONSTANT_Methodref_info </code> table. </p>
+                    <p> Table 6-17. Format of a <code> CONSTANT_Methodref_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> tag </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> class_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> name_and_type_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> tag </code> </i> </p>
+                    <p> The <code> tag </code> item has the value <code> CONSTANT_Methodref </code> (10). </p>
+                    <p> <i> <code> class_index </code> </i> </p>
+                    <p> The <code> class_index </code> gives the index of a <code> CONSTANT_Class_info </code> entry for the class that declares the referenced method. The <code> CONSTANT_Class_info </code> table specified by <code> class_index </code> must be a class and not an interface. Symbolic references to methods declared in interfaces use <code> CONSTANT_InterfaceMethodref </code> . </p>
+                    <p> <i> <code> name_and_type_index </code> </i> </p>
+                    <p> The <code> name_and_type_index </code> gives the index of a <code> CONSTANT_NameAndType_info </code> entry that gives the method's simple name and descriptor. </p>
+                    <p> The CONSTANT_InterfaceMethodref_info Table </p>
+                    <p> The <code> CONSTANT_InterfaceMethodref_info </code> table represents a symbolic reference to a method declared in an interface (not in a class). Table 6-18 shows the format of a <code> CONSTANT_InterfaceMethodref_info </code> table. </p>
+                    <p> Table 6-18. Format of a <code> CONSTANT_InterfaceMethodref_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> tag </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> class_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> name_and_type_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> tag </code> </i> </p>
+                    <p> The <code> tag </code> item has the value <code> CONSTANT_InterfaceMethodref </code> (11). </p>
+                    <p> <i> <code> class_index </code> </i> </p>
+                    <p> The <code> class_index </code> gives the index of a <code> CONSTANT_Class_info </code> entry for the interface that declares the referenced method. The <code> CONSTANT_Class_info </code> table specified by <code> class_index </code> must be an interface and not a class. Symbolic references to methods declared in classes use <code> CONSTANT_Methodref </code> . </p>
+                    <p> <i> <code> name_and_type_index </code> </i> </p>
+                    <p> The <code> name_and_type_index </code> gives the index of a <code> CONSTANT_NameAndType_info </code> entry that gives the method's simple name and descriptor. </p>
+                    <p> The CONSTANT_NameAndType_info Table </p>
+                    <p> The <code> CONSTANT_NameAndType_info </code> table forms part of a symbolic reference to a field or method. This table gives constant pool entries of the simple name and the descriptor of the referenced field or method. Table 6-19 shows the format of a <code> CONSTANT_NameAndType_info </code> table. </p>
+                    <p> Table 6-19. Format of a <code> CONSTANT_NameAndType_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> tag </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> name_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> descriptor_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> tag </code> </i> </p>
+                    <p> The <code> tag </code> item has the value <code> CONSTANT_NameAndType </code> (12). </p>
+                    <p> <i> <code> name_index </code> </i> </p>
+                    <p> The <code> name_index </code> gives the index of a <code> CONSTANT_Utf8_info </code> entry that gives the name of the field or method. </p>
+                    <p> <i> <code> descriptor_index </code> </i> </p>
+                    <p> The <code> descriptor_index </code> gives the index of a <code> CONSTANT_Utf8_info </code> entry that gives the descriptor of the field or method. </p>
+                    <p> <em> Fields </em> </p>
+                    <p> Each field (class variable and instance variable) declared in a class or interface is described by a <code> field_info </code> table in the class file. The format of the <code> field_info </code> table is shown in Table 6-20. </p>
+                    <p> Table 6-20. Format of a <code> field_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> access_flags </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> name_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> descriptor_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> attributes_count </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> attribute_info </code></td>
+                            <td valign="top"><code> attributes </code></td>
+                            <td valign="top"><code> attributes_count </code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> access_flags </p>
+                    <p> The modifiers used in declaring the field are placed into the field's <code> access_flags </code> item. Table 6-21 shows the bits used by each flag. </p>
+                    <p> Table 6-21. Flags in the <code> access_flags </code> item of <code> field_info </code> tables </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Flag Name </strong></td>
+                            <td valign="top"><strong> Value </strong></td>
+                            <td valign="top"><strong> Meaning if Set </strong></td>
+                            <td valign="top"><strong> Set By </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_PUBLIC </code></td>
+                            <td valign="top"> 0x0001</td>
+                            <td valign="top"> Field is public</td>
+                            <td valign="top"> Classes and interfaces</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_PRIVATE </code></td>
+                            <td valign="top"> 0x0002</td>
+                            <td valign="top"> Field is private</td>
+                            <td valign="top"> Classes only</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_PROTECTED </code></td>
+                            <td valign="top"> 0x0004</td>
+                            <td valign="top"> Field is protected</td>
+                            <td valign="top"> Classes only</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_STATIC </code></td>
+                            <td valign="top"> 0x0008</td>
+                            <td valign="top"> Field is static</td>
+                            <td valign="top"> Classes and interfaces</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_FINAL </code></td>
+                            <td valign="top"> 0x0010</td>
+                            <td valign="top"> Field is final</td>
+                            <td valign="top"> Classes and interfaces</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_VOLATILE </code></td>
+                            <td valign="top"> 0x0040</td>
+                            <td valign="top"> Field is volatile</td>
+                            <td valign="top"> Classes only</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_TRANSIENT </code></td>
+                            <td valign="top"> 0x0080</td>
+                            <td valign="top"> Field is transient</td>
+                            <td valign="top"> Classes only</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> For fields declared in a class (not an interface), at most one of <code> ACC_PUBLIC </code> , <code> ACC_PRIVATE </code> , and <code> ACC_PROTECTED </code> may be set. <code> ACC_FINAL </code> and <code> ACC_VOLATILE </code> must not both be set. All fields declared in interfaces must have the <code> ACC_PUBLIC </code> , <code> ACC_STATIC </code> , and <code> ACC_FINAL </code> flags set. </p>
+                    <p> All unused bits in <code> access_flags </code> must be set to zero and ignored by Java Virtual Machine implementations. </p>
+                    <p> name_index </p>
+                    <p> The <code> name_index </code> gives the index of a <code> CONSTANT_Utf8_info </code> entry that gives the simple (not fully qualified) name of the field. </p>
+                    <p> descriptor_index </p>
+                    <p> The <code> descriptor_index </code> gives the index of a <code> CONSTANT_Utf8_info </code> entry that gives the descriptor of the field. </p>
+                    <p> attributes_count and attributes </p>
+                    <p> The <code> attributes </code> item is a list of <code> attribute_info </code> tables. The <code> attributes_count </code> indicates the number of <code> attribute_info </code> tables in the list. Two kinds of attributes defined by the Java Virtual Machine specification that may appear in this item are <code> ConstantValue </code> and <code> Synthetic </code> . These two attributes are described in detail later in this chapter. </p>
+                    <p> <em> Methods </em> </p>
+                    <p> Each method declared in a class or interface or generated by the compiler is described in the class file by a <code> method_info </code> table. The two types of compiler-generated methods that may appear in class files are instance initialization methods (named <code> &lt;init&gt; </code> ) and class initialization methods (named <code> &lt;clinit&gt; </code> ). For more information on the compiler-generated methods, see Chapter 7, "The Lifetime of a Class." The format of the <code> method_info </code> table is shown in Table 6-22. </p>
+                    <p> Table 6-22. Format of a <code> method_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> access_flags </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> name_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> descriptor_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> attributes_count </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> attribute_info </code></td>
+                            <td valign="top"><code> attributes </code></td>
+                            <td valign="top"><code> attributes_count </code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> access_flags </p>
+                    <p> The modifiers used in declaring the method are placed into the method's <code> access_flags </code> item. Table 6-23 shows the bits used by each flag. </p>
+                    <p> Table 6-23. Flags in the <code> access_flags </code> item of <code> method_info </code> tables </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Flag Name </strong></td>
+                            <td valign="top"><strong> Value </strong></td>
+                            <td valign="top"><strong> Meaning if Set </strong></td>
+                            <td valign="top"><strong> Set By </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_PUBLIC </code></td>
+                            <td valign="top"> 0x0001</td>
+                            <td valign="top"> Method is public</td>
+                            <td valign="top"> Classes and all methods of interfaces</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_PRIVATE </code></td>
+                            <td valign="top"> 0x0002</td>
+                            <td valign="top"> Method is private</td>
+                            <td valign="top"> Classes only</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_PROTECTED </code></td>
+                            <td valign="top"> 0x0004</td>
+                            <td valign="top"> Method is protected</td>
+                            <td valign="top"> Classes only</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_STATIC </code></td>
+                            <td valign="top"> 0x0008</td>
+                            <td valign="top"> Method is static</td>
+                            <td valign="top"> Classes only</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_FINAL </code></td>
+                            <td valign="top"> 0x0010</td>
+                            <td valign="top"> Method is final</td>
+                            <td valign="top"> Classes only</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_SYNCHRONIZED </code></td>
+                            <td valign="top"> 0x0020</td>
+                            <td valign="top"> Method is synchronized</td>
+                            <td valign="top"> Classes only</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_NATIVE </code></td>
+                            <td valign="top"> 0x0100</td>
+                            <td valign="top"> Method is native</td>
+                            <td valign="top"> Classes only</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ACC_ABSTRACT </code></td>
+                            <td valign="top"> 0x0400</td>
+                            <td valign="top"> Method is abstract</td>
+                            <td valign="top"> Classes and all methods of interfaces</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> For methods declared in a class (not an interface), at most one of <code> ACC_PUBLIC </code> , <code> ACC_PRIVATE </code> , and <code> ACC_PROTECTED </code> may be set. If a method's <code> ACC_FINAL </code> flag is set, then its <code> ACC_SYNCHRONIZED </code> , <code> ACC_NATIVE </code> , and <code> ACC_ABSTRACT </code> flags must not be set. If a method's <code> ACC_PRIVATE </code> or <code> ACC_STATIC </code> flag is set, then its <code> ACC_ABSTRACT </code> flag must not be set. All methods declared in interfaces must have their <code> ACC_PUBLIC </code> and <code> ACC_ABSTRACT </code> flags set. </p>
+                    <p> Instance initialization ( <code> &lt;init&gt; </code> ) methods may only use flags <code> ACC_PUBLIC </code> , <code> ACC_PRIVATE </code> , and <code> ACC_PROTECTED </code> . Because class initialization ( <code> &lt;clinit&gt; </code> ) methods are invoked by the Java Virtual Machine, never directly by Java bytecodes, the the <code> access_flags </code> for <code> &lt;clinit&gt; </code> methods is ignored. </p>
+                    <p> All unused bits in <code> access_flags </code> must be set to zero and ignored by Java Virtual Machine implementations. </p>
+                    <p> name_index </p>
+                    <p> The <code> name_index </code> gives the index of a <code> CONSTANT_Utf8_info </code> entry that gives the simple (not fully qualified) name of the method. </p>
+                    <p> descriptor_index </p>
+                    <p> The <code> descriptor_index </code> gives the index of a <code> CONSTANT_Utf8_info </code> entry that gives the descriptor of the method. </p>
+                    <p> attributes_count and attributes </p>
+                    <p> The <code> attributes </code> item is a list of <code> attribute_info </code> tables. The <code> attributes_count </code> indicates the number of <code> attribute_info </code> tables in the list. Three kinds of attributes that are defined by the Java Virtual Machine specification that may appear in this item are <code> Code </code> , <code> Exceptions </code> , and <code> Synthetic </code> . These three attributes are described in detail later in this chapter. </p>
+                    <p> <em> Attributes </em> </p>
+                    <p> As mentioned above, attributes appear in several places inside a Java class file. They can appear in the <code> ClassFile </code> , <code> field_info </code> , <code> method_info </code> , and <code> Code_attribute </code> tables. The <code> Code_attribute </code> table, an attribute itself, is described later in this section. </p>
+                    <p> Every attribute follows the same general format of the <code> attribute_info </code> table, shown in Table 6-24. The first two bytes of an attribute, the <code> attribute_name_index </code> , form an index into the constant pool of a <code> CONSTANT_Utf8_info </code> table that contains the string name of the attribute. Each <code> attribute_info </code> , therefore, identifies its "type" by the first item in its table much like <code> cp_info </code> tables identify their type by the initial <code> tag </code> byte. The difference is that whereas the type of a <code> cp_info </code> table is indicated by an unsigned byte value, such as 3 ( <code> CONSTANT_Integer_info </code> ), the type of an <code> attribute_info </code> table is indicated by a string. </p>
+                    <p> Following the <code> attribute_name_index </code> is a four-byte <code> attribute_length </code> item, which gives the length of the entire <code> attribute_info </code> table minus the initial six bytes. This length is necessary because anyone, following certain rules (outlined below), is allowed to add attributes to a Java class file. Java Virtual Machine implementations are allowed to recognize new attributes. Implementations must ignore any attributes they don't recognize. The <code> attribute_length </code> allows virtual machines to skip unrecognized attributes as they parse the class file. </p>
+                    <p> Anyone who wishes to add a new attribute to a Java class file must follow these two rules: </p>
+                    <ol>
+                        <li> Any attribute that is not predefined by the specification must not affect the semantics of class or interface types. New attributes can only add more information to the class file, such as information used during debugging. </li>
+                        <li> The attribute must be named using the reverse Internet domain name scheme that is defined for package naming in the Java Language Specification. For example, if your Internet domain name were <code> artima.com </code> and you wished to create a new attribute named <code> CompilerVersion </code> , you would name the attribute: <code> COM.artima.CompilerVersion </code> . </li>
+                    </ol>
+                    <p> Table 6-24. Format of an <code> attribute_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> attribute_name_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u4 </code></td>
+                            <td valign="top"><code> attribute_length </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> info </code></td>
+                            <td valign="top"><code> attribute_length </code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> attribute_name_index </p>
+                    <p> The <code> attribute_name_index </code> gives the index in the constant pool of a <code> CONSTANT_Utf8_info </code> entry that contains the name of the attribute. </p>
+                    <p> attribute_length </p>
+                    <p> The <code> attribute_length </code> item indicates the length in bytes of the attribute data excluding the initial six bytes that contain the <code> attribute_name_index </code> and <code> attribute_length </code> . </p>
+                    <p> info </p>
+                    <p> The <code> info </code> item contains the attribute data. </p>
+                    <p> <em> Attributes </em> </p>
+                    <p> The Java Virtual Machine specification defines eight types of attributes, shown in Table 6-25. All Java Virtual Machine implementations must recognize three of these attributes: <code> Code </code> , <code> ConstantValue </code> , and <code> Exceptions </code> . Implementations can choose whether to recognize or ignore the other predefined attributes. (The <code> InnerClasses </code> and <code> Synthetic </code> attributes were added in Java 1.1). All of these predefined attributes are described in detail later in this chapter. </p>
+                    <p> Table 6-25. Types of <code> attribute_info </code> tables defined by the specification </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Used By </strong></td>
+                            <td valign="top"><strong> Description </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> Code </code></td>
+                            <td valign="top"><code> method_info </code></td>
+                            <td valign="top"> The bytecodes and other data for one method</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> ConstantValue </code></td>
+                            <td valign="top"><code> field_info </code></td>
+                            <td valign="top"> The value of a final variable</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> Exceptions </code></td>
+                            <td valign="top"><code> method_info </code></td>
+                            <td valign="top"> The checked exceptions that a method may throw</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> InnerClasses </code></td>
+                            <td valign="top"><code> ClassFile </code></td>
+                            <td valign="top"> A description of the inner classes defined inside a class</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> LineNumberTable </code></td>
+                            <td valign="top"><code> Code_attribute </code></td>
+                            <td valign="top"> A mapping of line numbers to bytecodes for one method</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> LocalVariableTable </code></td>
+                            <td valign="top"><code> Code_attribute </code></td>
+                            <td valign="top"> A description of the local variables for one method</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> SourceFile </code></td>
+                            <td valign="top"><code> ClassFile </code></td>
+                            <td valign="top"> The name of the source file</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> Synthetic </code></td>
+                            <td valign="top"><code> field_info </code> , <code>
+                                method_info </code></td>
+                            <td valign="top"> An indicator that a field or method was generated by the compiler</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> The Code Attribute </p>
+                    <p> One <code> Code_attribute </code> table appears in the <code> method_info </code> table of every method that is not abstract or native. The format of a <code> Code_attribute </code> table is shown in Table 6-26. </p>
+                    <p> Table 6-26. Format of a <code> Code_attribute </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> attribute_name_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u4 </code></td>
+                            <td valign="top"><code> attribute_length </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> max_stack </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> max_locals </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u4 </code></td>
+                            <td valign="top"><code> code_length </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u1 </code></td>
+                            <td valign="top"><code> code </code></td>
+                            <td valign="top"><code> code_length </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> exception_table_length </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> exception_info </code></td>
+                            <td valign="top"> exception_table</td>
+                            <td valign="top"> exception_table_length</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> attributes_count </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> attribute_info </code></td>
+                            <td valign="top"><code> attributes </code></td>
+                            <td valign="top"><code> attributes_count </code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> attribute_name_index </code> </i> </p>
+                    <p> The <code> attribute_name_index </code> gives the index in the constant pool of a <code> CONSTANT_Utf8_info </code> entry that contains the string <code> "Code" </code> . </p>
+                    <p> <i> <code> attribute_length </code> </i> </p>
+                    <p> The <code> attribute_length </code> item gives the length in bytes of the <code> Code </code> attribute excluding the initial six bytes that contain the <code> attribute_name_index </code> and <code> attribute_length </code> items. </p>
+                    <p> <i> <code> max_stack </code> </i> </p>
+                    <p> The <code> max_stack </code> item gives the maximum number of words that will be on the operand stack of this method at any point during its execution. </p>
+                    <p> <i> <code> max_locals </code> </i> </p>
+                    <p> The <code> max_locals </code> item gives the number of words in the local variables that are required by this method. </p>
+                    <p> <i> <code> code_length </code> and <code> code </code> </i> </p>
+                    <p> The <code> code_length </code> item gives the length in bytes of the bytecode stream for this method. The bytecodes themselves appear in the <code> code </code> item. </p>
+                    <p> <i> <code> exception_table_length </code> and </i> </p> <code> exception_table </code>
+                    <p> The <code> exception_table </code> item is a list of <code> exception_info </code> tables. Each <code> exception_info </code> table describes one exception table entry. The <code> exception_table_length </code> item gives the number of <code> exception_info </code> tables that appear in the <code> exception_table </code> list. The order in which the <code> exception_info </code> tables appear in the list is the order in which the Java Virtual Machine will check for a matching exception handler (catch clause) if an exception is thrown while this method executes. The format of a <code> exception_info </code> table is shown in Table 6-27. For more information about exception tables, see Chapter 17, "Exceptions." </p>
+                    <p> Table 6-27. Format of an <code> exception_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> start_pc </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> end_pc </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> handler_pc </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> catch_type </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <h4> <code> start_pc </code> </h4>
+                    <p> The <code> start_pc </code> item gives the offset from the beginning of the code array for the beginning of the range covered by this exception handler. </p> <h4> <code> end_pc </code> </h4>
+                    <p> The <code> end_pc </code> item gives the offset from the beginning of the code array for one byte past the end of the range covered by this exception handler. </p> <h4> <code> handler_pc </code> </h4>
+                    <p> The <code> handler_pc </code> item gives the offset from the beginning of the code array for the instruction to jump to (the first instruction of the exception handler) if a thrown exception is caught by this entry. </p>
+                    <h4> <code> catch_type </code> </h4>
+                    <p> The <code> catch_type </code> item gives the constant pool index of a <code> CONSTANT_Class_info </code> entry for the type of exception caught by this exception handler. The <code> CONSTANT_Class_info </code> entry must represent class <code> java.lang.Throwable </code> or one of its subclasses. </p>
+                    <p> If the value of <code> catch_type </code> is zero (which isn't a valid index into the constant pool, because the constant pool starts at index one), the exception handler handles all exceptions. A <code> catch_type </code> of zero is used to implement finally clauses. See Chapter 18, "Finally Clauses," for more information about how finally clauses are implemented. </p>
+                    <p> <i> <code> attributes_count </code> and <code> attributes </code> </i> </p>
+                    <p> The <code> attributes </code> item is a list of <code> attribute_info </code> tables. The <code> attributes_count </code> indicates the number of <code> attribute_info </code> tables in the list. The two kinds of attributes defined by the Java Virtual Machine specification that may appear in this item are <code> LineNumberTable </code> and <code> LocalVariableTable </code> . These two attributes are described in detail later in this chapter. </p>
+                    <p> The ConstantValue Attribute </p>
+                    <p> The <code> ConstantValue </code> attribute appears in <code> field_info </code> tables for fields that have a constant value. In the <code> access_flags </code> of a <code> field_info </code> table that includes a <code> ConstantValue </code> attribute, the <code> ACC_STATIC </code> flag must be set. The <code> ACC_FINAL </code> flag may also be set, though it is not required. When the virtual machine initializes a field that has a <code> ConstantValue </code> attribute, it assigns the constant value to the field. The format of a <code> ConstantValue_attribute </code> table is shown in Table 6-28. </p>
+                    <p> Table 6-28. Format of a <code> ConstantValue_attribute </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> attribute_name_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u4 </code></td>
+                            <td valign="top"><code> attribute_length </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> constantvalue_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> attribute_name_index </code> </i> </p>
+                    <p> The <code> attribute_name_index </code> gives the index in the constant pool of a <code> CONSTANT_Utf8_info </code> entry that contains the string <code> "ConstantValue" </code> . </p>
+                    <p> <i> <code> attribute_length </code> </i> </p>
+                    <p> The <code> attribute_length </code> item of a <code> ConstantValue_attribute </code> is always 2. </p>
+                    <p> <i> <code> constantvalue_index </code> </i> </p>
+                    <p> The <code> constantvalue_index </code> item gives the index in the constant pool of an entry that gives a constant value. Table 6-29 shows the type of entry for each type of field. </p>
+                    <p> Table 6-29. Constant pool entry types for constant value attributes </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top">
+                                <strong>
+                                    <code>byte</code>,
+                                    <code>short</code>,
+                                    <code>char</code>,
+                                    <code>int</code> ,
+                                    <code>boolean</code>
+                                </strong>
+                            </td>
+                            <td valign="top">
+                                <strong> <code> CONSTANT_Integer_info </code> </strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> long </code></td>
+                            <td valign="top"><code> CONSTANT_Long_info </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> float </code></td>
+                            <td valign="top"><code> CONSTANT_Float_info </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> double </code></td>
+                            <td valign="top"><code> CONSTANT_Double_info </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> java.lang.String </code></td>
+                            <td valign="top"><code> CONSTANT_String_info </code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> The Exceptions Attribute </p>
+                    <p> The <code> Exceptions </code> attribute lists the checked exceptions that a method may throw. One <code> Exceptions_attribute </code> table appears in the <code> method_info </code> table of every method that may throw checked exceptions. The format of a <code> Exceptions_attribute </code> table is shown in Table 6-30. </p>
+                    <p> Table 6-30. Format of an <code> Exceptions_attribute </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> attribute_name_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u4 </code></td>
+                            <td valign="top"><code> attribute_length </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> number_of_exceptions </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> exception_index_table </code></td>
+                            <td valign="top"><code> number_of_exceptions </code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> attribute_name_index </code> </i> </p>
+                    <p> The <code> attribute_name_index </code> gives the index in the constant pool of a <code> CONSTANT_Utf8_info </code> entry that contains the string <code> "Exceptions" </code> . </p>
+                    <p> <i> <code> attribute_length </code> </i> </p>
+                    <p> The <code> attribute_length </code> item gives the length in bytes of the <code> Exceptions_attribute </code> excluding the initial six bytes that contain the <code> attribute_name_index </code> and <code> attribute_length </code> items. </p>
+                    <p> <i> <code> number_of_exceptions </code> and </i> </p> <code> exception_index_table </code>
+                    <p> The <code> exception_index_table </code> is an array of indexes into the constant pool of <code> CONSTANT_Class_info </code> entries for the exceptions declared in this method's <code> throws </code> clause. In other words, the <code> exception_index_table </code> lists all the checked exceptions that this method may throw. The <code> number_of_exceptions </code> item indicates the number of indexes in the array. </p>
+                    <p> The InnerClasses Attribute </p>
+                    <p> The <code> InnerClasses </code> attribute lists any inner classes declared in a class. The <code> InnerClasses_attribute </code> table appears in the attributes of the <code> ClassFile </code> table for those classes that have inner classes. The format of a <code> InnerClasses_attribute </code> table is shown in Table 6-31. </p>
+                    <p> Table 6-31. Format of a <code> InnerClasses_attribute </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"> Type</td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> attribute_name_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u4 </code></td>
+                            <td valign="top"><code> attribute_length </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> number_of_classes </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> classes_info </code></td>
+                            <td valign="top"><code> classes </code></td>
+                            <td valign="top"><code> number_of_classes </code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> attribute_name_index </code> </i> </p>
+                    <p> The <code> attribute_name_index </code> gives the index in the constant pool of a <code> CONSTANT_Utf8_info </code> entry that contains the string <code> "InnerClasses" </code> . </p>
+                    <p> <i> <code> attribute_length </code> </i> </p>
+                    <p> The <code> attribute_length </code> item gives the length in bytes of the <code> Exceptions_attribute </code> excluding the initial six bytes that contain the <code> attribute_name_index </code> and <code> attribute_length </code> items. </p>
+                    <p> <i> <code> number_of_classes </code> and <code> classes </code> </i> </p>
+                    <p> The <code> classes </code> item is an array of <code> inner_class_info </code> tables. The <code> number_of_classes </code> gives the number of <code> inner_class_info </code> tables that appear in the <code> classes </code> array. The format of the <code> inner_class_info </code> table is shown in Table 6-32. </p>
+                    <p> Table 6-32. Format of an <code> inner_class_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> inner_class_info_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> outer_class_info_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> inner_name_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> inner_class_access_flags </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> inner_class_info_index </code> </i> </p>
+                    <p> The <code> inner_class_info_index </code> gives an index into the constant pool for a <code> CONSTANT_Class_info </code> entry for an inner class. </p>
+                    <p> <i> <code> outer_class_info_index </code> </i> </p>
+                    <p> The <code> outer_class_info_index </code> gives an index into the constant pool for a <code> CONSTANT_Class_info </code> entry for the class in which the inner class described by this <code> inner_class_info </code> table is defined. If the inner class is not a member, the <code> outer_class_info_index </code> is zero. </p>
+                    <p> <i> <code> inner_name_index </code> </i> </p>
+                    <p> The <code> inner_name_index </code> gives an index in the constant pool for a <code> CONSTANT_Utf8_info </code> entry that gives the simple name of the inner class. If the inner class is anonymous, the <code> inner_name_index </code> is zero. </p>
+                    <p> <i> <code> inner_class_access_flags </code> </i> </p>
+                    <p> The <code> inner_class_access_flags </code> item gives the access flags for the inner class. The flags used in this item are the same shown in Table 6-4 above for top-level classes. </p>
+                    <p> The LineNumberTable Attribute </p>
+                    <p> The <code> LineNumberTable </code> attribute maps offsets in a method's bytecode stream to line numbers in the source file. One <code> LineNumberTable_attribute </code> table may appear (it is optional) in the attributes component of <code> Code_attribute </code> tables. The format of a <code> LineNumberTable_attribute </code> table is shown in Table 6-33. </p>
+                    <p> Table 6-33. Format of a <code> LineNumberTable_attribute </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> attribute_name_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u4 </code></td>
+                            <td valign="top"><code> attribute_length </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> line_number_table_length </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> line_number_info </code></td>
+                            <td valign="top"><code> line_number_table </code></td>
+                            <td valign="top"><code> line_number_table_length </code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> attribute_name_index </code> </i> </p>
+                    <p> The <code> attribute_name_index </code> gives the index in the constant pool of a <code> CONSTANT_Utf8_info </code> entry that contains the string <code> "LineNumberTable" </code> . </p>
+                    <p> <i> <code> attribute_length </code> </i> </p>
+                    <p> The <code> attribute_length </code> item gives the length in bytes of the <code> LineNumberTable_attribute </code> excluding the initial six bytes that contain the <code> attribute_name_index </code> and <code> attribute_length </code> items. </p>
+                    <p> <i> <code> line_number_table_length </code> and </i> </p> <code> line_number_table </code>
+                    <p> The <code> line_number_table </code> item is an array of <code> line_number_info </code> tables. The <code> line_number_table_length </code> gives the number of <code> line_number_info </code> tables that appear in the <code> line_number_table </code> array. The tables in this array may appear in any order, and there may be more than one table for the same line number. The format of a <code> line_number_info </code> is shown in Table 6-34. </p>
+                    <p> Table 6-34. Format of a <code> line_number_info </code> </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> start_pc </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> line_number </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <h4> <code> start_pc </code> </h4>
+                    <p> The <code> start_pc </code> item gives an offset from the beginning of the code array where a new line begins. </p>
+                    <h4> <code> line_number </code> </h4>
+                    <p> The <code> line_number </code> item gives the line number of the line that begins at <code> start_pc </code> . </p>
+                    <p> The LocalVariableTable Attribute </p>
+                    <p> The <code> LocalVariableTable </code> attribute maps words in the local variables portion of the method's stack frame to names and descriptors of local variables in the source code. One <code> LocalVariableTable_attribute </code> table may appear (it is optional) in the attributes component of <code> Code_attribute </code> tables. The format of a <code> LocalVariableTable_attribute </code> table is shown in Table 6-35. </p>
+                    <p> Table 6-35. Format of a <code> LocalVariableTable_attribute </code> table </p> <table width="500"> <tbody> <tr> <td valign="top"> <strong> Type </strong> </td> <td valign="top"> <strong> Name </strong> </td> <td valign="top"> <strong> Count </strong> </td> </tr> <tr> <td valign="top"> <code> u2 </code> </td> <td valign="top"> <code> attribute_name_index </code> </td> <td valign="top"> 1 </td> </tr> <tr> <td valign="top"> <code> u4 </code> </td> <td valign="top"> <code> attribute_length </code> </td> <td valign="top"> 1 </td> </tr> <tr> <td valign="top"> <code> u2 </code> </td> <td valign="top"> <code> local_variable_table_length </code> </td> <td valign="top"> 1 </td> </tr> <tr> <td valign="top"> <code> local_variable_info </code> </td> <td valign="top"> <code> local_variable_table </code> </td> <td valign="top"> <code> local_variable_table_length </code> </td> </tr> </tbody> </table>
+                    <p> <i> <code> attribute_name_index </code> </i> </p>
+                    <p> The <code> attribute_name_index </code> gives the index in the constant pool of a <code> CONSTANT_Utf8_info </code> entry that contains the string <code> "LocalVariableTable" </code> . </p>
+                    <p> <i> <code> attribute_length </code> </i> </p>
+                    <p> The <code> attribute_length </code> item gives the length in bytes of the <code> LocalVariableTable_attribute </code> excluding the initial six bytes that contain the <code> attribute_name_index </code> and <code> attribute_length </code> items. </p>
+                    <p> <i> <code> local_variable_table_length </code> and </i> </p> <code> local_variable_table </code>
+                    <p> The <code> local_variable_table </code> item is an array of <code> local_variable_info </code> tables. The <code> local_variable_table_length </code> gives the number of <code> local_variable_info </code> tables that appear in the <code> local_variable_table </code> array. The format of a <code> local_variable_info </code> table is shown in Table 6-36. </p>
+                    <p> Table 6-36. Format of a <code> local_variable_info </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> start_pc </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> length </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> name_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> descriptor_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <h4> <code> start_pc </code> and <code> length </code> </h4>
+                    <p> The <code> start_pc </code> item gives an offset in the code array of the start of an instruction. The length item gives the length of the range of code that starts with <code> start_pc </code> for which a local variable is valid. The byte at offset <code> start_pc </code> <code> + </code> <code> length </code> from the beginning of the code array must either be the first byte of an instruction or the first byte past the end of the code array. </p> <h4> <code> name_index </code> </h4>
+                    <p> The <code> name_index </code> item gives an index in the constant pool of a <code> CONSTANT_Utf8_info </code> entry for the name of the local variable. </p> <h4> <code> descriptor_index </code> </h4>
+                    <p> The descriptor_index item gives an index in the constant pool of a <code> CONSTANT_Utf8_info </code> entry that contains the descriptor for this local variable. (A local variable descriptor adheres to the same grammar as a field descriptor.) </p> <h4> <code> index </code> </h4>
+                    <p> The <code> index </code> item gives the index in the local variable portion of this method's stack frame where the data for this local variable is kept as the method executes. If the local variable is of type <code> long </code> or <code> double </code> , the data occupies two words at positions <code> index </code> and <code> index </code> <code> + </code> <code> 1 </code> . Otherwise the data occupies one word at position <code> index </code> . </p>
+                    <p> The SourceFile Attribute </p>
+                    <p> The optional <code> SourceFile </code> attribute, which may appear in the attributes component of a <code> ClassFile </code> table, gives the name of the source file from which the class file was generated. The format of a <code> SourceFile_attribute </code> table is shown in Table 6-37. </p>
+                    <p> Table 6-37. Format of a <code> SourceFile_attribute </code> table </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Name </strong></td>
+                            <td valign="top"><strong> Count </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> attribute_name_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u4 </code></td>
+                            <td valign="top"><code> attribute_length </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"><code> u2 </code></td>
+                            <td valign="top"><code> sourcefile_index </code></td>
+                            <td valign="top"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> <i> <code> attribute_name_index </code> </i> </p>
+                    <p> The <code> attribute_name_index </code> gives the index in the constant pool of a <code> CONSTANT_Utf8_info </code> entry that contains the string <code> "SourceFile" </code>. </p>
+                    <p> <i> <code> attribute_length </code> </i> </p>
+                    <p> The <code> attribute_length </code> item of a <code> SourceFile_attribute </code> is always 2. </p>
+                    <p> <i> <code> sourcefile_index </code> </i> </p>
+                    <p> The <code> sourcefile_index </code> item gives the index in the constant pool of a <code> CONSTANT_Utf8_info </code> entry that contains the name of the source file. The source file name never includes a directory path . </p>
+                    <p> The Synthetic Attribute </p>
+                    <p> The Synthetic attribute, which may optionally appear in the attributes components of <code> field_info </code> and <code> method_info </code> tables, indicates that a field or method was generated by the compiler. The <code> Synthetic </code> attribute was added in Java 1.1 to support inner classes. The format of a <code> Synthetic_attribute </code> is shown in Table 6-38. </p>
+                    <p> Table 6-38. Format of a <code> Synthetic_attribute </code> table </p> <table width="500"> <tbody> <tr> <td valign="top"> <strong> Type </strong> </td> <td valign="top"> <strong> Name </strong> </td> <td valign="top"> <strong> Count </strong> </td> </tr> <tr> <td valign="top"> <code> u2 </code> </td> <td valign="top"> <code> attribute_name_index </code> </td> <td valign="top"> 1 </td> </tr> <tr> <td valign="top"> <code> u4 </code> </td> <td valign="top"> <code> attribute_length </code> </td> <td valign="top"> 1 </td> </tr> </tbody> </table>
+                    <p> <i> <code> attribute_name_index </code> </i> </p>
+                    <p> The <code> attribute_name_index </code> gives the index in the constant pool of a <code> CONSTANT_Utf8_info </code> entry that contains the string <code> "Synthetic" </code> . </p>
+                    <p> <i> <code> attribute_length </code> </i> </p>
+                    <p> The <code> attribute_length </code> must be zero. </p>
+                    <p> <em> Getting Loaded: A Simulation </em> </p>
+                    <p> The <i> Getting Loaded </i> applet, shown in Figure 6-3, simulates a Java Virtual Machine loading a class file. The class file being loaded in the simulation was generated by the 1.1 <code> javac </code> compiler from the Java source code shown below. Although the snippet of code used in the simulation may not be very useful in the real world, it does compile to a real class file and provides a reasonably simple example of the class file format. This is the same class used in the <i> Eternal Math </i> simulation applet described in Chapter 5, "The Java Virtual Machine." </p>
+                    <p> </p>
+                    <pre> <p> <code> // On CD-ROM in file classfile/ex1/Act.java </code> </p> <p> <code> class Act { </code> </p> <code> <p> </p> <p> public static void doMathForever() { </p> <p> int i = 0; </p> <p> for (;;) { </p> <p> i += 1; </p> <p> i *= 2; </p> <p> } </p> <p> } </p> <p> } </p> </code> <code> <p> </p> </code> <code> end </code> <p/> </pre>
+                    <p> The <i> Getting Loaded </i> applet allows you to drive the class load simulation one step at a time. For each step along the way you can read about the next chunk of bytes that is about to be consumed and interpreted by the Java Virtual Machine. Just press the "Step" button to cause the Java Virtual Machine to consume the next chunk. Pressing "Back" will undo the previous step, and pressing "Reset" will return the simulation to its original state, allowing you to start over from the beginning. </p>
+                    <p> The Java Virtual Machine is shown at the bottom left consuming the stream of bytes that makes up the class file <code> Act.class </code> . The bytes are shown in hex streaming out of a server on the bottom right. The bytes travel right to left, between the server and the Java Virtual Machine, one chunk at a time. The chunk of bytes to be consumed by the Java Virtual Machine on the next "Step" button press are shown in red. These highlighted bytes are described in the large text area above the Java Virtual Machine. Any remaining bytes beyond the next chunk are shown in black. </p>
+                    <p> As mentioned in previous sections, many items in the class file refer to constant pool entries. To make it easier for you to look up constant pool entries as you step through the simulation, a list of the contents of <code> Act </code>'s constant pool is shown in Table 6-39. </p>
+                    <p> Table 6-39. Class <code> Act </code>'s constant pool </p>
+                    <table width="500">
+                        <tbody>
+                        <tr>
+                            <td valign="top"><strong> Index </strong></td>
+                            <td valign="top"><strong> Type </strong></td>
+                            <td valign="top"><strong> Value </strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 1</td>
+                            <td valign="top"><code> CONSTANT_Class_info </code></td>
+                            <td valign="top"> 7</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 2</td>
+                            <td valign="top"><code> CONSTANT_Class_info </code></td>
+                            <td valign="top"> 16</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 3</td>
+                            <td valign="top"><code> CONSTANT_Methodref_info </code></td>
+                            <td valign="top"> 2, 4</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 4</td>
+                            <td valign="top"><code> CONSTANT_NameAndType_info </code></td>
+                            <td valign="top"> 6, 5</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 5</td>
+                            <td valign="top"><code> CONSTANT_Utf8_info </code></td>
+                            <td valign="top"><code> "()V" </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 6</td>
+                            <td valign="top"><code> CONSTANT_Utf8_info </code></td>
+                            <td valign="top"><code> "&lt;init&gt; </code> "</td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 7</td>
+                            <td valign="top"><code> CONSTANT_Utf8_info </code></td>
+                            <td valign="top"><code> "Act" </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 8</td>
+                            <td valign="top"><code> CONSTANT_Utf8_info </code></td>
+                            <td valign="top"><code> "Act.java" </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 9</td>
+                            <td valign="top"><code> CONSTANT_Utf8_info </code></td>
+                            <td valign="top"><code> "Code" </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 10</td>
+                            <td valign="top"><code> CONSTANT_Utf8_info </code></td>
+                            <td valign="top"><code> "ConstantValue" </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 11</td>
+                            <td valign="top"><code> CONSTANT_Utf8_info </code></td>
+                            <td valign="top"><code> "Exceptions" </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 12</td>
+                            <td valign="top"><code> CONSTANT_Utf8_info </code></td>
+                            <td valign="top"><code> "LineNumberTable" </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 13</td>
+                            <td valign="top"><code> CONSTANT_Utf8_info </code></td>
+                            <td valign="top"><code> "LocalVariables" </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 14</td>
+                            <td valign="top"><code> CONSTANT_Utf8_info </code></td>
+                            <td valign="top"><code> "SourceFile" </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 15</td>
+                            <td valign="top"><code> CONSTANT_Utf8_info </code></td>
+                            <td valign="top"><code> "doMathForever" </code></td>
+                        </tr>
+                        <tr>
+                            <td valign="top"> 16</td>
+                            <td valign="top"><code> CONSTANT_Utf8_info </code></td>
+                            <td valign="top"><code> "java/lang/Object" </code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p> Each chunk of bytes is fully explained in the text area. Because there is a lot of detail in the text area, you may wish to skim through all the steps first to get the general idea, then look back for more details. Happy clicking. </p>
+                    <p> </p>
+                    <p> <em> On the CD-ROM </em> </p>
+                    <p> The CD-ROM contains the source code examples from this chapter in the <code> classfile </code> directory. The <i> Getting Loaded </i> applet is contained in a web page on the CD-ROM in file <code> applets/GettingLoaded.html </code> . The source code for this applet is found alongside its class files, in the <code> applets/GettingLoaded </code> directory. </p>
+                    <p> <em> The Resources Page </em> </p>
+                    <p> For more information about class files visit the resources page for this chapter: <code> http://www.artima.com/insidejvm/classfile.html </code> . </p>
+
+                </div>
+
+            </div>
+            <br/>
+            <div class="u-cf"></div>
+
+            <div class="row">
+                <div class="one-third column value">
+                    <a class="button button-primary mod" href="05.html">Previous page</a>
+                </div>
+                <div class="one-third column value" style="text-align:center;">
+                    <a class="button button-primary mod" href="index.html">Table of content</a>
+                </div>
+                <div class="one-third column value">
+                    <a class="button button-primary mod u-pull-right" href="07.html">Next page</a>
+                </div>
+            </div>
+            <hr/>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
+
+

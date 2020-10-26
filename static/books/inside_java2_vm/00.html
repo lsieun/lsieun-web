@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>intro | Inside the Java 2 Virtual Machine</title>
+    <meta name="description" content="Inside the Java 2 Virtual Machine">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="main.css" type="text/css"/>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="twelve columns">
+            <div class="row test">
+                <h1>intro</h1>
+            </div>
+            <div class="u-cf"></div>
+
+            <div class="row">
+                <div class="one-third column value">
+                    <a class="button button-primary mod" href="index.html">Previous page</a>
+                </div>
+                <div class="one-third column value" style="text-align:center;">
+                    <a class="button button-primary mod" href="index.html">Table of content</a>
+                </div>
+                <div class="one-third column value">
+                    <a class="button button-primary mod u-pull-right" href="01.html">Next page</a>
+                </div>
+            </div>
+
+            <div class="content index ">
+                <div class="u-cf"></div>
+                <div class="waka">
+                    <hr>
+                    <p> This book describes the Java Virtual Machine, the abstract computer on which all Java programs run. Through a combination of tutorial explanations , working examples, reference material, and applets that interactively illustrate the concepts presented in the text, this book provides an in-depth , technical survey of Java as a technology. </p>
+                    <p> The Java programming language seems poised to be the next popular language for mainstream commercial software development, the next step after C and C++. One of the fundamental reasons Java is a likely candidate for this role is that Java's architecture helps programmers deal with emerging hardware realities. Java has features that the shifting hardware environment is demanding, features that are made possible by the Java Virtual Machine. </p>
+                    <p> The evolution of programming languages has to a great extent been driven by changes in the hardware being programmed. As hardware has grown faster, cheaper, and more powerful, software has become larger and more complex. The migration from assembly languages to procedural languages, such as C, and to object oriented languages, such as C++, was largely driven by a need to manage ever greater complexity--complexity made possible by increasingly powerful hardware. </p>
+                    <p> Today the progression towards cheaper, faster, and more powerful hardware continues, as does the need for managing increasing software complexity. Building on C and C++, Java helps programmers deal with complexity by rendering impossible certain kinds of bugs that frequently plague C and C++ programmers. Java's inherent memory safety--garbage collection, lack of pointer arithmetic, run-time checks on the use of references-- prevents most memory bugs from ever occurring. Java's memory safety makes programmers more productive and helps them manage complexity. </p>
+                    <p> In addition, besides the ongoing increase in the capabilities of hardware, there is another fundamental shift taking place in the hardware environment--the network. As networks interconnect more and more computers and devices, new demands are being made on software. With the rise of the network, platform independence and security have become much more important than they were in the past. </p>
+                    <p> The Java Virtual Machine is responsible for the memory safety, platform neutrality, and security features of the Java programming language. Although virtual machines have been around for a long time, prior to Java they hadn't quite entered the mainstream. But given today's emerging hardware realities, software developers needed a programming language with a virtual machine, and Sun hit the market window with Java. </p>
+                    <p> Thus, the Java Virtual Machine embodies the right software "stuff" for the coming years of computing. This book will help you get to know this virtual machine, and armed with this knowledge, you'll know how best to put the Java Virtual Machine to use in your programs. </p>
+                    <p> <em> Who Should Read the Book </em> </p>
+                    <p> This book is aimed primarily at professional software developers and students who want to understand Java technology. I assume you are familiar, though not necessarily proficient, with the Java language. Reading this book should help you add a depth to your knowledge of Java programming. If you are one of the elite few who are actually writing Java compilers or creating implementations of the Java Virtual Machine, this book can serve as a companion to the Java Virtual Machine specification. Where the specification specifies, this book explains. </p>
+                    <p> <em> How to Use the Book </em> </p>
+                    <p> This book has five basic parts : </p>
+                    <ol>
+                        <li> An introduction to Java's architecture (Chapters 1 through 4)</li>
+                        <li> An in-depth, technical tutorial of Java internals (Chapters 5 through 20)</li>
+                        <li> A class file and instruction set reference (Chapter 6, Appendices A through C)</li>
+                        <li> Interactive illustrations, example source code, and the JDK (On the CD-ROM)</li>
+                        <li> The Resources Web Site ( <code> http://www.artima.com/insidejvm </code>)</li>
+                    </ol>
+                    <p> An Introduction to Java's Architecture </p>
+                    <p> Chapters 1 through 4 (Part I of this book) give an overview of Java's architecture, including the motivations behind--and the implications of--Java's architectural design. These chapters show how the Java Virtual Machine relates to the other components of Java's architecture: the class file, API, and language. If you want a basic understanding of Java as a technology, consult these chapters. Here are some specific points of interest from this portion of the book: </p>
+                    <ul>
+                        <li> For an overview of Java's architecture and a discussion of its inherent tradeoffs, see Chapter 1, "Introduction to Java's Architecture." </li>
+                        <li> For a discussion of what "platform independence" really means, how Java's architecture supports it, and seven steps to take to create a platform independent Java program, see Chapter 2, "Platform Independence." </li>
+                        <li> For a description of the security model built into Java's core architecture, including a tutorial explaining how to write a security-minded class loader, see Chapter 3, "Security." </li>
+                        <li> For a discussion of the new paradigm of network-mobile software, see Chapter 4, "Network Mobility." </li>
+                    </ul>
+                    <p> A Tutorial of Java Internals </p>
+                    <p> Chapters 5 through 20 (Part II of this book) give an in-depth technical description of the inner workings of the Java Virtual Machine. These chapters will help you understand how Java programs actually work. All the material in Part II is presented in a tutorial manner, with lots of examples. Here are some specific points of interest from this portion of the book: </p>
+                    <ul>
+                        <li> For a comprehensive overview of the inner workings of the Java Virtual Machine, see Chapter 5, "The Java Virtual Machine." </li>
+                        <li> If you are parsing, generating, or simply peering into Java class files, see Chapter 6, "The Java Class File," for a complete tutorial and reference on the class file format. </li>
+                        <li> For a discussion of the lifetime of a class inside the Java Virtual Machine, including the circumstances in which classes can be unloaded, see Chapter 7, "The Lifetime of a Class." </li>
+                        <li> For a thorough explanation of Java's linking model, including a tutorial and examples on writing your own class loaders, see Chapter 8, "The Linking Model." </li>
+                        <li> For a discussion of garbage collection and finalization , and suggestions on how to use finalizers, see Chapter 9, "Garbage Collection." </li>
+                        <li> For a tutorial on the Java Virtual Machine's instruction set, read Chapters 10 through 20. </li>
+                        <li> For an explanation of monitors and how you can use them to write thread-safe Java code, see Chapter 20, "Thread Synchronization." </li>
+                    </ul>
+                    <p> A Class File and Instruction Set Reference </p>
+                    <p> In addition to being a tutorial on the Java class file, Chapter 6, "The Java Class File," serves as a complete reference of the class file format. Similarly, Chapters 10 through 20 form a tutorial of the Java Virtual Machine's instruction set, and Appendices A through C serve as a complete reference of the instruction set. If you need to look something up, check out these chapters and the appendices. </p>
+                    <p> Interactive Illustrations, Example Source Code, and the JDK </p>
+                    <p> For most of this book's chapters, material associated with the chapter--such as example code or simulation applets--appears on the CD-ROM. </p>
+                    <p> The <code> applets </code> directory of the CD-ROM contains a mini-website that includes 14 Java applets that illustrate the concepts presented in the text. These "interactive illustrations" form an integral part of this book. Ten of the applets simulate the Java Virtual Machine executing bytecodes. The other applets illustrate garbage collection, two's-complement and IEEE 754 floating point numbers , and the loading of class files. The applets can be viewed on any platform by any Java-capable browser. The source code for the simulation applets is also included on the CD-ROM. </p>
+                    <p> The copyright notice accompanying the HTML, .java, and .class files for the mini-website enables you to post the mini-website on any network, including the internet, providing you adhere to a few simple rules. For example, you must post the mini-website in its entirety, you can't make any changes to it, and you can't charge people to look at it. The full text of the copyright notice is given later in this introduction. </p>
+                    <p> All the example source code shown in this book appears on the CD-ROM in both source and compiled (class files) form. If some example code in the text strikes you as interesting (or dubious), you can try it out for yourself. </p>
+                    <p> Most of the example code is illustrative and not likely to be of much practical use besides helping you to understand Java. Nevertheless, you are free to cut and paste from the example code, use it in your own programs, and distribute it in binary (such as Java class file) form. The full text of the copyright notice for the example source code is shown later in this introduction. </p>
+                    <p> Besides the interactive illustrations and example source code, the CD-ROM contains one last item: a full distribution of version 1.1.3 of Sun's JDK. This is contained in the CD-ROM's <code> jdk </code> directory. </p>
+                    <p> The Resources Web Site </p>
+                    <p> To help you find more information and keep abreast of changes, I maintain a "Resources Web Site" with links to further reading about the material presented in this book. There is at least one "resources page" for each chapter in the book. The main URL of the Resources Web Site is <code> http://www.artima.com/insidejvm </code> . The URL for each chapter's individual resources page is given at the end of each chapter in the "The Resources Page" section. </p>
+                    <h2> <em> Chapter by Chapter Summary </em> </h2>
+                    <h2> Part One: Java's Architecture </h2>
+                    <h3> Chapter 1. Introduction to Java's Architecture </h3>
+                    <p> This chapter gives an introduction to Java as a technology. It gives an overview of Java's architecture, discusses why Java is important, and looks at Java's pros and cons. </p> <h3> Chapter 2. Platform independence </h3>
+                    <p> This chapter shows how Java's architecture enables programs to run on any platform, discusses the factors that determine the true portability of Java programs, and looks at the relevant tradeoffs. </p>
+                    <h3> Chapter 3. Security </h3>
+                    <p> This chapter gives an overview of the security model built into Java's core architecture. </p>
+                    <h3> Chapter 4. Network-mobility </h3>
+                    <p> This chapter examines the new paradigm of network-mobile software heralded by the arrival of Java, and shows how Java's architecture makes it possible. </p>
+                    <h2> Part Two: Java Internals </h2>
+                    <h3> Chapter 5. The Java Virtual Machine </h3>
+                    <p> This chapter gives a detailed overview of the Java Virtual Machine's internal architecture. Accompanying the chapter on the CD-ROM is an applet, named Eternal Math, that simulates the Java Virtual Machine executing a short sequence of bytecodes. </p>
+                    <h3> Chapter 6. The Java Class File </h3>
+                    <p> This chapter describes the contents of the class file, including the structure and format of the constant pool, and serves as both a tutorial and a complete reference of the Java class file format. Accompanying the chapter on the CD-ROM is an applet, named Getting Loaded, that simulates the Java Virtual Machine loading a Java class file. </p>
+                    <h3> Chapter 7. The Lifetime of a Class </h3>
+                    <p> This chapter follows the lifetime of a type (class or interface) from the type's initial entrance into the virtual machine to its ultimate exit. It discusses the processes of loading, linking, and initialization; object instantiation, garbage collection, and finalization; and type finalization and unloading. </p>
+                    <h3> Chapter 8. The Linking Model </h3>
+                    <p> This chapter takes an in-depth look at Java's linking model. It describes constant pool resolution and shows how to write class loaders to enable a Java application to dynamically extend itself at run-time. </p>
+                    <h3> Chapter 9. Garbage Collection </h3>
+                    <p> This chapter describes various garbage collection techniques and explains how garbage collection works in Java Virtual Machines. Accompanying this chapter on the CD-ROM is an applet, named Heap of Fish, that simulates a compacting, mark-and-sweep garbage-collected heap. </p>
+
+                    <h3> Chapter 10. Stack and Local Variable Operations </h3>
+                    <p> This chapter describes the Java Virtual Machine instructions that focus most exclusively on the operand stack--those that push constants onto the operand stack, perform generic stack operations, and transfer values back and forth between the operand stack and local variables . Accompanying this chapter on the CD-ROM is an applet, named Fibonacci Forever, that simulates the Java Virtual Machine executing a method that generates the Fibonacci sequence. </p>
+
+                    <h3> Chapter 11. Type Conversion </h3>
+                    <p> This chapter describes the instructions that convert values from one primitive type to another. Accompanying the chapter on the CD-ROM is an applet, named Conversion Diversion, that simulates the Java Virtual Machine executing a method that performs type conversion. </p>
+
+                    <h3> Chapter 12. Integer Arithmetic </h3>
+                    <p> This chapter describes integer arithmetic in the Java Virtual Machine. It explains two's complement arithmetic and describes the instructions that perform integer arithmetic. Accompanying this chapter on the CD-ROM are two applets that interactively illustrate the material presented in the chapter. One applet, named Inner Int, allows you to view and manipulate a two's complement number. The other applet, named Prime Time, simulates the Java Virtual Machine executing a method that generates prime numbers. </p>
+                    <h3> Chapter 13. Logic </h3>
+                    <p> This chapter describes the instructions that perform bitwise logical operations inside the Java Virtual Machine. These instructions include opcodes to perform shifting and boolean operations on integers. Accompanying this chapter on the CD-ROM is an applet, named Logical Results, that simulates the Java Virtual Machine executing a method that includes uses several of the logic opcodes. </p>
+                    <h3> Chapter 14. Floating Point Arithmetic </h3>
+                    <p> This chapter describes the floating point numbers and the instructions that perform floating point arithmetic inside the Java Virtual Machine. Accompanying this chapter on the CD-ROM are two applets that interactively illustrate the material presented in the chapter. One applet, named Inner Float, allows you to view and manipulate the individual components that make up a floating point number. The other applet, named Circle of Squares, simulates the Java Virtual Machine executing a method that uses several of the floating point opcodes. </p>
+                    <h3> Chapter 15. Objects and Arrays </h3>
+                    <p> This chapter describes the Java Virtual Machine instructions that create and manipulate objects and arrays. Accompanying this chapter on the CD-ROM is an applet, named Three-Dimensional Array, that simulates the Java Virtual Machine executing a method that allocates and initializes a three-dimensional array. </p>
+                    <h3> Chapter 16. Control Flow </h3>
+                    <p> This chapter describes the instructions that cause the Java Virtual Machine to conditionally or unconditionally branch to a different location within the same method. Accompanying this chapter on the CD-ROM is an applet, named Saying Tomato, that simulates the Java Virtual Machine executing a method that includes bytecodes that perform table jumps (the compiled version of a Java <code> switch </code> statement). </p>
+                    <h3> Chapter 17. Exceptions </h3>
+                    <p> This chapter shows how exceptions are implemented in bytecodes. It describes the instruction for throwing an exception explicitly, explains exception tables, and shows how catch clauses work. Accompanying this chapter on the CD-ROM is an applet, named Play Ball!, that simulates the Java Virtual Machine executing a method that throws and catches exceptions. </p>
+                    <h3> Chapter 18. Finally Clauses </h3>
+                    <p> This chapter shows how finally clauses are implemented in bytecodes. It describes the relevant instructions and gives examples of their use. The chapter also describes some surprising behaviors exhibited by finally clauses in Java source code and explains this behavior at the bytecode level. Accompanying this chapter on the CD-ROM is an applet, named Hop Around, that simulates the Java Virtual Machine executing a method that includes finally clauses. </p>
+                    <h3> Chapter 19. Method Invocation and Return </h3>
+                    <p> This chapter describes the four instructions that the Java Virtual Machine uses to invoke methods and the situations in which each instruction is used. </p>
+                    <h3> Chapter 20. Thread Synchronization </h3>
+                    <p> This chapter describes monitors--the mechanism that Java uses to support synchronization--and shows how they are used by the Java Virtual Machine. It shows how one aspect of monitors, the locking and unlocking of data, is supported in the instruction set. </p>
+                    <h2> The Appendices </h2>
+                    <h3> Appendix A. Instruction Set by Opcode Mnemonic </h3>
+                    <p> This appendix lists the opcodes alphabetically by mnemonic. For each opcode, it gives the mnemnonic, opcode byte value, instruction format (the operands, if any), a snapshot image of the stack before and after the instruction is executed, and a description of the execution of the instruction. Appendix A serves as the primary instruction set reference of the book. </p>
+                    <h3> Appendix B. Opcode Mnemonic by Functional Group </h3>
+                    <p> This appendix organizes the instructions by functional group. The organization used in this appendix corresponds to the order the instructions are described in Chapters 10 through 20. </p>
+                    <h3> Appendix C. Opcode Mnemonic by Opcode </h3>
+                    <p> This appendix organizes the opcodes in numerical order. For each numerical value, this appendix gives the mnemonic. </p>
+                </div>
+
+            </div>
+            <br/>
+            <div class="u-cf"></div>
+
+            <div class="row">
+                <div class="one-third column value">
+                    <a class="button button-primary mod" href="index.html">Previous page</a>
+                </div>
+                <div class="one-third column value" style="text-align:center;">
+                    <a class="button button-primary mod" href="index.html">Table of content</a>
+                </div>
+                <div class="one-third column value">
+                    <a class="button button-primary mod u-pull-right" href="01.html">Next page</a>
+                </div>
+            </div>
+            <hr/>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+

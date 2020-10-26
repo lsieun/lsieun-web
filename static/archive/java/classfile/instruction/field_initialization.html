@@ -1,0 +1,591 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Field Initialization</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>non-static field initialization</h2>
+
+<h3>Automation Initialization</h3>
+
+<p>
+    If a primitive is a field in a class, each primitive field of a class is guaranteed to get an initial value. Here’s a program that verifies this, and shows the values:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    boolean t;
+    char c;
+    byte b;
+    short s;
+    int i;
+    long l;
+    float f;
+    double d;
+    HelloWorld reference;
+
+    void printInitialValues() {
+        System.out.println("Data type    Initial value");
+        System.out.println("boolean      " + t);
+        System.out.println("char         [" + c + "]");
+        System.out.println("byte         " + b);
+        System.out.println("short        " + s);
+        System.out.println("int          " + i);
+        System.out.println("long         " + l);
+        System.out.println("float        " + f);
+        System.out.println("double       " + d);
+        System.out.println("reference    " + reference);
+    }
+
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+        instance.printInitialValues();
+    }
+}
+</div>
+
+<div title="Run Output" class="plaintext">
+Data type    Initial value
+boolean      false
+char         [ ]
+byte         0
+short        0
+int          0
+long         0
+float        0.0
+double       0.0
+reference    null
+</div>
+
+<p>
+    You can see that even though the values are not specified, they automatically get initialized (the <code>char</code> value is a <b>zero</b>, which prints as a space). So at least there’s no threat of working with uninitialized variables.
+</p>
+
+<p>
+    When you define an object reference inside a class without initializing it to a new object, that reference is given a special value of <code>null</code>.
+</p>
+
+<div title="init:()V" class="plaintext">
+constant_pool_count='007F' (127)
+constant_pool
+    |001| CONSTANT_Methodref {Value='java/lang/Object.&lt;init&gt;:()V', HexCode='0A00260048'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 5
+code = 2AB70001B1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: invokespecial   #1   // B70001     || java/lang/Object.&lt;init&gt;:()V
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+</div>
+
+<p>
+    Create a class containing an uninitialized <code>String</code> reference. Demonstrate that this reference is initialized by Java to <code>null</code>.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    // 注意，我们并没有在Constructor中对value进行赋值，它默认成为null值。
+    private String value;
+
+    public String getValue() {
+        return value;
+    }
+
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+        System.out.println(instance.getValue());
+    }
+}
+</div>
+
+<p>
+    Create a class with a <code>String</code> field that is initialized at the point of definition, and another one that is initialized by the constructor. What is the difference between the two approaches?
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public String strFirst = "Hello";
+    public String strSecond;
+
+    public HelloWorld() {
+        this.strSecond = "World";
+    }
+
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+        System.out.println(instance.strFirst);
+        System.out.println(instance.strSecond);
+    }
+}
+</div>
+
+<div title="init:()V" class="plaintext">
+constant_pool_count='002E' (46)
+constant_pool
+    |001| CONSTANT_Methodref {Value='java/lang/Object.&lt;init&gt;:()V', HexCode='0A000A001D'}
+    |002| CONSTANT_String {Value='Hello', HexCode='08001E'}
+    |003| CONSTANT_Fieldref {Value='sample/HelloWorld.strFirst:Ljava/lang/String;', HexCode='090006001F'}
+    |004| CONSTANT_String {Value='World', HexCode='080020'}
+    |005| CONSTANT_Fieldref {Value='sample/HelloWorld.strSecond:Ljava/lang/String;', HexCode='0900060021'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 1
+code_length = 17
+code = 2AB700012A1202B500032A1204B50005B1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: invokespecial   #1   // B70001     || java/lang/Object.&lt;init&gt;:()V
+0004: aload_0              // 2A
+0005: ldc             #2   // 1202       || Hello
+0007: putfield        #3   // B50003     || sample/HelloWorld.strFirst:Ljava/lang/String;
+0010: aload_0              // 2A
+0011: ldc             #4   // 1204       || World
+0013: putfield        #5   // B50005     || sample/HelloWorld.strSecond:Ljava/lang/String;
+0016: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      17  this:Lsample/HelloWorld;
+</div>
+
+<h3>Specifying Initialization</h3>
+
+<p>
+    What happens if you want to give a variable an initial value? One direct way to do this is simply to assign the value at the point you define the variable in the class. Here the field definitions in class HelloWorld are changed to provide initial values:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    boolean t = true;
+    char c = 'x';
+    byte b = 47;
+    short s = 0xff;
+    int i = 999;
+    long l = 1;
+    float f = 3.14f;
+    double d = 3.14159;
+    Object reference = new Object();
+
+    void printInitialValues() {
+        System.out.println("Data type    Initial value");
+        System.out.println("boolean      " + t);
+        System.out.println("char         [" + c + "]");
+        System.out.println("byte         " + b);
+        System.out.println("short        " + s);
+        System.out.println("int          " + i);
+        System.out.println("long         " + l);
+        System.out.println("float        " + f);
+        System.out.println("double       " + d);
+        System.out.println("reference    " + reference);
+    }
+
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+        instance.printInitialValues();
+    }
+}
+</div>
+
+<div title="Run Output" class="plaintext">
+Data type    Initial value
+boolean      true
+char         [x]
+byte         47
+short        255
+int          999
+long         1
+float        3.14
+double       3.14159
+reference    java.lang.Object@4554617c
+</div>
+
+<div title="init:()V" class="plaintext">
+constant_pool_count='0083' (131)
+constant_pool
+    |001| CONSTANT_Methodref {Value='java/lang/Object.&lt;init&gt;:()V', HexCode='0A000D004C'}
+    |002| CONSTANT_Fieldref {Value='sample/HelloWorld.t:Z', HexCode='090027004D'}
+    |003| CONSTANT_Fieldref {Value='sample/HelloWorld.c:C', HexCode='090027004E'}
+    |004| CONSTANT_Fieldref {Value='sample/HelloWorld.b:B', HexCode='090027004F'}
+    |005| CONSTANT_Fieldref {Value='sample/HelloWorld.s:S', HexCode='0900270050'}
+    |006| CONSTANT_Fieldref {Value='sample/HelloWorld.i:I', HexCode='0900270051'}
+    |007| CONSTANT_Fieldref {Value='sample/HelloWorld.l:J', HexCode='0900270052'}
+    |008| CONSTANT_Float {Value='3.14', HexCode='044048F5C3'}
+    |009| CONSTANT_Fieldref {Value='sample/HelloWorld.f:F', HexCode='0900270053'}
+    |010| CONSTANT_Double {Value='3.14159', HexCode='06400921F9F01B866E'}
+    |012| CONSTANT_Fieldref {Value='sample/HelloWorld.d:D', HexCode='0900270054'}
+    |013| CONSTANT_Class {Value='java/lang/Object', HexCode='070055'}
+    |014| CONSTANT_Fieldref {Value='sample/HelloWorld.reference:Ljava/lang/Object;', HexCode='0900270056'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 1
+code_length = 65
+code = 2AB700012A04B500022A1078B500032A102FB500042A1100FFB500052A1103E7B500062A0AB500072A1208B500092A14000AB5000C2ABB000D59B70001B5000EB1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: invokespecial   #1   // B70001     || java/lang/Object.&lt;init&gt;:()V
+0004: aload_0              // 2A
+0005: iconst_1             // 04
+0006: putfield        #2   // B50002     || sample/HelloWorld.t:Z
+0009: aload_0              // 2A
+0010: bipush          120  // 1078
+0012: putfield        #3   // B50003     || sample/HelloWorld.c:C
+0015: aload_0              // 2A
+0016: bipush          47   // 102F
+0018: putfield        #4   // B50004     || sample/HelloWorld.b:B
+0021: aload_0              // 2A
+0022: sipush          255  // 1100FF
+0025: putfield        #5   // B50005     || sample/HelloWorld.s:S
+0028: aload_0              // 2A
+0029: sipush          999  // 1103E7
+0032: putfield        #6   // B50006     || sample/HelloWorld.i:I
+0035: aload_0              // 2A
+0036: lconst_1             // 0A
+0037: putfield        #7   // B50007     || sample/HelloWorld.l:J
+0040: aload_0              // 2A
+0041: ldc             #8   // 1208       || 3.14
+0043: putfield        #9   // B50009     || sample/HelloWorld.f:F
+0046: aload_0              // 2A
+0047: ldc2_w          #10  // 14000A     || 3.14159
+0050: putfield        #12  // B5000C     || sample/HelloWorld.d:D
+0053: aload_0              // 2A
+0054: new             #13  // BB000D     || java/lang/Object
+0057: dup                  // 59
+0058: invokespecial   #1   // B70001     || java/lang/Object.&lt;init&gt;:()V
+0061: putfield        #14  // B5000E     || sample/HelloWorld.reference:Ljava/lang/Object;
+0064: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      65  this:Lsample/HelloWorld;
+</div>
+
+<p>
+    This approach to initialization is simple and straightforward. It has the limitation that every object of type <code>HelloWorld</code> will get these same initialization values. Sometimes this is exactly what you need, but at other times you need more flexibility.
+</p>
+
+<h3>Constructor Initialization</h3>
+
+<p>
+    The constructor can be used to perform initialization, and this gives you greater flexibility in your programming because you can call methods and perform actions at run time to determine the initial values. There’s one thing to keep in mind, however: You aren’t precluding the automatic initialization, which happens before the constructor is entered. So, for example, if you say:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    int i;
+
+    HelloWorld() {
+        i = 7;
+    }
+}
+</div>
+
+<p>
+    then <code>i</code> will first be initialized to <code>0</code>, then to <code>7</code>. This is true with all the primitive types and with object references, including those that are given explicit initialization at the point of definition. For this reason, the compiler doesn’t try to force you to initialize elements in the constructor at any particular place, or before they are used — initialization is already guaranteed.
+</p>
+
+<div title="init:()V" class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    |001| CONSTANT_Methodref {Value='java/lang/Object.&lt;init&gt;:()V', HexCode='0A00040010'}
+    |002| CONSTANT_Fieldref {Value='sample/HelloWorld.i:I', HexCode='0900030011'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 1
+code_length = 11
+code = 2AB700012A1007B50002B1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: invokespecial   #1   // B70001     || java/lang/Object.&lt;init&gt;:()V
+0004: aload_0              // 2A
+0005: bipush          7    // 1007
+0007: putfield        #2   // B50002     || sample/HelloWorld.i:I
+0010: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      11  this:Lsample/HelloWorld;
+</div>
+
+<h2>static field initialization</h2>
+
+<h3>static Automation Initialization</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static int staticValue;
+
+    public static void main(String[] args) {
+        System.out.println("HelloWorld.staticValue = " + HelloWorld.staticValue);
+    }
+}
+</div>
+
+<div title="Run Output" class="plaintext">
+HelloWorld.staticValue = 0
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        注意：这里没有生成&lt;clinit&gt;:()V方法
+    </p>
+</div>
+
+<div title="init:()V" class="plaintext">
+constant_pool_count='0035' (53)
+constant_pool
+    |001| CONSTANT_Methodref {Value='java/lang/Object.&lt;init&gt;:()V', HexCode='0A000C001D'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 1
+code_length = 5
+code = 2AB70001B1
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: invokespecial   #1   // B70001     || java/lang/Object.&lt;init&gt;:()V
+0004: return               // B1
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       5  this:Lsample/HelloWorld;
+</div>
+
+<h3>static Specifying Initialization</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static int staticValue = 1;
+}
+</div>
+
+<div title="clinit:()V" class="plaintext">
+constant_pool_count='0015' (21)
+constant_pool
+    ... ...
+    |002| CONSTANT_Fieldref {Value='sample/HelloWorld.staticValue:I', HexCode='0900030012'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 0
+code_length = 5
+code = 04B30002B1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: putstatic       #2   // B30002     || sample/HelloWorld.staticValue:I
+0004: return               // B1
+</div>
+
+<h3>Explicit static initialization</h3>
+
+<p>
+    Java allows you to group other static initializations inside a special “static clause” (sometimes called a static block) in a class. It looks like this:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static int staticValue;
+
+    static {
+        staticValue = 1;
+    }
+}
+</div>
+
+<div title="clinit:()V" class="plaintext">
+constant_pool_count='0015' (21)
+constant_pool
+    ... ...
+    |002| CONSTANT_Fieldref {Value='sample/HelloWorld.staticValue:I', HexCode='0900030012'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 0
+code_length = 5
+code = 04B30002B1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: putstatic       #2   // B30002     || sample/HelloWorld.staticValue:I
+0004: return               // B1
+</div>
+
+<p>
+    It appears to be a method, but it’s just the <code>static</code> keyword followed by a block of code. This code, like other static initializations, is executed only once: <b>the first time you make an object of that class</b> or <b>the first time you access a static member of that class</b> (even if you never make an object of that class).
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    static String strA = "Hello";
+    static String strB;
+
+    static {
+        strB = "World";
+    }
+}
+</div>
+
+<div title="clinit:()V" class="plaintext">
+constant_pool_count='001C' (28)
+constant_pool
+    ... ...
+    |002| CONSTANT_String {Value='Hello', HexCode='080016'}
+    |003| CONSTANT_Fieldref {Value='sample/HelloWorld.strA:Ljava/lang/String;', HexCode='0900060017'}
+    |004| CONSTANT_String {Value='World', HexCode='080018'}
+    |005| CONSTANT_Fieldref {Value='sample/HelloWorld.strB:Ljava/lang/String;', HexCode='0900060019'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 0
+code_length = 11
+code = 1202B300031204B30005B1
+=== === ===  === === ===  === === ===
+0000: ldc             #2   // 1202       || Hello
+0002: putstatic       #3   // B30003     || sample/HelloWorld.strA:Ljava/lang/String;
+0005: ldc             #4   // 1204       || World
+0007: putstatic       #5   // B30005     || sample/HelloWorld.strB:Ljava/lang/String;
+0010: return               // B1
+</div>
+
+<h2>static final field initialization</h2>
+
+<h3>static final primitive data</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    //区别：这是用final修饰
+    public static final int staticValue = 1;
+}
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        注意：这里并没有生成<code>&lt;clinit&gt;:()V</code>方法。
+    </p>
+</div>
+
+<div title="ConstantValue" class="plaintext">
+constant_pool_count='0014' (20)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='ConstantValue', HexCode='01000D436F6E7374616E7456616C7565'}
+    |007| CONSTANT_Integer {Value='1', HexCode='0300000001'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|001| ConstantValue:
+HexCode: 0006000000020007
+attribute_name_index='0006' (#6)
+attribute_length='00000002' (2)
+constantvalue_index='0007' (#7)
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static final int staticValue;
+
+    static {
+        staticValue = 1;
+    }
+}
+</div>
+
+<div title="clinit:()V" class="plaintext">
+constant_pool_count='0015' (21)
+constant_pool
+    ... ...
+    |002| CONSTANT_Fieldref {Value='sample/HelloWorld.staticValue:I', HexCode='0900030012'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 0
+code_length = 5
+code = 04B30002B1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: putstatic       #2   // B30002     || sample/HelloWorld.staticValue:I
+0004: return               // B1
+</div>
+
+<h3>static final Object Type</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static final Object obj = new Object();
+}
+</div>
+
+<div title="clinit:()V" class="plaintext">
+constant_pool_count='0015' (21)
+constant_pool
+    |001| CONSTANT_Methodref {Value='java/lang/Object.&lt;init&gt;:()V', HexCode='0A00020011'}
+    |002| CONSTANT_Class {Value='java/lang/Object', HexCode='070012'}
+    |003| CONSTANT_Fieldref {Value='sample/HelloWorld.obj:Ljava/lang/Object;', HexCode='0900040013'}
+    ... ...
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 0
+code_length = 11
+code = BB000259B70001B30003B1
+=== === ===  === === ===  === === ===
+0000: new             #2   // BB0002     || java/lang/Object
+0003: dup                  // 59
+0004: invokespecial   #1   // B70001     || java/lang/Object.&lt;init&gt;:()V
+0007: putstatic       #3   // B30003     || sample/HelloWorld.obj:Ljava/lang/Object;
+0010: return               // B1
+</div>
+
+<h2>Order of Initialization</h2>
+
+<p>
+    To summarize the process of creating an object, consider a class called <code>Dog</code>:
+</p>
+
+<ol>
+    <li>
+        Even though it doesn’t explicitly use the <code>static</code> keyword, the constructor is actually a static method. So the first time an object of type <code>Dog</code> is created, or the first time a static method or static field of class <code>Dog</code> is accessed, the Java interpreter must locate <code>Dog.class</code>, which it does by searching through the classpath.
+        <sub class="my_note" style="color:blue">笔记：先要找到ClassFile</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        As <code>Dog.class</code> is loaded (creating a <code>Class</code> object), all of its static initializers are run.
+        Thus, <code>static initialization</code> takes place only once, as the <code>Class</code> object is loaded for the first time.
+        <sub class="my_note" style="color:blue">笔记：加载ClassFile之后，执行static initializer。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        When you create a <code>new Dog()</code>, the construction process for a <code>Dog</code> object first allocates enough storage for a <code>Dog</code> object on the heap.
+        <sub class="my_note" style="color:blue">笔记：创建对象时，先在heap上分配空间</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        <b>This storage is wiped to zero</b>, automatically setting all the primitives in that <code>Dog</code> object to their default values (zero for numbers and the equivalent for <code>boolean</code> and <code>char</code>) and the references to <code>null</code>.
+        <sub class="my_note" style="color:blue">笔记：先将heap上分配的空间进行归零。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        Any initializations that occur at the point of field definition are executed.
+        <sub class="my_note" style="color:blue">笔记：再执行field definition</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        Constructors are executed. This might actually involve a fair amount of activity, especially when inheritance is involved.
+        <sub class="my_note" style="color:blue">笔记：最后执行constructor。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ol>
+
+<p class="indented">
+    Within a class, the order of initialization is determined by the order that the variables are defined within the class. The variable definitions may be scattered throughout and in between method definitions, but the variables are initialized before any methods can be called — even the constructor.
+</p>
