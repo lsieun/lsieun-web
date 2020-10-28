@@ -43,6 +43,10 @@
 
 <h2>Deprecated Opcodes</h2>
 
+
+<p class="indented"></p>
+<p class="indented"></p>
+
 <p class="indented">
     If the class file version number is 51.0(Java 7) or above, then neither the <code>jsr</code> opcode or the <code>jsr_w</code> opcode may appear in the <code>code</code> array.
 </p>
@@ -53,6 +57,18 @@
     <li><code>jsr_w</code></li>
     <li><code>ret</code></li>
 </ul>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-2.html#jvms-2.3.3" target="_blank">2.3.3. The returnAddress Type and Values</a>部分。
+    </p>
+</div>
+
+<p class="indented">
+    The <code>returnAddress</code> type is used by the Java Virtual Machine's <code>jsr</code>, <code>ret</code>, and <code>jsr_w</code> instructions.
+    The values of the <code>returnAddress</code> type are pointers to the opcodes of Java Virtual Machine instructions.
+    Unlike the numeric primitive types, the returnAddress type does not correspond to any Java programming language type and cannot be modified by the running program.
+</p>
 
 <div title="Code_attribute" class="plaintext">
 Code_attribute {

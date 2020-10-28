@@ -489,6 +489,17 @@ methods
 
 <h3>&lt;clinit&gt;</h3>
 
+<p class="indented">
+    Not all classes will necessarily have a <code>&lt;clinit&gt;</code>() method in their class file.
+</p>
+
+<ul>
+    <li>If a class declares no class variables or static initializers, it won't have a <code>&lt;clinit&gt;</code>() method.</li>
+    <li>If a class declares class variables, but doesn't explicitly initialize them with class variable initializers or static initializers, it won't have a <code>&lt;clinit&gt;</code>() method.</li>
+    <li>If a class contains only class variable initializers for static final variables, and those class variable initializers use compile-time constant expressions, that class won't have a <code>&lt;clinit&gt;</code>() method.</li>
+    <li>Only those classes that actually require Java code to be executed to initialize class variables to proper initial values will have a class initialization method.</li>
+</ul>
+
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     static {

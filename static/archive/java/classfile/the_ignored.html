@@ -295,6 +295,114 @@ do {
     The virtual machine converts values of type <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> to <code>int</code> before pushing them onto the operand stack.
 </p>
 
+<h3>boolean</h3>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-2.html#jvms-2.3.4" target="_blank">2.3.4. The boolean Type</a>部分。
+    </p>
+</div>
+
+<p class="indented">
+    Although the Java Virtual Machine defines <b>a <code>boolean</code> type</b>, it only provides very limited support for it.
+    There are no Java Virtual Machine instructions solely dedicated to operations on <code>boolean</code> values.
+    Instead, expressions in the Java programming language that operate on <code>boolean</code> values are compiled to use values of the Java Virtual Machine <code>int</code> data type.
+    <sub class="my_note" style="color:blue">笔记：这里是一个单独的boolean类型</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        boolean flag = true;
+    }
+}
+</div>
+
+<div title="test:()V boolean value" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 3
+code = 043CB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       3  this:Lsample/HelloWorld;
+    1         2       1  flag:Z
+</div>
+
+<p class="indented">
+    The Java Virtual Machine does directly support <b><code>boolean</code> arrays</b>.
+    Its <code>newarray</code> instruction enables creation of <code>boolean</code> arrays.
+    Arrays of type boolean are accessed and modified using the byte array instructions <code>baload</code> and <code>bastore</code>.
+    <sub class="my_note" style="color:blue">笔记：这里是一个boolean数组类型</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        boolean[] array = new boolean[3];
+        array[0] = true;
+        boolean flag = array[1];
+    }
+}
+</div>
+
+<div title="test:()V boolean array" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 3
+code_length = 13
+code = 06BC044C2B0304542B04333DB1
+=== === ===  === === ===  === === ===    "boolean[] array = new boolean[3];"
+0000: iconst_3             // 06
+0001: newarray        4    // BC04       || boolean
+0003: astore_1             // 4C
+=== === ===  === === ===  === === ===    "array[0] = true;"
+0004: aload_1              // 2B
+0005: iconst_0             // 03
+0006: iconst_1             // 04
+0007: bastore              // 54
+=== === ===  === === ===  === === ===    "boolean flag = array[1];"
+0008: aload_1              // 2B
+0009: iconst_1             // 04
+0010: baload               // 33
+0011: istore_2             // 3D
+=== === ===  === === ===  === === ===
+0012: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      13  this:Lsample/HelloWorld;
+    1         4       9  array:[Z
+    2        12       1  flag:Z
+</div>
+
+<p class="indented">
+    In Oracle’s Java Virtual Machine implementation, <b><code>boolean</code> arrays</b> in the Java programming language are encoded as
+    Java Virtual Machine <b><code>byte</code> arrays</b>, using 8 bits per <code>boolean</code> element.
+    <sub class="my_note" style="color:blue">笔记：这里说Oracle对于boolean数组类型的实现思路</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The Java Virtual Machine encodes <b><code>boolean</code> array</b> components using <code>1</code> to represent <code>true</code> and <code>0</code> to represent <code>false</code>.
+    Where Java programming language <b><code>boolean</code> values</b> are mapped by compilers to values of Java Virtual Machine type <code>int</code>, the compilers must use the same encoding.
+</p>
+
+<p class="indented"></p>
+<p class="indented"></p>
+
 <h2>Compactness</h2>
 
 <p class="indented">
