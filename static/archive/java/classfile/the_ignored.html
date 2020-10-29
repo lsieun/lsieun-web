@@ -295,6 +295,17 @@ do {
     The virtual machine converts values of type <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> to <code>int</code> before pushing them onto the operand stack.
 </p>
 
+<p>
+    Note also that types <code>byte</code>, <code>short</code>, <code>char</code>, and <code>boolean</code> in the source code become <code>int</code>s in the local variables.
+    This is also true of the operand stack.
+    As mentioned earlier, the <code>boolean</code> type is not supported directly by the Java Virtual Machine.
+    The Java compiler always uses <code>int</code>s to represent <code>boolean</code> values in the local variables or operand stack.
+    Data types <code>byte</code>, <code>short</code>, and <code>char</code>, however, are supported directly by the Java Virtual Machine.
+    These can be stored on the heap as instance variables or array elements, or in the method area as class variables.
+    When placed into local variables or the operand stack, however, values of type <code>byte</code>, <code>short</code>, and <code>char</code> are converted into <code>int</code>s.
+    They are manipulated as <code>int</code>s while on the stack frame, then converted back into <code>byte</code>, <code>short</code>, or <code>char</code> when stored back into heap or method area.
+</p>
+
 <h3>boolean</h3>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
@@ -400,6 +411,151 @@ index  start_pc  length  name_and_type
     Where Java programming language <b><code>boolean</code> values</b> are mapped by compilers to values of Java Virtual Machine type <code>int</code>, the compilers must use the same encoding.
 </p>
 
+<p>
+    To keep the instruction set small enough to enable each opcode to be represented by a single byte, not all operations are supported on all types.
+    Most operations are not supported for types <code>byte</code>, <code>short</code>, and <code>char</code>.
+    These types are converted to <code>int</code> when moved from the heap or method area to the stack frame.
+    They are operated on as <code>int</code> s, then converted back to <code>byte</code>, <code>short</code>, or <code>char</code> before being stored back into the heap or method area.
+</p>
+
+<p>
+    Table 5-3 shows the computation types that correspond to each storage type in the Java Virtual Machine.
+    As used here, a <em>storage type</em> is the manner in which values of the type are represented on the heap.
+    The storage type corresponds to the type of the variable in Java source code.
+    A <em>computation type</em> is the manner in which the type is represented on the Java stack frame.
+</p>
+
+<table border="1">
+    <caption>Table 5-3. Storage and computation types inside the Java Virtual Machine</caption>
+    <thead>
+    <tr>
+        <th>Storage Type</th>
+        <th>Minimum Bits in Heap or Method Area</th>
+        <th>Computation Type Words in the Java Stack Frame</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><code>byte</code></td>
+        <td>8 <code>int</code></td>
+        <td>load <code>byte</code> from array1</td>
+    </tr>
+    <tr>
+        <td><code>short</code></td>
+        <td>16 <code>int</code></td>
+        <td>load <code>short</code> from array1</td>
+    </tr>
+    <tr>
+        <td><code>int</code></td>
+        <td>32 <code>int</code></td>
+        <td>load <code>int</code> from array1</td>
+    </tr>
+    <tr>
+        <td><code>long</code></td>
+        <td>64 <code>long</code></td>
+        <td>load <code>long</code> from array2</td>
+    </tr>
+    <tr>
+        <td><code>char</code></td>
+        <td>16 <code>int</code></td>
+        <td>load <code>char</code> from array1</td>
+    </tr>
+    <tr>
+        <td><code>floa</code></td>
+        <td>32 <code>float</code></td>
+        <td>tload <code>float</code> from array1</td>
+    </tr>
+    <tr>
+        <td><code>double</code></td>
+        <td>64 <code>double</code></td>
+        <td>load <code>double</code> from array2</td>
+    </tr>
+    <tr>
+        <td><code>reference</code></td>
+        <td>32 <code>reference</code></td>
+        <td>load <code>reference</code> from array1</td>
+    </tr>
+    </tbody>
+</table>
+<br/>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-2.html#jvms-2.11.1-320" target="_blank">Table 2.11.1-B. Actual and Computational types in the Java Virtual Machine</a>部分。
+    </p>
+</div>
+
+<p class="indented">
+    The mapping between Java Virtual Machine actual types and Java Virtual Machine computational types is summarized by Table 2.11.1-B.
+</p>
+<p class="indented">
+    Certain Java Virtual Machine instructions such as pop and swap operate on the operand stack without regard to type; however, such instructions are constrained to use only on values of certain categories of computational types, also given in Table 2.11.1-B.
+</p>
+
+<table border="1" style="width:100%;border: solid 1px black; border-collapse: collapse;">
+    <caption>Actual and Computational types in the Java Virtual Machine</caption>
+    <thead>
+    <tr>
+        <th>Actual type</th>
+        <th>Computational type</th>
+        <th>Category</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><code class="literal">boolean</code></td>
+        <td><code class="literal">int</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">byte</code></td>
+        <td><code class="literal">int</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">char</code></td>
+        <td><code class="literal">int</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">short</code></td>
+        <td><code class="literal">int</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">int</code></td>
+        <td><code class="literal">int</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">float</code></td>
+        <td><code class="literal">float</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">reference</code></td>
+        <td><code class="literal">reference</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">returnAddress</code></td>
+        <td><code class="literal">returnAddress</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">long</code></td>
+        <td><code class="literal">long</code></td>
+        <td>2</td>
+    </tr>
+    <tr>
+        <td><code class="literal">double</code></td>
+        <td><code class="literal">double</code></td>
+        <td>2</td>
+    </tr>
+    </tbody>
+</table>
+
+<p class="indented"></p>
 <p class="indented"></p>
 <p class="indented"></p>
 

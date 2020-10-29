@@ -108,7 +108,7 @@
 <p>
     When you compile a Java program, you get a separate class file for each class or interface in your program.
     Although the individual class files may appear to be independent, they actually harbor symbolic connections to one another and to the class files of the Java API.
-    When you run your program, the Java Virtual Machine loads your program's classes and interfaces and hooks them together in a process of <i>dynamic linking</i>.
+    When you run your program, the Java Virtual Machine loads your program's classes and interfaces and hooks them together in a process of <em>dynamic linking</em>.
     As your program runs, the Java Virtual Machine builds an internal web of interconnected classes and interfaces.
     <span class="note">note：dynamic linking</span>
 </p>
@@ -120,9 +120,9 @@
     <span class="note">note：runtime constant pool</span>
 </p>
 <p>
-    At some point during the running of a program, if a particular symbolic reference is to be used, it must be <i>resolved</i>.
+    At some point during the running of a program, if a particular symbolic reference is to be used, it must be <em>resolved</em>.
     Resolution is the process of finding the entity identified by the symbolic reference and replacing the symbolic reference with a direct reference.
-    Because all symbolic references reside in the constant pool, this process is often called <i>constant pool resolution</i>.
+    Because all symbolic references reside in the constant pool, this process is often called <em>constant pool resolution</em>.
     <span class="note">note：constant pool resolution</span>
 </p>
 <p>
@@ -175,10 +175,10 @@
     then all symbolic references from subsequent classes,
     until every symbolic reference has been resolved.
     In this case, the application would be completely linked before its <code>main()</code> method was ever invoked.
-    This approach is called <i>early resolution</i>.
+    This approach is called <em>early resolution</em>.
     Alternatively, an implementation may choose to wait until the very last minute to resolve each symbolic reference.
     In this case, the Java Virtual Machine would resolve a symbolic reference only when it is first used by the running program.
-    This approach is called <i>late resolution</i>.
+    This approach is called <em>late resolution</em>.
     Other implementations could choose a resolution strategy in-between these two extremes.
     <span class="note">note：when to perform resolution? early resolution or late resolution</span>
 </p>
@@ -200,7 +200,7 @@
 <h2 id="resolution_and_dynamic_extension">Resolution and Dynamic Extension</h2>
 <p>
     In addition to simply linking types at run-time, Java applications can decide at run-time which types to link.
-    Java's architecture allows Java programs to be <i>dynamically extended</i>, the process of deciding at run-time other types to use, loading them, and using them.
+    Java's architecture allows Java programs to be <em>dynamically extended</em>, the process of deciding at run-time other types to use, loading them, and using them.
     You can dynamically extend a Java application by creating a class loader object and using it to load types that are not part of your original application,
     but are determined by your running application.
     An example of dynamic extension is a Java-capable web browser loading class files for applets from across a network.
@@ -664,7 +664,7 @@ end
 <h3 id="resolution_of_string_info">Resolution of CONSTANT_String_info Entries</h3>
 <p>
     To resolve an entry of type <code>CONSTANT_String_info</code>,
-    the virtual machine must place a reference to an <i>interned</i> <code>String</code> object in the data for the constant pool entry being resolved.
+    the virtual machine must place a reference to an <em>interned</em> <code>String</code> object in the data for the constant pool entry being resolved.
     The <code>String</code> object (an instance of class <code>java.lang.String</code>) must have the character sequence specified by
     the <code>CONSTANT_Utf8_info</code> entry identified by the <code>string_index</code> item of the <code>CONSTANT_String_info</code>.
 </p>
@@ -1187,14 +1187,18 @@ end
     which retrieves the binary form of the class, parses the binary data into internal data structures, and creates an instance of <code>java.lang.Class</code>.
     The constant pool for <code>Salutation</code> is shown in Table 8-1.
 </p>
-<p>Table 8-1. Class <code>Salutation</code>'s constant pool</p>
-<table border="1" style="width:100%;">
-    <tbody>
+
+<table>
+    <caption>Table 8-1. Class <code>Salutation</code>'s constant pool</caption>
+    <thead>
     <tr>
-        <td><strong> Index </strong></td>
-        <td><strong> Type </strong></td>
-        <td><strong> Value </strong></td>
+        <th>Index</th>
+        <th>Type</th>
+        <th>Value</th>
     </tr>
+    </thead>
+    <tbody>
+
     <tr>
         <td>1</td>
         <td><code>CONSTANT_String_info</code></td>
@@ -2548,7 +2552,7 @@ end
 
 
 <h2 id="resources_page">The Resources Page</h2>
-<p>For more information about the material presented in this chapter, visit the resources page: <code>https://www.artima.com/insidejvm/ed2/linking.html</code>.</p>
+<p>For more information about the material presented in this chapter, visit the resources page: <code>http://www.artima.com/insidejvm/linking.html</code>.</p>
 
 </div>
 

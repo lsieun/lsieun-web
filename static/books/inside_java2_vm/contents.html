@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>contents | Inside the Java 2 Virtual Machine</title>
+    <meta name="description" content="Inside the Java 2 Virtual Machine">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="main.css" type="text/css"/>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="twelve columns">
+
+            <div class="row test">
+                <h1>contents</h1>
+            </div>
+            <div class="u-cf"></div>
+
+            <div class="row">
+                <div class="one-third column value">
+                    <a class="button button-primary mod" href="index.html">Previous page</a>
+                </div>
+                <div class="one-third column value" style="text-align:center;">
+                    <a class="button button-primary mod" href="index.html">Table of content</a>
+                </div>
+                <div class="one-third column value">
+                    <a class="button button-primary mod u-pull-right" href="preface.html">Next page</a>
+                </div>
+            </div>
+
+            <div class="content index ">
+                <div class="u-cf"></div>
+
+                <div class="waka">
+
+                    <hr>
+                    <h3> Acknowledgments </h3>
+                    <h3> Introduction </h3>
+                    <h2> Part One: Java's Architecture </h2>
+                    <div style="margin-left: 2em">
+                        <h3><em>1 Introduction to Java's Architecture</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Why Java? <br/>
+                        The Architecture
+                        <div style="margin-left: 2em">
+                            The Java Virtual Machine<br/>
+                            The Class Loader Architecture<br/>
+                            The Java Class File<br/>
+                            The Java API<br/>
+                            The Java Programming Language
+                        </div>
+                        Architectural Tradeoffs <br/>
+                        Future Trends <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>2 Platform independence</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Why Platform Independence? <br/>
+                        Java's Architectural Support for Platform Independence <br/>
+                        Scalability <br/>
+                        Factors that Influence Platform Independence
+                        <div style="margin-left: 2em">
+                            The Java Platform<br/>
+                            Native Methods <br/>
+                            Other Factors
+                        </div>
+                        Seven Steps to Platform Independence <br/>
+                        The Politics of Platform Independence <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>3 Security</em></h3>
+                    </div>
+                    <div style="margin-left: 4em"> 
+                        Why Security? <br/>
+                        The Sandbox <br/>
+                        The Class Loader Architecture<br/>
+                        The Class File Verifier
+                        <div style="margin-left: 2em">
+                            Phase One: Internal Checks <br/>
+                            Phase Two: Verification of Symbolic References
+                        </div>
+                        Safety Features Built Into the Java Virtual Machine <br/>
+                        The Security Manager and the Java API <br/>
+                        The Security API <br/>
+                        Security Beyond the Architecture <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>4 Network-mobility</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Why Network Mobility? <br/>
+                        A New Software Paradigm <br/>
+                        Java's Architectural Support for Network-Mobility <br/>
+                        The Applet: An Example of Network-Mobile Java <br/>
+                        The Resources Page
+                    </div>
+
+
+                    <h2> Part Two: Java Internals </h2>
+                    <div style="margin-left: 2em">
+                        <h3><em>5 The Java Virtual Machine</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        What is a Java Virtual Machine? <br/>
+                        The Lifetime of a Java Virtual Machine <br/>
+                        The Architecture of the Java Virtual Machine
+                        <div style="margin-left: 2em">
+                            Data Types <br/>
+                            Word Size <br/>
+                            The Class Loader Subsystem
+                            <div style="margin-left: 2em">
+                                Loading, Linking and Initialization <br/>
+                                The Primordial Class Loader <br/>
+                                Class Loader Objects <br/>
+                                Name Spaces
+                            </div>
+                            The Method Area
+                            <div style="margin-left: 2em">
+                                Type Information <br/>
+                                The Constant Pool <br/>
+                                Field Information <br/>
+                                Method Information Class Variables <br/>
+                                A Reference to Class ClassLoader <br/>
+                                A Reference to Class Class <br/>
+                                Method Tables <br/>
+                                An Example of Method Area Use
+                            </div>
+                            The Heap
+                            <div style="margin-left: 2em">
+                                Garbage Collection <br/>
+                                Object Representation <br/>
+                                Array Representation
+                            </div>
+                            The Program Counter <br/>
+                            The Java Stack <br/>
+                            The Stack Frame
+                            <div style="margin-left: 2em">
+                                Local Variables <br/>
+                                Operand Stack <br/>
+                                Frame Data <br/>
+                                Possible Implementations of the Java Stack
+                            </div>
+                            Native Method Stacks <br/>
+                            Execution Engine
+                            <div style="margin-left: 2em">
+                                The Instruction Set <br/>
+                                Execution Techniques <br/>
+                                Threads
+                            </div>
+                            Native Method Interface
+                        </div>
+                        The Real Machine <br/>
+                        Eternal Math: A Simulation <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>6 The Java Class File</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        What is a Java Class File? <br/>
+                        What's in a Class File? <br/>
+                        Special Strings
+                        <div style="margin-left: 2em">
+                            Fully Qualified Names <br/>
+                            Simple Names <br/>
+                            Descriptors
+                        </div>
+                        The Constant Pool
+                        <div style="margin-left: 2em">
+                            The CONSTANT_Utf8_info Table <br/>
+                            The CONSTANT_Integer_info Table <br/>
+                            The CONSTANT_Float_info Table <br/>
+                            The CONSTANT_Long_info Table <br/>
+                            The CONSTANT_Double_info Table <br/>
+                            The CONSTANT_Class_info Table <br/>
+                            The CONSTANT_String_info Table <br/>
+                            The CONSTANT_Fieldref_info Table <br/>
+                            The CONSTANT_Methodref_info Table <br/>
+                            The CONSTANT_InterfaceMethodref_info Table <br/>
+                            The CONSTANT_NameAndType_info Table
+                        </div>
+                        Fields <br/>
+                        Methods <br/>
+                        Attributes
+                        <div style="margin-left: 2em">
+                            The Code Attribute <br/>
+                            The ConstantValue Attribute <br/>
+                            The Exceptions Attribute <br/>
+                            The InnerClasses Attribute <br/>
+                            The LineNumberTable Attribute <br/>
+                            The LocalVariableTable Attribute <br/>
+                            The SourceFile Attribute <br/>
+                            The Synthetic Attribute
+                        </div>
+                        Getting Loaded: A Simulation <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>7 The Lifetime of a Class</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Class Loading, Linking, and Initialization
+                        <div style="margin-left: 2em">
+                            Loading <br/>
+                            Verification <br/>
+                            Preparation <br/>
+                            Resolution <br/>
+                            Initialization
+                            <div style="margin-left: 2em">
+                                The Class Initialization Method <br/>
+                                Active versus Passive Use
+                            </div>
+                        </div>
+                        The Lifetime of an Object
+                        <div style="margin-left: 2em">
+                            Class Instantiation <br/>
+                            Garbage Collection and Finalization of Objects
+                        </div>
+                        Unloading and Finalization of Classes <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>8 The Linking Model</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Dynamic Linking and Resolution <br/>
+                        Resolution and Dynamic Extension <br/>
+                        Constant Pool Resolution
+                        <div style="margin-left: 2em">
+                            Resolution of CONSTANT_Class_info Entries
+                            <div style="margin-left: 2em">
+                                Array Classes <br/>
+                                Non-Array Classes and Interfaces
+                            </div>
+                            Resolution of CONSTANT_Fieldref_info Entries <br/>
+                            Resolution of CONSTANT_Methodref_info Entries <br/>
+                            Resolution of CONSTANT_InterfaceMethodref_info Entries <br/>
+                            Resolution of CONSTANT_String_info Entries <br/>
+                            Resolution of Other Types of Entries
+                        </div>
+                        Compile-Time Resolution of Constants <br/>
+                        Direct References <br/>
+                        _quick Instructions <br/>
+                        Example: The Linking of the Salutation Application <br/>
+                        Example: The Dynamic Extension of the Greet Application <br/>
+                        Example: Unloading Unreachable Greeters <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>9 Garbage Collection</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Why Garbage Collection? <br/>
+                        Garbage Collection Algorithms <br/>
+                        Reference Counting Collectors <br/>
+                        Tracing Collectors <br/>
+                        Compacting Collectors <br/>
+                        Copying Collectors <br/>
+                        Generational Collectors <br/>
+                        Adaptive Collectors <br/>
+                        Finalization <br/>
+                        Heap of Fish: A Simulation
+                        <div style="margin-left: 2em">
+                            Allocate Fish <br/>
+                            Assign References <br/>
+                            Garbage Collect <br/>
+                            Compact Heap
+                        </div>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>10 Stack and Local Variable Operations</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Pushing Constants Onto the Stack <br/>
+                        Generic Stack Operations <br/>
+                        Pushing Local Variables Onto the Stack <br/>
+                        Popping to Local Variables <br/>
+                        The wide Instruction <br/>
+                        Fibonacci Forever: A Simulation <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>11 Type Conversion</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        The Conversion Opcodes <br/>
+                        Conversion Diversion: A Simulation <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>12 Integer Arithmetic</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Two's Complement Arithmetic <br/>
+                        Inner Int: A Java int Reveals its Inner Nature <br/>
+                        Arithmetic Opcodes <br/>
+                        Prime Time: A Simulation <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>13 Logic</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        The Logic Opcodes <br/>
+                        Logical Results: A Simulation <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>14 Floating Point Arithmetic</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Floating Point Numbers <br/>
+                        Inner Float: A Java float Reveals its Inner Nature <br/>
+                        The Floating Point Opcodes <br/>
+                        Circle of Squares: A Simulation <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>15 Objects and Arrays</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        A Refresher on Objects and Arrays <br/>
+                        Opcodes for Objects <br/>
+                        Opcodes for Arrays <br/>
+                        Three-Dimensional Array: A Simulation <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>16 Control Flow</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Conditional Branching <br/>
+                        Unconditional Branching <br/>
+                        Conditional Branching with Tables <br/>
+                        Saying Tomato: A Simulation <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>17 Exceptions</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Throwing and Catching Exceptions <br/>
+                        The Exception Table <br/>
+                        Play Ball!: A Simulation <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>18 Finally Clauses</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Miniature Subroutines <br/>
+                        Asymmetrical Invocation and Return <br/>
+                        Hop Around: A Simulation <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>19 Method Invocation and Return</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Method Invocation
+                        <div style="margin-left: 2em">
+                            Invoking a Java Method <br/>
+                            Invoking a Native Method
+                        </div>
+                        Other Forms of Method Invocation <br/>
+                        The invokespecial instruction
+                        <div style="margin-left: 2em">
+                            invokespecial and &lt;init&gt;() <br/>
+                            invokespecial and Private Methods <br/>
+                            invokespecial and super
+                        </div>
+                        The invokeinterface Instruction <br/>
+                        Invocation Instructions and Speed <br/>
+                        Examples of Method Invocation <br/>
+                        Returning from Methods <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <div style="margin-left: 2em">
+                        <h3><em>20 Thread Synchronization</em></h3>
+                    </div>
+                    <div style="margin-left: 4em">
+                        Monitors <br/>
+                        Object Locking <br/>
+                        Synchronization Support in the Instruction Set
+                        <div style="margin-left: 2em">
+                            Synchronized Statements <br/>
+                            Synchronized Methods
+                        </div>
+                        Coordination Support in Class Object <br/>
+                        On the CD-ROM <br/>
+                        The Resources Page
+                    </div><br/>
+                    <h3> Appendix A. Instructions by Opcode Mnemonic </h3>
+                    <h3> Appendix B. Opcode Mnemonic by Functional Group </h3>
+                    <h3> Appendix C. Opcode Mnemonic by Opcode </h3>
+                    <h3> Appendix D. Slices of Pi: A Simulation of the Java Virtual Machine </h3>
+                    <h3> Index </h3>
+                    <h3> About the Author </h3>
+
+                    <hr>
+
+
+                </div>
+
+            </div>
+            <br/>
+            <div class="u-cf"></div>
+
+            <div class="row">
+                <div class="one-third column value">
+                    <a class="button button-primary mod" href="index.html">Previous page</a>
+                </div>
+                <div class="one-third column value" style="text-align:center;">
+                    <a class="button button-primary mod" href="index.html">Table of content</a>
+                </div>
+                <div class="one-third column value">
+                    <a class="button button-primary mod u-pull-right" href="preface.html">Next page</a>
+                </div>
+            </div>
+            <hr/>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+
+

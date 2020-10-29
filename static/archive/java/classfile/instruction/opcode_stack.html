@@ -19,7 +19,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 3
@@ -49,7 +49,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 1
@@ -67,9 +67,35 @@ index  start_pc  length  name_and_type
     0         0       7  this:Lsample/HelloWorld;
 </div>
 
+<h2>pop2</h2>
 
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Math.max(3L, 4L);
+    }
+}
+</div>
 
-
+<div title="test:()V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 1
+code_length = 11
+code = 140002140004B8000658B1
+=== === ===  === === ===  === === ===
+0000: ldc2_w          #2   // 140002     || 3
+0003: ldc2_w          #4   // 140004     || 4
+0006: invokestatic    #6   // B80006     || java/lang/Math.max:(JJ)J
+0009: pop2                 // 58
+0010: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      11  this:Lsample/HelloWorld;
+</div>
 
 
 
