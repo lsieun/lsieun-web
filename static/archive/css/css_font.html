@@ -1,0 +1,248 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">CSS Font</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/css/css_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>font-family</h2>
+
+<p class="indented">
+    Font name. This can be a single font or a comma-separated list, of which a browser will apply the first font it can use (such as one installed on a user’s computer).
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Possible Values</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>Value</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>[Font family]</td>
+        <td class="w3-left-align">Font name. Fonts are not CSS-specific and need to be either installed on a user’s computer or downloaded for CSS to grab hold of them and apply them.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>serif</td>
+        <td style="font-family: serif;" class="w3-left-align">Generic font family. Serif font, like Times or Times New Roman.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>sans-serif</td>
+        <td style="font-family: sans-serif;" class="w3-left-align">Generic font family. Sans-serif font, like Arial or Helvetica.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>monospace</td>
+        <td style="font-family: monospace;" class="w3-left-align">Generic font family. Fixed-width font, like Courier.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>cursive</td>
+        <td style="font-family: cursive;" class="w3-left-align">Generic font family. Flowing font, like Zapf Chancery.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>fantasy</td>
+        <td style="font-family: fantasy;" class="w3-left-align">Generic font family. Daft font, like Papyrus.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td></td>
+        <td style="font-family: ;" class="w3-left-align"></td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        Font names that are made up of more than one word should be placed inside quotation marks. <code>font-family: "Times New Roman"</code>, for example.
+    </p>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        While it’s perfectly legit to use the <code>serif, sans-serif, monospace, cursive</code>, and <code>fantasy</code> generic font family names,
+        they are designed as a fallback for when preceding font families are not recognised.
+        Their use at the end of a multiple font family list is advisable.
+    </p>
+</div>
+
+<div title="Example" class="plaintext">
+body { font-family: Helvetica, Arial, sans-serif; }
+blockquote { font-family: Times, "Times New Roman", serif; }
+</div>
+
+<h2>font-size</h2>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Possible Values</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>Value</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>[length]</td>
+        <td class="w3-left-align">When <code>em</code> or <code>ex</code> units are used, font size is calculated in relation to the containing box’s font size.
+            Should not be a negative value.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>[percentage]</td>
+        <td class="w3-left-align">Calculated as a percentage of the containing box’s font size. Should not be a negative value.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>larger</td>
+        <td style="font-size: larger" class="w3-left-align">Larger than the inherited font size.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>smaller</td>
+        <td style="font-size: smaller" class="w3-left-align">Smaller than the inherited font size.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>xx-small</td>
+        <td style="font-size: xx-small" class="w3-left-align">Extra EXTRA small.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>x-small</td>
+        <td style="font-size: x-small" class="w3-left-align">Extra small.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>small</td>
+        <td style="font-size: small" class="w3-left-align">Smaller than medium.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>medium</td>
+        <td style="font-size: medium" class="w3-left-align">The standard reference middle value.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>large</td>
+        <td style="font-size: large" class="w3-left-align">Larger than medium.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>x-large</td>
+        <td style="font-size: x-large" class="w3-left-align">Extra large.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>xx-large</td>
+        <td style="font-size: xx-large" class="w3-left-align">Extra EXTRA large.</td>
+    </tr>
+    </tbody>
+</table>
+
+<div title="Example" class="plaintext">
+p { font-size: 16px; }
+</div>
+
+<h2>font-style</h2>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Possible Values</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>Value</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>normal</td>
+        <td style="font-style: normal" class="w3-left-align">Standard “roman” non-italic, non-oblique text.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>italic</td>
+        <td style="font-style: italic" class="w3-left-align">Italic text. Selects an italic subset of a font family. If one is not found, oblique is selected.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>oblique</td>
+        <td style="font-style: oblique" class="w3-left-align">Slanted text. Selects an oblique subset of a font family. If one is not found, text may be generated by slanting a normal font.</td>
+    </tr>
+    </tbody>
+</table>
+
+<div title="Example" class="plaintext">
+.warning { font-style: italic; }
+</div>
+
+<h2>font-weight</h2>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Possible Values</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>Value</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td>normal</td>
+        <td style="font-weight: normal;" class="w3-left-align">Standard weight. Equivalent of 400.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>bold</td>
+        <td style="font-weight: bold" class="w3-left-align">Bold weight. Equivalent of 700.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>bolder</td>
+        <td style="font-weight: bolder" class="w3-left-align">Bolder than the inherited font weight.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>lighter</td>
+        <td style="font-weight: lighter" class="w3-left-align">Lighter than the inherited font weight.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>100</td>
+        <td style="font-weight: 100" class="w3-left-align">Lightest.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>200</td>
+        <td style="font-weight: 200" class="w3-left-align">Bolder than 100, lighter than 300.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>300</td>
+        <td style="font-weight: 300" class="w3-left-align">Bolder than 200, lighter than 400.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>400</td>
+        <td style="font-weight: 400" class="w3-left-align">Bolder than 300, lighter than 500. Equivalent of normal.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>500</td>
+        <td style="font-weight: 500" class="w3-left-align">Bolder than 400, lighter than 600.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>600</td>
+        <td style="font-weight: 600" class="w3-left-align">Bolder than 500, lighter than 700.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>700</td>
+        <td style="font-weight: 700" class="w3-left-align">Bolder than 600, lighter than 800. Equivalent of bold.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>800</td>
+        <td style="font-weight: 800" class="w3-left-align">Bolder than 700, lighter than 900.</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td>900</td>
+        <td style="font-weight: 900" class="w3-left-align">Boldest.</td>
+    </tr>
+    </tbody>
+</table>
+
+<p class="indented">
+    The nine font weights can not be relied on.
+    These weights are dependent on weight subsets of a font being available.
+    Whereas a font may contain nine weights, it may also contain fewer; simply for normal and bold, for example.
+</p>
+
+<div title="Example" class="plaintext">
+.chubbybaby { font-weight: bold; }
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="http://www.ampsoft.net/webdesign-l/WindowsMacFonts.html" target="_blank">Common fonts to all versions of Windows & Mac equivalents</a></li>
+</ul>
