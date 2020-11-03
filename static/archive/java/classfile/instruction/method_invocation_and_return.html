@@ -189,6 +189,63 @@
     When the native method returns, the Java stack once again will be used.
 </p>
 
+<h3>Returning from methods</h3>
+
+<p class="indented">
+    To return from a method, the JVM uses several opcodes, one for each type of return value.
+    These opcodes do not take operands: If there is a return value, it must be on the operand stack.
+    The return value is popped off the operand stack and pushed onto the operand stack of the calling method's stack frame.
+    The current stack frame is popped, and the calling method's stack frame becomes current.
+    The <b>program counter</b> is reset to the instruction following the instruction that invoked this method in the first place.
+</p>
+
+<table class="w3-table-all w3-hoverable w3-centered">
+    <caption>Method invocation of invokevirtual and invokestatic</caption>
+    <thead onclick="$(this).next().toggle()">
+    <tr class="w3-green">
+        <th>Opcode</th>
+        <th>Operand(s)</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="w3-hover-blue">
+        <td><code>ireturn</code></td>
+        <td>none</td>
+        <td class="w3-left-align">pop int, push onto stack of calling method and return</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>lreturn</code></td>
+        <td>none</td>
+        <td class="w3-left-align">pop long, push onto stack of calling method and return</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>freturn</code></td>
+        <td>none</td>
+        <td class="w3-left-align">pop float, push onto stack of calling method and return</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>dreturn</code></td>
+        <td>none</td>
+        <td class="w3-left-align">pop double, push onto stack of calling method and return</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>areturn</code></td>
+        <td>none</td>
+        <td class="w3-left-align">pop object reference, push onto stack of calling method and return</td>
+    </tr>
+    <tr class="w3-hover-blue">
+        <td><code>return</code></td>
+        <td>none</td>
+        <td class="w3-left-align">return void</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    The <code>ireturn</code> instruction is used for methods that return <code>int</code>, <code>char</code>, <code>byte</code>, or <code>short</code>.
+</p>
+
 <h2>Other forms of method invocation</h2>
 
 <p class="indented">
@@ -249,7 +306,7 @@
     </tbody>
 </table>
 
-<h3>The invokespecial instruction</h3>
+<h2>The invokespecial instruction</h2>
 
 <p class="indented">
     <code>invokespecial</code> differs from <code>invokevirtual</code> primarily in that <code>invokespecial</code> selects a method based on <b>the type of the reference</b> rather than <b>the class of the object</b>.
@@ -257,7 +314,7 @@
     In each of the three situations where <code>invokespecial</code> is used, dynamic binding wouldn't yield the desired result.
 </p>
 
-<h4>invokespecial and &lt;init&gt;</h4>
+<h3>invokespecial and &lt;init&gt;</h3>
 
 <p class="indented">
     The compiler places code for constructors and instance variable initializers into <code>&lt;init&gt;</code> methods, or instance initialization methods.
@@ -337,7 +394,7 @@ index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
 </div>
 
-<h4>invokespecial and private methods</h4>
+<h3>invokespecial and private methods</h3>
 
 <p class="indented">
     In the case of private methods, it must be possible for a subclass to declare a method with the same signature as a private method in a superclass.
@@ -382,7 +439,7 @@ Superclass's interesting method.
     so <code>ParentClass</code>'s version of <code>interestingMethod()</code> will be invoked.
 </p>
 
-<h4>invokespecial and super</h4>
+<h3>invokespecial and super</h3>
 
 <p class="indented">
     When invoking a method with the <code>super</code> keyword, as in <code>super.someMethod()</code>, you want the superclass's version of a method to be invoked -- even if the current class overrides the method.
@@ -433,62 +490,7 @@ Superclass's interesting method.
     These decisions are left to the designers of each Java virtual machine implementation.
 </p>
 
-<h2>Returning from methods</h2>
 
-<p class="indented">
-    To return from a method, the JVM uses several opcodes, one for each type of return value.
-    These opcodes do not take operands: If there is a return value, it must be on the operand stack.
-    The return value is popped off the operand stack and pushed onto the operand stack of the calling method's stack frame.
-    The current stack frame is popped, and the calling method's stack frame becomes current.
-    The <b>program counter</b> is reset to the instruction following the instruction that invoked this method in the first place.
-</p>
-
-<table class="w3-table-all w3-hoverable w3-centered">
-    <caption>Method invocation of invokevirtual and invokestatic</caption>
-    <thead onclick="$(this).next().toggle()">
-    <tr class="w3-green">
-        <th>Opcode</th>
-        <th>Operand(s)</th>
-        <th>Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr class="w3-hover-blue">
-        <td><code>ireturn</code></td>
-        <td>none</td>
-        <td class="w3-left-align">pop int, push onto stack of calling method and return</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>lreturn</code></td>
-        <td>none</td>
-        <td class="w3-left-align">pop long, push onto stack of calling method and return</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>freturn</code></td>
-        <td>none</td>
-        <td class="w3-left-align">pop float, push onto stack of calling method and return</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>dreturn</code></td>
-        <td>none</td>
-        <td class="w3-left-align">pop double, push onto stack of calling method and return</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>areturn</code></td>
-        <td>none</td>
-        <td class="w3-left-align">pop object reference, push onto stack of calling method and return</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>return</code></td>
-        <td>none</td>
-        <td class="w3-left-align">return void</td>
-    </tr>
-    </tbody>
-</table>
-
-<p>
-    The <code>ireturn</code> instruction is used for methods that return <code>int</code>, <code>char</code>, <code>byte</code>, or <code>short</code>.
-</p>
 
 <h2>Conclusion</h2>
 

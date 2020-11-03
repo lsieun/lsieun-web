@@ -39,6 +39,40 @@ index  start_pc  length  name_and_type
     2         4       1  b:I
 </div>
 
+<h2>dup2</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        long a;
+        long b;
+        b = a = 2;
+    }
+}
+</div>
+
+<div title="test:()V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 5
+code_length = 7
+code = 1400025C4042B1
+=== === ===  === === ===  === === ===
+0000: ldc2_w          #2   // 140002     || 2
+0003: dup2                 // 5C
+0004: lstore_1             // 40
+0005: lstore_3             // 42
+0006: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       7  this:Lsample/HelloWorld;
+    1         5       2  a:J
+    3         6       1  b:J
+</div>
+
 <h2>pop</h2>
 
 <div title="HelloWorld.java" class="javacode">
@@ -97,8 +131,83 @@ index  start_pc  length  name_and_type
     0         0      11  this:Lsample/HelloWorld;
 </div>
 
+<h2>dup_x2</h2>
 
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static int test(int[] array, int i, int value) {
+        return array[i] = value;
+    }
+}
+</div>
 
+<div title="test:([III)I" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:([III)I
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 3
+code_length = 6
+code = 2A1B1C5B4FAC
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: iload_1              // 1B
+0002: iload_2              // 1C
+0003: dup_x2               // 5B
+0004: iastore              // 4F
+0005: ireturn              // AC
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  array:[I
+    1         0       6  i:I
+    2         0       6  value:I
+</div>
 
+<h2>dup2_x2</h2>
 
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static long test(long[] array, int i, long value) {
+        return array[i] = value;
+    }
+}
+</div>
 
+<div title="test:([JIJ)J" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:([JIJ)J
+=== === ===  === === ===  === === ===
+max_stack = 6
+max_locals = 4
+code_length = 6
+code = 2A1B205E50AD
+=== === ===  === === ===  === === ===
+0000: aload_0              // 2A
+0001: iload_1              // 1B
+0002: lload_2              // 20
+0003: dup2_x2              // 5E
+0004: lastore              // 50
+0005: lreturn              // AD
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  array:[J
+    1         0       6  i:I
+    2         0       6  value:J
+</div>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一，这里与operand stack密切相关的opcode，大体分为三类：dup、pop和swap。</li>
+    <li>第二，从JVM execution model的角度上来说，这些opcode是如何影响frame当中的operand stack和local variable。</li>
+</ul>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_stack_a_frame.png" alt="Frames"/>
+</div>

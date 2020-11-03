@@ -1,0 +1,72 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">slot</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h3>slot</h3>
+
+
+<p class="indented">
+    Each <b>slot</b> in the <b>local variables</b> and <b>operand stack</b> parts can hold any Java value, except <code>long</code> and <code>double</code> values. These values require two slots. This complicates the management of local variables: for instance the <code>i<sup>th</sup></code> method argument is not necessarily stored in local variable <code>i</code>. For example, calling <code>Math.max(1L, 2L)</code> creates a frame with the <code>1L</code> value in the first two local variable slots, and with the value <code>2L</code> in the third and fourth slots.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static long add(long a, long b) {
+        long c = a + b;
+        return c;
+    }
+}
+</div>
+
+<div title="add:(JJ)J" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 4
+max_locals = 6
+code_length = 8
+code = 1E206137041604AD
+=== === ===  === === ===  === === ===
+0000: lload_0              // 1E
+0001: lload_2              // 20
+0002: ladd                 // 61
+0003: lstore          4    // 3704
+0005: lload           4    // 1604
+0007: lreturn              // AD
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       8  a:J
+    2         0       8  b:J
+    4         5       3  c:J
+</div>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        对slot概念的解读。
+    </p>
+    <p>
+        货币，在中国，使用RMB；在日本，使用日元；在欧洲，使用欧元；在美国，使用美元。这些货币，在各自的环境中，发挥着各自的作用。
+        复旦大学中国研究院研究员、春秋发展战略研究院研究员陈平，表达过这样的观点：中国月入2000元比美国月入3000刀幸福。
+        如果按照美元和RMB的汇率来说，1美元相当于6.81人民币，那么3000美元则大概相当于2万元人民币。
+        除了单纯的从美元向人民币进行转换之外，还应该考虑物价的影响；假设，在美国，一瓶水卖1美元，换算成人民币就是6.81元，在中国，一瓶水卖1元，因此物价对于生活水平也是有影响的。
+        因此，更合理的一种比较方式是“购买力”。比如说，麦当劳，美国一个巨无霸是5美元，他一个月收入3000，可以买600个；中国一个巨无霸是30元，一个月收入3000，只能买100个。
+        （参考自<a class="external" href="https://www.zhihu.com/question/28490267" target="_blank">知乎</a>）
+    </p>
+    <p>
+        在谈论内存（Memory）和硬盘（Disk）的时候，衡量它们的大小，我们使用byte作为计算单位。在frame中的local variable和operand stack中，并没有使用byte作为计算单位，而是使用slot作为计算单位。为什么要使用slot，而不使用byte呢？
+    </p>
+    <p>
+        我们知道，在JVM规范当中，它只是定义是虚拟机应该做什么（What），而没有定义怎么做（How）。
+        所以，不同的虚拟机在实现local variable和operand stack的时候，可能表现出各自的差异，比如说有的实现的时候使用4 byte作为1个word，有的时候的实现则使用8 byte作为1个word，而slot则是与word等价的概念。
+    </p>
+    <p>
+        slot则相当于“购买力”的概念。
+        “购买力”，主要是说，不管你在中国或在美国一个月赚多少钱，你这一个月的钱能够买多少个面包呢？
+        slot，则主要是说，不管你的JVM实现的时候到底要用多少个byte来实现功能，你只要保证在1个slot的空间当中，能够存储下1个int类型，或者1个float类型，或者1个reference类型，
+        2个slot空间能够存储1个long类型，或者1个double类型，这样就可以了。
+    </p>
+</div>

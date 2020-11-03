@@ -29,7 +29,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 8
@@ -77,7 +77,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 5
@@ -116,7 +116,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 5
@@ -155,7 +155,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 constant_pool_count='001C' (28)
 constant_pool
     ... ...
@@ -220,7 +220,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 5
@@ -251,7 +251,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 constant_pool_count='001A' (26)
 constant_pool
     ... ...
@@ -294,7 +294,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 4
@@ -327,7 +327,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 constant_pool_count='0014' (20)
 constant_pool
@@ -365,7 +365,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 5
@@ -395,7 +395,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -432,7 +432,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -459,7 +459,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -493,7 +493,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 constant_pool_count='0013' (19)
 constant_pool
     ... ...
@@ -554,4 +554,15 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
     1         4       1  str:Ljava/lang/String;
+</div>
+
+<h2>Summing Up</h2>
+
+<ul>
+    <li>第一，从代码的角度上来说，不同范围内的数值需要用到哪些opcode来实现。</li>
+    <li>第二，从JVM execution model的角度上来说，这些opcode是如何影响frame当中的operand stack和local variable。</li>
+</ul>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_stack_a_frame.png" alt="Frames"/>
 </div>

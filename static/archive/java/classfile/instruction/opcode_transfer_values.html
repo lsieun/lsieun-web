@@ -7,9 +7,11 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<p>
-    在frame当中，有operand stack和local variables这两个结构，transfer values就是在这两者之间进行传递数值。
-</p>
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        在frame当中，有operand stack和local variables这两个结构，transfer values就是在这两者之间进行传递数值。
+    </p>
+</div>
 
 <p>
     The <code>ILOAD</code>, <code>LLOAD</code>, <code>FLOAD</code>, <code>DLOAD</code>, and <code>ALOAD</code> instructions read a <b>local variable</b> and push its value on the <b>operand stack</b>. They take as argument the index <code>i</code> of the local variable that must be read.
@@ -62,7 +64,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 6
@@ -105,7 +107,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 6
@@ -141,7 +143,7 @@ index  start_pc  length  name_and_type
 </p>
 
 <p>
-    TODO: 这里应该好好说一说，Constant Pool、operand stack和local variables。
+    注意: Constant Pool、operand stack和local variables，对于long和double类型的数据，都占用2个位置。
 </p>
 
 <h3>long</h3>
@@ -157,7 +159,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 9
@@ -196,7 +198,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 9
@@ -236,7 +238,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 6
@@ -267,7 +269,15 @@ index  start_pc  length  name_and_type
 
 <h2>Summing Up</h2>
 
-<p>
-    在bytecode当中，并没有体现出对于局部变量的定义，而是直接使用local variable的空间。
-</p>
+<ul>
+    <li>第一，从代码的角度上来说，不同范围内的数值需要用到哪些opcode来实现。</li>
+    <li>第二，从JVM execution model的角度上来说，这些opcode是如何影响frame当中的operand stack和local variable。</li>
+</ul>
 
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_stack_a_frame.png" alt="Frames"/>
+</div>
+
+<ul>
+    <li>第三，在opcode当中，并没有体现出对于局部变量的定义，而是直接使用local variable的空间。</li>
+</ul>

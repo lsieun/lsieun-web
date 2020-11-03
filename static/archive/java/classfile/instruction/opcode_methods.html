@@ -7,6 +7,16 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<p class="indented">
+    The Java Virtual Machine uses <b>local variables</b> to <b>pass parameters on method invocation</b>.
+    On <b>class method invocation</b>, any parameters are passed in consecutive local variables starting from local variable <code>0</code>.
+    On <b>instance method invocation</b>, local variable <code>0</code> is always used to pass a reference to the object
+    on which the instance method is being invoked (<code>this</code> in the Java programming language).
+    Any parameters are subsequently passed in consecutive local variables starting from local variable <code>1</code>.
+    <sub class="my_note" style="color:blue">笔记：local variable，它的作用，是传递方法调用的参数。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
 <h2>constructor invocation</h2>
 
 <div title="HelloWorld.java" class="javacode">
@@ -17,7 +27,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 constant_pool_count='0013' (19)
 constant_pool
     ... ...
@@ -58,7 +68,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -88,7 +98,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -118,7 +128,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -148,7 +158,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -186,7 +196,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 0
 max_locals = 1
@@ -215,7 +225,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 0
 max_locals = 1
@@ -244,7 +254,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 0
 max_locals = 1
@@ -273,7 +283,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 0
 max_locals = 1
@@ -304,7 +314,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 2
@@ -348,7 +358,7 @@ interface MyInterface {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -383,7 +393,7 @@ interface MyInterface {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 0
 max_locals = 1
@@ -411,7 +421,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 constant_pool_count='003B' (59)
 constant_pool
     ... ...
@@ -454,7 +464,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -484,7 +494,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -517,7 +527,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 1
@@ -535,27 +545,18 @@ index  start_pc  length  name_and_type
 
 <h2>Summing Up</h2>
 
-<table class="w3-table-all w3-hoverable w3-centered">
-    <caption>invoke method</caption>
-    <thead onclick="$(this).next().toggle()">
-    <tr class="w3-green">
-        <th>opcode</th>
-        <th>mnemonic symbol</th>
-        <th>meaning</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr><td><code>182</code></td><td>invokevirtual</td><td class="w3-left-align">Invoke instance method; dispatch based on class</td></tr>
-    <tr><td><code>183</code></td><td>invokespecial</td><td class="w3-left-align">Invoke instance method; special handling for superclass, private, and instance initialization method invocations</td></tr>
-    <tr><td><code>184</code></td><td>invokestatic</td><td class="w3-left-align">Invoke a class (static) method</td></tr>
-    <tr><td><code>185</code></td><td>invokeinterface</td><td class="w3-left-align">Invoke interface method</td></tr>
-    <tr><td><code>186</code></td><td>invokedynamic</td><td class="w3-left-align">Invoke dynamic method</td></tr>
-    </tbody>
-</table>
+<ul>
+    <li>第一，从代码的角度上来说，调用方法需要用到哪些opcode。</li>
+    <li>第二，从JVM execution model的角度上来说，这些opcode是如何影响frame当中的operand stack和local variable。</li>
+</ul>
 
-<p>
-    对于<code>invokespecial</code>有三种情况
-</p>
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_stack_a_frame.png" alt="Frames"/>
+</div>
+
+<ul>
+    <li>第三，对于<code>invokespecial</code>有三种情况</li>
+</ul>
 
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {

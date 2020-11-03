@@ -41,7 +41,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 constant_pool_count='0016' (22)
 constant_pool
     ... ...
@@ -76,7 +76,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -112,7 +112,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 constant_pool_count='0016' (22)
 constant_pool
     ... ...
@@ -146,7 +146,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -169,21 +169,13 @@ index  start_pc  length  name_and_type
 
 <h2>Summing Up</h2>
 
-<table class="w3-table-all w3-hoverable w3-centered">
-    <caption>Field Operation</caption>
-    <thead onclick="$(this).next().toggle()">
-    <tr class="w3-green">
-        <th>opcode</th>
-        <th>mnemonic symbol</th>
-        <th>meaning</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr><td><code>178</code></td><td>getstatic</td><td class="w3-left-align">Get static field from class</td></tr>
-    <tr><td><code>179</code></td><td>putstatic</td><td class="w3-left-align">Set static field in class</td></tr>
-    <tr><td><code>180</code></td><td>getfield</td><td class="w3-left-align">Fetch field from object</td></tr>
-    <tr><td><code>181</code></td><td>putfield</td><td class="w3-left-align">Set field in object</td></tr>
-    </tbody>
-</table>
+<ul>
+    <li>第一，从代码的角度上来说，使用字段（读取字段的值、给字段赋值）需要用到哪些opcode。</li>
+    <li>第二，从JVM execution model的角度上来说，这些opcode是如何影响frame当中的operand stack和local variable。</li>
+</ul>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_stack_a_frame.png" alt="Frames"/>
+</div>
 
 

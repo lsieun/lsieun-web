@@ -1,0 +1,309 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">JVM Types</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    The Java Virtual Machine specification defines the range of values for each of the data types, but does not define their sizes.
+    The number of bits used to store each data type value is a decision of the designers of individual implementations.
+</p>
+<p>
+    The basic unit of size for data values in the Java Virtual Machine is the <em>word</em> -- a fixed size chosen by the designer of each Java Virtual Machine implementation.
+    The word size must be large enough to hold a value of type <code>byte</code>, <code>short</code>, <code>int</code>, <code>char</code>, <code>float</code>, <code>returnAddress</code>, or <code>reference</code>.
+    Two words must be large enough to hold a value of type <code>long</code> or <code>double</code>.
+    An implementation designer must therefore choose a word size that is at least 32 bits, but otherwise can pick whatever word size will yield the most efficient implementation.
+    The word size is often chosen to be the size of a native pointer on the host platform.
+</p>
+<p>
+    The specification of many of the Java Virtual Machine's runtime data areas are based upon this abstract concept of a word.
+    For example, two sections of a Java stack frame--the local variables and operand stack--are defined in terms of words.
+    These areas can contain values of any of the virtual machine's data types.
+    When placed into the local variables or operand stack, a value occupies either one or two words.
+</p>
+<p>
+    As they run, Java programs cannot determine the word size of their host virtual machine implementation.
+    The word size does not affect the behavior of a program. It is only an internal attribute of a virtual machine implementation.
+</p>
+
+<h2>Java Type vs ClassFile Type</h2>
+
+<h3>Constant Pool</h3>
+
+<h3>Field</h3>
+
+<h3>local variables</h3>
+
+<p class="indented">
+    Values of type <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> are converted to <code>int</code> before being stored into the local variables.
+    Values of type <code>long</code> and <code>double</code> occupy two consecutive entries in the array.
+</p>
+
+<h3>operand stack</h3>
+
+<p>
+    The virtual machine converts values of type <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> to <code>int</code> before pushing them onto the operand stack.
+</p>
+
+<p>
+    Note also that types <code>byte</code>, <code>short</code>, <code>char</code>, and <code>boolean</code> in the source code become <code>int</code>s in the local variables.
+    This is also true of the operand stack.
+    As mentioned earlier, the <code>boolean</code> type is not supported directly by the Java Virtual Machine.
+    The Java compiler always uses <code>int</code>s to represent <code>boolean</code> values in the local variables or operand stack.
+    Data types <code>byte</code>, <code>short</code>, and <code>char</code>, however, are supported directly by the Java Virtual Machine.
+    These can be stored on the heap as instance variables or array elements, or in the method area as class variables.
+    When placed into local variables or the operand stack, however, values of type <code>byte</code>, <code>short</code>, and <code>char</code> are converted into <code>int</code>s.
+    They are manipulated as <code>int</code>s while on the stack frame, then converted back into <code>byte</code>, <code>short</code>, or <code>char</code> when stored back into heap or method area.
+</p>
+
+<h3>boolean</h3>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-2.html#jvms-2.3.4" target="_blank">2.3.4. The boolean Type</a>部分。
+    </p>
+</div>
+
+<p class="indented">
+    Although the Java Virtual Machine defines <b>a <code>boolean</code> type</b>, it only provides very limited support for it.
+    There are no Java Virtual Machine instructions solely dedicated to operations on <code>boolean</code> values.
+    Instead, expressions in the Java programming language that operate on <code>boolean</code> values are compiled to use values of the Java Virtual Machine <code>int</code> data type.
+    <sub class="my_note" style="color:blue">笔记：这里是一个单独的boolean类型</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        boolean flag = true;
+    }
+}
+</div>
+
+<div title="test:()V boolean value" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 1
+max_locals = 2
+code_length = 3
+code = 043CB1
+=== === ===  === === ===  === === ===
+0000: iconst_1             // 04
+0001: istore_1             // 3C
+0002: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       3  this:Lsample/HelloWorld;
+    1         2       1  flag:Z
+</div>
+
+<p class="indented">
+    The Java Virtual Machine does directly support <b><code>boolean</code> arrays</b>.
+    Its <code>newarray</code> instruction enables creation of <code>boolean</code> arrays.
+    Arrays of type boolean are accessed and modified using the byte array instructions <code>baload</code> and <code>bastore</code>.
+    <sub class="my_note" style="color:blue">笔记：这里是一个boolean数组类型</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        boolean[] array = new boolean[3];
+        array[0] = true;
+        boolean flag = array[1];
+    }
+}
+</div>
+
+<div title="test:()V boolean array" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 3
+max_locals = 3
+code_length = 13
+code = 06BC044C2B0304542B04333DB1
+=== === ===  === === ===  === === ===    "boolean[] array = new boolean[3];"
+0000: iconst_3             // 06
+0001: newarray        4    // BC04       || boolean
+0003: astore_1             // 4C
+=== === ===  === === ===  === === ===    "array[0] = true;"
+0004: aload_1              // 2B
+0005: iconst_0             // 03
+0006: iconst_1             // 04
+0007: bastore              // 54
+=== === ===  === === ===  === === ===    "boolean flag = array[1];"
+0008: aload_1              // 2B
+0009: iconst_1             // 04
+0010: baload               // 33
+0011: istore_2             // 3D
+=== === ===  === === ===  === === ===
+0012: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0      13  this:Lsample/HelloWorld;
+    1         4       9  array:[Z
+    2        12       1  flag:Z
+</div>
+
+<p class="indented">
+    In Oracle’s Java Virtual Machine implementation, <b><code>boolean</code> arrays</b> in the Java programming language are encoded as
+    Java Virtual Machine <b><code>byte</code> arrays</b>, using 8 bits per <code>boolean</code> element.
+    <sub class="my_note" style="color:blue">笔记：这里说Oracle对于boolean数组类型的实现思路</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    The Java Virtual Machine encodes <b><code>boolean</code> array</b> components using <code>1</code> to represent <code>true</code> and <code>0</code> to represent <code>false</code>.
+    Where Java programming language <b><code>boolean</code> values</b> are mapped by compilers to values of Java Virtual Machine type <code>int</code>, the compilers must use the same encoding.
+</p>
+
+<p>
+    To keep the instruction set small enough to enable each opcode to be represented by a single byte, not all operations are supported on all types.
+    Most operations are not supported for types <code>byte</code>, <code>short</code>, and <code>char</code>.
+    These types are converted to <code>int</code> when moved from the heap or method area to the stack frame.
+    They are operated on as <code>int</code> s, then converted back to <code>byte</code>, <code>short</code>, or <code>char</code> before being stored back into the heap or method area.
+</p>
+
+<p>
+    Table 5-3 shows the computation types that correspond to each storage type in the Java Virtual Machine.
+    As used here, a <em>storage type</em> is the manner in which values of the type are represented on the heap.
+    The storage type corresponds to the type of the variable in Java source code.
+    A <em>computation type</em> is the manner in which the type is represented on the Java stack frame.
+</p>
+
+<table border="1">
+    <caption>Table 5-3. Storage and computation types inside the Java Virtual Machine</caption>
+    <thead>
+    <tr>
+        <th>Storage Type</th>
+        <th>Minimum Bits in Heap or Method Area</th>
+        <th>Computation Type Words in the Java Stack Frame</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><code>byte</code></td>
+        <td>8 <code>int</code></td>
+        <td>load <code>byte</code> from array1</td>
+    </tr>
+    <tr>
+        <td><code>short</code></td>
+        <td>16 <code>int</code></td>
+        <td>load <code>short</code> from array1</td>
+    </tr>
+    <tr>
+        <td><code>int</code></td>
+        <td>32 <code>int</code></td>
+        <td>load <code>int</code> from array1</td>
+    </tr>
+    <tr>
+        <td><code>long</code></td>
+        <td>64 <code>long</code></td>
+        <td>load <code>long</code> from array2</td>
+    </tr>
+    <tr>
+        <td><code>char</code></td>
+        <td>16 <code>int</code></td>
+        <td>load <code>char</code> from array1</td>
+    </tr>
+    <tr>
+        <td><code>floa</code></td>
+        <td>32 <code>float</code></td>
+        <td>tload <code>float</code> from array1</td>
+    </tr>
+    <tr>
+        <td><code>double</code></td>
+        <td>64 <code>double</code></td>
+        <td>load <code>double</code> from array2</td>
+    </tr>
+    <tr>
+        <td><code>reference</code></td>
+        <td>32 <code>reference</code></td>
+        <td>load <code>reference</code> from array1</td>
+    </tr>
+    </tbody>
+</table>
+<br/>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-2.html#jvms-2.11.1-320" target="_blank">Table 2.11.1-B. Actual and Computational types in the Java Virtual Machine</a>部分。
+    </p>
+</div>
+
+<p class="indented">
+    The mapping between Java Virtual Machine actual types and Java Virtual Machine computational types is summarized by Table 2.11.1-B.
+</p>
+<p class="indented">
+    Certain Java Virtual Machine instructions such as pop and swap operate on the operand stack without regard to type; however, such instructions are constrained to use only on values of certain categories of computational types, also given in Table 2.11.1-B.
+</p>
+
+<table border="1" style="width:100%;border: solid 1px black; border-collapse: collapse;">
+    <caption>Actual and Computational types in the Java Virtual Machine</caption>
+    <thead>
+    <tr>
+        <th>Actual type</th>
+        <th>Computational type</th>
+        <th>Category</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><code class="literal">boolean</code></td>
+        <td><code class="literal">int</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">byte</code></td>
+        <td><code class="literal">int</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">char</code></td>
+        <td><code class="literal">int</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">short</code></td>
+        <td><code class="literal">int</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">int</code></td>
+        <td><code class="literal">int</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">float</code></td>
+        <td><code class="literal">float</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">reference</code></td>
+        <td><code class="literal">reference</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">returnAddress</code></td>
+        <td><code class="literal">returnAddress</code></td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td><code class="literal">long</code></td>
+        <td><code class="literal">long</code></td>
+        <td>2</td>
+    </tr>
+    <tr>
+        <td><code class="literal">double</code></td>
+        <td><code class="literal">double</code></td>
+        <td>2</td>
+    </tr>
+    </tbody>
+</table>

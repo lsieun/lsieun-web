@@ -373,42 +373,15 @@ index  start_pc  length  name_and_type
 
 <h2>Summing Up</h2>
 
-<table class="w3-table-all w3-hoverable w3-centered">
-    <tr class="w3-green">
-        <th>opcode</th>
-        <th>mnemonic symbol</th>
-        <th>return type</th>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>177</code></td>
-        <td>return</td>
-        <td>void</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>172</code></td>
-        <td>ireturn</td>
-        <td>int, boolean, byte, short, char</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>173</code></td>
-        <td>lreturn</td>
-        <td>long</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>174</code></td>
-        <td>freturn</td>
-        <td>float</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>175</code></td>
-        <td>dreturn</td>
-        <td>double</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>176</code></td>
-        <td>areturn</td>
-        <td>Object, int[], Object[]</td>
-    </tr>
-</table>
+<p>
+    总结：
+</p>
 
+<ul>
+    <li>第一，从代码的角度上来说，不同的return语句要用到哪些opcode来实现。</li>
+    <li>第二，从JVM execution model的角度上来说，这些opcode是如何影响frame当中的operand stack和local variable。</li>
+</ul>
 
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_stack_a_frame.png" alt="Frames"/>
+</div>

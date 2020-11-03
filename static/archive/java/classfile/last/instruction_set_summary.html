@@ -1,0 +1,57 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Instruction Set Summary</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Instruction Set Summary</h2>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-2.html#jvms-2.11" target="_blank">2.11. Instruction Set Summary</a>部分。
+    </p>
+</div>
+
+<p class="indented">
+    A Java Virtual Machine <b>instruction</b> consists of a one-byte <b>opcode</b> specifying the operation to be performed, followed by zero or more <b>operands</b> supplying arguments or data that are used by the operation. Many <b>instructions</b> have no <b>operands</b> and consist only of an <b>opcode</b>.
+</p>
+
+<p>
+    Ignoring exceptions, the inner loop of a Java Virtual Machine interpreter is effectively
+</p>
+
+<div title="Java Virtual Machine interpreter" class="plaintext">
+do {
+    atomically calculate pc and fetch opcode at pc;
+    if (operands) fetch operands;
+    execute the action for the opcode;
+} while (there is more to do);
+</div>
+
+<p class="indented">
+    The number and size of the <b>operands</b> are determined by the <b>opcode</b>.
+    If an operand is more than one byte in size, then it is stored in big-endian order - high-order byte first.
+    For example, an unsigned 16-bit index into the local variables is stored as two unsigned bytes,
+    <code>byte1</code> and <code>byte2</code>, such that its value is <code>(byte1 << 8) | byte2</code>.
+</p>
+
+<p>
+    在JVM文档中对opcode进行了一个分类，如下所示：
+</p>
+
+<ul>
+    <li>Load and Store Instructions</li>
+    <li>Arithmetic Instructions</li>
+    <li>Type Conversion Instructions</li>
+    <li>Object Creation and Manipulation</li>
+    <li>Operand Stack Management Instructions</li>
+    <li>Control Transfer Instructions</li>
+    <li>Method Invocation and Return Instructions</li>
+    <li>Throwing Exceptions</li>
+    <li>Synchronization</li>
+</ul>
+
+

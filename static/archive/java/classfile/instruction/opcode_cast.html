@@ -20,7 +20,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 4
@@ -52,7 +52,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 4
@@ -86,7 +86,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 3
@@ -118,7 +118,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 3
@@ -141,36 +141,15 @@ index  start_pc  length  name_and_type
 
 <h2>Summing Up</h2>
 
-<table class="w3-table-all w3-hoverable w3-centered">
-    <caption>Array Operation</caption>
-    <thead onclick="$(this).next().toggle()">
-    <tr class="w3-green">
-        <th>opcode</th>
-        <th>mnemonic symbol</th>
-        <th>meaning</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr><td><code>133</code></td><td>i2l</td><td></td></tr>
-    <tr><td><code>134</code></td><td>i2f</td><td></td></tr>
-    <tr><td><code>135</code></td><td>i2d</td><td></td></tr>
-    <tr><td><code>136</code></td><td>l2i</td><td></td></tr>
-    <tr><td><code>137</code></td><td>l2f</td><td></td></tr>
-    <tr><td><code>138</code></td><td>l2d</td><td></td></tr>
-    <tr><td><code>139</code></td><td>f2i</td><td></td></tr>
-    <tr><td><code>140</code></td><td>f2l</td><td></td></tr>
-    <tr><td><code>141</code></td><td>f2d</td><td></td></tr>
-    <tr><td><code>142</code></td><td>d2i</td><td></td></tr>
-    <tr><td><code>143</code></td><td>d2l</td><td></td></tr>
-    <tr><td><code>144</code></td><td>d2f</td><td></td></tr>
-    <tr><td><code>145</code></td><td>i2b</td><td></td></tr>
-    <tr><td><code>146</code></td><td>i2c</td><td></td></tr>
-    <tr><td><code>147</code></td><td>i2s</td><td></td></tr>
-    <tr><td><code>192</code></td><td>checkcast</td><td></td></tr>
-    <tr><td><code>193</code></td><td>instanceof</td><td></td></tr>
-    </tbody>
-</table>
+<p>
+    总结：
+</p>
 
+<ul>
+    <li>第一，从代码的角度上来说，primitive type(int和long)转换、Object type转换、检查对象的类型，这些语句要用到哪些opcode来实现。</li>
+    <li>第二，从JVM execution model的角度上来说，这些opcode是如何影响frame当中的operand stack和local variable。</li>
+</ul>
 
-
-
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_stack_a_frame.png" alt="Frames"/>
+</div>

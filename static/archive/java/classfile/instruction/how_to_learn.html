@@ -1,0 +1,236 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">How to Learn</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>JVM Specification</h2>
+
+<p class="indented">
+    学习opcode的知识，需要多多查阅《The Java Virtual Machine Specification》中的<a href="/doc/javase/jvms/se8/jvms-6.html">Chapter 6. The Java Virtual Machine Instruction Set</a>的内容。
+</p>
+
+<p>
+    对于opcode，可以从3个方面入手：
+</p>
+
+<ul>
+    <li>
+        第一，opcode的作用是什么。
+        <sub class="my_note" style="color:blue">笔记：也就是Operation和Description的描述</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        第二，这个opcode是否需要operand。
+        <sub class="my_note" style="color:blue">笔记：instruction = opcode + operands</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>第三，从JVM execution model的角度来说，opcode对于frame当中的operand stack和local variable的影响。</li>
+</ul>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/instruction_format.png" alt="Format of Instruction Descriptions"/>
+</div>
+
+<h2>HelloWorld.class</h2>
+
+<ul>
+    <li><input type="checkbox" checked/> <code>.class</code> file --&gt; ClassFile --&gt; method_info，这是第二章解决的问题</li>
+    <li><input type="checkbox" checked/> method_info --&gt; Code Attribute --&gt; code[]，这是第三章解决的问题</li>
+    <li><input type="checkbox"/> code[] --&gt; a sequence of instructions</li>
+    <li><input type="checkbox"/> instruction所涉及到内存区域，constant pool, local variable, operand stack</li>
+    <li><input type="checkbox"/> 初始的local variable和operand stack是如何布局的，后续是如何变化的</li>
+    <li><input type="checkbox"/> The central focus of the Java Virtual Machine's instruction set is the operand stack.</li>
+</ul>
+
+
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        除了需要了解<code>Code</code>属性之外，也需要了解<code>LocalVariableTable</code>属性，它在我们学习opcode过程当中起着非常重要的作用。
+    </p>
+    <p>
+        对于<code>Code</code>属性可以参考<a class="external" href="/archive/java/classfile/attribute_perspective/code_attribute.html" target="_blank">这里</a>，对于<code>LocalVariableTable</code>属性可以参考<a class="external" href="/archive/java/classfile/attribute_perspective/local_variable_table_attribute.html" target="_blank">这里</a>。
+    </p>
+</div>
+
+<h3>code[] parse</h3>
+
+<p class="indented">
+    A method's bytecode stream is <b>a sequence of instructions</b> for the Java Virtual Machine.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static void test() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</div>
+
+<div title="test:()V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:()V
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 1
+code_length = 15
+code = 140002B80004A700084B2AB60006B1
+Exception Table:
+from    to  target  type
+   0     6       9  java/lang/InterruptedException
+=== === ===  === === ===  === === ===
+0000: ldc2_w          #2   // 140002     || 1000
+0003: invokestatic    #4   // B80004     || java/lang/Thread.sleep:(J)V
+0006: goto            8    // A70008
+0009: astore_0             // 4B
+0010: aload_0              // 2A
+0011: invokevirtual   #6   // B60006     || java/lang/InterruptedException.printStackTrace:()V
+0014: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0        10       4  e:Ljava/lang/InterruptedException;
+</div>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/output_sample.png" alt="output sample"/>
+</div>
+
+<h3>JVM execution model</h3>
+
+<p class="indented">
+    When it executes an instruction, the virtual machine may use entries in the current constant pool,
+    entries in the current frame's local variables, or values sitting on the top of the current frame's operand stack.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/jvm/jvm_stack_a_frame.png" alt="Frames"/>
+</div>
+
+<h4>initial local variables</h4>
+
+<p class="indented">
+    When it is created, a <b>frame</b> is initialized with <b>an empty stack</b>, and <b>its local variables</b> are initialized with the target object <code>this</code> (for non static methods) and with <b>the method’s arguments</b>.
+    <sub class="my_note" style="color:blue">笔记：这里讲了frame在创建的时候，是如何初始化的。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int add(int a, int b) { // non-static method
+        int c = a + b;
+        return c;
+    }
+}
+</div>
+
+<div title="add:(II)I" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 4
+code_length = 6
+code = 1B1C603E1DAC
+=== === ===  === === ===  === === ===
+0000: iload_1              // 1B
+0001: iload_2              // 1C
+0002: iadd                 // 60
+0003: istore_3             // 3E
+0004: iload_3              // 1D
+0005: ireturn              // AC
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  this:Lsample/HelloWorld;
+    1         0       6  a:I
+    2         0       6  b:I
+    3         4       2  c:I
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static int add(int a, int b) { // static method
+        int c = a + b;
+        return c;
+    }
+}
+</div>
+
+<div title="add:(II)I" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 6
+code = 1A1B603D1CAC
+=== === ===  === === ===  === === ===
+0000: iload_0              // 1A
+0001: iload_1              // 1B
+0002: iadd                 // 60
+0003: istore_2             // 3D
+0004: iload_2              // 1C
+0005: ireturn              // AC
+
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       6  a:I
+    1         0       6  b:I
+    2         4       2  c:I
+</div>
+
+<h4>local variables and operand stack</h4>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static int add(int a, int b) { // static method
+        int c = a + b;
+        return c;
+    }
+}
+</div>
+
+<div title="add:(II)I" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method add:(II)I
+=== === ===  === === ===  === === ===
+max_stack = 2
+max_locals = 3
+code_length = 6
+code = 1A1B603D1CAC
+=== === ===  === === ===  === === ===
+                           ||[int, int, &lt;unknown&gt;] [] &lt;-- [(II)I]
+0000: iload_0              // 1A
+                           ||[int, int, &lt;unknown&gt;] [int]
+0001: iload_1              // 1B
+                           ||[int, int, &lt;unknown&gt;] [int, int]
+0002: iadd                 // 60
+                           ||[int, int, &lt;unknown&gt;] [int]
+0003: istore_2             // 3D
+                           ||[int, int, int] []
+0004: iload_2              // 1C
+                           ||[int, int, int] [int]
+0005: ireturn              // AC
+                           ||[int, int, int] []
+=== === ===  === === ===  === === ===
+</div>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/opcode_frame_sample.png" alt=""/>
+</div>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一，从JVM Specification的角度来说，如何读取opcode的信息。</li>
+    <li>第二，从一个<code>.class</code>文件开始，如何读取和理解其中的opcode内容。</li>
+</ul>

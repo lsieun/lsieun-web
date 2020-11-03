@@ -1,5 +1,5 @@
 <!-- 标题 -->
-<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Opcode: (1) Overview</span></h1>
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Opcode Intro</span></h1>
 <!-- 内容 -->
 
 <div style="text-align: right">
@@ -17,13 +17,28 @@
     <p>
         JVM instruction = opcode + operands.
     </p>
+    <p>
+        在有些资料当中，会严格的区分instruction和opcode两个概念。
+    </p>
+    <p>
+        在我们这个课程当中，可以认为instruction和opcode是等价的，两者不进行严格区分。
+    </p>
 </div>
 
 <h2>opcode</h2>
 
-<table class="w3-table-all w3-hoverable w3-centered">
+<p class="indented">
+    opcode占用空间的大小为1 byte。在1 byte中，包含8个bit，因此1 byte最多可以表示256个数（即0~255）。
+    在JVM 8版本当中，opcode使用了204个位置。
+</p>
+
+<p class="indented">
+    opcode的内容就是“数值”，也就是定义的204个位置的取值；而mnemonic symbol是帮助人记忆opcode含义的符号。
+</p>
+
+<table border="1" style="width:100%; border: 1px solid black; border-collapse: collapse;" class="w3-center">
     <thead onclick="$(this).next().toggle()">
-    <tr class="w3-green">
+    <tr>
         <th>opcode</th><th>mnemonic symbol</th>
         <th>opcode</th><th>mnemonic symbol</th>
         <th>opcode</th><th>mnemonic symbol</th>
@@ -31,385 +46,385 @@
     </tr>
     </thead>
     <tbody style="display: none;">
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>0</code></td><td>nop</td>
         <td><code>64</code></td><td>lstore_1</td>
         <td><code>128</code></td><td>ior</td>
         <td><code>192</code></td><td>checkcast</td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>1</code></td><td>aconst_null</td>
         <td><code>65</code></td><td>lstore_2</td>
         <td><code>129</code></td><td>lor</td>
         <td><code>193</code></td><td>instanceof</td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>2</code></td><td>iconst_m1</td>
         <td><code>66</code></td><td>lstore_3</td>
         <td><code>130</code></td><td>ixor</td>
         <td><code>194</code></td><td>monitorenter</td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>3</code></td><td>iconst_0</td>
         <td><code>67</code></td><td>fstore_0</td>
         <td><code>131</code></td><td>lxor</td>
         <td><code>195</code></td><td>monitorexit</td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>4</code></td><td>iconst_1</td>
         <td><code>68</code></td><td>fstore_1</td>
         <td><code>132</code></td><td>iinc</td>
         <td><code>196</code></td><td>wide</td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>5</code></td><td>iconst_2</td>
         <td><code>69</code></td><td>fstore_2</td>
         <td><code>133</code></td><td>i2l</td>
         <td><code>197</code></td><td>multianewarray</td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>6</code></td><td>iconst_3</td>
         <td><code>70</code></td><td>fstore_3</td>
         <td><code>134</code></td><td>i2f</td>
         <td><code>198</code></td><td>ifnull</td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>7</code></td><td>iconst_4</td>
         <td><code>71</code></td><td>dstore_0</td>
         <td><code>135</code></td><td>i2d</td>
         <td><code>199</code></td><td>ifnonnull</td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>8</code></td><td>iconst_5</td>
         <td><code>72</code></td><td>dstore_1</td>
         <td><code>136</code></td><td>l2i</td>
         <td><code>200</code></td><td>goto_w</td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>9</code></td><td>lconst_0</td>
         <td><code>73</code></td><td>dstore_2</td>
         <td><code>137</code></td><td>l2f</td>
         <td><code>201</code></td><td>jsr_w</td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>10</code></td><td>lconst_1</td>
         <td><code>74</code></td><td>dstore_3</td>
         <td><code>138</code></td><td>l2d</td>
         <td><code>202</code></td><td>breakpoint</td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>11</code></td><td>fconst_0</td>
         <td><code>75</code></td><td>astore_0</td>
         <td><code>139</code></td><td>f2i</td>
         <td><code>203</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>12</code></td><td>fconst_1</td>
         <td><code>76</code></td><td>astore_1</td>
         <td><code>140</code></td><td>f2l</td>
         <td><code>204</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>13</code></td><td>fconst_2</td>
         <td><code>77</code></td><td>astore_2</td>
         <td><code>141</code></td><td>f2d</td>
         <td><code>205</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>14</code></td><td>dconst_0</td>
         <td><code>78</code></td><td>astore_3</td>
         <td><code>142</code></td><td>d2i</td>
         <td><code>206</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>15</code></td><td>dconst_1</td>
         <td><code>79</code></td><td>iastore</td>
         <td><code>143</code></td><td>d2l</td>
         <td><code>207</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>16</code></td><td>bipush</td>
         <td><code>80</code></td><td>lastore</td>
         <td><code>144</code></td><td>d2f</td>
         <td><code>208</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>17</code></td><td>sipush</td>
         <td><code>81</code></td><td>fastore</td>
         <td><code>145</code></td><td>i2b</td>
         <td><code>209</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>18</code></td><td>ldc</td>
         <td><code>82</code></td><td>dastore</td>
         <td><code>146</code></td><td>i2c</td>
         <td><code>210</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>19</code></td><td>ldc_w</td>
         <td><code>83</code></td><td>aastore</td>
         <td><code>147</code></td><td>i2s</td>
         <td><code>211</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>20</code></td><td>ldc2_w</td>
         <td><code>84</code></td><td>bastore</td>
         <td><code>148</code></td><td>lcmp</td>
         <td><code>212</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>21</code></td><td>iload</td>
         <td><code>85</code></td><td>castore</td>
         <td><code>149</code></td><td>fcmpl</td>
         <td><code>213</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>22</code></td><td>lload</td>
         <td><code>86</code></td><td>sastore</td>
         <td><code>150</code></td><td>fcmpg</td>
         <td><code>214</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>23</code></td><td>fload</td>
         <td><code>87</code></td><td>pop</td>
         <td><code>151</code></td><td>dcmpl</td>
         <td><code>215</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>24</code></td><td>dload</td>
         <td><code>88</code></td><td>pop2</td>
         <td><code>152</code></td><td>dcmpg</td>
         <td><code>216</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>25</code></td><td>aload</td>
         <td><code>89</code></td><td>dup</td>
         <td><code>153</code></td><td>ifeq</td>
         <td><code>217</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>26</code></td><td>iload_0</td>
         <td><code>90</code></td><td>dup_x1</td>
         <td><code>154</code></td><td>ifne</td>
         <td><code>218</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>27</code></td><td>iload_1</td>
         <td><code>91</code></td><td>dup_x2</td>
         <td><code>155</code></td><td>iflt</td>
         <td><code>219</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>28</code></td><td>iload_2</td>
         <td><code>92</code></td><td>dup2</td>
         <td><code>156</code></td><td>ifge</td>
         <td><code>220</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>29</code></td><td>iload_3</td>
         <td><code>93</code></td><td>dup2_x1</td>
         <td><code>157</code></td><td>ifgt</td>
         <td><code>221</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>30</code></td><td>lload_0</td>
         <td><code>94</code></td><td>dup2_x2</td>
         <td><code>158</code></td><td>ifle</td>
         <td><code>222</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>31</code></td><td>lload_1</td>
         <td><code>95</code></td><td>swap</td>
         <td><code>159</code></td><td>if_icmpeq</td>
         <td><code>223</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>32</code></td><td>lload_2</td>
         <td><code>96</code></td><td>iadd</td>
         <td><code>160</code></td><td>if_icmpne</td>
         <td><code>224</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>33</code></td><td>lload_3</td>
         <td><code>97</code></td><td>ladd</td>
         <td><code>161</code></td><td>if_icmplt</td>
         <td><code>225</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>34</code></td><td>fload_0</td>
         <td><code>98</code></td><td>fadd</td>
         <td><code>162</code></td><td>if_icmpge</td>
         <td><code>226</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>35</code></td><td>fload_1</td>
         <td><code>99</code></td><td>dadd</td>
         <td><code>163</code></td><td>if_icmpgt</td>
         <td><code>227</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>36</code></td><td>fload_2</td>
         <td><code>100</code></td><td>isub</td>
         <td><code>164</code></td><td>if_icmple</td>
         <td><code>228</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>37</code></td><td>fload_3</td>
         <td><code>101</code></td><td>lsub</td>
         <td><code>165</code></td><td>if_acmpeq</td>
         <td><code>229</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>38</code></td><td>dload_0</td>
         <td><code>102</code></td><td>fsub</td>
         <td><code>166</code></td><td>if_acmpne</td>
         <td><code>230</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>39</code></td><td>dload_1</td>
         <td><code>103</code></td><td>dsub</td>
         <td><code>167</code></td><td>goto</td>
         <td><code>231</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>40</code></td><td>dload_2</td>
         <td><code>104</code></td><td>imul</td>
         <td><code>168</code></td><td>jsr</td>
         <td><code>232</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>41</code></td><td>dload_3</td>
         <td><code>105</code></td><td>lmul</td>
         <td><code>169</code></td><td>ret</td>
         <td><code>233</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>42</code></td><td>aload_0</td>
         <td><code>106</code></td><td>fmul</td>
         <td><code>170</code></td><td>tableswitch</td>
         <td><code>234</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>43</code></td><td>aload_1</td>
         <td><code>107</code></td><td>dmul</td>
         <td><code>171</code></td><td>lookupswitch</td>
         <td><code>235</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>44</code></td><td>aload_2</td>
         <td><code>108</code></td><td>idiv</td>
         <td><code>172</code></td><td>ireturn</td>
         <td><code>236</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>45</code></td><td>aload_3</td>
         <td><code>109</code></td><td>ldiv</td>
         <td><code>173</code></td><td>lreturn</td>
         <td><code>237</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>46</code></td><td>iaload</td>
         <td><code>110</code></td><td>fdiv</td>
         <td><code>174</code></td><td>freturn</td>
         <td><code>238</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>47</code></td><td>laload</td>
         <td><code>111</code></td><td>ddiv</td>
         <td><code>175</code></td><td>dreturn</td>
         <td><code>239</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>48</code></td><td>faload</td>
         <td><code>112</code></td><td>irem</td>
         <td><code>176</code></td><td>areturn</td>
         <td><code>240</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>49</code></td><td>daload</td>
         <td><code>113</code></td><td>lrem</td>
         <td><code>177</code></td><td>return</td>
         <td><code>241</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>50</code></td><td>aaload</td>
         <td><code>114</code></td><td>frem</td>
         <td><code>178</code></td><td>getstatic</td>
         <td><code>242</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>51</code></td><td>baload</td>
         <td><code>115</code></td><td>drem</td>
         <td><code>179</code></td><td>putstatic</td>
         <td><code>243</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>52</code></td><td>caload</td>
         <td><code>116</code></td><td>ineg</td>
         <td><code>180</code></td><td>getfield</td>
         <td><code>244</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>53</code></td><td>saload</td>
         <td><code>117</code></td><td>lneg</td>
         <td><code>181</code></td><td>putfield</td>
         <td><code>245</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>54</code></td><td>istore</td>
         <td><code>118</code></td><td>fneg</td>
         <td><code>182</code></td><td>invokevirtual</td>
         <td><code>246</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>55</code></td><td>lstore</td>
         <td><code>119</code></td><td>dneg</td>
         <td><code>183</code></td><td>invokespecial</td>
         <td><code>247</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>56</code></td><td>fstore</td>
         <td><code>120</code></td><td>ishl</td>
         <td><code>184</code></td><td>invokestatic</td>
         <td><code>248</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>57</code></td><td>dstore</td>
         <td><code>121</code></td><td>lshl</td>
         <td><code>185</code></td><td>invokeinterface</td>
         <td><code>249</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>58</code></td><td>astore</td>
         <td><code>122</code></td><td>ishr</td>
         <td><code>186</code></td><td>invokedynamic</td>
         <td><code>250</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>59</code></td><td>istore_0</td>
         <td><code>123</code></td><td>lshr</td>
         <td><code>187</code></td><td>new</td>
         <td><code>251</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>60</code></td><td>istore_1</td>
         <td><code>124</code></td><td>iushr</td>
         <td><code>188</code></td><td>newarray</td>
         <td><code>252</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>61</code></td><td>istore_2</td>
         <td><code>125</code></td><td>lushr</td>
         <td><code>189</code></td><td>anewarray</td>
         <td><code>253</code></td><td></td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>62</code></td><td>istore_3</td>
         <td><code>126</code></td><td>iand</td>
         <td><code>190</code></td><td>arraylength</td>
         <td><code>254</code></td><td>impdep1</td>
     </tr>
-    <tr class="w3-hover-blue">
+    <tr>
         <td><code>63</code></td><td>lstore_0</td>
         <td><code>127</code></td><td>land</td>
         <td><code>191</code></td><td>athrow</td>
@@ -418,7 +433,17 @@
     </tbody>
 </table>
 
-<h2>typed instructions</h2>
+<p class="indented">
+    在这里，并不要求大家记忆opcode或mnemonic symbol的内容，后续课程中，我们会以一个一个小的专题的内容来介绍opcode的内容。
+</p>
+
+<h2>Type Information</h2>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        Typed Information这部分内容，就是对204个opcode进行一个分类，按照是否携带“类型”信息进行分类。
+    </p>
+</div>
 
 <p class="indented">
     Most of the instructions in the Java Virtual Machine instruction set encode <b>type information</b> about the operations they perform. For instance, the <code>iload</code> instruction loads the contents of a <b>local variable</b>, which must be an <code>int</code>, onto the <b>operand stack</b>. The <code>fload</code> instruction does the same with a <code>float</code> value. The two instructions may have identical implementations, but have distinct opcodes.
@@ -435,20 +460,11 @@
     <b>d</b> for <code>double</code>,
     and <b>a</b> for reference.
     <sub class="my_note" style="color:green">笔记：对于大部分的些opcode，它们有明确的的type信息。</sub>
-    Some instructions for which <b>the type is unambiguous</b> do not have a type letter in their mnemonic. For instance, <code>arraylength</code> always operates on an object that is an array.
+    <b>Some instructions</b> for which <b>the type is unambiguous</b> do not have a type letter in their mnemonic. For instance, <code>arraylength</code> always operates on an object that is an array.
     <sub class="my_note" style="color:green">笔记：而有些opcode的type是模糊的。</sub>
     <b>Some instructions</b>, such as <code>goto</code>, an unconditional control transfer, <b>do not operate on typed operands</b>.
     <sub class="my_note" style="color:green">笔记：还有一些opcode不带有type信息。</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
-</p>
-
-<p class="indented">
-    <b>A few instructions operate on any type</b>. The <code>dup</code> instruction, for example, duplicates the top word of a stack irrespective of its type.
-    <b>Some instructions</b>, such as <code>goto</code>, <b>don't operate on typed values</b>.
-    <b>The majority of the instructions</b>, however, <b>operate on a specific type</b>.
-    The mnemonics for most of these "typed" instructions indicate their type by a single character prefix that starts their mnemonic.
-    A few instructions, such as <code>arraylength</code> or <code>instanceof</code>, don't include a prefix because their type is obvious.
-    The <code>arraylength</code> opcode requires an array reference. The <code>instanceof</code> opcode requires an object reference.
 </p>
 
 <table class="w3-table-all w3-hoverable w3-centered">
@@ -513,65 +529,6 @@
     </tbody>
 </table>
 
-<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
-    <p>
-        IMHO: 这里主要是对opcode本身是不是带有type信息，进行一个概括的分类。
-    </p>
-</div>
-
-<h2>Code Attribute</h2>
-
-<p class="indented">
-    对于200多个opcode，讲解的顺序，并不是按照“数值大小”的顺序讲解，也不是按照“字母顺序”来讲解，而是从实例代码的角度上去研究它；而实例代码的难度，是逐步提升的，在这个过程当中，我们来学习其中涉及到opcode内容。
-</p>
-
-<p class="indented">
-    从实例代码入手学习。其实，换一种说法，还是要从<code>.class</code>文件开始，这就要求我们熟悉<code>ClassFile</code>和<code>method_info</code>部分的内容。首先，我们需要将<code>.class</code>文件解析成<code>ClassFile</code>结构，然后找到方法对应的<code>method_info</code>结构，再从<code>method_info</code>结构中找到其中的<code>Code</code>属性，最后在<code>Code</code>属性当中找到<code>code[]</code>这部分内容，而<code>code[]</code>这部分内容就包含了opcode的内容。
-</p>
-
-<div title="Code_attribute" class="plaintext">
-Code_attribute {
-    u2 attribute_name_index;
-    u4 attribute_length;
-    u2 max_stack;
-    u2 max_locals;
-    u4 code_length;
-    u1 code[code_length]; // 这里是存放opcode的地方
-    u2 exception_table_length;
-    {   u2 start_pc;
-        u2 end_pc;
-        u2 handler_pc;
-        u2 catch_type;
-    } exception_table[exception_table_length];
-    u2 attributes_count;
-    attribute_info attributes[attributes_count];
-}
-</div>
-
-<p class="indented">
-    除了需要了解<code>Code</code>属性之外，也需要了解<code>LocalVariableTable</code>属性，它在我们学习opcode过程当中起着非常重要的作用。
-</p>
-
-<div class="w3-panel w3-light-grey w3-border w3-round">
-    <p>
-        对于<code>Code</code>属性可以参考<a class="external" href="/archive/java/classfile/attribute_perspective/code_attribute.html" target="_blank">这里</a>，对于<code>LocalVariableTable</code>属性可以参考<a class="external" href="/archive/java/classfile/attribute_perspective/local_variable_table_attribute.html" target="_blank">这里</a>。
-    </p>
-</div>
-
-<h2>Course Overview</h2>
-
-<p class="indented">
-    结合<a href="/archive/java/classfile/course/course_content.html" target="_blank">课程规划</a>的内容，这一章（opcode perspective）是属于steep acceleration阶段，是学习突飞猛进的阶段。
-</p>
-
-<p class="indented">
-    这一章内容与《The Java Virtual Machine Specification》中的<a href="/doc/javase/jvms/se8/jvms-6.html">Chapter 6. The Java Virtual Machine Instruction Set</a>相对应。因此，大家在学习这些内容的时候，多多查阅JVM文档。
-</p>
-
-<div class="w3-display-container w3-center">
-    <img class="w3-image w3-center" src="/images/learn/learning_curve.jpg" alt="The S-shaped learning curve typical of complex learning"/>
-</div>
-
 <h2>Summing Up</h2>
 
 <p>
@@ -580,47 +537,8 @@ Code_attribute {
 
 <ul>
     <li>第一，instruction = opcode + operands</li>
-    <li>第二，opcode有200多个。</li>
-    <li>第三，在这200多个opcode当中，大部分的opcode带有明确的type信息，有些opcode的type信息是模糊的，还有一些opcode与type无关。</li>
-    <li>第四，学习opcode的入手思路：<code>.class</code>文件 --&gt; <code>ClassFile</code> --&gt; <code>method_info</code> --&gt; <code>Code</code> --&gt; <code>code[]</code></li>
+    <li>第二，opcode占用1个byte，在JVM8版本中，目前只定义了204个opcode。</li>
+    <li>第三，在这204多个opcode当中，大部分的opcode带有明确的type信息，有些opcode的type信息是模糊的，还有一些opcode与type无关。</li>
 </ul>
 
-<h2>范进中举</h2>
 
-<p>
-    最后，是一个“范进中举”的小故事。这个小故事，是我看到一个文章。这个文章，对“范进中举”进行了“新视角”的解读。那么，“旧视角”是指“对科举制度的批判”；而“新视角”是指“人到50多岁了，仍然在追寻自己的梦想”。
-</p>
-
-<div class="w3-panel w3-light-grey w3-border w3-round">
-    <p>
-        范进家徒四壁，穷得连一件像样的衣服都买不起，甚至吃饭都成问题，需要老丈人胡屠夫接济。胡屠夫也瞧不起女婿范进：“我自倒运，把个女儿嫁与你这现世宝，历年以来，不知累了我多少。”
-    </p>
-
-    <p>
-        后来，范进想去乡试，因没有盘费，走去同丈人商议，被胡屠户一口啐在脸上，骂了一个狗血喷头，道：“不要失了你的时了！你自己只觉得中了一个相公，就‘癞蛤蟆想吃起天鹅肉’来！我听见人说，就是中相公时，也不是你的文章，还是宗师看见你老，不过意，舍与你的。如今痴心就想中起老爷来！这些中老爷的都是天上的‘文曲星’！你不看见城里张府上那些老爷，都有万贯家私，一个个方面大耳?像你这尖嘴猴腮，也该撒抛尿自己照照！不三不四，就想天鹅屁吃！趁早收了这心，明年在我们行事里替你寻一个馆，每年寻几两银子，养活你那老不死的老娘和你老婆是正经！你问我借盘缠，我一天杀一个猪还赚不得钱把银子，都把与你去丢在水里，叫我一家老小嗑西北风！”一顿夹七夹八，骂的范进摸不着门。
-    </p>
-
-    <p>
-        辞了丈人回来，范进心里想：“宗师说我火候已到，<b>自古无场外的举人，如不进去考他一考，如何甘心?</b>”因向几个同案商议，瞒着丈人，到城里乡试。出了场，即便回家。家里已是饿了两三天。被胡屠户知道，又骂了一顿。
-    </p>
-
-    <p>
-        如《镜花缘》所言：“盖未进场，如何言中；就如人事未尽，如何言得天命。世上无论何事，若人力未尽，从无坐在家中，就能平空落下随心所欲事来。强求固属不可，至应分当行之事，坐失其机，及至事后委之于命，常人之情，往往如此。”
-    </p>
-
-    <p>
-        范进考中之时已经54岁，一直考了二十多次。如果你现在54岁，你还有勇气坚持下来吗？估计很少有这样的人。
-    </p>
-</div>
-
-<p>
-    在这个小故事当中，我们主要是关注这句话：
-</p>
-
-<div title="范进心里想" class="plaintext">
-宗师说我火候已到，自古无场外的举人，如不进去考他一考，如何甘心?
-</div>
-
-<p>
-    上面这句话，引用到Java范畴当中来。比如说，我们写了一个<code>.java</code>文件，它实现了非常、非常、非常强大的功能，然后可以通过javac编译成相应的<code>.class</code>文件。那么，现在这个<code>.class</code>文件所面临的处境就是：我有一身的才华（实现各种功能），自古无虚拟机之外的优秀代码，如不进虚拟机当中运行一番，如何甘心?
-</p>
