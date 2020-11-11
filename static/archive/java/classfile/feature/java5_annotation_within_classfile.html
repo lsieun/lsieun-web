@@ -1,5 +1,5 @@
 <!-- 标题 -->
-<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 5 Annotation</span></h1>
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 5 Annotation in ClassFile</span></h1>
 <!-- 内容 -->
 
 <div style="text-align: right">
@@ -7,343 +7,7 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>Intro</h2>
-
-<p class="indented">
-    Annotation、Enum和Generics都是在Java 5的时候引入的。
-</p>
-
-<p class="indented">
-    <strong>Annotations are a special kind of metadata which could be associated with different elements and constructs of the Java language.</strong><sub class="my_note" style="color:green">笔记：从本质上来说，Annotation代表了一种特殊的metadata。</sub>
-    Interestingly, annotations have contributed a lot into the elimination of boilerplate XML descriptors used in Java ecosystem mostly everywhere.<sub class="my_note" style="color:green">笔记：Annotation取代了XML的作用。</sub>
-    They introduced the new, type-safe and robust way of configuration and customization techniques.<sub class="my_note" style="color:green">笔记：Annotation，相比于XML，它的特点就是type-safe和robust。</sub>
-    <sub class="my_note" style="color:blue">笔记：这段内容的重点是，Annotation代表是metadata。</sub>
-    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
-</p>
-
-<p class="indented">
-
-</p>
-
-<p>
-    在下面的代码中，<code>SuppressWarnings</code>就是Annotation的示例：
-</p>
-
-<div title="HelloWorld.java" class="javacode">
-@SuppressWarnings("Duplicates")
-public class HelloWorld {
-}
-</div>
-
-<p class="indented">
-    用一个形象的说法来讲，如果将当前JavaFile想象成一个“卡通人物”，那么Annotation则可以理解成“手提包”。
-    没有“手提包”的时候，“卡通人物”本身就是一个独立的人物形象；有“手提包”的时候，“卡通人物”可以在“手提包”里多带一些个人物品，例如：手机、镜子、眼镜等。
-    同样的，对于没有Annotation的类来说，它本身就是一个独立的类文件；对于有Annotation的类来说，Annotation帮当前类承载一些额外的信息。
-</p>
-
-<div class="w3-display-container w3-center">
-    <img width="400px" class="w3-image w3-center" src="/images/cartoon/handbag.jpg" alt="handbag"/>
-</div>
-
-<p>
-    为了清晰的理解Annotation，我觉得，应该从四个层面来看待它：
-</p>
-
-<ul>
-    <li>JavaFile</li>
-    <li>Java Compiler</li>
-    <li>ClassFile</li>
-    <li>JVM</li>
-</ul>
-
-<div class="w3-display-container w3-center">
-    <img class="w3-image w3-center" src="/images/java/classfile/javafile_javac_classfile_java_jvm.png" alt="From Java File to JVM"/>
-</div>
-
-<h2>Annotation In JavaFile</h2>
-
-<div class="w3-display-container w3-center">
-    <img class="w3-image w3-center" src="/images/java/classfile/java5_annotation_three_parts.png" alt="Java Annotation"/>
-</div>
-
-<h3>@interface keyword</h3>
-
-<p class="indented">
-    Let us take a look at the simplest annotation declaration possible:
-</p>
-
-<div title="MyTag.java" class="javacode">
-public @interface MyTag {
-
-}
-</div>
-
-<p>
-    The <code>@interface</code> keyword introduces new annotation type.
-    That is why annotations could be treated as specialized interfaces.
-</p>
-
-<h3>meta-annotation</h3>
-
-<p>
-    Java includes some important meta-annotations directly within the language specification:
-</p>
-
-<ul>
-    <li>
-        <code>@Target</code>: Describes the targets to which an annotation can be applied.
-    </li>
-    <li>
-        <code>@Retention</code>: Describes how long the annotation should be retained by the compiler.
-    </li>
-    <li>
-        <code>@Inherited</code>: Denotes that an annotation should be inherited by a subtype if applied to a supertype.
-    </li>
-    <li>
-        <code>@Deprecated</code>: Denotes that an annotation (or any other type) should no longer be used.
-    </li>
-    <li>
-        <code>@Repeatable</code>: Denotes that an annotation can be applied multiple times in the same context; i.e. a class can have the same annotation applied to it two or more times.
-    </li>
-    <li>
-        <code></code>:
-    </li>
-
-</ul>
-
-<h4>Retention Policy</h4>
-
-<p>
-    Each annotation has the very important characteristic called <b>retention policy</b> which is an enumeration (of type <code>RetentionPolicy</code>) with the set of policies on how to retain annotations. It could be set to one of the following values.
-</p>
-
-<table class="w3-table-all w3-hoverable w3-centered">
-    <tr class="w3-green">
-        <th>Policy</th>
-        <th>Description</th>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>CLASS</code></td>
-        <td class="w3-left-align">Annotations are to be recorded in the class file by the compiler but need not be retained by the VM at run time.</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>RUNTIME</code></td>
-        <td class="w3-left-align">Annotations are to be recorded in the class file by the compiler and retained by the VM at run time, so they may be read reflectively.</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>SOURCE</code></td>
-        <td class="w3-left-align">Annotations are to be discarded by the compiler.</td>
-    </tr>
-</table>
-
-<p class="indented">
-    Retention policy has a crucial effect on when the annotation will be available for processing. The retention policy could be set using <code>@Retention</code> annotation. For example:
-</p>
-
-<div title="MyTag.java" class="javacode">
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.RUNTIME)
-public @interface MyTag {
-
-}
-</div>
-
-<p class="indented">
-    Setting annotation retention policy to <code>RUNTIME</code> will guarantee its presence in the compilation process and in the running application.
-</p>
-
-<h4>Element Types</h4>
-
-<p class="indented">
-    Another characteristic which each annotation must have is the <b>element types</b> it could be applied to.
-    Similarly to the <b>retention policy</b>, it is defined as enumeration (<code>ElementType</code>) with the set of possible element types.
-</p>
-
-<table class="w3-table-all w3-hoverable w3-centered">
-    <tr class="w3-green">
-        <th>Element Type</th>
-        <th>Description</th>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>ANNOTATION_TYPE</code></td>
-        <td class="w3-left-align">Annotation type declaration</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>CONSTRUCTOR</code></td>
-        <td class="w3-left-align">Constructor declaration</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>FIELD</code></td>
-        <td class="w3-left-align">Field declaration (includes enum constants)</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>LOCAL_VARIABLE</code></td>
-        <td class="w3-left-align">Local variable declaration</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>METHOD</code></td>
-        <td class="w3-left-align">Method declaration</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>PACKAGE</code></td>
-        <td class="w3-left-align">Package declaration</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>PARAMETER</code></td>
-        <td class="w3-left-align">Parameter declaration</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>TYPE</code></td>
-        <td class="w3-left-align">Class, interface (including annotation type), or enum declaration</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>TYPE_PARAMETER</code></td>
-        <td class="w3-left-align">Type parameter declaration</td>
-    </tr>
-    <tr class="w3-hover-blue">
-        <td><code>TYPE_USE</code></td>
-        <td class="w3-left-align">Use of a type</td>
-    </tr>
-</table>
-
-<p class="indented">
-    In contrast to the <b>retention policy</b>, an annotation may declare multiple element types it can be associated with, using the <code>@Target</code> annotation. For example:
-</p>
-
-<div title="MyTag.java" class="javacode">
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
-
-@Target({ElementType.FIELD, ElementType.METHOD})
-public @interface MyTag {
-
-}
-</div>
-
-<h4>Summing Up</h4>
-
-<p class="indented">
-    Mostly all annotations you are going to create should have both <b>retention policy</b> and <b>element types</b> specified in order to be useful.
-</p>
-
-<p class="indented">
-    According to the source code, none of them has a <b>default value</b>, which means you must provide it, whenever you use the annotation.
-    The meaning of the missing annotation is defined in the javadoc:
-</p>
-
-<ul>
-    <li>
-        <b>For Target it means</b>: If a <code>Target</code> meta-annotation is not present on an annotation type declaration, the declared type may be used on any program element.
-        <sub class="my_note" style="color:blue">笔记：从严格的意义上来讲，这里的说法不完全对，但这种说法能够简化认知难度。完整的内容应参考java.lang.annotation.Target的Javadoc文档。</sub>
-        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
-    </li>
-    <li>
-        <b>For Retention it means</b>: If no <code>Retention</code> annotation is present on an annotation type declaration, the retention policy defaults to <code>RetentionPolicy.CLASS</code>.
-    </li>
-</ul>
-
-<h3>attributes</h3>
-
-<p class="indented">
-    Annotations may declare the <b>attributes</b> with or without <b>default values</b>, for example:
-</p>
-
-<div title="MyTag.java" class="javacode">
-public @interface MyTag {
-    String name();
-    int age() default 10;
-}
-</div>
-
-<p class="indented">
-    If an annotation declares an attribute without a default value, it should be provided in all places the annotation is being applied. For example:
-</p>
-
-<div title="HelloWorld.java" class="javacode">
-@MyTag(name="Tom")
-public class HelloWorld {
-}
-</div>
-
-<p class="indented">
-    By convention, if the annotation has an attribute with the name <code>value</code> and it is <b>the only one which is required to be specified</b>, the name of the attribute could be omitted, for example:
-</p>
-
-<div title="MyTag.java" class="javacode">
-public @interface MyTag {
-    String value();
-    int age() default 10;
-}
-</div>
-
-<div title="HelloWorld.java" class="javacode">
-@MyTag("Tom")
-public class HelloWorld {
-}
-</div>
-
-<h3>Restrictions on Annotation Types</h3>
-
-<p class="indented">
-    There are a couple of limitations which in certain use cases make working with annotations not very convenient.
-
-
-
-    <sub class="my_note" style="color:blue">笔记：这里讲Annotation的局限性。</sub>
-
-</p>
-
-<ul>
-    <li>
-        <b>Firstly</b>, annotations do not support any kind of inheritance: one annotation cannot extend another annotation.
-        <sub class="my_note" style="color:green">笔记：第一个局限，不支持继承。</sub>
-        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
-    </li>
-    <li>
-        <b>Secondly</b>, it is not possible to create an instance of annotation programmatically using the <code>new</code> operator.
-        <sub class="my_note" style="color:green">笔记：第二个局限，不能创建实例。</sub>
-        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
-    </li>
-    <li>
-        <b>Thirdly</b>, annotations can declare only attributes of <b>primitive types</b>, <code>String</code> or <code>Class&lt;?&gt;</code> types and <b>arrays of those</b>.
-        <sub class="my_note" style="color:green">笔记：第三个局限，支持的属性类型有限。</sub>
-        No <b>methods</b> or <b>constructors</b> are allowed to be declared in the annotations.
-        <sub class="my_note" style="color:green">笔记：不能声明方法和构造器。</sub>
-        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
-    </li>
-</ul>
-
-<h2>Process Annotation</h2>
-
-<p class="indented">
-    Annotations are the syntactic sugar used to associate the metadata with different elements of Java language.
-    However, annotations by themselves do not have any direct effect on the element they are annotating. Depending on the annotations
-    and the way they are defined, they may be used by <b>Java compiler</b> (the great example of that is the <code>@Override</code> annotation), by <b>annotation processors</b>
-    and by <b>the code at runtime</b> using reflection and other introspection techniques.
-</p>
-
-<h3>Java Compiler</h3>
-
-<p class="indented">
-    The Java compiler supports a special kind of plugins called <b>annotation processors</b> (using the <code>-processor</code> command line argument) which could process the annotations during the compilation phase.
-    Annotation processors can analyze the annotations usage (perform static code analysis), create additional Java source files or resources (which in turn could be compiled and processed) or mutate the annotated code.
-</p>
-
-<p class="indented">
-    The <b>retention policy</b> plays a key role by instructing the compiler which annotations should be available for processing by annotation processors.
-</p>
-
-<p class="indented">
-    Annotation processors are widely used, however to write one it requires some knowledge of how Java compiler works and the compilation process itself.
-</p>
-
-<h3>JVM</h3>
-
-<h2>Annotation In ClassFile</h2>
-
-<h3>ClassInfo</h3>
+<h2>ClassInfo</h2>
 
 <p>
     Annotation is a special type of interface.
@@ -354,7 +18,7 @@ public interface MyTag {
 }
 </div>
 
-<div title="Example: Interface" class="plaintext">
+<div title="class_info: Interface" class="plaintext">
 class_info='0601000100020000'
     access_flags='0601' ([ACC_PUBLIC,ACC_INTERFACE,ACC_ABSTRACT])
     this_class='0001' (1)
@@ -372,7 +36,7 @@ public @interface MyTag { // 注意，这里是@interface，是Annotation的写�
 }
 </div>
 
-<div title="Example: Annotation" class="plaintext">
+<div title="class_info: Annotation" hidden class="plaintext">
 constant_pool_count='0009' (9)
 constant_pool
     |001| CONSTANT_Class {Value='sample/MyTag', HexCode='070006'}
@@ -396,9 +60,9 @@ class_info='26010001000200010003'
     <li>第二点，在<code>interfaces</code>，它默认实现了<code>java.lang.annotation.Annotation</code>接口。</li>
 </ul>
 
-<h3>Marker Annotation</h3>
+<h2>Marker Annotation</h2>
 
-<h4>No RetentionPolicy</h4>
+<h3>No RetentionPolicy</h3>
 
 <div title="MyTag.java" class="javacode">
 public @interface MyTag {
@@ -411,7 +75,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="Example: HelloWorld Attributes" class="plaintext">
+<div title="HelloWorld.class Attributes" hidden class="plaintext">
 constant_pool_count='0012' (18)
 constant_pool
     ... ...
@@ -438,7 +102,7 @@ annotation[0] {
 }
 </div>
 
-<h4>RetentionPolicy.SOURCE</h4>
+<h3>RetentionPolicy.SOURCE</h3>
 
 <div title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
@@ -449,7 +113,7 @@ public @interface MyTag {
 }
 </div>
 
-<div title="Example" class="plaintext">
+<div title="HelloWorld.class Attributes" hidden class="plaintext">
 attributes_count='0001' (1)
 attributes
 --->|001| SourceFile:
@@ -459,7 +123,7 @@ attribute_length='00000002' (2)
 sourcefile_index='000C' (#12)
 </div>
 
-<h4>RetentionPolicy.CLASS</h4>
+<h3>RetentionPolicy.CLASS</h3>
 
 <div title="HelloWorld.java" class="javacode">
 import java.lang.annotation.Retention;
@@ -470,7 +134,7 @@ public @interface MyTag {
 }
 </div>
 
-<div title="Example" class="plaintext">
+<div title="HelloWorld.class Attributes" hidden class="plaintext">
 attributes_count='0002' (2)
 attributes
 --->|001| SourceFile:
@@ -489,7 +153,7 @@ annotation[0] {
 }
 </div>
 
-<h4>RetentionPolicy.RUNTIME</h4>
+<h3>RetentionPolicy.RUNTIME</h3>
 
 <div title="HelloWorld.java" class="javacode">
 import java.lang.annotation.Retention;
@@ -500,7 +164,7 @@ public @interface MyTag {
 }
 </div>
 
-<div title="Example" class="plaintext">
+<div title="HelloWorld.class Attributes" hidden class="plaintext">
 attributes_count='0002' (2)
 attributes
 --->|001| SourceFile:
@@ -519,15 +183,30 @@ annotation[0] {
 }
 </div>
 
-<h4>Summing Up</h4>
+<h3>Summing Up</h3>
 
 <p>
-    RetentionPolicy的不同，对于生成的Attribute有影响。
+    RetentionPolicy的取值不同，对于生成的Attribute有影响：
 </p>
 
-<h3>attributes</h3>
+<ul>
+    <li>
+        <code>RetentionPolicy.SOURCE</code>: 不生成任何Runtime*Annotations属性。
+    </li>
+    <li>
+        <code>RetentionPolicy.CLASS</code>: 生成任何RuntimeInvisible*Annotations属性。
+    </li>
+    <li>
+        <code>RetentionPolicy.RUNTIME</code>: 生成任何RuntimeVisible*Annotations属性。
+    </li>
+    <li>
+        默认值: <code>RetentionPolicy.CLASS</code>
+    </li>
+</ul>
 
-<h4>primitive type: int</h4>
+<h2>attributes</h2>
+
+<h3>primitive type: int</h3>
 
 <div title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
@@ -545,7 +224,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="ClassFile: HelloWorld.class" class="plaintext">
+<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -581,7 +260,7 @@ annotation[0] {
 }
 </div>
 
-<h4>default value</h4>
+<h3>default value</h3>
 
 <div title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
@@ -599,7 +278,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="ClassFile: HelloWorld.class" class="plaintext">
+<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0012' (18)
 constant_pool
     ... ...
@@ -626,7 +305,7 @@ annotation[0] {
 }
 </div>
 
-<div title="ClassFile: MyTag.class age() Attributes" class="plaintext">
+<div title="MyTag.class age() AnnotationDefault" hidden class="plaintext">
 constant_pool_count='0012' (18)
 constant_pool
     ... ...
@@ -646,7 +325,7 @@ element_value {
 </div>
 
 
-<h4>String</h4>
+<h3>String</h3>
 
 <div title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
@@ -664,7 +343,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="ClassFile: HelloWorld.class" class="plaintext">
+<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -700,7 +379,7 @@ annotation[0] {
 }
 </div>
 
-<h4>int + String</h4>
+<h3>int + String</h3>
 
 <div title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
@@ -719,7 +398,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="ClassFile: HelloWorld.class" class="plaintext">
+<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0016' (22)
 constant_pool
     ... ...
@@ -765,7 +444,7 @@ annotation[0] {
 }
 </div>
 
-<h4>Class&lt;?&gt;</h4>
+<h3>Class&lt;?&gt;</h3>
 
 <div title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
@@ -783,7 +462,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="ClassFile: HelloWorld.class" class="plaintext">
+<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -819,7 +498,66 @@ annotation[0] {
 }
 </div>
 
-<h4>Enum</h4>
+<h3>annotation</h3>
+
+<div title="UserInfo.java" class="javacode">
+public @interface UserInfo {
+    String name();
+    int age();
+}
+</div>
+
+<div title="MyTag.java" class="javacode">
+public @interface MyTag {
+    UserInfo user() default @UserInfo(name = "tomcat", age=12);
+}
+</div>
+
+<div title="methods" hidden class="plaintext">
+methods_count='0001' (1)
+methods
+    MethodInfo {Value='user:()Lsample/UserInfo;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]'}
+</div>
+
+<div title="user:()Lsample/UserInfo; AnnotationDefault" hidden class="plaintext">
+constant_pool_count='0011' (17)
+constant_pool
+    ... ...
+    |006| CONSTANT_Utf8 {Value='AnnotationDefault', HexCode='010011416E6E6F746174696F6E44656661756C74'}
+    |007| CONSTANT_Utf8 {Value='Lsample/UserInfo;', HexCode='0100114C73616D706C652F55736572496E666F3B'}
+    |008| CONSTANT_Utf8 {Value='name', HexCode='0100046E616D65'}
+    |009| CONSTANT_Utf8 {Value='tomcat', HexCode='010006746F6D636174'}
+    |010| CONSTANT_Utf8 {Value='age', HexCode='010003616765'}
+    |011| CONSTANT_Integer {Value='12', HexCode='030000000C'}
+    ... ...
+attributes_count='0001' (1)
+attributes
+--->|000| AnnotationDefault:
+HexCode: 00060000000F40000700020008730009000A49000B
+attribute_name_index='0006' (#6)
+attribute_length='0000000F' (15)
+element_value {
+    tag='40' (@)
+    type_index='0007' (#7)
+    num_element_value_pairs='0002' (2)
+    element_value_pairs[0] {
+        element_name_index='0008' (#8)
+        element_value {
+            tag='73' (s)
+            const_value_index='0009' (#9: tomcat)
+        }
+    }
+    element_value_pairs[1] {
+        element_name_index='000A' (#10)
+        element_value {
+            tag='49' (I)
+            const_value_index='000B' (#11: 12)
+        }
+    }
+}
+</div>
+
+<h3>Enum</h3>
 
 <div title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
@@ -840,7 +578,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="ClassFile: HelloWorld.class" class="plaintext">
+<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -878,7 +616,7 @@ annotation[0] {
 }
 </div>
 
-<h4>Array</h4>
+<h3>Array</h3>
 
 <div title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
@@ -896,7 +634,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="ClassFile: HelloWorld.class" class="plaintext">
+<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -943,4 +681,13 @@ annotation[0] {
 
 <h2>Summing Up</h2>
 
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一，Annotation is a special type of interface</li>
+    <li>第二，RetentionPolicy的取值决定了属性的Invisible和Visible部分。</li>
+    <li>第三，annotation，在Java语言层面，可以承载不同类型（int/String/Class/annotation/enum/array）的数据信息（metadata）；在ClassFile层面，也有相应的存储结构来进行支撑。</li>
+</ul>
 

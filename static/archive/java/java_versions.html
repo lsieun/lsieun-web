@@ -1,0 +1,135 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java Versions</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Java Version</h2>
+
+<p class="indented">
+    Newer Java versions now follow every 6 months. Hence, Java 16 is scheduled for March 2021, Java 17 for September 2021 and so on. In the past, Java release cycles were much longer, up to 3-5 years. This graphic demonstrates that:
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/java_versions.png" alt="java versions"/>
+</div>
+
+
+<h2>Java Distributions</h2>
+
+<h3>The OpenJDK project</h3>
+
+<p class="indented">
+    In terms of <b>Java source code</b>, there is only one, living at the <a class="external" href="http://openjdk.java.net/projects/jdk/" target="_blank">OpenJDK project</a> site.
+</p>
+
+<p class="indented">
+    This is just source code however, not a distributable build. In theory, you and I could produce a build from that source code, and start distributing it. But our distribution would lack certification, to be able to legally call ourselves <i>Java SE compatible</i>.
+</p>
+
+<p class="indented">
+    That’s why in practice, there’s a handful of vendors that actually create these builds, get them certified (see <a class="external" href="https://en.wikipedia.org/wiki/Technology_Compatibility_Kit" target="_blank">TCK</a>) and then distribute them.
+    <sub class="my_note" style="color:blue">笔记：Oracle有一套测试方案（test suite），不同的vendor构建的JDK版本，要通过Oracle的测试，才能获取到certification。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    And while vendors cannot, say, remove a method from the String class before producing a new Java build, they can add branding or add some other (e.g. CLI, Command Line Interface) utilities they deem useful.
+    But other than that, the original source code is the same for all Java distributions.
+</p>
+
+<h3>OpenJDK builds and OracleJDK builds</h3>
+
+<p class="indented">
+    One of the vendors who builds Java from source is <b>Oracle</b>.
+    This leads to two different Java distributions, which can be very confusing at first.
+</p>
+
+<ol>
+    <li><a class="external" href="http://jdk.java.net/" target="_blank">OpenJDK builds</a> by Oracle(!). These builds are free and unbranded, but Oracle won’t release updates for older versions, say Java 15, as soon as Java 16 comes out.</li>
+    <li><a class="external" href="https://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">OracleJDK</a>, which is a branded, commercial build starting with the license change in 2019. Which means it can be used for free during development, but you need to pay Oracle if using it in production. For this, you get longer support, i.e. updates to versions and a telephone number you can call if your JVM goes crazy.</li>
+</ol>
+
+<p class="indented">
+    Now, historically (pre-Java 8) there were actual source differences between OpenJDK builds and OracleJDK builds, where you could say that OracleJDK was 'better'.
+    But as of today, both versions are essentially the same, with minor differences.
+</p>
+
+<h3>AdoptOpenJDK</h3>
+
+<p class="indented">
+    In 2017, a group of Java User Group members, developers and vendors (Amazon, Microsoft, Pivotal, Redhat and others) started a community, called <a class="external" href="https://adoptopenjdk.net/" target="_blank">AdoptOpenJDK</a>.
+</p>
+
+<p class="indented">
+    They provide free, rock-solid OpenJDK builds with <a class="external" href="https://adoptopenjdk.net/support.html" target="_blank">longer availibility/updates</a> and even offer you the choice of two different Java virtual machines: <a class="external" href="https://en.wikipedia.org/wiki/HotSpot" target="_blank">HotSpot</a> and <a class="external" href="https://en.wikipedia.org/wiki/OpenJ9" target="_blank">OpenJ9</a>.
+</p>
+
+<p class="indented">
+    <b>Highly recommended</b> if you are looking to install Java.
+</p>
+
+<h3>Azul Zulu, Amazon Corretto, SAPMachine</h3>
+
+<p class="indented">
+    You will find a complete list of OpenJDK builds at the <a class="external" href="https://en.wikipedia.org/wiki/OpenJDK" target="_blank">OpenJDK Wikipedia</a> site. Among them are <a class="external" href="https://www.azul.com/products/zulu-community/" target="_blank">Azul Zulu</a>, <a class="external" href="https://aws.amazon.com/de/corretto/" target="_blank">Amazon Corretto</a> as well as <a class="external" href="https://sap.github.io/SapMachine/" target="_blank">SapMachine</a>, to name a few. To oversimplify it boils down to you having different support options/maintenance guarantees.
+</p>
+
+<p class="indented">
+    But make sure to check out the individual websites to learn about the advantages of each single distribution.
+</p>
+
+<h3>Alibaba Dragonwell/Tencent Kona</h3>
+
+<ul>
+    <li>阿里 OpenJDK: <a class="external" href="https://github.com/alibaba/dragonwell8" target="_blank">Alibaba Dragonwell</a></li>
+    <li>腾讯 OpenJDK: <a class="external" href="https://github.com/Tencent/TencentKona-8" target="_blank">Tencent Kona</a></li>
+</ul>
+
+<h2>More About Java</h2>
+
+<ul>
+    <li><a href="/archive/java/info/java_license.html" target="_blank">Java SE License</a></li>
+    <li><a href="/archive/java/info/java_roadmap.html" target="_blank">Java SE Roadmap</a></li>
+    <li><a href="/archive/java/info/java_story.html" target="_blank">Java Story</a></li>
+    <li><a href="/archive/java/info/sun_microsystems.html" target="_blank">Sun Microsystems</a></li>
+</ul>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://www.marcobehler.com/guides/a-guide-to-java-versions-and-features" target="_blank">Java Versions and Features</a></li>
+    <li><a class="external" href="https://www.oracle.com/java/technologies/javase/jdk-faqs.html" target="_blank">Oracle: Java SE Licensing FAQ</a></li>
+    <li><a class="external" href="https://docs.oracle.com/javase/tutorial/java/index.html" target="_blank">Oracle: Java Tutorials</a></li>
+</ul>
+

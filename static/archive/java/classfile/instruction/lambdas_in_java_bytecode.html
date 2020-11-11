@@ -22,6 +22,13 @@
     Instead, the compiler converts those Java structures into an underlying form in bytecode.
 </p>
 
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>Lambda是Java语言层面的概念，而invokedynamic是ClassFile层面的opcode，两者之间关系是：Lambda是由invokedynamic来实现的。</p>
+    <p>这篇文章着重讲述什么内容？</p>
+    <p>虽然Java语言当中，对于Lambda的使用分成不同的形式，例如，在本文中列举了4种使用方式；在ClassFile层面，都是借助于invokedynamic来实现的。这4种不同的Lambda使用方式，是使用一个共同的机制来实现的。</p>
+    <p>或者，用一个成语来表示，就是“殊途同归”。</p>
+</div>
+
 <h2>Static Method References</h2>
 
 <p class="indented">
@@ -101,7 +108,7 @@ code = BA00030000B0
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
-        invokedynamic --&gt; bootstrap method --&gt; CallSite --&gt; JVM execute the target method
+        实现机制：invokedynamic --&gt; CONSTANT_InvokeDynamic --&gt; bootstrap method --&gt; CallSite --&gt; JVM execute the target method
     </p>
 </div>
 
@@ -156,6 +163,8 @@ BootstrapMethods:
 <div title="BootstrapMethods" class="plaintext">
 constant_pool_count='002F' (47)
 constant_pool
+    ... ...
+    |003| CONSTANT_InvokeDynamic {Value='#0:get:()Ljava/util/function/Supplier;', HexCode='120000001C'}
     ... ...
     |022| CONSTANT_Utf8 {Value='Hello World!', HexCode='01000C48656C6C6F20576F726C6421'}
     |023| CONSTANT_Utf8 {Value='BootstrapMethods', HexCode='010010426F6F7473747261704D6574686F6473'}

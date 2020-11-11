@@ -175,6 +175,12 @@ public class HelloWorld {
 }
 </div>
 
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        注意：<code>i--;</code>和<code>i +=2;</code>都会生成<code>iinc</code>的opcode内容。
+    </p>
+</div>
+
 <div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
@@ -713,3 +719,7 @@ index  start_pc  length  name_and_type
 <div class="w3-display-container w3-center">
     <img class="w3-image w3-center" src="/images/java/jvm/jvm_stack_a_frame.png" alt="Frames"/>
 </div>
+
+<ul>
+    <li>第三，<code>iinc</code>是一个比较特殊的opcode，它直接修改local variable当中的值，不需要加载到operand stack当中。</li>
+</ul>

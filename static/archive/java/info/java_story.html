@@ -1,0 +1,221 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java Story</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_versions.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>2011.07-Java 7</h2>
+
+<h3>2010, Re-thinking JDK 7</h3>
+
+<div class="w3-panel w3-border w3-border-blue">
+    <p>
+        <a class="external" href="https://mreinhold.org/blog/rethinking-jdk7" target="_blank">Re-thinking JDK 7</a>, 2010/09/08
+    </p>
+    <p>
+        It's been clear for some time that the most recent JDK 7 development schedule is, to put it mildly, unrealistic.
+        <sub class="my_note" style="color:blue">笔记：Java 7 development schedule is unrealistic</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        We created that schedule over nine months ago, prior to the acquisition of Sun by Oracle.
+        The post-acquisition integration process took longer than any of us anticipated, unfortunately,
+        but we're now ready and able to focus on this release with a larger (and still growing) staff which will continue to work in the open alongside other contributors.
+        <sub class="my_note" style="color:blue">笔记：计划是9个月之前定的，实际的情形与原计划差异很大</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        So, whither JDK 7?
+        <sub class="my_note" style="color:blue">笔记：那么，Java 7将何去何从呢？</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        Our present best estimate is that we could complete, test, and stabilize the planned work in time for a release around the middle of 2012.
+        <sub class="my_note" style="color:blue">笔记：如果Java 7要完成全部的功能，现在是2010年，那么最乐观的估计是要到2012年才能实现。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        Looking at what's in the forest today, however, much of that work is in fact already done, or very nearly so.
+        <b>The main outstanding items are the Lambda and Jigsaw Projects, along with a few of the Coin proposals.</b>
+        We've made a lot of progress on these features, and they now have more Oracle engineers working on them than before,
+        <b>but significant work remains to be done.</b>
+        <sub class="my_note" style="color:blue">笔记：没有实现的主要功能是Lambda项目、Jigsaw项目和Coin项目的一部分。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        Another possibility, therefore, is to take everything we have now, test and stabilize it, and ship that as JDK 7.
+        We could then finish Lambda, Jigsaw, the rest of Coin, and maybe a few additional key features in a JDK 8 release which would ship fairly soon thereafter.
+        <sub class="my_note" style="color:blue">笔记：另一种可能的实现是，将现有的功能作为JDK 7进行发布，而Lambda、Jigsaw等功能留到JDK 8版本来实现。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        This approach would give developers production-quality access to the nearly-finished features sooner rather than later, and with much less risk.
+        It would also allow more time to really shake out Lambda and Jigsaw, which is critical given that these higher-risk efforts are making deep changes to the very foundations of the platform.
+        <sub class="my_note" style="color:blue">笔记：这种实现思路，从时间上来说更快，从风险上来说更低。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        Our current estimate for this “Plan B” is that we could ship a reduced JDK 7 in mid-2011 and JDK 8 in the second half of 2012.
+    </p>
+    <p>To summarize:</p>
+    <table border="1" style="border-collapse: collapse;">
+        <tbody>
+        <tr>
+            <td>Plan A:</td>
+            <td>JDK 7 (as currently defined)</td>
+            <td>Mid 2012</td>
+        </tr>
+        <tr>
+            <td rowspan="2">Plan B:</td>
+            <td>
+                JDK 7 (minus Lambda, Jigsaw, and part of Coin)
+            </td>
+            <td>Mid 2011</td>
+        </tr>
+        <tr>
+            <td>
+                JDK 8 (Lambda, Jigsaw, the rest of Coin, ++)
+            </td>
+            <td>Late 2012</td>
+        </tr>
+        </tbody>
+    </table>
+    <p>
+        Here at Oracle we’re leaning heavily toward the lower-risk Plan B.
+        The platform has been idle for (more than!) long enough—it’s time to get Java moving again.
+        If there are good reasons to prefer Plan A, however, then I’d like to hear them.
+    </p>
+</div>
+
+<h3>Project Coin</h3>
+
+<div class="w3-panel w3-border w3-border-blue">
+    <p>
+        <a class="external" href="http://openjdk.java.net/projects/coin/" target="_blank">OpenJDK: Project Coin</a>
+    </p>
+    <p>
+        The goal of Project Coin is to determine what set of small language changes should be added to JDK 7. That list is:
+    </p>
+    <ul>
+        <li>Strings in switch</li>
+        <li>Binary integral literals and underscores in numeric literals</li>
+        <li>Multi-catch and more precise rethrow</li>
+        <li>Improved type inference for generic instance creation (diamond)</li>
+        <li>try-with-resources statement</li>
+        <li>Simplified varargs method invocation</li>
+    </ul>
+    <p>
+        The previously selected features of collections support and unsigned literals have been deferred and will be reconsidered in JDK 8.
+    </p>
+</div>
+
+<h2>2014.03-Java 8</h2>
+
+<h3>2009, Closures for Java</h3>
+
+<div class="w3-panel w3-border w3-border-blue">
+    <p>
+        <a class="external" href="https://mreinhold.org/blog/closures-straw-man" target="_blank">Closures for Java: The Straw Man</a>, 2009/12/10
+    </p>
+    <p>
+        As promised I’ve posted a <a class="external" href="http://cr.openjdk.java.net/~mr/lambda/straw-man" target="_blank">straw-man proposal</a> to extend Java with first-class functions, function types, and lambda expressions (informally, “closures”) to the newly-created <a class="external" href="http://openjdk.java.net/projects/lambda" target="_blank">Project Lambda</a> page.
+    </p>
+</div>
+
+<p>
+    <i>
+        A <b>straw-man proposal</b> is a brainstormed simple draft proposal intended to generate discussion of its disadvantages and to provoke the generation of new and better proposals.
+    </i>
+</p>
+<p>
+    <i>
+        Often, a straw man document will be prepared by one or two people prior to kicking off a larger project.
+        In this way, the team can jump start their discussions with a document that is likely to contain many, but not all, of the key aspects to be discussed.
+        As the document is revised, it may be given other edition names such as the more solid-sounding "<b>stone-man</b>", "<b>iron-man</b>", and so on.
+    </i>
+</p>
+
+<h2>2017, Java 9</h2>
+
+<h3>The Curse of Project Jigsaw</h3>
+
+<div class="w3-panel w3-border w3-border-blue">
+    <p>
+        <a class="external" href="https://www.overops.com/blog/the-curse-of-project-jigsaw-why-is-java-9-delayed-over-and-over-again/" target="_blank">The Curse of Project Jigsaw</a>
+    </p>
+    <p>
+        It’s no surprise that JDK 9 has been pushed again, and for the same reason – Project Jigsaw.
+        This project has a long history of pushing Java versions back,
+        <a class="external" href="https://mreinhold.org/blog/on-the-next-train" target="_blank">moving from Java 7 to Java 8</a> and ending up as part of Java 9, hopefully.
+    </p>
+    <p>
+        Jigsaw aims to make Java modular and break the JRE to interoperable components.
+        This mean that you’ll be able to create a scaled down runtime Jar (<code>rt.jar</code>) customised to the components a project actually needs.
+    </p>
+    <p>
+        The desire is to make Java scalable to small computing devices, improve security and performance,
+        and mainly make it easier for developers to construct and maintain libraries.
+        Considering the JDK 8 <code>rt.jar</code> has about 20,000 classes that are part of the JDK, even if many of them aren’t really being used in a specific environment – it’s a pretty big deal.
+    </p>
+    <p>
+        Mark addressed the reason for the delay on his original email, explaining that:
+    </p>
+    <p>
+        <i>
+            “We recently received critical feedback that motivated a redesign of the module system’s package-export feature,
+            without which we’d have failed to achieve one of our main goals.
+            There are, beyond that, still many open design issues, which will take time to work through.”
+        </i>
+    </p>
+    <p>
+        The current pushback tells us loud and clear that Jigsaw needs more time,
+        and our only hope is that it’ll actually be a part of JDK 9,
+        and not be pushed back to JDK 10. Or JDK 11.
+        There’s no doubt it’s a critical and important project, and the community is willing to wait a little longer for it to be just right.
+    </p>
+</div>
+
+<h3>2012, Project Jigsaw: On the next train</h3>
+
+<div class="w3-panel w3-border w3-border-blue">
+    <p>
+        <a class="external" href="https://mreinhold.org/blog/on-the-next-train" target="_blank">Project Jigsaw: On the next train</a>, 2012/09/21
+    </p>
+    <p>
+        I recently proposed to defer Project Jigsaw from Java 8 to Java 9.
+    </p>
+    <p>
+        Feedback on the proposal was about evenly divided as to whether Java 8 should be delayed for Jigsaw, Jigsaw should be deferred to Java 9, or some other, usually less-realistic, option should be taken.
+    </p>
+    <p>
+        The ultimate decision rested, of course, with the Java SE 8 (JSR 337) Expert Group.
+        After due consideration, a strong majority of the EG agreed to my proposal.
+    </p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="http://openjdk.java.net/projects/" target="_blank">OpenJDK: Projects</a></li>
+    <li><a class="external" href="http://openjdk.java.net/projects/coin/" target="_blank">OpenJDK: Project Coin</a></li>
+    <li><a class="external" href="http://openjdk.java.net/projects/lambda/" target="_blank">OpenJDK: Project Lambda</a></li>
+    <li><a class="external" href="http://openjdk.java.net/projects/jigsaw/" target="_blank">OpenJDK: Project Jigsaw</a></li>
+    <li><a class="external" href="https://mreinhold.org/blog/closures-straw-man" target="_blank">Mark Reinhold: Closures for Java: The Straw Man</a>, 2009/12/10</li>
+    <li><a class="external" href="https://mreinhold.org/blog/rethinking-jdk7" target="_blank">Mark Reinhold: Re-thinking JDK 7</a>, 2010/09/08</li>
+    <li><a class="external" href="https://mreinhold.org/blog/jigsaw-focus" target="_blank">Mark Reinhold: Project Jigsaw: Bringing the big picture into focus</a>, 2011/12/21</li>
+    <li><a class="external" href="https://mreinhold.org/blog/late-for-the-train" target="_blank">Mark Reinhold: Project Jigsaw: Project Jigsaw: Late for the train</a>, 2012/07/17</li>
+    <li><a class="external" href="https://mreinhold.org/blog/on-the-next-train" target="_blank">Mark Reinhold: Project Jigsaw: On the next train</a>, 2012/09/21</li>
+
+</ul>
+

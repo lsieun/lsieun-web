@@ -58,18 +58,6 @@
     <li><code>ret</code></li>
 </ul>
 
-<div class="w3-panel w3-light-grey w3-border w3-round">
-    <p>
-        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-2.html#jvms-2.3.3" target="_blank">2.3.3. The returnAddress Type and Values</a>部分。
-    </p>
-</div>
-
-<p class="indented">
-    The <code>returnAddress</code> type is used by the Java Virtual Machine's <code>jsr</code>, <code>ret</code>, and <code>jsr_w</code> instructions.
-    The values of the <code>returnAddress</code> type are pointers to the opcodes of Java Virtual Machine instructions.
-    Unlike the numeric primitive types, the returnAddress type does not correspond to any Java programming language type and cannot be modified by the running program.
-</p>
-
 <div title="Code_attribute" class="plaintext">
 Code_attribute {
     u2 attribute_name_index;
@@ -77,7 +65,7 @@ Code_attribute {
     u2 max_stack;
     u2 max_locals;
     u4 code_length;
-    u1 code[code_length];
+    u1 code[code_length]; // code array
     u2 exception_table_length;
     {   u2 start_pc;
         u2 end_pc;
@@ -88,3 +76,32 @@ Code_attribute {
     attribute_info attributes[attributes_count];
 }
 </div>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-2.html#jvms-2.3.3" target="_blank">2.3.3. The returnAddress Type and Values</a>部分。
+    </p>
+</div>
+
+<p class="indented">
+    The <code>returnAddress</code> type is used by the Java Virtual Machine's <code>jsr</code>, <code>ret</code>, and <code>jsr_w</code> instructions.
+    The values of the <code>returnAddress</code> type are pointers to the opcodes of Java Virtual Machine instructions.
+    Unlike the numeric primitive types, the <code>returnAddress</code> type does not correspond to any Java programming language type and cannot be modified by the running program.
+</p>
+
+
+
+<h2>nop</h2>
+
+<p class="indented">
+    Do nothing
+</p>
+
+<p class="indented">
+    <a class="external" href="https://stackoverflow.com/questions/10422086/what-is-the-nop-in-jvm-bytecode-used-for" target="_blank">stackoverflow: What is the NOP in JVM bytecode used for?
+    </a>
+</p>
+
+<p class="indented">
+    A NOP is most commonly used for timing purposes, to force memory alignment, to prevent hazards, to occupy a branch delay slot, or as a place-holder to be replaced by active instructions later on in program development (or to replace removed instructions when refactoring would be problematic or time-consuming). In some cases, a NOP can have minor side effects; for example, on the Motorola 68000 series of processors, the NOP opcode causes a synchronization of the pipeline.
+</p>

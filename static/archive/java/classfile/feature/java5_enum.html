@@ -185,7 +185,7 @@ code = BB000459120703B70008B30009BB00045912......
 0084: bipush          6    // 1006
 0086: invokespecial   #8   // B70008     || sample/Day.&lt;init&gt;:(Ljava/lang/String;I)V
 0089: putstatic       #21  // B30015     || sample/Day.SATURDAY:Lsample/Day;
-=== === ===  === === ===  === === ===    这里是创建Day[]数组，用于存放7个具体数据，最后存储到Day.SATURDAY$VALUES
+=== === ===  === === ===  === === ===    这里是创建Day[]数组，用于存放7个具体数据，最后存储到Day.$VALUES
 0092: bipush          7    // 1007
 0094: anewarray       #4   // BD0004     || sample/Day
 === === ===  === === ===  === === ===    这里是存放SUNDAY到0位置
@@ -223,7 +223,7 @@ code = BB000459120703B70008B30009BB00045912......
 0134: bipush          6    // 1006
 0136: getstatic       #21  // B20015     || sample/Day.SATURDAY:Lsample/Day;
 0139: aastore              // 53
-=== === ===  === === ===  === === ===    最后将整个Day[]存储到Day.SATURDAY$VALUES字段内
+=== === ===  === === ===  === === ===    最后将整个Day[]存储到Day.$VALUES字段内
 0140: putstatic       #1   // B30001     || sample/Day.$VALUES:[Lsample/Day;
 0143: return               // B1
 === === ===  === === ===  === === ===
@@ -259,7 +259,7 @@ code_length = 10
 code = 12042AB80005C00004B0
 === === ===  === === ===  === === ===
 0000: ldc             #4   // 1204       || sample/Day  这是Day.class
-0002: aload_0              // 2A         这里是第一个参数，String类型
+0002: aload_0              // 2A         || 这里是第一个参数，String类型
 0003: invokestatic    #5   // B80005     || java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
 0006: checkcast       #4   // C00004     || sample/Day
 0009: areturn              // B0

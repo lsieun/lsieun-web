@@ -240,6 +240,39 @@ class SimpleBean {
 }
 </div>
 
+<h3>生成两个bootstrap方法</h3>
+
+<p>
+    在下面的代码中，我们使用了两个lambda表达式，因此在<code>BootstrapMethods</code>属性中会有两个bootstrap method。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.Random;
+import java.util.function.BiFunction;
+
+public class HelloWorld {
+    public static int add(int a, int b) {
+        return a + b;
+    }
+
+    public static int sub(int a, int b) {
+        return a - b;
+    }
+
+    public static void test(BiFunction&lt;Integer, Integer, Integer&gt; func, int a, int b) {
+        System.out.println(func.getClass());
+        Integer result = func.apply(a, b);
+        System.out.println(result);
+    }
+
+    public static void main(String[] args) {
+        Random rand = new Random();
+        boolean flag = rand.nextBoolean();
+        HelloWorld.test(flag ? HelloWorld::add : HelloWorld::sub, 20, 5);
+    }
+}
+</div>
+
 <h2>LambdaMetafactory</h2>
 
 <div title="LambdaMetafactory.java" class="javacode">
@@ -321,36 +354,11 @@ invokedynamic    ---->    CONSTANT_InvokeDynamic    ---->    LambdaMetafactory.m
 从LambdaMetafactory.metafactory()方法的源代码入手，找到新生成的.class文件，如何输出出来。
 </div>
 
-<div title="第四步，OpenJDK/JVM实现" class="plaintext">
+<!--<div title="第四步，OpenJDK/JVM实现" class="plaintext">-->
 
-</div>
+<!--</div>-->
 
-<div title="HelloWorld.java" class="javacode">
-import java.util.Random;
-import java.util.function.BiFunction;
 
-public class HelloWorld {
-    public static int add(int a, int b) {
-        return a + b;
-    }
-
-    public static int sub(int a, int b) {
-        return a - b;
-    }
-
-    public static void test(BiFunction&lt;Integer, Integer, Integer&gt; func, int a, int b) {
-        System.out.println(func.getClass());
-        Integer result = func.apply(a, b);
-        System.out.println(result);
-    }
-
-    public static void main(String[] args) {
-        Random rand = new Random();
-        boolean flag = rand.nextBoolean();
-        HelloWorld.test(flag ? HelloWorld::add : HelloWorld::sub, 20, 5);
-    }
-}
-</div>
 
 <h2>References</h2>
 

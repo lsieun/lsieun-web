@@ -197,6 +197,45 @@ index  start_pc  length  name_and_type
     2         0       6  value:J
 </div>
 
+<h2>swap</h2>
+
+<p class="indented">
+    对于<code>swap</code>，我并没有找到一段代码能够直接生成<code>swap</code>指令。
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static int test() {
+        long timestamp = System.currentTimeMillis();
+        return (int) (timestamp % 24);
+    }
+}
+</div>
+
+<div title="App.java" class="javacode">
+public class App {
+    public static void main(String[] args) {
+        int value = HelloWorld.test();
+        if (value &lt; 6) {
+            System.out.println("Good Night");
+        } else if (value &lt; 12) {
+            System.out.println("Good Morning");
+        } else if (value &lt; 18) {
+            System.out.println("Good Afternoon");
+        } else {
+            System.out.println("Good Evening");
+        }
+    }
+}
+</div>
+
+<div title="ASM" class="plaintext">
+mv.visitInsn(DUP);
+mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+mv.visitInsn(SWAP);
+mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+</div>
+
 <h2>Summing Up</h2>
 
 <p>

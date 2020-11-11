@@ -81,7 +81,39 @@ public class HelloWorld&lt;T extends Number&gt; { /* The TypeParameter that "int
     </li>
 </ul>
 
-<h3>Formal Type Parameter Naming Convention</h3>
+<h3>Generic Class and Generic Interface</h3>
+
+<ul>
+    <li>
+        Generic Type
+        <ul>
+            <li>Generic Class</li>
+            <li>Generic Interface</li>
+        </ul>
+    </li>
+</ul>
+
+<div title="Generic Class" class="javacode">
+public class HelloWorld&lt;T&gt; {
+}
+</div>
+
+<div title="Generic Interface" class="javacode">
+public interface HelloWorld&lt;T&gt; {
+}
+</div>
+
+<h3>Generic Methods</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static &lt;E&gt; void test(E val) {
+        System.out.println(val);
+    }
+}
+</div>
+
+<h2>Formal Type Parameter Naming Convention</h2>
 
 <p>
     Use an uppercase single-character for formal type parameter. For example,
@@ -94,48 +126,6 @@ public class HelloWorld&lt;T extends Number&gt; { /* The TypeParameter that "int
     <li><code>S</code>,<code>U</code>,<code>V</code>, etc. for 2nd, 3rd, 4th type parameters</li>
     <li><code>&lt;R&gt;</code> for return type;</li>
 </ul>
-
-
-
-
-<h2>Generics Classes and Interfaces</h2>
-
-<h2>Parameterized Types</h2>
-
-
-
-<h2>Generic Methods</h2>
-
-<div title="HelloWorld.java" class="javacode">
-public class HelloWorld {
-    public static &lt;E&gt; void test(E val) {
-        System.out.println(val);
-    }
-}
-</div>
-
-<div title="test:(Ljava/lang/Object;)V" hidden class="plaintext">
-=== === ===  === === ===  === === ===
-Method test:(Ljava/lang/Object;)V
-=== === ===  === === ===  === === ===
-max_stack = 2
-max_locals = 1
-code_length = 8
-code = B200022AB60003B1
-=== === ===  === === ===  === === ===
-0000: getstatic       #2   // B20002     || java/lang/System.out:Ljava/io/PrintStream;
-0003: aload_0              // 2A
-0004: invokevirtual   #3   // B60003     || java/io/PrintStream.println:(Ljava/lang/Object;)V
-0007: return               // B1
-=== === ===  === === ===  === === ===
-LocalVariableTable:
-index  start_pc  length  name_and_type
-    0         0       8  val:Ljava/lang/Object;
-
-LocalVariableTypeTable:
-index  start_pc  length  name_and_type
-    0         0       8  val:TE;
-</div>
 
 <h2>References</h2>
 

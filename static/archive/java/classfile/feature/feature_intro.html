@@ -1,0 +1,691 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassFile Feature Perspective<br/>Introduction</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Purpose</h2>
+
+<p>
+    Java在不断的发展，版本在不断的更新，同时伴随着特性（Feature）的更新。
+</p>
+
+<ul>
+    <li>第一，主要内容。在这一章当中，是将Java 5到Java 8引入的特性（Feature）放到ClassFile的视角来进行解读，它会涉及到<code>.class</code>文件中实现feature的细节。</li>
+    <li>第二，想说明一种研究思路。本章的具体内容，可以不用学习，但是，希望大家明白这样一种研究思路：学习了ClassFile的核心内容后，有可能，在某一个阶段当中，会进入一种迷茫期的状态，不知道去研究什么东西；为了更好的掌握ClassFile的知识，可以把每一个Java版本的feature做为研究的入手点。</li>
+    <li>第三，学习的方式。本章的内容，可以选择学习，也可以选择不学习。如果学习的话，大家可以挑自己感兴趣的内容来学习，或者挑自己感兴趣的内容来自己进行研究。在第二章、第三章、第四章，已经把ClassFile的核心知识已经讲完了，大家也有能力自己去研究这部分内容。</li>
+</ul>
+
+<p class="indented">
+
+</p>
+
+
+<h2>Java 5/Java 8/Java 11</h2>
+
+<h3>Java 5</h3>
+
+<p>
+    <b>JDK 5</b> is a major update, which introduces many important new language features.
+</p>
+
+<ul>
+    <li>Generics</li>
+    <li>Annotations</li>
+    <li>Enumerations</li>
+    <li>Autoboxing/unboxing</li>
+    <li>Varargs</li>
+    <li>Enhanced for-each loop</li>
+</ul>
+
+<h3>Java 8</h3>
+
+<p>
+    <b>JDK 8 (LTS)</b> is a MAJOR upgrade! It introduces new syntax (Lambda Expression) to support functional programming; retrofitted existing libraries (especially the Collection Framework); and added new libraries and features.
+</p>
+
+<p>
+    JDK 8 comes with three big features:
+</p>
+
+<ol>
+    <li>Lambda Expressions</li>
+    <li>Stream API</li>
+    <li>Date/Time API (java.time)</li>
+</ol>
+
+<h3>Java 11</h3>
+
+
+
+<p>
+    <b>JDK 11 (TLS)</b>, released in September 2018, is the second time-bound release, after JDK 10 in March 2018. JDK 11 is the second <b>Long Term Support</b> release (till 2026), after the JDK 8 (till 2030).
+</p>
+
+
+<table border="1" style="width:100%;border-collapse: collapse;" class="w3-center">
+    <caption><a class="external" href="https://www.oracle.com/java/technologies/java-se-support-roadmap.html" target="_blank">Oracle Java SE Support Roadmap</a></caption>
+    <thead>
+    <tr>
+        <th>Release</th>
+        <th>GA Date</th>
+        <th>Premier Support Until</th>
+        <th>Extended Support Until</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>7</td>
+        <td>July 2011</td>
+        <td>July 2019</td>
+        <td>July 2022</td>
+    </tr>
+    <tr>
+        <td>8</td>
+        <td>March 2014</td>
+        <td>March 2022</td>
+        <td>December 2030</td>
+    </tr>
+    <tr>
+        <td>11 (LTS)</td>
+        <td>September 2018</td>
+        <td>September 2023</td>
+        <td>September 2026</td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Java Version</h2>
+
+<h3>From Java 1 to Java 15</h3>
+
+<ul>
+    <li>1996.01, Java 1</li>
+    <li>1997.02, Java 1.1</li>
+    <li>1998.12, Java 1.2</li>
+    <li>2000.05, Java 1.3</li>
+    <li>2002.02, Java 1.4(时隔1年7个月)</li>
+    <li>2004.09, Java 5(时隔2年7个月)</li>
+    <li>2006.12, Java 6(时隔2年3个月)</li>
+    <li>2009.04, Sun --&gt; Oracle</li>
+    <li>2010.04, James Gosling Quit Oracle</li>
+    <li>2011.07, Java 7(时隔4年7个月)</li>
+    <li>2014.03, Java 8(时隔2年8个月)</li>
+    <li>2017.09, Java 9(时隔3年6个月)</li>
+    <li>2018.03, Java 10(时隔6个月)</li>
+    <li>2018.09, Java 11(时隔6个月)</li>
+    <li>2019.03, Java 12(时隔6个月)</li>
+    <li>2019.09, Java 13(时隔6个月)</li>
+    <li>2020.03, Java 14(时隔6个月)</li>
+    <li>2020.09, Java 15(时隔6个月)</li>
+</ul>
+
+<p class="indented">
+    In 2017, Oracle and the Java community announced its intentions to shift to a new six-month release cycle.
+</p>
+
+<p class="indented">
+    Java 10 is the first release on the new six-month schedule, and it builds incrementally on the significant new functionality that appeared in Java 9, which had a multiyear gestation<sub class="my_note" style="color:green">（想法、计划的）构思，酝酿，孕育 the process by which an idea or a plan develops</sub> period.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Newer Java versions now follow every 6 months. Hence, Java 16 is scheduled for March 2021, Java 17 for September 2021 and so on. In the past, Java release cycles were much longer, up to 3-5 years. This graphic demonstrates that:
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/java_versions.png" alt="java versions"/>
+</div>
+
+<h3>Sun Microsystems</h3>
+
+<p class="indented">
+    On February 24, 1982,
+    <a class="external" href="https://en.wikipedia.org/wiki/Scott_McNealy" target="_blank">Scott McNealy</a>,
+    <a class="external" href="https://en.wikipedia.org/wiki/Andy_Bechtolsheim" target="_blank">Andy Bechtolsheim</a>, and
+    <a class="external" href="https://en.wikipedia.org/wiki/Vinod_Khosla" target="_blank">Vinod Khosla</a>, all Stanford graduate students, founded Sun Microsystems.
+    <a class="external" href="https://en.wikipedia.org/wiki/Bill_Joy" target="_blank">Bill Joy</a> of Berkeley joined soon after and is counted as one of the original founders.
+    The <b>Sun</b> name is derived from the initials of the <b>S</b>tanford <b>U</b>niversity <b>N</b>etwork.
+    Sun was profitable from its first quarter in July 1982.
+</p>
+
+<ul>
+    <li>
+        1982-1984, <a class="external" href="https://en.wikipedia.org/wiki/Vinod_Khosla" target="_blank">Vinod Khosla</a>(CEO).
+        Khosla served as the first chairman and CEO, from 1982 to 1984, when he left the company to become a venture capitalist.
+    </li>
+    <li>
+        1984-2006, <a class="external" href="https://en.wikipedia.org/wiki/Scott_McNealy" target="_blank">Scott McNealy</a>(CEO).
+        In 1984, McNealy took over the CEO role from Khosla, who ultimately would leave the company in 1985. On April 24, 2006, McNealy stepped down as CEO after serving in that position for 22 years, and turned the job over to Jonathan Schwartz.
+    </li>
+    <li>
+        2006-2010, <a class="external" href="https://en.wikipedia.org/wiki/Jonathan_I._Schwartz" target="_blank">Jonathan I. Schwartz</a>(CEO).
+        Jonathan I. Schwartz began his career at Sun working for Eric Schmidt, then the head of Sun's Laboratories.
+        After Schmidt's departure for Novell, Schwartz became the director of product marketing for JavaSoft in 1997 and then transitioned through a series of vice president positions.
+        In 2004, Schwartz was promoted to president and chief operating officer of Sun.
+        He eventually succeeded Scott McNealy as CEO in April 2006.
+        On February 4, 2010, Schwartz resigned from his post as CEO of Sun. His resignation was a haiku on Twitter that read as follows: "Financial crisis/Stalled too many customers/CEO no more."
+    </li>
+</ul>
+
+<h4>Sun sues Microsoft (1997)</h4>
+
+<p>
+    Microsoft tried repeatedly to make Windows hostile to Java.
+    When Java threatened to overtake ActiveX as a browser plug-in mechanism, Microsoft released a reverse-engineered Java virtual machine for Internet Explorer. Microsoft later developed a Java-like language, Visual J#, intending to draw Java coders into .Net.
+    The gist of Sun's complaint was that Microsoft illegally co-opted and changed Java for its own purposes.
+    Other complaints were filed, and Microsoft counter sued.
+    The very public feud ended in 2004 -- with Scott McNealy and Steve Ballmer calling a truce -- when Microsoft agreed to pay Sun $2 billion.
+</p>
+
+<h4>dot-com bubble</h4>
+
+<p>
+    The <b>dot-com bubble</b> was a stock market bubble caused by excessive speculation of Internet-related companies from 1995 to 2004, a period of massive growth in the use and adoption of the Internet.
+</p>
+
+<p>
+    <b>By 1999, losing money was the mark of a successful dot-com.</b>
+</p>
+
+<p>
+    In the wake of the dot-com bust in late 2000, Sun Microsystems rethought its brand positioning and changed its tagline from "We're the dot in dot-com” to "We make the net work.”
+</p>
+
+<p>
+    Between 1995 and its peak in March 2000, the Nasdaq Composite stock market index rose 400%, only to fall 78% from its peak by October 2002, giving up all its gains during the bubble.
+</p>
+
+<p>
+    "We put the dot in dot com" (1999-2001) The famous advertising phrase of the dot-com bubble proved all too true.
+    <b>Sun was valued at approximately $200 billion at its peak, with a stock price of $247 per share. By the end of 2001 the stock price had plunged to $49 per share.</b>
+</p>
+
+<h4>Business</h4>
+
+<div class="w3-panel w3-border w3-border-blue">
+    <p>
+        <a class="external" href="https://hansh51.com/2010/05/18/the-rise-and-fall-of-sun-microsystems-2/" target="_blank">The rise and fall of SUN Microsystems</a>
+    </p>
+    <p>
+        I was always impressed with SUN as they made <b>hardware</b>, but beyond hardware,
+        they designed the <b>chip</b> (SUN Sparc),
+        the <b>Operating System</b> (SUN Solaris) and
+        then <b>manufactured the boxes</b>.
+        This was in contrast to Microsoft which had a philosophy – you either made hardware or software, but you did not do both.
+    </p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+</div>
+<div class="w3-panel w3-border w3-border-blue"></div>
+
+<h4>Java</h4>
+
+<p>
+    SUN came up with the Java Virtual Machine (JVM) and said write to the JVM and then it will support and take care of the underlying OS.
+    So whether you were running Windows, HP UX, AIX Solaris etc..if you wrote to the JVM your app would be supported (in theory).
+    It was the smart thing to do.
+    In the dev world the marriage of Java and the JVM is what we refer to as managed code.
+    You do not have to worry about the underlying OS as much since the JVM handles everything (in theory).
+</p>
+<p>
+    <b>As SUN gained popularity and Java really went crazy in the enterprise another thing took place, the dotcom boom.</b>
+    Two things really happened in the dotcom bubble for SUN.
+    The first being that a pivotal player in dotcom was the <b>Telecommunications carriers</b>.
+    Anyone who followed the stock market at this point realized that the stock valuations globally of Telco's really went through the roof at this time.
+    To shed a little light on history here, AT&T Bell Labs created the UNIX operating Systems.
+    The OS that runs the phone system we are all on today is predominantly UNIX based.
+    As these carriers built out their networks – the developer problem they had was solved by what SUN was providing with Java.
+    They also wanted the lowest cost UNIX system, which at the time SUN was lower priced than what other vendors like HP or IBM had to offer.
+    The second thing that happened was this Telco evolution that was going on extended to all the Dotcom start ups.
+    I spent a lot of time traveling to Silicon Valley in those days and all over the place were the SUN billboards, "Sun Microsystems the dot in dot-com”. During this period SUN was blowing away it's quarterly earning's every quarter.
+</p>
+<p>
+    A <b>dot-com</b> company, or simply a <b>dot-com</b>, is a company that does most of its business on the Internet,
+    usually through a website on the World Wide Web that uses the popular top-level domain ".com".
+</p>
+<p>
+    Of course, Sun leaves a tremendous technological legacy. 
+    <b>Its marketing claim that it was "the dot in dot-com” wasn't hyperbole.</b>
+    The company was pushing the idea of network computers before most of their customers had even contemplated the possibility.
+    It built the servers and storage to make it happen.
+    It created Java, which allowed developers to write large programs for businesses that could run across different platforms.
+</p>
+<p>
+    Make no mistake <b>Java was huge in the industry</b>. <b>However SUN was not making any money on Java.</b>
+    They refused to hand it over to the standards bodies (which in my view would have been the smart thing to do).
+    They also were more clueless about Open Source then Microsoft.
+    I think they missed the point on this one.
+    They did conferences for Java, but they really should have built a strong program around the developer community – once you have developers they can write applications to your platform (and others).
+    They could have created a strong developer brand around Java.
+    They would have owned the direction of the community.
+    In the end SUN was so afraid of seeding any control of Java, that they did nothing.
+    They were also a hardware company and they had a huge hit with software.
+    <b>Hardware is great for revenue, you can get really big numbers, because it is expensive to buy, but your margins are not that great.</b>
+    <b>On the other side software is cheaper and you really need economies of scale to drive big revenue numbers.
+        However software margins are huge, usually around 90% so Net Profits are great.</b>
+</p>
+<p>
+    As the dotcom boom died so did SUN Microsystems. 
+    The problem SUN had was that so much revenue was being generated by the dotcom boom that when it went bust all of SUN's eggs were in one basket. It was surprising to see how much revenue was being generated for SUN by the telecommunications industry.
+</p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+
+<h4>The downfall of Sun Microsystems</h4>
+
+<div class="w3-panel w3-border w3-border-blue">
+    <p>
+        <a class="external" href="https://www.networkworld.com/article/2268096/the-downfall-of-sun-microsystems.html" target="_blank">The downfall of Sun Microsystems</a>
+    </p>
+    <p>
+        Dot-com bust, failure to embrace x86 processors ended Sun's life as an independent company, analysts say
+    </p>
+    <p>
+        <b>Sun has attempted to compete in many different hardware and software markets, but is too often in third or fourth place.</b>
+        Sun bought MySQL for $1 billion in 2008, for example, challenging the database market where Oracle was already king.
+        Sun also executed poorly in the storage market after purchasing the vendor StorageTek for $4.1 billion in 2005.
+    </p>
+    <p>
+        "There was just mismanagement," Babineau says. "They purchased so many different things over the years. It was panic and frantic at the end."
+    </p>
+    <p>
+        Following the dot-com crash, Sun's profits took an immediate dive.
+        After reporting net income of $1.85 billion in fiscal 2000, that number was halved to $927 million in 2001.
+        Sun lost $628 million in fiscal 2002 and a whopping $2.4 billion in fiscal 2003.
+        It returned to profitability in fiscal 2007, but ultimately the company reported net losses in three of the four most recent quarters,
+        and the sharks started circling, in a manner of speaking.
+        IBM offered $7 billion to buy Sun, only to be rebuffed.
+        Several analysts doubted that Sun could find another buyer after rejecting IBM, but then Oracle came calling.
+    </p>
+    <p></p>
+    <p>
+        Oracle's surprising $7.4 billion deal to purchase Sun this week gives Larry Ellison and crew a big stake in the hardware market as well as control over Java and other well-known open source technologies. But it also spells the end of an independent Sun Microsystems, one of Silicon Valley's most prominent companies.
+    </p>
+    <p></p>
+</div>
+
+
+
+<h3>Oracle</h3>
+
+<h4>Sun acquisition by Oracle</h4>
+
+<p>
+    On April 20, 2009, it was announced that Oracle Corporation would acquire Sun for US $7.4 billion. The deal was completed on January 27, 2010.
+</p>
+
+<p>
+    The acquisition of Sun Microsystems by Oracle Corporation was completed on January 27, 2010.
+    Significantly, Oracle, previously only a software vendor, now owned both hardware and software product lines from Sun (e.g. SPARC Enterprise and Java, respectively).
+</p>
+
+<h4>James Gosling Quit Oracle</h4>
+
+<div class="w3-panel w3-border w3-border-blue">
+    <p>
+        <a class="external" href="https://www.silicon.co.uk/workspace/why-i-quit-oracle-the-father-of-java-james-gosling-speaks-out-9995" target="_blank">Why I Quit "Creepy” Oracle: The Father Of Java James Gosling Speaks Out</a>
+    </p>
+    <p>
+        "There is actually a long list of things that played into my leaving Oracle,” Gosling said.
+        "There were things like my salary offer ... <b>they wanted me to take a big pay cut</b>,” Gosling said.
+        <sub class="my_note" style="color:blue">笔记：报酬减少。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        That in itself was not a showstopper.
+        However, another annoyance arose when, according to Gosling, Oracle did not have a notion of a senior engineer or at least one equivalent to Gosling's grade at Sun,
+        where he was a fellow. "In my job offer, <b>they had me at a fairly significant grade level down</b>,” he said.
+        <sub class="my_note" style="color:blue">笔记：职位降低。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        Even that was not the final factor in leading to his decision to leave the company.
+        Perhaps the final straw was what Gosling said was Oracle's move to rein him in.
+        Indeed they owned Sun, and thus Java.
+        So they also owned its creator and his intellectual property and <b>it was up to Oracle to decide what Gosling or anybody else had to say about Java</b>.
+    </p>
+    <p>
+        "My ability to decide anything at Oracle was minimised,” Gosling said.
+        "Oracle is an extremely micromanaged company.
+        <b>So myself and my peers in the Java area were not allowed to decide anything</b>.
+        All of our authority to decide anything evaporated.”
+        <sub class="my_note" style="color:blue">笔记：失去对Java的决策权。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        That bent Gosling's resolve like a wishbone in the hands of two eager siblings in mid-pull after Thanksgiving dinner – but even that didn't break it.
+        What ultimately snapped the wishbone and made Gosling want to holler and throw up his hands Marvin-Gaye style was that
+        "<b>My job seemed to be to get up on stage and be a public presence for Java for Oracle</b>. I'm from the wrong Myers-Briggs quadrant [psychometric measurement] for that,” he said.
+        <sub class="my_note" style="color:blue">笔记：经常出席公开场合，James Gosling感到不合适。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        或许，大家会同情James Gosling的遭遇；但是，也不必过分伤心或愤愤不平。因为，在2020年，James Gosling是一个拥有2000万美元净资产的“小康之家”。
+    </p>
+    <p>
+        在美国的硅谷，净身家达到5000万美元是一个非常普通的数字了。在硅谷，拥有5000万美元净资产的富豪多达几万人，是美国非常有名的千万富翁集中地。这些无名富豪先是成为某个技术新创企业创始团队的一分子，拥有5000万美元家底的人群通常拥有一栋价值1000万美元的房子。——内容来自《百度知道》
+    </p>
+</div>
+
+<table border="1" style="border-collapse: collapse;">
+    <caption><a class="external" href="https://www.thewealthrecord.com/celebs-bio-wiki-salary-earnings-2019-2020-2021-2022-2023-2024-2025/other/james-gosling-net-worth/" target="_blank">James Gosling Net Worth 2020, Age Wiki</a></caption>
+    <tbody>
+    <tr>
+        <td>Celebrated Name/Nick Name:</td>
+        <td>James Gosling</td>
+    </tr>
+    <tr>
+        <td>Real Name/Birth Name:</td>
+        <td>James Arthur Gosling</td>
+    </tr>
+    <tr>
+        <td>Age:</td>
+        <td>65 years old</td>
+    </tr>
+    <tr>
+        <td>Birth Date/Birthday:</td>
+        <td>19 May 1955</td>
+    </tr>
+    <tr>
+        <td>Nationality:</td>
+        <td>Canadian</td>
+    </tr>
+    <tr>
+        <td>Marital Status:</td>
+        <td>Married</td>
+    </tr>
+    <tr>
+        <td>Children:</td>
+        <td>2 Children</td>
+    </tr>
+    <tr>
+        <td>Smoking:</td>
+        <td>No</td>
+    </tr>
+    <tr>
+        <td>Drinking:</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>Profession:</td>
+        <td>Computer Scientist</td>
+    </tr>
+    <tr>
+        <td>Net Worth in 2020:</td>
+        <td>$20 million</td>
+    </tr>
+    <tr>
+        <td>Last Updated:</td>
+        <td>November 2020</td>
+    </tr>
+    </tbody>
+</table>
+
+<h4>Oracle-Sun Marriage</h4>
+
+<div class="w3-panel w3-border w3-border-blue">
+    <p>
+        <a class="external" href="https://www.cio.com/article/2881293/5-years-later-how-is-the-oracle-sun-marriage-working-out.html" target="_blank">5 Years Later, How is the Oracle-Sun Marriage Working Out?</a>  FEBRUARY 2015
+    </p>
+    <p>
+        It wasn't very long after the merger that James Gosling, the inventor of Java,
+        bailed from Oracle along with a lot of other Sun folks. It was no surprise.
+        The culture clash had to be jolting for people like the laid-back Gosling and others.
+        <sub class="my_note" style="color:blue">笔记：James Gosling离开了Oracle公司。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        It's been rough sailing for Java, and blame cannot be laid at the feet of Oracle.
+        It has spent years cleaning up the mess of Java code and its endless parade of critical bugs that got so bad.
+        <sub class="my_note" style="color:blue">笔记：Java发展并不顺利。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        Only two major version releases of the Java Standard Edition have emerged since Oracle bought Sun:
+        Java SE 7 in 2011 and Java SE 8 in 2014.
+        Prior to Java SE 7, a new major version of the platform shipped every year or two.
+        <sub class="my_note" style="color:blue">笔记：这篇文章是2015年写的，因此只记录了Java 7和Java 8。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        Oracle has two very ambitious projects,
+        <a class="external" href="http://openjdk.java.net/projects/jigsaw/" target="_blank">Project Jigsaw</a>, designed to make Java scale down to smaller devices,
+        and <a class="external" href="http://openjdk.java.net/projects/lambda/" target="_blank">Project Lambda</a>, which seeks to add multicore support to Java 8.
+    </p>
+    <p>
+        Sun was a mismanaged company. That's often why companies get bought out in the first place.
+        Jonathan Schwartz was the wrong man for the job and made some very poor decisions,
+        like spending $1 billion to buy MySQL,
+        a $50 million company at the time, and putting all his efforts into open sourcing Sun software while sales were on a steady downward spiral.
+    </p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+</div>
+
+<div class="w3-panel w3-border w3-border-blue">
+    <p>
+        <a class="external" href="https://www.forbes.com/sites/quora/2015/05/20/how-has-the-sun-acquisition-worked-out-for-oracle/?sh=49dbbd32554e" target="_blank">How Has The SUN Acquisition Worked Out For Oracle?</a>
+    </p>
+    <p>
+        Sun was a large company, with many products spanning a diverse set of technologies
+        from CPUs to Servers to Operating Systems to programming languages to Storage to database software to middleware to desktop clients ("SunRays," I think they were called) to office productivity software (their "Open Office" software, I think it was called).
+    </p>
+    <p>
+        What Oracle does seem to do well in an acquisition is to quickly determine what things to keep and invest in,
+        and what things to stop spending money on.
+        I'm not suggesting that the decisions are always correct,
+        but I will say that in this context, indecision is always wrong.
+    </p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+</div>
+
+<p>
+
+</p>
+
+<h4>six-month cadence</h4>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/java_versions.png" alt="java versions"/>
+</div>
+
+<p class="indented">
+    As work on Java SE 9 was winding down in early 2017,
+    some contributors in the OpenJDK Community started wondering if there was a way to evolve the Java SE Platform and the JDK at a more rapid pace,
+    so that new features could be delivered in timelier manner.
+    A JCP working group was established to consider how the Java Community Process could accommodate such a change.
+    After further discussion amongst key contributors <a class="external" href="https://mreinhold.org/blog/forward-faster" target="_blank">a plan was proposed</a> and,
+    in parallel, Oracle announced plans for <a class="external" href="https://blogs.oracle.com/java-platform-group/faster-and-easier-use-and-redistribution-of-java-se" target="_blank">its commercial Java SE products</a>.
+</p>
+
+<div class="w3-panel w3-border w3-border-blue">
+    <p>
+        <a class="external" href="https://mreinhold.org/blog/forward-faster" target="_blank">Moving Java Forward Faster</a>(2017/09/06)
+        Mark Reinhold, the Chief Architect of the Java Platform Group at Oracle
+    </p>
+    <p>
+        For over twenty years the Java SE Platform and the JDK have evolved in large, irregular, and somewhat unpredictable steps.
+        <sub class="my_note" style="color:green">笔记：在2017年以前，Java版本的发布时间（发布周期）非常不稳定。</sub>
+        Each feature release has been driven by one or a few significant features,
+        <sub class="my_note" style="color:green">笔记：每一次发布的时间，取决于significant features是否已经实现。</sub>
+        and so the schedule of each release has been adjusted as needed--sometimes more than once!--in order to accommodate the development of those features.
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        This approach made it possible to deliver big new features at a high level of quality, after thorough review and testing by early adopters.
+        <sub class="my_note" style="color:green">笔记：这种方式的好处。</sub>
+        The downside, however, was that smaller API, language, and JVM features could only be delivered when the big features were ready.
+        <sub class="my_note" style="color:green">笔记：这种方式的坏处。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        Five years ago I mused on the tension between developers, who prefer rapid innovation,
+        <sub class="my_note" style="color:green">笔记：在2012年的时候，作者曾思考过这样的"问题”。对于developer来说，希望接触新的技术。</sub>
+        and enterprises, which prefer stability,
+        <sub class="my_note" style="color:green">笔记：对于enterprises来说，希望技术的稳定性。</sub>
+        and the fact that everyone prefers regular and predictable releases.
+        <sub class="my_note" style="color:green">笔记：对于everyone来说，希望Java版本以固定的周期时间进行发布。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        To address these differing desires I suggested, back then,
+        that we switch from the historical feature-driven release model to a time-driven "train” model, with a feature release every two years.
+        <sub class="my_note" style="color:green">笔记：在2012年的时候，作者建议使用time-driven的方式（每2年发布一个Java版本），来代替feature-driven的方式。</sub>
+        In this type of model the development process is a continuous pipeline of innovation that's only loosely coupled to the actual release process,
+        which itself has a constant cadence.
+        <sub class="my_note" style="color:green">笔记：使用time-driven的方式，Java发布就会有一个固定的时间周期。</sub>
+        Any particular feature, large or small, is merged only when it's nearly finished.
+        <sub class="my_note" style="color:green">笔记：对于任何feature，只有等它的技术成熟后，才把它加入到Java版本中进行发布。</sub>
+        If a feature misses the current train then that's unfortunate but it's not the end of the world,
+        since the next train will already be waiting and will also leave on schedule.
+        <sub class="my_note" style="color:green">笔记：如果一个feature错过了某一辆火车（错过了在某一个Java版本中的发布时机），那么可以等下一辆火车（可以在下一个Java版本中发布）。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        The two-year train model was appealing in theory, but proved unworkable in practice.
+        <sub class="my_note" style="color:green">笔记：这个2年的time-driven的方式，从理论上来说，很吸引人，但从实践中又验证了它是一个不切合实际的理论。</sub>
+        We took an additional eight months for Java 8 in order to address critical security issues and finish Project Lambda,
+        which was preferable to delaying Lambda by two years.
+        <sub class="my_note" style="color:green">笔记：例如，对于Java 8来说，项目延迟了8个月。</sub>
+        We initially planned Java 9 as a two-and-a-half year release in order to include Project Jigsaw,
+        which was preferable to delaying Jigsaw by an additional eighteen months,
+        yet in the end we wound up taking an additional year and so Java 9 will ship this month, three and a half years after Java 8.
+        <sub class="my_note" style="color:green">笔记：又例如，Java 9，本来打算用两年半的时间，但实际上用了三年半的时间。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        A two-year release cadence is, in retrospect, simply too slow.
+        <sub class="my_note" style="color:green">笔记：站在2017年这个时间点上，对往昔进行回顾，这个2年的time-driven的方式，太慢了。</sub>
+        To achieve a constant cadence we must ship feature releases at a more rapid rate.
+        Deferring a feature from one release to the next should be a tactical decision with minor inconveniences rather than a strategic decision with major consequences.
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        So, let's ship a feature release every six months.
+        <sub class="my_note" style="color:green">笔记：让我们把发布周期改为6个月吧！！！</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        That's fast enough to minimize the pain of waiting for the next train,
+        <sub class="my_note" style="color:green">笔记：好处一，缩短等待新Java版本的时间</sub>
+        yet slow enough that we can still deliver each release at a high level of quality.
+        <sub class="my_note" style="color:green">笔记：好处二，发布周期缩短为6个月，新的Java版本，包含的feature就变少了，也能保证每个Java版本发布的代码质量。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        Taking inspiration from the release models used by other platforms and by various operating-system distributions,
+        I propose that <b>after Java 9 we adopt a strict, time-based model with a new feature release every six months</b>,
+        update releases every quarter, and <b>a long-term support release every three years</b>.
+        <sub class="my_note" style="color:blue">笔记：作者明确提出，每6个月发布一个新的Java版本，每3年出一个LTS的Java版本。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <ul>
+        <li>
+            <b>New features</b> will be merged only when they're nearly finished,
+            so that the release currently in development is feature-complete at all times.
+            Feature releases will ship in March and September of each year, starting in March of 2018.
+        </li>
+        <li>
+            <b>Update releases</b> will ship quarterly in January, April, July, and October, as they do today.
+        </li>
+        <li>
+            <b>Every three years, starting in September of 2018, the feature release will be a long-term support release.</b>
+            Updates for these releases will be available for at least three years and quite possibly longer, depending upon your vendor.
+            <sub class="my_note" style="color:blue">笔记：2018年9月份，对应着Java 11，因此11是LTS版本。</sub>
+            <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+        </li>
+    </ul>
+    <p>
+        In this model the overall rate of change should be about the same as it is today;
+        what's different is that there will be many more opportunities to deliver innovation.
+        The six-month feature releases will be smaller than the multi-year feature releases of the past, and therefore easier to adopt.
+        Six-month feature releases will also reduce the pressure to backport new features to older releases,
+        since the next feature release will never be more than six months away.
+        <sub class="my_note" style="color:blue">笔记：使用6个月的发布周期之后，新的每一个Java版本包含的feature就减少了。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        Developers who prefer rapid innovation,
+        so that they can leverage new features in production as soon as possible,
+        can use the most recent feature release or an update release thereof and move on to the next one when it ships.
+        They can deliver an application in a Docker image, or other type of container package, along with the exact Java release on which the application will run.
+        Since the application and the Java release can always be tested together,
+        in a modern continuous-integration and continuous-deployment pipeline,
+        it will be straightforward to move from one Java release to the next.
+        <sub class="my_note" style="color:blue">笔记：这种方式，让developers很满意。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        Enterprises that prefer stability, so that they can run multiple large applications on a single shared Java release,
+        can instead use the current long-term support release.
+        They can plan ahead to migrate from one long-term support release to the next, like clockwork, every three years.
+        <sub class="my_note" style="color:blue">笔记：这种方式，让enterprises也很满意。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </p>
+    <p>
+        To make it clear that these are time-based releases, and to make it easy to figure out the release date of any particular release,
+        the version strings of feature releases will be of the form <code>$YEAR.$MONTH</code>.
+        Thus next year's March release will be <code>18.3</code>, and the September long-term support release will be <code>18.9</code>.
+    </p>
+    <p></p>
+</div>
+
+<h2>Is Java still free?</h2>
+
+<p>
+    Oracle have announced that, "after January 2019”, Java SE 8 public updates will not be available for "business, commercial or production use” without a commercial license.
+</p>
+
+<div class="w3-panel w3-border w3-border-blue">
+    <p>
+        <a class="external" href="https://www.oracle.com/java/technologies/javase/jdk-faqs.html" target="_blank">Oracle: Java SE Licensing FAQ</a>
+    </p>
+
+    <ul>
+        <li>If you are <b>an organization</b> used to getting Oracle Java SE binaries at <b>no cost</b>, you can simply continue doing so with Oracle's OpenJDK releases available at <a class="external" href="http://jdk.java.net/" target="_blank">jdk.java.net</a>.</li>
+        <li>If you are used to getting Oracle Java SE binaries at <b>no cost</b> as a <b>personal user</b> or for <b>development use</b>, then you can continue to get Oracle Java SE releases through <a class="external" href="https://www.java.com/" target="_blank">java.com</a> (personal users) and the <a class="external" href="https://www.oracle.com/java/technologies/javase-downloads.html" target="_blank">Oracle Technology Network ("OTN”)</a> (developers).</li>
+        <li>Those wishing to use the Oracle JDK or Oracle JRE for other uses will require a <a class="external" href="https://www.oracle.com/java/java-se-subscription.html" target="_blank">Java SE Subscription</a>. Java SE Subscription offers the most complete support and advanced management features available today. Protect your enterprise investment with security updates and world-class support from the stewards of Java.</li>
+    </ul>
+
+    <p>
+        What about Java SE 8?
+    </p>
+
+    <p>
+        <b>Oracle Java SE8 updates</b>, which includes the Oracle JRE with Java Web Start, <b>continues to be free</b> for <b>personal use, development, testing, prototyping, demonstrating</b> and some other important usesunder the OTN License Agreement for Java SE. Personal users can continue downloading the Oracle Java SE 8 JRE at java.com.
+    </p>
+</div>
+
+
+
+<h2>Resources</h2>
+
+<ul>
+    <li><a class="external" href="https://www3.ntu.edu.sg/home/ehchua/programming/java/JDK5_NewFeatures.html" target="_blank">JDK 5 New Features</a></li>
+    <li><a class="external" href="https://www3.ntu.edu.sg/home/ehchua/programming/java/JDK6_NewFeatures.html" target="_blank">JDK 6 New Features</a></li>
+    <li><a class="external" href="https://www3.ntu.edu.sg/home/ehchua/programming/java/JDK7_NewFeatures.html" target="_blank">JDK 7 New Features</a></li>
+    <li><a class="external" href="https://www3.ntu.edu.sg/home/ehchua/programming/java/JDK8_NewFeatures.html" target="_blank">JDK 8 New Features</a></li>
+    <li><a class="external" href="https://www3.ntu.edu.sg/home/ehchua/programming/java/JDK9_NewFeatures.html" target="_blank">JDK 9 New Features</a></li>
+    <li><a class="external" href="https://www3.ntu.edu.sg/home/ehchua/programming/java/JDK10_NewFeatures.html" target="_blank">JDK 10 New Features</a></li>
+    <li><a class="external" href="https://www3.ntu.edu.sg/home/ehchua/programming/java/JDK11_NewFeatures.html" target="_blank">JDK 11 (LTS) New Features</a></li>
+    <li><a class="external" href="https://blogs.oracle.com/java-platform-group/update-and-faq-on-the-java-se-release-cadence" target="_blank">Update and FAQ on the Java SE Release Cadence</a></li>
+    <li><a class="external" href="https://mreinhold.org/blog/forward-faster" target="_blank">Moving Java Forward Faster</a></li>
+<!--    <li><a class="external" href="" target="_blank"></a></li>-->
+</ul>
