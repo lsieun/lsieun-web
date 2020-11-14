@@ -1,0 +1,141 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Lambda Capture</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Lambda body desugaring</h2>
+
+<p class="indented">
+    The first step of translating lambdas into bytecode is desugaring the lambda body into a method.
+</p>
+
+<h3>"stateless" lambdas</h3>
+
+<p class="indented">
+    The simplest form of lambda expression to translate is one that captures no state from its enclosing scope (a stateless lambda):
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.ArrayList;
+import java.util.List;
+
+public class HelloWorld {
+    private static final List&lt;String&gt; colorList;
+
+    static {
+        colorList = new ArrayList&lt;&gt;();
+        colorList.add("Red");
+        colorList.add("Green");
+        colorList.add("Blue");
+    }
+
+    public static void test() {
+        List&lt;String&gt; list = colorList;
+        list.forEach(s -> System.out.println(s));
+    }
+}
+</div>
+
+<div title="HelloWorld.class" class="plaintext">
+methods_count='0004' (4)
+methods
+    MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
+    MethodInfo {Value='test:()V', AccessFlags='[ACC_PUBLIC,ACC_STATIC]', Attrs='[Code]'}
+    MethodInfo {Value='lambda$test$0:(Ljava/lang/String;)V',
+                AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_SYNTHETIC]',
+                Attrs='[Code, MethodParameters]'}
+    MethodInfo {Value='&lt;clinit&gt;:()V', AccessFlags='[ACC_STATIC]', Attrs='[Code]'}
+</div>
+
+<p class="indented">
+    The natural signature of the lambda is <code>(Ljava/lang/String;)V</code>.
+    The compiler desugars the lambda body into a static(<code>ACC_STATIC</code>) method whose signature is the natural signature,
+    and generates a name(<code>lambda$test$0</code>) for the desugared body.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    // ......
+
+    public static void test() {
+        List&lt;String&gt; list = colorList;
+        list.forEach( [lambda for lambda$test$0 as Block] );
+    }
+
+    private static void lambda$test$0(String s) {
+        System.out.println(s);
+    }
+}
+</div>
+
+<h3>lambdas capturing immutable values</h3>
+
+<p class="indented">
+    The other form of lambda expression involves capture of enclosing final (or effectively final) <b>local variables</b>,
+    and/or fields from enclosing instances (which we can treat as capture of the final enclosing <code>this</code> reference).
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.List;
+
+public class HelloWorld {
+    public static void test() {
+        List&lt;Person&gt; list = null;
+        int bottom = 5, top = 10;
+        list.removeIf( p -> (p.size >= bottom && p.size <= top) );
+    }
+}
+</div>
+
+<p class="indented">
+    Here, our lambda captures the final local variables <code>bottom</code> and <code>top</code> from the enclosing scope.
+</p>
+
+<p class="indented">
+    The signature of the desugared method will be the natural signature <code>(Person)Z</code> with some extra arguments prepended at the front of the argument list.
+    The compiler has some latitude as to how these extra arguments are represented;
+    they could be prepended individually, boxed into a frame class, boxed into an array, etc.
+    The simplest approach is to prepend them individually:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.List;
+
+public class HelloWorld {
+    public static void test() {
+        List&lt;Person&gt; list = null;
+        int bottom = 5, top = 10;
+        list.removeIf( [ lambda for lambda$test$0 as Predicate capturing (bottom, top) ] );
+    }
+
+    private static boolean lambda$test$0(int bottom, int top, Person p) {
+        return (p.size >= bottom && p.size <= top);
+    }
+}
+</div>
+
+<p class="indented">
+    Alternately, the captured values (<code>bottom</code> and <code>top</code>) could be boxed into a frame or an array;
+    the key is agreement between the types of the extra arguments as they appear in the signature of the desugared lambda method,
+    and the types as they appear as (dynamic) arguments to the lambda factory.
+    Since the compiler is in control of both of these, and they are generated at the same time,
+    the compiler has some flexibility in how captured arguments are packaged.
+</p>
+
+<h2>Capturing vs Non-Capturing Lambdas</h2>
+
+<p class="indented">
+    A lambda expression is said to be capturing if it either access instance variables of it's enclosing class or local variables (final or effectively final) from it's enclosing scope.
+</p>
+
+<p class="indented">
+    A non-capturing lambda doesn't use any variables from outside.
+</p>
+
+<p class="indented">
+    Non-capturing lambdas generally are considered more efficient than the capturing ones as they are evaluated only once.
+</p>

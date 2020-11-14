@@ -1,0 +1,19 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java 7 Diamond Syntax</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    When we create an instance of a generic type, the right hand side of the assignment statement repeats the value of the type parameter.
+    This is usually unnecessary, as the compiler can infer the values of the type parameters.
+    In modern versions of Java, we can leave out the repeated type values in what is called <b>diamond syntax</b>.
+</p>
+
+<div title="example" class="javacode">
+List&lt;String&gt; list = new ArrayList&lt;&gt;();
+</div>
+

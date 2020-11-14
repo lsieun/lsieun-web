@@ -9,6 +9,28 @@
 
 <h2>Intro</h2>
 
+<h3>Code Example</h3>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.ArrayList;
+import java.util.List;
+
+public class HelloWorld&lt;E&gt; { // HelloWorld&lt;E&gt;是Generic Type，其中的E是Type Parameter
+    public E item;           // 这里的E是Type Variable
+    public void test() {
+        List&lt;Number&gt; list = new ArrayList&lt;&gt;(); // List&lt;Number&gt;是Parameterized Type，而其中的Number是Type Argument
+    }
+}
+</div>
+
+<h3>Signature Syntax</h3>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.7.9.1" target="_blank">4.7.9.1. Signatures</a>部分。
+    </p>
+</div>
+
 <p>
     Notation:
 </p>
@@ -16,7 +38,7 @@
 <ul>
     <li>The syntax <code>[x]</code> denotes zero or one occurrences of <code>x</code>. That is, <code>x</code> is an optional symbol.</li>
     <li>The syntax <code>{x}</code> denotes zero or more occurrences of <code>x</code>.</li>
-    <li><code>Identifier</code> denotes the name of a type, field, method, formal parameter, local variable, or type variable.</li>
+    <li><code>Identifier</code> denotes <b>the name of</b> a type, field, method, formal parameter, local variable, or type variable.</li>
 </ul>
 
 
@@ -49,48 +71,15 @@ ReferenceTypeSignature:
     ClassTypeSignature
     TypeVariableSignature
     ArrayTypeSignature
-
-ClassTypeSignature:
-    L [PackageSpecifier] SimpleClassTypeSignature {ClassTypeSignatureSuffix} ;
-
-PackageSpecifier:
-    Identifier / {PackageSpecifier}
-
-SimpleClassTypeSignature:
-    Identifier [TypeArguments]
-
-TypeArguments:
-    &lt; TypeArgument {TypeArgument} &gt;
-
-TypeArgument:
-    [WildcardIndicator] ReferenceTypeSignature
-    *
-
-WildcardIndicator:
-    +
-    -
-
-ClassTypeSignatureSuffix:
-    . SimpleClassTypeSignature
-
-TypeVariableSignature:
-    T Identifier ;
-
-ArrayTypeSignature:
-    [ JavaTypeSignature
 </div>
 
-<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
-    <p>type argument = [WildcardIndicator] + ReferenceTypeSignature</p>
-    <p>type argument = * (wildcard)</p>
-    <p>type variable = T + Identifier + ;</p>
-</div>
+
+<h2>Generic Type: Type Parameter</h2>
 
 <p>
     A <b>class signature</b> describes any <b>type parameters of the class</b>, and lists its (possibly parameterized) <b>direct superclass</b> and <b>direct superinterfaces</b>, if any.
     A <b>type parameter</b> is described by its <b>name</b>, followed by any <b>class bound</b> and <b>interface bounds</b>.
 </p>
-
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
@@ -123,8 +112,6 @@ SuperclassSignature:
 SuperinterfaceSignature:
     ClassTypeSignature
 </div>
-
-<h2>Generic Type and Type Parameter Examples</h2>
 
 <h3>&lt;E&gt;</h3>
 
@@ -358,7 +345,19 @@ signature_index='000F' (#15)
 ... ...
 </div>
 
-<h2>Type Variable Examples</h2>
+<h2>Generic Type: Type Variable</h2>
+
+<div title="TypeVariableSignature" class="plaintext">
+TypeVariableSignature:
+    T Identifier ;
+
+ArrayTypeSignature:
+    [ JavaTypeSignature
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>type variable = T + Identifier + ;</p>
+</div>
 
 <h3>E item</h3>
 
@@ -421,35 +420,39 @@ signature_index='0007' (#7)
 </div>
 
 
-<h2>Parameterized Type Examples</h2>
+<h2>Parameterized Type: Type Argument</h2>
 
-<h3>Comparable</h3>
+<div title="ClassTypeSignature" class="plaintext">
+ClassTypeSignature:
+    L [PackageSpecifier] SimpleClassTypeSignature {ClassTypeSignatureSuffix} ;
 
-<div title="HelloWorld.java" class="javacode">
-public class HelloWorld {
-    public Comparable&lt;HelloWorld&gt; item;
-}
+PackageSpecifier:
+    Identifier / {PackageSpecifier}
+
+SimpleClassTypeSignature:
+    Identifier [TypeArguments]
+
+TypeArguments:
+    &lt; TypeArgument {TypeArgument} &gt;
+
+TypeArgument:
+    [WildcardIndicator] ReferenceTypeSignature
+    *
+
+WildcardIndicator:
+    +
+    -
+
+ClassTypeSignatureSuffix:
+    . SimpleClassTypeSignature
 </div>
 
-<div title="item:Ljava/lang/Comparable; Signature Attribute" hidden class="plaintext">
-constant_pool_count='0014' (20)
-constant_pool
-    ... ...
-    |006| CONSTANT_Utf8 {Value='Signature', HexCode='0100095369676E6174757265'}
-    |007| CONSTANT_Utf8 {Value='Ljava/lang/Comparable&lt;Lsample/HelloWorld;&gt;;', HexCode='......'}
-    ... ...
-attributes_count='0001' (1)
-attributes
---->|000| Signature:
-HexCode: 0006000000020007
-attribute_name_index='0006' (#6)
-attribute_length='00000002' (2)
-signature_index='0007' (#7)
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>type argument = [WildcardIndicator] + ReferenceTypeSignature</p>
+    <p>type argument = * (wildcard)</p>
 </div>
 
-<h2>Type Argument Examples</h2>
-
-<h3>&lt;Number&gt;</h3>
+<h3>List&lt;Number&gt;</h3>
 
 <div title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
@@ -489,7 +492,7 @@ local_variable_type_table[0] {
 }
 </div>
 
-<h3>&lt;?&gt;</h3>
+<h3>List&lt;?&gt;</h3>
 
 <div title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
@@ -529,7 +532,7 @@ local_variable_type_table[0] {
 }
 </div>
 
-<h3>&lt;? extends Number&gt;</h3>
+<h3>List&lt;? extends Number&gt;</h3>
 
 <div title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
@@ -569,7 +572,7 @@ local_variable_type_table[0] {
 }
 </div>
 
-<h3>&lt;? super Number&gt;</h3>
+<h3>List&lt;? super Number&gt;</h3>
 
 <div title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;

@@ -13,18 +13,6 @@
     Annotation、Enum和Generics都是在Java 5的时候引入的。
 </p>
 
-<p class="indented">
-    <strong>Annotations are a special kind of metadata which could be associated with different elements and constructs of the Java language.</strong><sub class="my_note" style="color:green">笔记：从本质上来说，Annotation代表了一种特殊的metadata。</sub>
-    Interestingly, annotations have contributed a lot into the elimination of boilerplate XML descriptors used in Java ecosystem mostly everywhere.<sub class="my_note" style="color:green">笔记：Annotation取代了XML的作用。</sub>
-    They introduced the new, type-safe and robust way of configuration and customization techniques.<sub class="my_note" style="color:green">笔记：Annotation，相比于XML，它的特点就是type-safe和robust。</sub>
-    <sub class="my_note" style="color:blue">笔记：这段内容的重点是，Annotation代表是metadata。</sub>
-    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
-</p>
-
-<p class="indented">
-
-</p>
-
 <p>
     在下面的代码中，<code>SuppressWarnings</code>就是Annotation的示例：
 </p>
@@ -35,25 +23,40 @@ public class HelloWorld {
 }
 </div>
 
+<h3>What is Annotation?</h3>
+
+<p class="indented">
+    <strong>Annotations are a special kind of metadata which could be associated with different elements and constructs of the Java language.</strong><sub class="my_note" style="color:green">笔记：从本质上来说，Annotation代表了一种特殊的metadata。</sub>
+    Interestingly, annotations have contributed a lot into the elimination of boilerplate XML descriptors used in Java ecosystem mostly everywhere.<sub class="my_note" style="color:green">笔记：Annotation取代了XML的作用。</sub>
+    They introduced the new, type-safe and robust way of configuration and customization techniques.<sub class="my_note" style="color:green">笔记：Annotation，相比于XML，它的特点就是type-safe和robust。</sub>
+    <sub class="my_note" style="color:blue">笔记：这段内容的重点是，Annotation是一种特殊的metadata，它与不同elements and constructs（instance variables, constructors, methods, classes, etc.）联系在一起。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
 <p class="indented">
     用一个形象的说法来讲，如果将当前JavaFile想象成一个“卡通人物”，那么Annotation则可以理解成“手提包”。
     没有“手提包”的时候，“卡通人物”本身就是一个独立的人物形象；有“手提包”的时候，“卡通人物”可以在“手提包”里多带一些个人物品，例如：手机、镜子、眼镜等。
-    同样的，对于没有Annotation的类来说，它本身就是一个独立的类文件；对于有Annotation的类来说，Annotation帮当前类承载一些额外的信息。
+    到于“手提包”的摆放位置，可以放在肩膀上，可以提在手上，可以挂在胳膊上。
+    同样的，对于没有Annotation的类来说，它本身就是一个独立的类文件；对于有Annotation的类来说，Annotation帮当前类承载一些额外的信息，这些额外的信息可以出现在不同的位置。
+    <sub class="my_note" style="color:blue">笔记：这里是用一种形象的角度来说，Annotation是一个容器，它里面存储的是metadata。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
 <div class="w3-display-container w3-center">
     <img width="400px" class="w3-image w3-center" src="/images/cartoon/handbag.jpg" alt="handbag"/>
 </div>
 
+<h3>How to learn Annotation?</h3>
+
 <p>
     为了清晰的理解Annotation，我觉得，应该从四个层面来看待它：
 </p>
 
 <ul>
-    <li>JavaFile</li>
-    <li>Java Compiler</li>
-    <li>ClassFile</li>
-    <li>JVM</li>
+    <li>JavaFile: 如何在SourceCode层面去记录这些metadata信息</li>
+    <li>Java Compiler: 如何在compile time时，处理这里metadata信息</li>
+    <li>ClassFile: 如何在ClassFile层面，记录这些metadata信息</li>
+    <li>JVM: 如何在runtime时，处理这些metadata信息</li>
 </ul>
 
 <div class="w3-display-container w3-center">
@@ -224,6 +227,11 @@ public @interface MyTag {
     Mostly all annotations you are going to create should have both <b>retention policy</b> and <b>element types</b> specified in order to be useful.
 </p>
 
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p><b>retention policy</b>，可以认为是从“时间”的维度来进行考虑</p>
+    <p><b>element types</b>，可以认为是从“空间”的维度来进行考虑</p>
+</div>
+
 <p class="indented">
     According to the source code, none of them has a <b>default value</b>, which means you must provide it, whenever you use the annotation.
     The meaning of the missing annotation is defined in the javadoc:
@@ -280,13 +288,10 @@ public class HelloWorld {
 }
 </div>
 
-<h3>Restrictions on Annotation Types</h3>
+<h3>Limitations</h3>
 
 <p class="indented">
     There are a couple of limitations which in certain use cases make working with annotations not very convenient.
-
-
-
     <sub class="my_note" style="color:blue">笔记：这里讲Annotation的局限性。</sub>
 
 </p>
@@ -315,8 +320,9 @@ public class HelloWorld {
 
 <p class="indented">
     Annotations are the syntactic sugar used to associate the metadata with different elements of Java language.
-    However, annotations by themselves do not have any direct effect on the element they are annotating. Depending on the annotations
-    and the way they are defined, they may be used by <b>Java compiler</b> (the great example of that is the <code>@Override</code> annotation), by <b>annotation processors</b>
+    <b>However, annotations by themselves do not have any direct effect on the element they are annotating.</b>
+    Depending on the annotations and the way they are defined,
+    they may be used by <b>Java compiler</b> (the great example of that is the <code>@Override</code> annotation), by <b>annotation processors</b>
     and by <b>the code at runtime</b> using reflection and other introspection techniques.
 </p>
 
@@ -344,6 +350,7 @@ public class HelloWorld {
 <h2>References</h2>
 
 <ul>
+    <li><a class="external" href="https://www.geeksforgeeks.org/annotations-in-java/" target="_blank">Annotations in Java</a></li>
     <li><a class="external" href="http://hannesdorfmann.com/annotation-processing/annotationprocessing101" target="_blank">ANNOTATION PROCESSING 101</a></li>
     <li><a class="external" href="http://tutorials.jenkov.com/java-reflection/annotations.html" target="_blank">Java Reflection - Annotations</a></li>
     <li><a class="external" href="https://medium.com/@nadundesilva/reading-annotations-at-compile-time-using-java-annotation-processors-f5a7604bb2f7" target="_blank">Reading Annotations at compile-time using Java Annotation Processors</a></li>

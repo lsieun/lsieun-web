@@ -7,7 +7,7 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>Type Erasure Examples</h2>
+<h2>Type Erasure: Type Variable</h2>
 
 <h3>&lt;E&gt;</h3>
 
@@ -84,7 +84,7 @@ index  start_pc  length  name_and_type
     1         0      15  item:TE;
 </div>
 
-<h3>Type Erasure: Code</h3>
+<h2>Type Erasure: Parameterized Type</h2>
 
 <div title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
@@ -140,7 +140,7 @@ index  start_pc  length  name_and_type
     1         8      30  list:Ljava/util/List&lt;Ljava/lang/String;&gt;;
 </div>
 
-<h2>Bridge Method</h2>
+<h2>Type Erasure: Bridge Method</h2>
 
 <h3>signature changed</h3>
 
@@ -243,7 +243,7 @@ methods
 === === ===  === === ===  === === ===
 </div>
 
-<div title="HelloWorld.java" class="javacode">
+<div title="Task.java" class="javacode">
 public class Task&lt;T&gt; implements Callable&lt;T&gt; {
     public T call() {
         return null;

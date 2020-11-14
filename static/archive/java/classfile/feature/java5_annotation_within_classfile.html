@@ -200,11 +200,17 @@ annotation[0] {
         <code>RetentionPolicy.RUNTIME</code>: 生成任何RuntimeVisible*Annotations属性。
     </li>
     <li>
-        默认值: <code>RetentionPolicy.CLASS</code>
+        默认的情况下，使用: <code>RetentionPolicy.CLASS</code>
     </li>
 </ul>
 
 <h2>attributes</h2>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        对于<code>annotation</code>的类型，可以参考<a href="/archive/java/classfile/attribute_perspective/annotation_structure.html" target="_blank">这里</a>。
+    </p>
+</div>
 
 <h3>primitive type: int</h3>
 
@@ -261,6 +267,10 @@ annotation[0] {
 </div>
 
 <h3>default value</h3>
+
+<p>
+    这个示例是想看一下default value是存储在哪里的。
+</p>
 
 <div title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;

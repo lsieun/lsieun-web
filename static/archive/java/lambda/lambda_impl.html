@@ -1,0 +1,74 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Lambda Capture</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>MOre</h2>
+
+<p class="indented">
+    For bootstrapping a call site, any <code>invokedynamic</code> instruction currently delegates to the <code>LambdaMetafactory</code> class.
+    This factory is then responsible for creating a class that implements the functional interface.
+    In the future, this bootstrapping process might however change which is one of the major advantages of using <code>invokedynamic</code> for implementing lambda expressions.
+    If one day, a better suited language feature was available for implementing lambda expressions, the current implementation could simply be swapped out.
+    <sub class="my_note" style="color:blue">笔记：invokedynamic --&gt; LambdaMetafactory --&gt; creating a class that implements the functional interface</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    In order to being able to create a class that implements the functional interface, any call site representing a lambda expression provides additional arguments to the bootstrap method.
+    For the obligatory arguments, it already provides <b>the name of the functional interface's method</b>.
+    Also, it provides a <code>MethodType</code> of the factory method that the bootstrapping is supposed to yield as a result.
+    Additionally, the bootstrap method is supplied another <code>MethodType</code> that describes the signature of the functional interface's method.
+    To that, it receives a <code>MethodHandle</code> referencing the method that contains the lambda's method body.
+    Finally, the call site provides a <code>MethodType</code> of the generic signature of the functional interface's method, i.e. the signature of the method at the call site before type-erasure was applied.
+    <sub class="my_note" style="color:blue">笔记：six parameters</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    When invoked, the bootstrap method looks at these arguments and creates an appropriate implementation of a class that implements the functional interface.
+    This class is created using the ASM library, a low-level byte code parser and writer that has become the de facto standard for direct Java byte code manipulation.
+    Besides implementing the functional interface's method, the bootstrap method also adds an appropriate constructor and a static factory method for creating instances of the class.
+    It is this factory method that is later bound to the <code>invokedyanmic</code> call site.
+    As arguments, the factory receives an instance to the lambda method's enclosing instance, in case it is accessed and also any values that are read from the enclosing method.
+    <sub class="my_note" style="color:blue">笔记：使用ASM创建实现类</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    You might have noticed that the lambda expression's method body is contained in a private method which is now invoked from another class.
+    Normally, this would result in an illegal access error.
+    To overcome this limitation, the generated classes are loaded using so-called anonymous class loading.
+    Anonymous class loading can only be applied when a class is loaded explicitly by handing a byte array.
+    Also, it is not normally possible to apply anonymous class loading in user code as it is hidden away in the internal classes of the Java class library.
+    When a class is loaded using anonymous class loading, it receives a host class of which it inherits its full security context.
+    This involves both method and field access rights and the protection domain such that a lambda expression can also be generated for signed jar files.
+    Using this approch, lambda expression can be considered more secure than anonymous inner classes because private methods are never reachable from outside of a class.
+    <sub class="my_note" style="color:blue">笔记：访问私有方法</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<p class="indented">
+
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://www.baeldung.com/java-invoke-dynamic" target="_blank">An Introduction to Invoke Dynamic in the JVM</a></li>
+    <li><a class="external" href="http://cr.openjdk.java.net/~briangoetz/lambda/lambda-translation.html" target="_blank">OpenJDK: Translation of Lambda Expressions</a>，这篇文章是openjdk网站上2012年写的，现在是2020年，过去8年了，它的内容还是有借鉴意义</li>
+    <li><a class="external" href="https://dzone.com/articles/dismantling-invokedynamic" target="_blank">DZone: Dismantling invokedynamic</a></li>
+    <li><a class="external" href="https://www.logicbig.com/tutorials/core-java-tutorial/java-8-enhancements/java-capturing-lambda.html" target="_blank">Capturing vs Non-Capturing Lambdas</a></li>
+</ul>

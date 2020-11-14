@@ -119,22 +119,6 @@ fields
     FieldInfo {Value='$VALUES:[Lsample/Day;', AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_FINAL,ACC_SYNTHETIC]'}
 </div>
 
-<p>
-    如果我们在<code>HelloWorld.java</code>中定义<code>Day</code>类型的字段，它会带有<code>ACC_ENUM</code>标识吗？
-</p>
-
-<div title="HelloWorld.java" class="javacode">
-public class HelloWorld {
-    public Day day;
-}
-</div>
-
-<div title="no synthetic example" class="plaintext">
-fields_count='0001' (1)
-fields
-    FieldInfo {Value='day:Lsample/Day;', AccessFlags='[ACC_PUBLIC]', Attrs='[]', HexCode='0001000400050000'}
-</div>
-
 <h2>Synthetic Method</h2>
 
 <h3>First Example: InnerClass</h3>

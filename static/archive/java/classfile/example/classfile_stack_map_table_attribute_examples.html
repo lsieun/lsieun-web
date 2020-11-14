@@ -7,6 +7,32 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p></p>
+    <ul>
+        <li>
+            StackMapTable属性，是在哪个层面出现的属性，是ClassFile、Field、Method，还是Code？答案是Code层面。
+        </li>
+        <li>
+            StackMapTable研究的是什么？研究是frame当中的local variable和operand stack里数据的类型。
+        </li>
+        <li>
+            在什么样的情况下，会生成StackMapTable属性？
+            <ul>
+                <li>第一种情况，使用jump相关的opcode(<code>goto</code>, <code>if*</code>)跳转到的位置</li>
+                <li>第二种情况，exception table处理异常的地方</li>
+            </ul>
+        </li>
+        <li>
+            在StackMapTable属性中，我们关注点是什么？
+            <ul>
+                <li>关注点一，在某一个opcode执行前，stack frame中local variable和operand stack中的所有数据类型都是什么？</li>
+                <li>关注点二，某一种类型（<code>ITEM_Integer</code>、<code>ITEM_Float</code>、<code>ITEM_Uninitialized</code>）是否出现</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
 <h2>StackMapFrame Examples</h2>
 
 <h3>same_frame</h3>
@@ -622,26 +648,20 @@ public class HelloWorld {
     }
 
     public void test(int val) {
-        HelloWorld a = new HelloWorld(val > 0 ? val : 0); // 注意，a是HelloWorld类型
-        int b = 2;
-        int c = 3;
-        int d = 4;
-        int x = val > 20 ? 30 : 10;
+        HelloWorld a = new HelloWorld(val > 0 ? val : 0);
     }
 }
 </div>
 
 <div title="test:(I)V StackMapTable Attribute" hidden class="plaintext">
-attributes_count='0001' (1)
+attributes_count='0003' (3)
 attributes
---->|000| StackMapTable:
-HexCode: 000D000000380004
-    FF000C000207000E010002080000080000
-    FF0000000207000E01000308000008000001
-    FF0016000607000E0107000E01010100004101
-attribute_name_index='000D' (#13)
-attribute_length='00000038' (56)
-number_of_entries='0004' (4)
+......
+--->|002| StackMapTable:
+HexCode: 0013000000250002FF000C0002070014010002080000080000FF0000000207001401000308000008000001
+attribute_name_index='0013' (#19)
+attribute_length='00000025' (37)
+number_of_entries='0002' (2)
 stack_map_frame[0]@12 {
     full_frame {
         frame_type='FF' (255)
@@ -650,7 +670,7 @@ stack_map_frame[0]@12 {
         local[0] {
             ITEM_Object {
                 tag='07' (7)
-                cpool_index='000E' (#14)
+                cpool_index='0014' (#20)
             }
         }
         local[1] {
@@ -681,7 +701,7 @@ stack_map_frame[1]@13 {
         local[0] {
             ITEM_Object {
                 tag='07' (7)
-                cpool_index='000E' (#14)
+                cpool_index='0014' (#20)
             }
         }
         local[1] {
@@ -703,56 +723,6 @@ stack_map_frame[1]@13 {
             }
         }
         stack[2] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-    }
-}
-stack_map_frame[2]@36 {
-    full_frame {
-        frame_type='FF' (255)
-        offset_delta='0016' (22)
-        number_of_locals='0006' (6)
-        local[0] {
-            ITEM_Object {
-                tag='07' (7)
-                cpool_index='000E' (#14)
-            }
-        }
-        local[1] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        local[2] {
-            ITEM_Object {
-                tag='07' (7)
-                cpool_index='000E' (#14)
-            }
-        }
-        local[3] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        local[4] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        local[5] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        number_of_stack_items='0000' (0)
-    }
-}
-stack_map_frame[3]@38 {
-    same_locals_1_stack_item_frame {
-        frame_type='41' (65)
-        stack[0] {
             ITEM_Integer {
                 tag='01' (1)
             }
@@ -834,12 +804,12 @@ stack_map_frame[1]@11 {
 
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
+    public void targetMethod(Object obj, int val) {
+        //
+    }
+
     public void test(int val) {
-        Object a = null; // 注意，这里给a赋值为null。
-        int b = 2;
-        int c = 3;
-        int d = 4;
-        int x = val > 20 ? 30 : 10;
+        targetMethod(null, val > 20 ? 30 : 10);
     }
 }
 </div>
@@ -847,263 +817,71 @@ public class HelloWorld {
 <div title="test:(I)V StackMapTable Attribute" hidden class="plaintext">
 attributes_count='0001' (1)
 attributes
---->|000| StackMapTable:
-HexCode: 0009000000150002FF0015000607000A0107000B01010100004101
-attribute_name_index='0009' (#9)
-attribute_length='00000015' (21)
+......
+--->|002| StackMapTable:
+HexCode: 0015000000210002FF000D000207001601000207001605FF000100020700160100030700160501
+attribute_name_index='0015' (#21)
+attribute_length='00000021' (33)
 number_of_entries='0002' (2)
-stack_map_frame[0]@21 {
+stack_map_frame[0]@13 {
     full_frame {
         frame_type='FF' (255)
-        offset_delta='0015' (21)
-        number_of_locals='0006' (6)
+        offset_delta='000D' (13)
+        number_of_locals='0002' (2)
         local[0] {
             ITEM_Object {
                 tag='07' (7)
-                cpool_index='000A' (#10)
+                cpool_index='0016' (#22)
             }
         }
         local[1] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        local[2] {
-            ITEM_Object { // 注意，这里是ITEM_Object，而不是ITEM_Null
-                tag='07' (7)
-                cpool_index='000B' (#11)
-            }
-        }
-        local[3] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        local[4] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        local[5] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        number_of_stack_items='0000' (0)
-    }
-}
-stack_map_frame[1]@23 {
-    same_locals_1_stack_item_frame {
-        frame_type='41' (65)
-        stack[0] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-    }
-}
-</div>
-
-<p class="indented">
-    接下来，我们使用ASM来生成一个StackMapTable中包含ITEM_Null的情况：
-</p>
-
-<div title="M_ASMPrint.java" class="javacode">
-import jdk.internal.org.objectweb.asm.ClassReader;
-import jdk.internal.org.objectweb.asm.util.ASMifier;
-import jdk.internal.org.objectweb.asm.util.TraceClassVisitor;
-import lsieun.utils.FileUtils;
-import lsieun.utils.ReadUtils;
-
-import java.io.PrintWriter;
-
-public class M_ASMPrint {
-    public static void main(String[] args) {
-        String relative_path = "sample/HelloWorld.class";
-        String filepath = FileUtils.getFilePath(relative_path);
-        byte[] bytes = ReadUtils.readByPath(filepath);
-        generate(bytes);
-    }
-
-    public static void generate(byte[] bytes) {
-        ASMifier printer = new ASMifier();
-        TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, printer, new PrintWriter(System.out));
-        ClassReader cr = new ClassReader(bytes);
-        cr.accept(traceClassVisitor, ClassReader.SKIP_FRAMES);
-    }
-}
-</div>
-
-<div title="M_ASMStackMapFrame.java" class="javacode">
-import jdk.internal.org.objectweb.asm.ClassWriter;
-import jdk.internal.org.objectweb.asm.Label;
-import jdk.internal.org.objectweb.asm.MethodVisitor;
-import lsieun.utils.FileUtils;
-
-import static jdk.internal.org.objectweb.asm.Opcodes.*;
-
-public class M_ASMStackMapFrame {
-    public static void main(String[] args) {
-        try {
-            String relative_path = "sample/HelloWorld.class";
-            String filepath = FileUtils.getFilePath(relative_path);
-            byte[] bytes = dump();
-            FileUtils.writeBytes(filepath, bytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static byte[] dump() throws Exception {
-
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        MethodVisitor mv;
-
-        String constructor_name = "&lt;init&gt;";
-
-        cw.visit(52, ACC_PUBLIC + ACC_SUPER, "sample/HelloWorld", null, "java/lang/Object", null);
-
-        {
-            mv = cw.visitMethod(ACC_PUBLIC, constructor_name, "()V", null, null);
-            mv.visitCode();
-            mv.visitVarInsn(ALOAD, 0);
-            mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", constructor_name, "()V", false);
-            mv.visitInsn(RETURN);
-            mv.visitMaxs(0, 0);
-            mv.visitEnd();
-        }
-        {
-            // region 替换区域
-            mv = cw.visitMethod(ACC_PUBLIC, "test", "(I)V", null, null);
-            mv.visitParameter("val", 0);
-            mv.visitCode();
-            mv.visitInsn(ACONST_NULL);
-            mv.visitVarInsn(ASTORE, 2);
-            mv.visitInsn(ICONST_2);
-            mv.visitVarInsn(ISTORE, 3);
-            mv.visitInsn(ICONST_3);
-            mv.visitVarInsn(ISTORE, 4);
-            mv.visitInsn(ICONST_4);
-            mv.visitVarInsn(ISTORE, 5);
-            mv.visitInsn(ACONST_NULL); // 注意，这里添加了一条 aconst_null opcode
-            mv.visitVarInsn(ILOAD, 1);
-            mv.visitIntInsn(BIPUSH, 20);
-            Label l0 = new Label();
-            mv.visitJumpInsn(IF_ICMPLE, l0);
-            mv.visitIntInsn(BIPUSH, 30);
-            Label l1 = new Label();
-            mv.visitJumpInsn(GOTO, l1);
-            mv.visitLabel(l0);
-            mv.visitIntInsn(BIPUSH, 10);
-            mv.visitLabel(l1);
-            mv.visitVarInsn(ISTORE, 6);
-            mv.visitInsn(RETURN);
-            // endregion
-            mv.visitMaxs(0, 0);
-            mv.visitEnd();
-        }
-        cw.visitEnd();
-
-        return cw.toByteArray();
-    }
-}
-</div>
-
-<div title="test:(I)V StackMapTable Attribute" hidden class="plaintext">
-attributes_count='0001' (1)
-attributes
---->|000| StackMapTable:
-HexCode: 000D000000230002FF001600060700020105010101000105FF00010006070002010501010100020501
-attribute_name_index='000D' (#13)
-attribute_length='00000023' (35)
-number_of_entries='0002' (2)
-stack_map_frame[0]@22 {
-    full_frame {
-        frame_type='FF' (255)
-        offset_delta='0016' (22)
-        number_of_locals='0006' (6)
-        local[0] {
-            ITEM_Object {
-                tag='07' (7)
-                cpool_index='0002' (#2)
-            }
-        }
-        local[1] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        local[2] {
-            ITEM_Null { // 注意，这里是ITEM_Null
-                tag='05' (5)
-            }
-        }
-        local[3] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        local[4] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        local[5] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        number_of_stack_items='0001' (1)
-        stack[0] {
-            ITEM_Null { // 注意，这里是ITEM_Null
-                tag='05' (5)
-            }
-        }
-    }
-}
-stack_map_frame[1]@24 {
-    full_frame {
-        frame_type='FF' (255)
-        offset_delta='0001' (1)
-        number_of_locals='0006' (6)
-        local[0] {
-            ITEM_Object {
-                tag='07' (7)
-                cpool_index='0002' (#2)
-            }
-        }
-        local[1] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        local[2] {
-            ITEM_Null { // 注意，这里是ITEM_Null
-                tag='05' (5)
-            }
-        }
-        local[3] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        local[4] {
-            ITEM_Integer {
-                tag='01' (1)
-            }
-        }
-        local[5] {
             ITEM_Integer {
                 tag='01' (1)
             }
         }
         number_of_stack_items='0002' (2)
         stack[0] {
-            ITEM_Null { // 注意，这里是ITEM_Null
-                tag='05' (5)
+            ITEM_Object {
+                tag='07' (7)
+                cpool_index='0016' (#22)
             }
         }
         stack[1] {
+            ITEM_Null {
+                tag='05' (5)
+            }
+        }
+    }
+}
+stack_map_frame[1]@15 {
+    full_frame {
+        frame_type='FF' (255)
+        offset_delta='0001' (1)
+        number_of_locals='0002' (2)
+        local[0] {
+            ITEM_Object {
+                tag='07' (7)
+                cpool_index='0016' (#22)
+            }
+        }
+        local[1] {
+            ITEM_Integer {
+                tag='01' (1)
+            }
+        }
+        number_of_stack_items='0003' (3)
+        stack[0] {
+            ITEM_Object {
+                tag='07' (7)
+                cpool_index='0016' (#22)
+            }
+        }
+        stack[1] {
+            ITEM_Null {
+                tag='05' (5)
+            }
+        }
+        stack[2] {
             ITEM_Integer {
                 tag='01' (1)
             }
@@ -1185,6 +963,32 @@ stack_map_frame[1]@23 {
                 tag='01' (1)
             }
         }
+    }
+}
+</div>
+
+<div title="M_ASMPrint.java" class="javacode">
+import jdk.internal.org.objectweb.asm.ClassReader;
+import jdk.internal.org.objectweb.asm.util.ASMifier;
+import jdk.internal.org.objectweb.asm.util.TraceClassVisitor;
+import lsieun.utils.FileUtils;
+import lsieun.utils.ReadUtils;
+
+import java.io.PrintWriter;
+
+public class M_ASMPrint {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes = ReadUtils.readByPath(filepath);
+        generate(bytes);
+    }
+
+    public static void generate(byte[] bytes) {
+        ASMifier printer = new ASMifier();
+        TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, printer, new PrintWriter(System.out));
+        ClassReader cr = new ClassReader(bytes);
+        cr.accept(traceClassVisitor, ClassReader.SKIP_FRAMES);
     }
 }
 </div>

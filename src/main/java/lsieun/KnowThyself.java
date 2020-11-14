@@ -211,6 +211,10 @@ public class KnowThyself {
 
     private static void doClose(SocketChannel socketChannel, String reason) {
         HttpConnection conn = dataMap.get(socketChannel);
+        if(conn == null) {
+            audit.info(() -> "Connection is null, just Return");
+            return;
+        }
         dataMap.remove(socketChannel);
         conn.close();
 

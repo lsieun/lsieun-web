@@ -112,7 +112,7 @@ In the same vein<sub class="my_note" style="color:green">以同样的方式</sub
 <sub class="my_note" style="color:blue">笔记：</sub>
 <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 
-<div title="HelloWorld.java" class="javacode">
+<div title="Bar.java" class="javacode">
 
 </div>
 

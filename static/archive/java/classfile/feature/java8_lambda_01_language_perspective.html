@@ -6,3 +6,317 @@
     <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
+
+<p>
+    A takeaway line might be this: <b>languages need to evolve to track changing hardware or programmer expectations</b>.
+    To endure, Java has to evolve by adding new features.
+</p>
+
+<p>
+    The biggest language change in Java 8 is the introduction of <b>lambda expressions</b>—a compact way of passing around <b>behavior</b>.
+    <sub class="my_note" style="color:blue">笔记：在Java 8中，behavior就是指“Code”。behavior的具体表现形式有两种，一种是lambda expression，另一种是method reference，这两种形式的本质就是将Code进行传递。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Lambdas</h2>
+
+<h3>lambda expression definition</h3>
+
+<p>
+    A <b>lambda expression</b> can be understood as a <b>concise</b> representation of an <b>anonymous function</b> that can be <b>passed around</b>:
+    it doesn’t have a name, but it has a list of parameters, a body, a return type, and also possibly a list of exceptions that can be thrown.
+</p>
+
+<p>
+    That’s one big definition; let’s break it down:
+</p>
+
+<ul>
+    <li>
+        Anonymous: We say anonymous because it does not have an explicit name like a method would normally have: less to write and think about!
+    </li>
+    <li>
+        Function: Like a method, a lambda has a list of parameters, a body, a return type, and a possible list of exceptions that can be thrown.
+    </li>
+    <li>
+        Passed around: A lambda expression can be passed as argument to a method or stored in a variable.
+    </li>
+    <li>
+        Concise— You don’t need to write a lot of boilerplate like you do for anonymous classes.
+    </li>
+</ul>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>For now you can think of lambda expressions as anonymous functions.</p>
+</div>
+
+<h3>lambda expression composition</h3>
+
+<p>
+    A <b>lambda expression</b> is composed of <b>parameters, an arrow, and a body</b>.
+</p>
+
+<div title="lambda expression = parameters + arrow + body" class="plaintext">
+(Apple a1, Apple a2)  ->         a1.getWeight().compareTo(a2.getWeight())
+-----------------------------------------------------------------------
+parameters            arrow       lambda body
+</div>
+
+<ul>
+    <li>
+        <b>A list of parameters</b>: In this case it mirrors the parameters of the <code>compare</code> method of a <code>Comparator</code> — two Apples.
+    </li>
+    <li>
+        <b>An arrow</b>: The arrow <code>-&gt;</code> separates the list of parameters from the body of the lambda.
+    </li>
+    <li>
+        <b>The body of the lambda</b>: Compare two Apples using their weights. The expression is considered the lambda’s return value.
+    </li>
+</ul>
+
+<p>
+    The basic syntax of a lambda is:
+</p>
+
+<div title="basic syntax of a lambda" class="plaintext">
+(parameters) -> expression
+(parameters) -> { statements; }
+</div>
+
+<p>
+    注意：下面两个lambda expression是错误的
+</p>
+
+<ul>
+    <li>
+        第一个示例，<code>(Integer i) -&gt; return "Alan" + i;</code>: 错误，因为<code>return "Alan" + i;</code>不是expression，而是statement，正确的写法应该加上<code>{}</code>，即<code>(Integer i) -&gt; {return "Alan" + i;}</code>
+    </li>
+    <li>
+        第二个示例，<code>(String s) -&gt; {"Iron Man";}</code>: 错误，是因为<code>"Iron Man"</code>是expression，而不是statement。正确的写法是：<code>(String s) -&gt; "Iron Man"</code>，又或者是<code>(String s) -&gt; {return "Iron Man";}</code>。
+    </li>
+</ul>
+
+<h2>Functional interface</h2>
+
+<p>
+    <b>So where exactly can you use lambdas</b>? You can use a <b>lambda expression</b> in the context of a <b>functional interface</b>.
+</p>
+
+<p>
+    In a nutshell, a <b>functional interface</b> is an <b>interface</b> that specifies <b>exactly one abstract method</b>.
+</p>
+
+<p>
+    What can you do with functional interfaces?
+    <b>Lambda expressions</b> let you provide the implementation of <b>the abstract method</b> of a <b>functional interface</b> directly inline.
+</p>
+
+<p>
+    If you explore the new Java API, you’ll notice that <b>functional interfaces</b> are annotated with <code>@FunctionalInterface</code>.
+    This annotation is used to indicate that the interface is intended to be a functional interface.
+    The compiler will return a meaningful error if you define an interface using the <code>@FunctionalInterface</code> annotation and it isn’t a functional interface.
+</p>
+
+<p>
+    For example, an error message could be “Multiple non-overriding abstract methods found in interface Foo” to indicate that more than one abstract method is available.
+</p>
+
+<div title="Foo.java" class="javacode">
+@FunctionalInterface
+public interface Foo {
+    void firstMethod();
+    void secondMethod();
+}
+</div>
+
+<div title="error: multiple non-overriding abstract methods" hidden class="plaintext">
+$ javac Foo.java
+Foo.java:1: error: Unexpected @FunctionalInterface annotation
+@FunctionalInterface
+^
+  Foo is not a functional interface
+    multiple non-overriding abstract methods found in interface Foo
+1 error
+</div>
+
+<h2>Method references</h2>
+
+<p>
+    <b>Method references</b> let you reuse <b>existing method</b> definitions and pass them just like lambdas.
+</p>
+
+<p>
+    Indeed, a <b>method reference</b> lets you create a <b>lambda expression</b> from <b>an existing method implementation</b>.
+    But by referring to a method name explicitly, your code can gain better readability.
+    How does it work?
+    When you need a method reference, the target reference is placed before the delimiter <code>::</code> and the name of the method is provided after it.
+    For example, <code>Apple::getWeight</code> is a method reference to the method <code>getWeight</code> defined in the <code>Apple</code> class.
+    Remember that no brackets(<code>()</code>) are needed because you’re not actually calling the method.
+</p>
+
+<h3>construct method references</h3>
+
+<p>
+    There are three main kinds of method references:
+</p>
+
+<ul>
+    <li>A method reference to a <b>static method</b> (for example, the method <code>parseInt</code> of <code>Integer</code>, written <code>Integer::parseInt</code>)</li>
+    <li>A method reference to an <b>instance method of an arbitrary type</b> (for example, the method <code>length</code> of a <code>String</code>, written <code>String::length</code>)</li>
+    <li>
+        A method reference to <b>an instance method of an existing object</b>
+        (for example, suppose you have a local variable <code>expensiveTransaction</code> that holds an object of type <code>Transaction</code>,
+        which supports an instance method <code>getValue</code>; you can write <code>expensiveTransaction::getValue</code>)
+    </li>
+</ul>
+
+<p>
+    Recipes for constructing <b>method references</b> for three different types of <b>lambda expressions</b>
+</p>
+
+<table border="1" style="border-collapse: collapse;width:100%;" class="w3-center">
+    <thead>
+    <tr>
+        <th>No.</th>
+        <th>Lambda</th>
+        <th>Method reference</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>1</td>
+        <td><code>(args) -&gt; ClassName.staticMethod(args)</code></td>
+        <td><code>ClassName::staticMethod</code></td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td><code>(arg0, rest) -&gt; arg0.instanceMethod(rest)</code></td>
+        <<td><code>ClassName::instanceMethod</code></td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td><code>(args) -&gt; expr.instanceMethod(args)</code></td>
+        <td><code>expr::instanceMethod</code></td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>Constructor references</h3>
+
+<h4>zero-argument constructor</h4>
+
+<p>
+    You can create a reference to <b>an existing constructor</b> using its name and the keyword <code>new</code> as follows: <code>ClassName::new</code>.
+    It works similarly to a reference to a static method. For example, suppose there’s a zero-argument constructor.
+</p>
+
+<div title="examples" class="javacode">
+// 第一种：lambda expression
+Supplier&lt;Apple&gt; c1 = () -> new Apple();
+
+// 第二种：Constructor references
+Supplier&lt;Apple&gt; c1 = Apple::new;
+
+Apple a1 = c1.get();
+</div>
+
+<h4>one-argument constructor</h4>
+
+<p>
+    If you have a constructor with signature <code>Apple(Integer weight)</code>, it fits the signature of the <code>Function</code> interface, so you can do this,
+</p>
+
+<div title="examples" class="javacode">
+// 第一种：lambda expression
+Function&lt;Integer, Apple&gt; c1 = (weight) -&gt; new Apple(weight);
+
+// 第二种：Constructor references
+Function&lt;Integer, Apple&gt; c2 = Apple::new;
+
+Apple a2 = c2.apply(110);
+</div>
+
+<h4>two-argument constructor</h4>
+
+<p>
+    If you have a two-argument constructor, <code>Apple(String color, Integer weight)</code>, it fits the signature of the <code>BiFunction</code> interface, so you can do this:
+</p>
+
+<div title="examples" class="javacode">
+// 第一种：lambda expression
+BiFunction&lt;String, Integer, Apple&gt; c3 = (color, weight) -> new Apple(color, weight);
+
+// 第二种：Constructor references
+BiFunction&lt;String, Integer, Apple&gt; c3 = Apple::new;
+Apple a3 = c3.apply("green", 110);
+</div>
+
+<h3>create arrays</h3>
+
+<p>
+    It’s also possible to create arrays using this method. Here is how you would create a String array: <code>String[]::new</code>.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.util.Arrays;
+import java.util.function.Function;
+
+public class Demo {
+    public static void main(String[] args) {
+        Function&lt;Integer, String[]&gt; func = String[]::new;
+        String[] array = func.apply(3);
+        System.out.println(Arrays.toString(array));
+    }
+}
+</div>
+
+<h2>Summing Up</h2>
+
+<h3>Behavior Parameterization</h3>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>Behavior Parameterization = Functional Interface + Lambda/Method Reference</p>
+    <p>
+        我希望，能够使用Behavior Parameterization来这里涉及的概念“统驭”起来，也就是将Functional Interface、Lambda、Method Reference归并为一个完整的概念。
+    </p>
+</div>
+
+<p>
+    Lambda和Method Reference都是属于Behavior Parameterization的范围。
+</p>
+
+<div title="examples" class="javacode">
+int i = 100;
+</div>
+
+<p>
+    其中，<code>int</code>是Type，是装数据的“容器”，而100是Value，是真正的“数据”。这就表达了Type与Value之间的关系：Type是“容器”，Value是“数据”。
+</p>
+
+<div title="Type是“容器”，Value是“数据”" class="plaintext">
+将Value装载到Type这个容器当中：
+Type &lt;-- Value
+</div>
+
+<p>
+    那么，把Type和Value的概念应用到Behavior Parameterization上来说，Lambda和Method Reference表示的只是Value，而Functional Interface表示的是Type。
+</p>
+
+<h3>Behavior Parameterization VS Type Parameterization</h3>
+
+<p>
+    Behavior Parameterization是将Code（Behavior）进行参数化，而Type Parameterization（Generics，泛型）是将Type进行参数化。
+</p>
+
+<h3>Lambda Vs Method Reference</h3>
+
+<div title="" class="plaintext">
+Lambda = anonymous functions
+Method Reference = named functions
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://blog.indrek.io/articles/java-8-behavior-parameterization/" target="_blank">Java 8: Behavior parameterization</a></li>
+</ul>

@@ -7,7 +7,15 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>Instruction Set Summary</h2>
+<p class="indented">
+    At the core of any Java Virtual Machine implementation is its <b>execution engine</b>.
+    <b>In the Java Virtual Machine specification, the behavior of the execution engine is defined in terms of an instruction set</b>.
+    For each instruction, the specification describes in detail <b>what</b> an implementation should do when it encounters the instruction as it executes bytecodes,
+    but says very little about <b>how</b>.
+    Implementation designers are free to decide how their implementations will execute bytecodes.
+    <sub class="my_note" style="color:blue">笔记：instruction set（opcode）的本质，就是对于Execution Engine的行为描述。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
@@ -15,9 +23,17 @@
     </p>
 </div>
 
+<h2>Instruction</h2>
+
 <p class="indented">
     A Java Virtual Machine <b>instruction</b> consists of a one-byte <b>opcode</b> specifying the operation to be performed, followed by zero or more <b>operands</b> supplying arguments or data that are used by the operation. Many <b>instructions</b> have no <b>operands</b> and consist only of an <b>opcode</b>.
 </p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>instruction = opcode + operands</p>
+</div>
+
+<h2>Execution Engine</h2>
 
 <p>
     Ignoring exceptions, the inner loop of a Java Virtual Machine interpreter is effectively
@@ -37,6 +53,8 @@ do {
     For example, an unsigned 16-bit index into the local variables is stored as two unsigned bytes,
     <code>byte1</code> and <code>byte2</code>, such that its value is <code>(byte1 << 8) | byte2</code>.
 </p>
+
+<h2>Classification</h2>
 
 <p>
     在JVM文档中对opcode进行了一个分类，如下所示：

@@ -1,0 +1,228 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Dollar($) Names</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>inner class</h2>
+
+<ul>
+    <li><code>Bar$Foo.class</code></li>
+</ul>
+
+<div title="Bar.java" class="javacode">
+public class Bar {
+    public class Foo {
+        private int value;
+    }
+
+    public void test() {
+        Foo instance = new Foo();
+        instance.value = 100;
+    }
+}
+</div>
+
+<p>
+    <code>Bar$Foo.class</code>类中有一个<code>access$002</code>方法：
+</p>
+
+<div title="Bar$Foo.class-methods-access$002" class="plaintext">
+methods_count='0002' (2)
+methods
+    MethodInfo {Value='&lt;init&gt;:(Lsample/Bar;)V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code, MethodParameters]'}
+    MethodInfo {Value='access$002:(Lsample/Bar$Foo;I)I', AccessFlags='[ACC_STATIC,ACC_SYNTHETIC]', Attrs='[Code]'}
+</div>
+
+<h2>anonymous class</h2>
+
+<ul>
+    <li><code>Bar$1.class</code></li>
+</ul>
+
+<div title="Bar.java" class="javacode">
+public class Bar {
+    private Runnable r = new Runnable() {
+        @Override
+        public void run() {
+            //
+        }
+    };
+}
+</div>
+
+<h2>local class</h2>
+
+<ul>
+    <li><code>Bar$1Foo.class</code></li>
+    <li><code>Bar$2Foo.class</code></li>
+</ul>
+
+<div title="Bar.java" class="javacode">
+public class Bar {
+    public void test1() {
+        class Foo {
+            //
+        }
+    }
+
+    public void test2() {
+        class Foo {
+            //
+        }
+    }
+}
+</div>
+
+<h2>enum type</h2>
+
+<h3>field: $VALUES</h3>
+
+<ul>
+    <li>
+        字段：<code>$VALUES</code>
+    </li>
+</ul>
+
+<div title="Day.java" class="javacode">
+public enum Day {
+    SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
+    THURSDAY, FRIDAY, SATURDAY
+}
+</div>
+
+<div title="Day.class-fields-$VALUES" class="plaintext">
+fields_count='0008' (8)
+fields
+    FieldInfo {Value='SUNDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='MONDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='TUESDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='WEDNESDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='THURSDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='FRIDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='SATURDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
+    FieldInfo {Value='$VALUES:[Lsample/Day;', AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_FINAL,ACC_SYNTHETIC]', Attrs='[]'}
+</div>
+
+<h3>switch enum</h3>
+
+<div title="Bar.java" class="javacode">
+public class Bar {
+    public void tellItLikeItIs(Day day) {
+        switch (day) {
+            case MONDAY:
+                System.out.println("Mondays are bad.");
+                break;
+
+            case FRIDAY:
+                System.out.println("Fridays are better.");
+                break;
+
+            case SATURDAY:
+            case SUNDAY:
+                System.out.println("Weekends are best.");
+                break;
+
+            default:
+                System.out.println("Midweek days are so-so.");
+                break;
+        }
+    }
+}
+</div>
+
+<p>
+    生成<code>Bar$1.class</code>，包含字段<code>$SwitchMap$sample$Day</code>:
+</p>
+
+<div title="Bar$1.class-fields-$SwitchMap$sample$Day" class="plaintext">
+fields_count='0001' (1)
+fields
+    FieldInfo {Value='$SwitchMap$sample$Day:[I', AccessFlags='[ACC_STATIC,ACC_FINAL,ACC_SYNTHETIC]', Attrs='[]'}
+</div>
+
+<h2>Lambda</h2>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        <a class="external" href="https://stackoverflow.com/questions/36057007/what-does-in-javac-generated-name-mean" target="_blank">StackOverflow: What does $$ in javac generated name mean?</a>
+    </p>
+    <ul>
+        <li>
+            <code>Bar$Foo</code> refers to <code>Foo</code>, which is an inner class of <code>Bar</code>.
+        </li>
+        <li>
+            <code>Bar$1</code> refers to an anonymous class declared inside one of the methods of <code>Bar</code>.
+        </li>
+        <li>
+            <code>Bar.lambda$test$0()</code> refers to a lambda declared inside of <code>Bar.test()</code> method.
+        </li>
+        <li>
+            <code>Bar$$Lambda$1</code> refers to the special "new classes" used for lambda expressions inside of <code>Bar.test()</code> method
+        </li>
+    </ul>
+    <p>
+        What does double dollar (<code>$$</code>) mean?
+    </p>
+    <p class="indented">
+        It seems obvious that the double dollar (<code>$$</code>) is simply used for the special "new classes" used for lambda expressions.
+        So <code>$</code> is used to separate names for inner classes, and <code>$$</code> marks lambda-expression-based inner classes. – GhostCat
+    </p>
+</div>
+
+<h3>lambda based method</h3>
+
+<p class="indented">
+    When a source file containing lambdas is compiled, javac will compile the lambda bodies into synthetic(<code>ACC_SYNTHETIC</code>) methods that reside in the containing class.
+    These methods are <code>private</code>(<code>ACC_PRIVATE</code>) and <code>static</code>(<code>ACC_STATIC</code>), and their names will be something like <code>lambda$&lt;method&gt;$&lt;count&gt;</code> where <code>method</code> is the name of the method that contains the lambda, and <code>count</code> is a sequential counter that numbers methods from the beginning of the source file (starting from zero).
+</p>
+
+<ul>
+    <li><code>lambda$test$0</code></li>
+    <li><code>lambda$test$1</code></li>
+</ul>
+
+<div title="Bar.java" class="javacode">
+import java.util.function.Function;
+
+public class Bar {
+    public void test() {
+        Function&lt;Integer, Integer&gt; func1 = val -> val + 5;
+        Function&lt;String, String&gt; func2 = name -> "Hello, " + name;
+    }
+}
+</div>
+
+<h3>lambda based class</h3>
+
+<p class="indented">
+    When a lambda expression is first evaluated at runtime, the lambda <code>metafactory</code> is called.
+    This produces a class that implements the lambda's functional interface.
+    It instantiates this class, takes the arguments to the functional interface method (if any), combines them with any captured values, and calls the synthetic method compiled by javac as described above.
+    This instance is referred to as a "function object" or a "proxy".
+</p>
+
+<ul>
+    <li><code>Bar$$Lambda$1.class</code></li>
+</ul>
+
+<div title="Bar.java" class="javacode">
+import java.util.function.Consumer;
+
+public class Bar {
+    public static void main(String[] args) {
+        System.setProperty("jdk.internal.lambda.dumpProxyClasses","D:/git-repo/java8-classfile-tutorial/target/classes");
+        Consumer&lt;String&gt; c = System.out::println;
+        c.accept("Hello");
+    }
+}
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <a class="external" href="https://stackoverflow.com/questions/36057007/what-does-in-javac-generated-name-mean" target="_blank">StackOverflow: What does $$ in javac generated name mean?</a>
+</ul>

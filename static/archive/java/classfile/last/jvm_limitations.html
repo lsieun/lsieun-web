@@ -7,8 +7,6 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>Limitations of the Java Virtual Machine</h2>
-
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
         下面的内容来自于《The Java Virtual Machine Specification, Java SE 8 Edition》的<a class="external" href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.11" target="_blank">4.11. Limitations of the Java Virtual Machine</a>部分。
@@ -19,7 +17,9 @@
     The following limitations of the Java Virtual Machine are implicit in <b>the class file format</b>:
 </p>
 
-<h3>ClassFile: count</h3>
+<h2>ClassFile</h2>
+
+<h3>count</h3>
 
 <ul>
     <li>
@@ -60,7 +60,7 @@ ClassFile {
 }
 </div>
 
-<h3>ClassFile: names</h3>
+<h3>names</h3>
 
 <ul>
     <li>
@@ -77,7 +77,9 @@ CONSTANT_Utf8_info {
 }
 </div>
 
-<h3>Method: parameters</h3>
+<h2>Method</h2>
+
+<h3>parameters</h3>
 
 <ul>
     <li>
@@ -86,6 +88,13 @@ CONSTANT_Utf8_info {
         Note that a method descriptor is defined in terms of a notion of method parameter length in which a parameter of type <code>long</code> or <code>double</code> contributes two units to the length, so parameters of these types further reduce the limit.
     </li>
 </ul>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int a, int b, int c) {
+    }
+}
+</div>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
@@ -138,7 +147,9 @@ RuntimeInvisibleParameterAnnotations_attribute {
 }
 </div>
 
-<h3>Code: max_stack and max_locals</h3>
+<h2>Code</h2>
+
+<h3>max_stack and max_locals</h3>
 
 <ul>
     <li>
@@ -173,7 +184,7 @@ Code_attribute {
 }
 </div>
 
-<h3>Code: array</h3>
+<h3>array</h3>
 
 <ul>
     <li>

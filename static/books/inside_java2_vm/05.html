@@ -1784,49 +1784,58 @@ end
     <tr>
         <th>Storage Type</th>
         <th>Minimum Bits in Heap or Method Area</th>
-        <th>Computation Type Words in the Java Stack Frame</th>
+        <th>Computation Type</th>
+        <th>Words in the Java Stack Frame</th>
     </tr>
     </thead>
     <tbody>
     <tr>
         <td><code>byte</code></td>
-        <td>8 <code>int</code></td>
-        <td>load <code>byte</code> from array1</td>
+        <td>8</td>
+        <td><code>int</code></td>
+        <td>1</td>
     </tr>
     <tr>
         <td><code>short</code></td>
-        <td>16 <code>int</code></td>
-        <td>load <code>short</code> from array1</td>
+        <td>16</td>
+        <td><code>int</code></td>
+        <td>1</td>
     </tr>
     <tr>
         <td><code>int</code></td>
-        <td>32 <code>int</code></td>
-        <td>load <code>int</code> from array1</td>
+        <td>32</td>
+        <td><code>int</code></td>
+        <td>1</td>
     </tr>
     <tr>
         <td><code>long</code></td>
-        <td>64 <code>long</code></td>
-        <td>load <code>long</code> from array2</td>
+        <td>64</td>
+        <td><code>long</code></td>
+        <td>2</td>
     </tr>
     <tr>
         <td><code>char</code></td>
-        <td>16 <code>int</code></td>
-        <td>load <code>char</code> from array1</td>
+        <td>16</td>
+        <td><code>int</code></td>
+        <td>1</td>
     </tr>
     <tr>
-        <td><code>floa</code></td>
-        <td>32 <code>float</code></td>
-        <td>tload <code>float</code> from array1</td>
+        <td><code>float</code></td>
+        <td>32</td>
+        <td><code>float</code></td>
+        <td>1</td>
     </tr>
     <tr>
         <td><code>double</code></td>
-        <td>64 <code>double</code></td>
-        <td>load <code>double</code> from array2</td>
+        <td>64</td>
+        <td><code>double</code></td>
+        <td>2</td>
     </tr>
     <tr>
         <td><code>reference</code></td>
-        <td>32 <code>reference</code></td>
-        <td>load <code>reference</code> from array1</td>
+        <td>32</td>
+        <td><code>reference</code></td>
+        <td>1</td>
     </tr>
     </tbody>
 </table>

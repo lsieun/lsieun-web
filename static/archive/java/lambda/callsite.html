@@ -1,0 +1,60 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Callsite</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_lambda_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Different Types of CallSites</h2>
+
+<p class="indented">
+    Once the JVM sees <code>invokedynamic</code> for the first time, it calls <b>the bootstrap method</b>.
+    <b>The lambda bootstrap method will use the <code>InnerClassLambdaMetafactory</code> to generate an inner class for the lambda at runtime</b>.
+</p>
+
+<p class="indented">
+    Then the bootstrap method encapsulates the generated inner class inside a special type of <code>CallSite</code> known as <code>ConstantCallSite</code>.
+    This type of <code>CallSite</code> would never change after setup.
+    Therefore, after the first setup for each lambda, the JVM will always use the fast path to directly call the lambda logic.
+</p>
+
+<p class="indented">
+    Although this is the most efficient type of <code>invokedynamic</code>, it's certainly not the only available option.
+    As a matter of fact, Java provides <code>MutableCallSite</code> and <code>VolatileCallSite</code> to accommodate for more dynamic requirements.
+</p>
+
+<h2>Advantages</h2>
+
+<p class="indented">
+    So, in order to implement <b>lambda expressions</b>, instead of creating <b>anonymous inner classes</b> at <b>compile-time</b>, Java creates them at <b>runtime</b> via <code>invokedynamic</code>.
+</p>
+
+<p class="indented">
+    One might argue against deferring inner class generation until runtime.
+    However, the <code>invokedynamic</code> approach has a few advantages over the simple compile-time solution.
+</p>
+
+<p class="indented">
+    First, the JVM does not generate the inner class until the first use of lambda.
+    Hence, <b>we won't pay for the extra footprint associated with the inner class before the first lambda execution.</b>
+</p>
+
+<p class="indented">
+    Additionally, much of the linkage logic is moved out from the bytecode to the bootstrap method.
+    Therefore, <b>the <code>invokedynamic</code> bytecode is usually much smaller than alternative solutions.</b>
+    The smaller bytecode can boost startup speed.
+</p>
+
+<p class="indented">
+    Suppose a newer version of Java comes with a more efficient bootstrap method implementation.
+    <b>Then our <code>invokedynamic</code> bytecode can take advantage of this improvement without recompiling.</b>
+    This way we can achieve some sort of forwarding binary compatibility.
+    Basically, we can switch between different strategies without recompilation.
+</p>
+
+<p class="indented">
+    Finally, writing the bootstrap and linkage logic in Java is usually easier than traversing an AST to generate a complex piece of bytecode.
+    So, <code>invokedynamic</code> can be (subjectively) less brittle.
+</p>

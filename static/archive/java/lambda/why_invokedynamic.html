@@ -1,0 +1,49 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Why invokedynamic?</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_lambda_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>The Problem</h2>
+
+<p class="indented">
+    Invoke Dynamic (Also known as Indy) was part of <a class="external" href="https://jcp.org/en/jsr/detail?id=292" target="_blank">JSR 292</a> intended to enhance the JVM support for dynamically typed languages.
+    After its first release in Java 7, the <code>invokedynamic</code> opcode is used quite extensively by dynamic JVM-based languages like JRuby and even statically typed languages like Java.
+</p>
+
+<p class="indented">
+    Before Java 7, the JVM only had four method invocation types:
+    <code>invokevirtual</code> to call normal class methods,
+    <code>invokestatic</code> to call static methods,
+    <code>invokeinterface</code> to call interface methods,
+    and <code>invokespecial</code> to call constructors or private methods.
+</p>
+
+<p class="indented">
+    <b>
+        Despite their differences, all these invocations share one simple trait:
+        They have a few predefined steps to complete each method call, and we can't enrich these steps with our custom behaviors.
+    </b>
+</p>
+
+<p class="indented">
+    There are two main workarounds for this limitation: One at compile-time and the other at runtime.
+    The former is usually used by languages like Scala or Koltin and the latter is the solution of choice for JVM-based dynamic languages like JRuby.
+</p>
+
+<p class="indented">
+    The runtime approach is usually reflection-based and consequently, inefficient.
+</p>
+
+<p class="indented">
+    On the other hand, the compile-time solution is usually relying on code-generation at compile-time.
+    This approach is more efficient at runtime.
+    However, it's somewhat brittle and also may cause a slower startup time as there's more bytecode to process.
+</p>
+
+<p class="indented">
+    Now that we've got a better understanding of the problem, let's see how the solution works internally.
+</p>

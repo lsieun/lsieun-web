@@ -13,10 +13,12 @@
     </p>
     <ul>
         <li>第一个层面，Java Language层面，也就是在<code>.java</code>文件中，如何写lambda expression。</li>
-        <li>第二个层面，Compile Time层面，或者说是Java Class File Format层面，也就是在<code>.class</code>文件中，它有哪些结构来支撑Java Language层面的lambda expression。</li>
-        <li>第三个层面，Runtime层面，或者说是JVM层面，也就是在程序运行的过程中，JVM如何将<code>.class</code>文件中存储的结构，如何转换成实际的可执行的代码的过程。</li>
+        <li>第二个层面，Java Class File层面，也就是在<code>.class</code>文件中，它有哪些结构来支撑Java Language层面的lambda expression。</li>
+        <li>第三个层面，Runtime层面，或者说是JVM在运行的过程中，JVM如何将<code>.class</code>文件中存储的结构转换成实际的可执行的代码的过程。</li>
     </ul>
 </div>
+
+<h2>Intro</h2>
 
 <p class="indented">
     We know that Java code itself does not compile directly to bytes that are executed by the operating system.
@@ -51,42 +53,7 @@
 
 
 
-<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
-    <p>
-        我想呈现一个这样的观点：
-    </p>
-    <p>
-        CONSTANT_MethodHandle = invokevirtual/invokespecial/invokestatic/invokeinterface + CONSTANT_Methodref
-    </p>
-    <p>
-        CONSTANT_MethodType = CONSTANT_NameAndType - name_index   或者   CONSTANT_MethodType = descriptor
-    </p>
-    <p>
-        换句话来表示，CONSTANT_MethodHandle是CONSTANT_Methodref的“增强版”，而CONSTANT_MethodType是CONSTANT_NameAndType的简化版。
-    </p>
-</div>
 
-<h2>Translation strategy</h2>
-
-<p class="indented">
-
-</p>
-
-<p class="indented">
-
-</p>
-
-<p class="indented">
-
-</p>
-
-<p class="indented">
-
-</p>
-
-<p class="indented">
-
-</p>
 
 <h2>Glossary</h2>
 
@@ -114,7 +81,7 @@
 &lt;classname&gt; :: &lt;methodname&gt;
 </div>
 
-<h3>functional interface/SAM</h3>
+<h3>functional interface and SAM</h3>
 
 <p class="indented">
     Interface that has <b>single abstract method</b> (<b>SAM</b>), is known as <b>functional interface</b>.
@@ -154,10 +121,3 @@ public class HelloWorld {
     }
 }
 </div>
-
-
-
-<div title="HelloWorld.java" class="javacode">
-
-</div>
-
