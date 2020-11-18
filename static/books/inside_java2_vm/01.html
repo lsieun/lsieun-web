@@ -51,7 +51,8 @@
         </ul>
     </li>
     <li><a href="#architectural_tradeoffs">Architectural Tradeoffs</a></li>
-    <li><a href="#on_the_cd">On the CD-ROM</a></li>
+    <li><a href="#future_trends">Future Trends</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
     <li><a href="#resources_page">The Resources Page</a></li>
 </ul>
 <hr>
@@ -651,52 +652,247 @@
 
 
 <h2 id="architectural_tradeoffs">Architectural Tradeoffs</h2>
-<p>Although Java's network-oriented features are desirable, especially in a networked environment, they did not come for free. They required tradeoffs against other desirable features. Whenever a potential tradeoff between desirable characteristics arose, the designers of Java made the architectural choice that made better sense in a networked world. Hence, Java is not the right tool for every job. It is suitable for solving problems that involve networks and has utility in many problem that don't involve networks, but its architectural tradeoffs will disqualify it for certain types of jobs.</p>
-<p>As mentioned before, one of the prime costs of Java's network-oriented features is the potential reduction in program execution speed compared to other technologies such as C++. Java programs can run slower than an equivalent C++ program for many reasons:</p>
+<p>
+    Although Java's network-oriented features are desirable, especially in a networked environment, they did not come for free.
+    They required tradeoffs against other desirable features.
+    Whenever a potential tradeoff between desirable characteristics arose,
+    the designers of Java made the architectural choice that made better sense in a networked world.
+    Hence, Java is not the right tool for every job.
+    It is suitable for solving problems that involve networks and has utility in many problem that don't involve networks,
+    but its architectural tradeoffs will disqualify it for certain types of jobs.
+    <span class="note">Java在架构层面的取舍。</span>
+</p>
+<p>
+    As mentioned before, one of the prime costs of Java's network-oriented features is the potential reduction in program execution speed compared to other technologies such as C++.
+    Java programs can run slower than an equivalent C++ program for many reasons:
+    <span class="note">Java程序运行慢的原因。</span>
+</p>
 <ul>
-    <li>Interpreting bytecodes is 10 to 30 times slower than native execution. </li>
-    <li>Just-in-time compiling bytecodes can be 7 to 10 times faster than interpreting, but still not quite as fast as native execution. </li>
-    <li>Java programs are dynamically linked. </li>
-    <li>The Java Virtual Machine may have to wait for class files to download across a network. </li>
+    <li>Interpreting bytecodes is 10 to 30 times slower than native execution.</li>
+    <li>Just-in-time compiling bytecodes can be 7 to 10 times faster than interpreting, but still not quite as fast as native execution.</li>
+    <li>Java programs are dynamically linked.</li>
+    <li>The Java Virtual Machine may have to wait for class files to download across a network.</li>
     <li>Array bounds are checked on each array access. </li>
-    <li>All objects are created on the heap (no objects are created on the stack). </li>
-    <li>All uses of object references are checked at run-time for <code>null</code>. </li>
-    <li>All reference casts are checked at run-time for type safety. </li>
-    <li>The garbage collector is likely less efficient (though often more effective) at managing the heap than you could be if you managed it directly as in C++. </li>
+    <li>All objects are created on the heap (no objects are created on the stack).</li>
+    <li>All uses of object references are checked at run-time for <code>null</code>.</li>
+    <li>All reference casts are checked at run-time for type safety.</li>
+    <li>The garbage collector is likely less efficient (though often more effective) at managing the heap than you could be if you managed it directly as in C++.</li>
     <li>Primitive types in Java are the same on every platform, rather than adjusting to the most efficient size on each platform as in C++. </li>
-    <li>Strings in Java are always UNICODE. When you really need to manipulate just an ASCII string, a Java program will be slightly less efficient than an equivalent C++ program. </li>
+    <li>Strings in Java are always UNICODE. When you really need to manipulate just an ASCII string, a Java program will be slightly less efficient than an equivalent C++ program.</li>
 </ul>
-<p>Although many of Java's speed hits are manageable through techniques such as just-in-time compiling, some--such as those that result from run-time checking--can't be eliminated even by compilation to native executable. Still, you get something, such as platform independence or program robustness, for all of the speed hits associated with Java programs. In many cases the end-user will not be able to perceive any speed deficit. In many other cases, the benefits of platform independence and improved program robustness will be worth the speed degradation. Sometimes, however, Java may be disqualified as a tool to help you solve a problem because that problem requires the utmost in speed and Java can't deliver it.</p>
-<p>Another tradeoff is loss of control of memory management. Garbage collection can help make programs more robust and easier to design, but adds a level of uncertainty to the runtime performance of the program. You can't always be sure when a garbage collector will decide it is time to collect garbage, nor how long it will take. This loss of control of memory management makes Java a questionable candidate for software problems that require a real-time response to events. While it is possible to create a garbage collector that attempts to meet real-time requirements, for many real-time problems, robustness and platform independence are simply not important enough to justify using Java.</p>
-<p>Still another tradeoff arises from Java's goal of platform independence. One difficulty inherent in any API that attempts to provide cross-platform functionality is the lowest-common-denominator problem. Although there is much overlap between operating systems, each operating system usually has a handful of traits all its own. An API that aims to give programs access to the system services of any operating system has to decide which capabilities to support. If a feature exists on only one operating system, the designers of the API may decide not to include support for that feature. If a feature exists on most operating systems, but not all, the designers may decide to support it anyway. This will require an implementation of something similar in the API on operating systems that lack the feature. Both of these lowest -common-denominator kinds of choices may to some degree offend developers and end-users on the affected operating systems.</p>
-<p>What's worse, not only does the lowest-common-denominator problem afflict the designers of a platform independent API, it also affects the designer of a program that uses that API. Take user interface as an example. The AWT attempts to give your program a user interface that adopts the native look on each platform. You might find it difficult, however, to design a user interface in which the components interact in a way that <em>feels</em> native on every platform, even though the individual components may have the native look. So on top of the lowest-common-denominator choices that were made when the AWT was designed, you may find yourself faced with your own lowest-common-denominator choices when you use the AWT.</p>
-<p>One last tradeoff stems from the dynamically linked nature of Java programs combined with the close relationship between Java class files and the Java programming language. Because Java programs are dynamically linked, the references from one class file to another are symbolic. In a statically-linked executable, references between classes are direct pointers or offsets. Inside a Java class file, by contrast, a reference to another class spells out the name of the other class in a text string. If the reference is to a field, the field's name and <em>descriptor</em> (the field's type) are also specified. If the reference is to a method, the method's name and descriptor (the method's return type, number and types of its arguments) are specified. Moreover, not only do Java class files contain symbolic references to the fields and methods of other classes, they also contain symbolic references to their own fields and methods. Java class files also may contain optional debugging information that includes the names and types of local variables. A class file's symbolic information, and the close relationship between the bytecode instruction set and the Java language, make it quite easy to decompile Java class files back into Java source. This in turn makes it quite easy for your competitors to borrow heavily from your hard work.</p>
-<p>While it has always been possible for competitors to decompile a statically-linked binary executable and glean insights into your program, by comparison decompilation is far easier with an intermediate (not yet linked) binary form such as Java class files. Decompilation of statically-linked binary executables is more difficult not only because the symbolic information (the original class, field, method, and local variable names) is missing, but also because statically-linked binaries are usually heavily optimized. The more optimized a statically-linked binary is, the less it corresponds to the original source code. Still, if you have an algorithm buried in your binary executable, and it is worth the trouble to your competitors, they can peer into your binary executable and retrieve that algorithm.</p>
-<p>Fortunately, there is a way to combat the easy borrowing of your intellectual property: you can obfuscate your class files. Obfuscation alters your class files by changing the names of classes, fields, methods, and local variables, but without altering the operation of the program. Your program can still be decompiled, but will no longer have the (hopefully) meaningful names you originally gave to all of your classes, fields, methods, and local variables. For large programs, obfuscation can make the code that comes out of the decompiler so cryptic as to require nearly the same effort to steal your work as would be required by a statically-linked executable.</p>
-<p><em> Future Trends </em></p>
-<p>As Java matures, some of the tradeoffs described in this chapter may change. One area in which you can expect improvement over time is in the execution speed of Java programs. Sun, for example, is currently working on a technology they call "hot-spot compiling," which is a hybrid of interpreting and just-in-time compiling. They claim this technique will yield Java programs that run as fast as natively compiled C++. Although this seems like a rash claim, when you look at the approach, it makes sense that speeds very close to natively compiled C++ could be achievable.</p>
-<p>As a programmer, you may sometimes be faced with the task of speeding up a program by looking through your code for ways to optimize. Often, programmers waste time optimizing code that is rarely executed when the program runs. The proper approach is usually to profile the program to discover exactly where the program spends most of its time. Programs often spend 80 or 90 percent of their time in 10 to 20 percent of the code. To be most effective, you should focus your optimization efforts on just the 10 to 20 percent of the code that really matters to execution speed.</p>
-<p>In a sense, a Java Virtual Machine that does just-in-time compiling is like a programmer who spends time to optimize all the code in a program. 80 to 90 percent of the time such a virtual machine spends just-in-time compiling is probably spent on code that only runs 10 to 20 percent of the time. Because all the code is just-in-time compiled, the memory footprint of the program grows much larger than that of an interpreted program, where all the code remains in bytecode form. Also, because so much time is spent just-in-time compiling everything, the virtual machine doesn't have enough time left over to do a thorough job of optimization.</p>
-<p>A Java Virtual Machine that does hot-spot compiling, by contrast, is like a programmer who profiles the code and only optimizes the code's time-critical portions. In this approach, the virtual machine begins by interpreting the program. As it interprets bytecodes, it analyzes the execution of the program to determine the program's "hot spot"--that part of the code where the program is spending most of its time. When it identifies the hot spot, it just-in-time compiles only that part of the code that makes up the hot spot. As the program continues to run, the virtual machine continues to analyze it. If the hot spot moves, the virtual machine can just-in-time compile and optimize new areas as they move into the hot spot. Also, it can revert back to using bytecodes for areas that move out of the hot spot back, to keep the memory footprint at a minimum.</p>
-<p>Because only a small part of the program is just-in-time compiled, the memory footprint of the program remains small and the virtual machine has more time to do optimizations. On systems with virtual memory, a smaller memory footprint means less paging. On systems that lack virtual memory--such as many embedded devices--a smaller memory footprint may mean the difference between a program fitting or not fitting in memory at all. More time for optimizations yields hot-spot code that could potentially be optimized as much as natively compiled C++.</p>
-<p>In the hot-spot compiling approach, the Java Virtual Machine loads platform-independent class files, just-in-time compiles and heavily optimizes only the most time-critical code, and interprets the rest of the code. Such a program could spend 80 to 90 percent of its time executing native code that is optimized as heavily as natively compiled C++. At the same time, it could keep a memory footprint that is not much larger than a Java program that is 100 percent interpreted. It makes sense that a Java program running on such a virtual machine could achieve speeds very close to the speed of natively compiled C++.</p>
-<p>If emerging technologies, such as hot-spot compiling, fulfill their promise, the speed tradeoff of Java programs could eventually become much less significant. It remains to be seen, however, what execution speeds such technologies will actually be able to achieve. For links to the latest information about emerging virtual machine technologies, visit the resources page for this chapter.</p>
-<p>Another area in which much work is being done is user interface. One of the tradeoffs listed in this chapter for writing platform-independent programs is the lowest-common-denominator problem. A major area in which this problem reveals itself is user interfaces. In an effort to provide a user-interface library that could map to native components on most platforms, Sun filled the AWT library in Java 1.0 and 1.1 with a lowest-common-denominator subset of components. The 1.0 AWT library included a button class, for example, because every platform had a native button. The library did not include more advanced components such as tab controls or spin controls, however, in part because of schedule constraints, but also because these kinds of controls weren't native to enough platforms.</p>
-<p>The Java programmer was faced with an AWT library that directly supported the creation of rather simple user interfaces. With work, however, the programmer could build a fancier user interface on top of the AWT primitives. Many third party vendors built more advanced user interface libraries on top of AWT to help ease the programmer's burden. Microsoft's AFC (Application Foundation Classes) and Netscape's IFC (Internet Foundation Classes) are two good examples. These libraries add support for more advanced user-interface components and functionality to those directly supported by the AWT. They are, however, built on top of AWT, so programs that use them are still platform independent.</p>
-<p>Sun has announced JFC (Java Foundation Classes), which is their approach to solving the lowest-common-denominator problem with the 1.0 and 1.1 AWT libraries. Rather than attempting to map more components to native counterparts, Sun's strategy is to provide what they call "lightweight components." A lightweight component doesn't directly map to a native component. Instead, it is built out of the AWT primitives. So for example, instead of providing a tab control that maps to a native tab control on each platform that supports one, JFC would provide a "Java Platform tab control". When such a control is used on Windows95, which supports tab controls natively, the control would not necessarily have the native Windows look and feel. It would have the Java Platform look and feel.</p>
+<p>
+    Although many of Java's speed hits are manageable through techniques such as just-in-time compiling,
+    some--such as those that result from run-time checking--can't be eliminated even by compilation to native executable.
+    Still, you get something, such as platform independence or program robustness, for all of the speed hits associated with Java programs.
+    In many cases the end-user will not be able to perceive any speed deficit.
+    In many other cases, the benefits of platform independence and improved program robustness will be worth the speed degradation.
+    Sometimes, however, Java may be disqualified as a tool to help you solve a problem because that problem requires the utmost in speed and Java can't deliver it.
+    <span class="note">Java程序就是运行慢，但是，它的优点是platform independence or program robustness。</span>
+</p>
+<p>
+    Another tradeoff is loss of control of memory management.
+    Garbage collection can help make programs more robust and easier to design,
+    but adds a level of uncertainty to the runtime performance of the program.
+    You can't always be sure when a garbage collector will decide it is time to collect garbage, nor how long it will take.
+    This loss of control of memory management makes Java a questionable candidate for software problems that require a real-time response to events.
+    While it is possible to create a garbage collector that attempts to meet real-time requirements, for many real-time problems,
+    robustness and platform independence are simply not important enough to justify using Java.
+    <span class="note">失去对memory的管理，是好事，也是坏事。</span>
+</p>
+<p>
+    Still another tradeoff arises from Java's goal of platform independence.
+    One difficulty inherent in any API that attempts to provide cross-platform functionality is the lowest-common-denominator problem.
+    Although there is much overlap between operating systems, each operating system usually has a handful of traits all its own.
+    An API that aims to give programs access to the system services of any operating system has to decide which capabilities to support.
+    If a feature exists on only one operating system, the designers of the API may decide not to include support for that feature.
+    If a feature exists on most operating systems, but not all, the designers may decide to support it anyway.
+    This will require an implementation of something similar in the API on operating systems that lack the feature.
+    Both of these lowest-common-denominator kinds of choices may to some degree offend developers and end-users on the affected operating systems.
+    <span class="note">platform independence VS lowest-common-denominator</span>
+</p>
+<p>
+    What's worse, not only does the lowest-common-denominator problem afflict the designers of a platform independent API,
+    it also affects the designer of a program that uses that API.
+    Take user interface as an example.
+    The AWT attempts to give your program a user interface that adopts the native look on each platform.
+    You might find it difficult, however, to design a user interface in which the components interact in a way that <em>feels</em> native on every platform,
+    even though the individual components may have the native look.
+    So on top of the lowest-common-denominator choices that were made when the AWT was designed,
+    you may find yourself faced with your own lowest-common-denominator choices when you use the AWT.
+    <span class="note">lowest-common-denominator还会影响程序的设计者</span>
+</p>
+<p>
+    One last tradeoff stems from the dynamically linked nature of Java programs combined with the close relationship between Java class files and the Java programming language.
+    Because Java programs are dynamically linked, the references from one class file to another are symbolic.
+    In a statically-linked executable, references between classes are direct pointers or offsets.
+    Inside a Java class file, by contrast, a reference to another class spells out the name of the other class in a text string.
+    If the reference is to a field, the field's name and <em>descriptor</em> (the field's type) are also specified.
+    If the reference is to a method, the method's name and descriptor (the method's return type, number and types of its arguments) are specified.
+    Moreover, not only do Java class files contain symbolic references to the fields and methods of other classes,
+    they also contain symbolic references to their own fields and methods.
+    Java class files also may contain optional debugging information that includes the names and types of local variables.
+    A class file's symbolic information, and the close relationship between the bytecode instruction set and the Java language,
+    make it quite easy to decompile Java class files back into Java source.
+    This in turn makes it quite easy for your competitors to borrow heavily from your hard work.
+    <span class="note">生成的class文件中，大量使用symbolic information</span>
+</p>
+<p>
+    While it has always been possible for competitors to decompile a statically-linked binary executable and glean insights into your program,
+    by comparison decompilation is far easier with an intermediate (not yet linked) binary form such as Java class files.
+    Decompilation of statically-linked binary executables is more difficult not only because the symbolic information (the original class, field, method, and local variable names) is missing,
+    but also because statically-linked binaries are usually heavily optimized.
+    The more optimized a statically-linked binary is, the less it corresponds to the original source code.
+    Still, if you have an algorithm buried in your binary executable, and it is worth the trouble to your competitors,
+    they can peer into your binary executable and retrieve that algorithm.
+    <span class="note">生成的class文件，很容易被人反编译</span>
+</p>
+<p>
+    Fortunately, there is a way to combat the easy borrowing of your intellectual property:
+    you can obfuscate your class files.
+    Obfuscation alters your class files by changing the names of classes, fields, methods, and local variables,
+    but without altering the operation of the program.
+    Your program can still be decompiled, but will no longer have the (hopefully) meaningful names you originally gave to all of your classes, fields, methods, and local variables.
+    For large programs, obfuscation can make the code that comes out of the decompiler so cryptic as to require nearly the same effort to steal your work as would be required by a statically-linked executable.
+    <span class="note">可以使用Obfuscation，增加反编译的难度</span>
+</p>
+
+
+
+<h2 id="future_trends">Future Trends</h2>
+<p>
+    As Java matures, some of the tradeoffs described in this chapter may change.
+    One area in which you can expect improvement over time is in the execution speed of Java programs.
+    Sun, for example, is currently working on a technology they call "hot-spot compiling," which is a hybrid of interpreting and just-in-time compiling.
+    They claim this technique will yield Java programs that run as fast as natively compiled C++.
+    Although this seems like a rash claim, when you look at the approach, it makes sense that speeds very close to natively compiled C++ could be achievable.
+    <span class="note">未来的一个趋势，Java的运行速度可能会接近C++。</span>
+</p>
+<p>
+    As a programmer, you may sometimes be faced with the task of speeding up a program by looking through your code for ways to optimize.
+    Often, programmers waste time optimizing code that is rarely executed when the program runs.
+    The proper approach is usually to profile the program to discover exactly where the program spends most of its time.
+    Programs often spend 80 or 90 percent of their time in 10 to 20 percent of the code.
+    To be most effective, you should focus your optimization efforts on just the 10 to 20 percent of the code that really matters to execution speed.
+    <span class="note">应该把80%或90%的时间投入到优化关键性的10%或20%的代码。</span>
+</p>
+<p>
+    In a sense, a Java Virtual Machine that does just-in-time compiling is like a programmer who spends time to optimize all the code in a program.
+    80 to 90 percent of the time such a virtual machine spends just-in-time compiling is probably spent on code that only runs 10 to 20 percent of the time.
+    Because all the code is just-in-time compiled, the memory footprint of the program grows much larger than that of an interpreted program, where all the code remains in bytecode form.
+    Also, because so much time is spent just-in-time compiling everything, the virtual machine doesn't have enough time left over to do a thorough job of optimization.
+    <span class="note">just-in-time compiling的功能还是不够成熟，花费较多的时间编译一部分代码，而这部分代码可能只占运行时间的10%或20%。</span>
+</p>
+<p>
+    A Java Virtual Machine that does hot-spot compiling, by contrast, is like a programmer who profiles the code and only optimizes the code's time-critical portions.
+    In this approach, the virtual machine begins by interpreting the program.
+    As it interprets bytecodes, it analyzes the execution of the program to determine the program's "hot spot"--that part of the code where the program is spending most of its time.
+    When it identifies the hot spot, it just-in-time compiles only that part of the code that makes up the hot spot.
+    As the program continues to run, the virtual machine continues to analyze it.
+    If the hot spot moves, the virtual machine can just-in-time compile and optimize new areas as they move into the hot spot.
+    Also, it can revert back to using bytecodes for areas that move out of the hot spot back, to keep the memory footprint at a minimum.
+    <span class="note">hot spot来帮助我们探测高频率使用的代码。</span>
+</p>
+<p>
+    Because only a small part of the program is just-in-time compiled, the memory footprint of the program remains small and the virtual machine has more time to do optimizations.
+    On systems with virtual memory, a smaller memory footprint means less paging.
+    On systems that lack virtual memory--such as many embedded devices--a smaller memory footprint may mean the difference between a program fitting or not fitting in memory at all.
+    More time for optimizations yields hot-spot code that could potentially be optimized as much as natively compiled C++.
+    <span class="note">只对少部分代码进行just-in-time compiling，会占用更少的内存空间。</span>
+</p>
+<p>
+    In the hot-spot compiling approach, the Java Virtual Machine loads platform-independent class files,
+    just-in-time compiles and heavily optimizes only the most time-critical code, and interprets the rest of the code.
+    Such a program could spend 80 to 90 percent of its time executing native code that is optimized as heavily as natively compiled C++.
+    At the same time, it could keep a memory footprint that is not much larger than a Java program that is 100 percent interpreted.
+    It makes sense that a Java program running on such a virtual machine could achieve speeds very close to the speed of natively compiled C++.
+    <span class="note">hot-spot compiling只把关键的代码编译成native code。</span>
+</p>
+<p>
+    If emerging technologies, such as hot-spot compiling, fulfill their promise, the speed tradeoff of Java programs could eventually become much less significant.
+    It remains to be seen, however, what execution speeds such technologies will actually be able to achieve.
+    For links to the latest information about emerging virtual machine technologies, visit the resources page for this chapter.
+    <span class="note">这个hot-spot compiling技术值得期待。</span>
+</p>
+<p>
+    Another area in which much work is being done is user interface.
+    One of the tradeoffs listed in this chapter for writing platform-independent programs is the lowest-common-denominator problem.
+    A major area in which this problem reveals itself is user interfaces.
+    In an effort to provide a user-interface library that could map to native components on most platforms,
+    Sun filled the AWT library in Java 1.0 and 1.1 with a lowest-common-denominator subset of components.
+    The 1.0 AWT library included a button class, for example, because every platform had a native button.
+    The library did not include more advanced components such as tab controls or spin controls, however, in part because of schedule constraints,
+    but also because these kinds of controls weren't native to enough platforms.
+    <span class="note">另外一个未来的发展趋势，就是UI界面。</span>
+</p>
+<p>
+    The Java programmer was faced with an AWT library that directly supported the creation of rather simple user interfaces.
+    With work, however, the programmer could build a fancier user interface on top of the AWT primitives.
+    Many third party vendors built more advanced user interface libraries on top of AWT to help ease the programmer's burden.
+    Microsoft's AFC (Application Foundation Classes) and Netscape's IFC (Internet Foundation Classes) are two good examples.
+    These libraries add support for more advanced user-interface components and functionality to those directly supported by the AWT.
+    They are, however, built on top of AWT, so programs that use them are still platform independent.
+    <span class="note">第三方的厂商提高了一个UI类库，可以让开发者使用。</span>
+</p>
+<p>
+    Sun has announced JFC (Java Foundation Classes), which is their approach to solving the lowest-common-denominator problem with the 1.0 and 1.1 AWT libraries.
+    Rather than attempting to map more components to native counterparts, Sun's strategy is to provide what they call "lightweight components."
+    A lightweight component doesn't directly map to a native component.
+    Instead, it is built out of the AWT primitives.
+    So for example, instead of providing a tab control that maps to a native tab control on each platform that supports one,
+    JFC would provide a "Java Platform tab control".
+    When such a control is used on Windows95, which supports tab controls natively,
+    the control would not necessarily have the native Windows look and feel.
+    It would have the Java Platform look and feel.
+    <span class="note">Sun公司推出了JFC。</span>
+</p>
 <p>
     As Java user interface libraries evolve, they will reduce the pain of writing platform-independent user interfaces.
     Sun's lightweight component approach could enable the Java Platform to become more of a driving force in the evolution of user-interface.
     Rather than just trying to catch up with the user interfaces available on native platforms, Sun can develop user interface of the Java Platform.
     With lightweight components, they need not be restrained by lowest-common-denominator choices between native user interfaces.
+    <span class="note">随着Java UI的发展，开发者创建platform-independent user interfaces会越来越容易。</span>
 </p>
-<p>It's not clear to what extent users will accept a Java Platform look and feel over a native one, but user interface does seem to be evolving towards more heterogeneity. Back in the eighties, the Apple Macintosh established a principle that stated all Macintosh applications should adhere to certain user-interface guidelines. The theory was that software would be easier to use if all a user's applications were homogeneous: if they all used familiar metaphors and exhibited the same look and feel. Today, however, when a Macintosh user browses the World Wide Web, they don't expect every web page to look like a Macintosh page. When they go to the IBM site, they expect it to look like IBM. When they go to the Disney site, they expect it to look like Disney. This is similar to the real world in that when you go to New York, you expect it to look and feel like New York. When you go to Paris, you expect it to look and feel like Paris. You don't expect all cities to have the same look and feel. As users are exposed to the web, they are becoming accustomed to working with more heterogeneous user interfaces than they might have encountered on an isolated personal computer.</p>
-<p>As Java user-interface libraries evolve, the lowest-common-denominator problem inherent in platform-independent user interfaces may gradually become less painful. It remains to be seen, however, the extent to which users will accept interfaces that do not look and feel 100% native. For links to the latest information about the evolution of user interface technologies for Java, visit the resources page for this chapter.</p>
+<p>
+    It's not clear to what extent users will accept a Java Platform look and feel over a native one,
+    but user interface does seem to be evolving towards more heterogeneity.
+    Back in the eighties, the Apple Macintosh established a principle that stated all Macintosh applications should adhere to certain user-interface guidelines.
+    The theory was that software would be easier to use if all a user's applications were homogeneous:
+    if they all used familiar metaphors and exhibited the same look and feel.
+    Today, however, when a Macintosh user browses the World Wide Web, they don't expect every web page to look like a Macintosh page.
+    When they go to the IBM site, they expect it to look like IBM.
+    When they go to the Disney site, they expect it to look like Disney.
+    This is similar to the real world in that when you go to New York, you expect it to look and feel like New York.
+    When you go to Paris, you expect it to look and feel like Paris.
+    You don't expect all cities to have the same look and feel.
+    As users are exposed to the web, they are becoming accustomed to working with more heterogeneous user interfaces than they might have encountered on an isolated personal computer.
+    <span class="note">关于未来，用户对于Java UI的接受程度，还是一个未知之数。</span>
+</p>
+<p>
+    As Java user-interface libraries evolve, the lowest-common-denominator problem inherent in platform-independent user interfaces may gradually become less painful.
+    It remains to be seen, however, the extent to which users will accept interfaces that do not look and feel 100% native.
+    For links to the latest information about the evolution of user interface technologies for Java, visit the resources page for this chapter.
+    <span class="note">让时间来鉴证吧：用户是不是会接受Java UI。</span>
+</p>
+
+
+
+<h2 id="conclusion">Conclusion</h2>
+<p>
+    So what is the main point of Java's architecture?
+    As shown in this chapter, the Java programming language is a very general-purpose tool that has distinct advantages over other technologies.
+    In particular Java can yield better programmer productivity and improved program robustness with, for the most part, acceptable performance compared to older programming technologies such as C and C++.
+    Yet the main focus of the design of Java's architecture was not just to make programmers more productive and programs more robust,
+    but to provide a tool for the emerging network-centric computing environment.
+    Java's architecture paves the way for new network-oriented software architectures that take full advantage of Java's support for network-mobility of code and objects.
+    <span class="note">Java's architecture paves the way for new network-oriented software architectures</span>
+</p>
 
 
 
 <h2 id="resources_page">The Resources Page</h2>
-<p>For links to more information about the material presented in this chapter, visit the resources page at <code>http://www.artima.com/insidejvm/intro.html</code>.</p>
+<p>
+    For links to more information about the material presented in this chapter, visit the resources page at <a href="http://www.artima.com/insidejvm/resources" target="_blank">http://www.artima.com/insidejvm/resources</a>.
+</p>
 
 <hr>
 </div>
