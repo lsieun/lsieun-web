@@ -80,9 +80,11 @@ public class HttpConnection extends Connection {
 
             }
 
-            if (current_response.status_line.contains("404")) {
-                BlackListUtils.add(host);
-            }
+//            if (current_response.status_line.contains("404")) {
+//                BlackListUtils.add(host);
+//            }
+
+            current_request = null;
         }
     }
 
@@ -97,6 +99,7 @@ public class HttpConnection extends Connection {
         } else {
             byte[] bytes = current_response.toBytes();
             current_out_data = ByteBuffer.wrap(bytes);
+            current_response = null;
         }
 
         return current_out_data;

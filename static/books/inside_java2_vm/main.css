@@ -205,6 +205,7 @@ ol ol, ol ul, ul ol, ul ul {
 }
 
 .note {
+    font-family: "courier new", sans-serif;
     color: blueviolet;
 }
 
