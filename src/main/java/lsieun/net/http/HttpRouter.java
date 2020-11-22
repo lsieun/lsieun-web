@@ -64,6 +64,8 @@ public class HttpRouter {
                         "/code/".equals(uri_path) || "/code".equals(uri_path) ||
                         "/front/".equals(uri_path) || "/front".equals(uri_path) ||
                         "/os/".equals(uri_path) || "/os".equals(uri_path) ||
+                        "/tools/".equals(uri_path) || "/tools".equals(uri_path) ||
+                        "/books/".equals(uri_path) || "/books".equals(uri_path) ||
                         "/about/".equals(uri_path) || "/about".equals(uri_path)
         ) {
             return page_list_handler.getResource(uri_path, header);
@@ -93,6 +95,9 @@ public class HttpRouter {
             return html_handler.getResource(uri_path, header);
         }
         else if (uri_path.startsWith("/books/")) {
+            return html_handler.getResource(uri_path, header);
+        }
+        else if (uri_path.startsWith("/robots.txt")) {
             return html_handler.getResource(uri_path, header);
         }
         else if (uri_path.startsWith("/json/")) {

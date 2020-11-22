@@ -1,0 +1,48 @@
+User-agent: Baiduspider
+Disallow: /about
+
+User-agent: Googlebot
+Disallow: /about
+
+User-agent: MSNBot
+Disallow: /about
+
+User-agent: Baiduspider-image
+Disallow: /about
+
+User-agent: YoudaoBot
+Disallow: /about
+
+User-agent: Sogou web spider
+Disallow: /about
+
+User-agent: Sogou inst spider
+Disallow: /about
+
+User-agent: Sogou spider2
+Disallow: /about
+
+User-agent: Sogou blog
+Disallow: /about
+
+User-agent: Sogou News Spider
+Disallow: /about
+
+User-agent: Sogou Orion spider
+Disallow: /about
+
+User-agent: ChinasoSpider
+Disallow: /about
+
+User-agent: Sosospider
+Disallow: /about
+
+
+User-agent: yisouspider
+Disallow: /about
+
+User-agent: EasouSpider
+Disallow: /about
+
+User-agent: *
+Disallow: /about

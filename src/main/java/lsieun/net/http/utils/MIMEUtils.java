@@ -8,6 +8,7 @@ public class MIMEUtils {
 
     static {
         mime_map.put(".html", "text/html");
+        mime_map.put(".txt", "text/plain");
         mime_map.put(".css", "text/css");
         mime_map.put(".js", "application/javascript");
         mime_map.put(".ico", "image/x-icon");

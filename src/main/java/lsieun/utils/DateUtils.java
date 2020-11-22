@@ -4,13 +4,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 public class DateUtils {
     private static final DateFormat df = new SimpleDateFormat("yyyy_MM_dd.HH_mm_ss");
     public static final DateFormat HUMAN_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    private static final DateFormat GMT_FORMAT = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss zzz");
+    private static final DateFormat GMT_FORMAT = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
 
     static {
         GMT_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));

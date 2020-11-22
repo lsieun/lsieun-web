@@ -40,7 +40,7 @@ public class HttpPipeline {
             HttpHeader header = new HttpHeader();
             HttpResource resource = HttpRouter.getResource(uri_path, header);
 
-            String connection = header.getConnection();
+            String connection = request.header.getConnection();
             header.add("Connection", connection != null ? connection : "close");
 
             byte[] content_bytes = resource.content;
