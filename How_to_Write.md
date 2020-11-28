@@ -112,7 +112,7 @@ In the same vein<sub class="my_note" style="color:green">以同样的方式</sub
 <sub class="my_note" style="color:blue">笔记：</sub>
 <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 
-<div title="Bar.java" class="javacode">
+<div title="HelloWorld.java" class="javacode">
 
 </div>
 
@@ -176,6 +176,26 @@ Code
 </tr>
 </tbody>
 </table>
+```
+
+添加注意事项的例子：
+
+```html
+<table class="lamp">
+    <tbody>
+    <tr>
+    <th style="width:34px">
+        <img src="/images/lamp.jpg" alt="Note" style="height:32px;width:32px">
+    </th>
+    <td>
+        <b>Note:</b> For W3C compliant CSS: If you define the <code>color</code> property, you must also define the <code>background-color</code>
+        property.
+    </td>
+
+    </tr>
+    </tbody>
+</table>
+<hr>
 ```
 
 ## Reference

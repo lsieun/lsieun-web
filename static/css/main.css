@@ -2,13 +2,28 @@
     text-indent:2em;
 }
 
+.lamp {
+    border: 1px solid #dddddd;
+    margin: 16px 0;
+}
+
 .literal {
     font-family: monospace;
 }
 
+.text-underline {
+    text-decoration-line: underline;
+    text-decoration-style: wavy;
+}
+
 .w3-tangerine {
     font-size:36px;
-    font-family: "Tangerine", serif;
+    font-family: "Tangerine", "Comic Sans MS", serif;
+}
+
+.vocabulary {
+    font-weight: bold;
+    font-family: "Comic Sans MS", serif;
 }
 
 .external {

@@ -66,6 +66,7 @@ public class HttpRouter {
                         "/os/".equals(uri_path) || "/os".equals(uri_path) ||
                         "/tools/".equals(uri_path) || "/tools".equals(uri_path) ||
                         "/books/".equals(uri_path) || "/books".equals(uri_path) ||
+                        "/english/".equals(uri_path) || "/english".equals(uri_path) ||
                         "/about/".equals(uri_path) || "/about".equals(uri_path)
         ) {
             return page_list_handler.getResource(uri_path, header);

@@ -236,6 +236,22 @@ ol ol, ol ul, ul ol, ul ul {
     margin: 0.67em 0;
 }
 
+.text-center {
+    text-align: center;
+}
+
+.text-emphasize {
+    font-weight: bold;
+    text-decoration-line: underline;
+    text-decoration-color: red;
+    text-decoration-style: solid;
+}
+
+.text-underline {
+    text-decoration-line: underline;
+    text-decoration-style: double;
+}
+
 .u-pull-right {
     float: right;
 }

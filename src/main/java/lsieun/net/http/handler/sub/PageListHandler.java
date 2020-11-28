@@ -52,6 +52,9 @@ public class PageListHandler extends FileHandler {
         else if ("/books/".equals(uri_path) || "/books".equals(uri_path)) {
             resource = getPageList("Tools", "books_list.txt");
         }
+        else if ("/english/".equals(uri_path) || "/english".equals(uri_path)) {
+            resource = getPageList("English", "english_list.txt");
+        }
         else if ("/about/".equals(uri_path) || "/about".equals(uri_path)) {
             resource = super.getResource("/about.html", header);
         }
@@ -111,6 +114,9 @@ public class PageListHandler extends FileHandler {
             }
             else if ("books_list.txt".equals(filename)) {
                 base_url = "/json/books/list/";
+            }
+            else if ("english_list.txt".equals(filename)) {
+                base_url = "/json/english/list/";
             }
             else {
                 base_url = "/json/home/list/";

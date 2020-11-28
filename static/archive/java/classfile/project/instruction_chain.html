@@ -1,0 +1,89 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">InstructionChain</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_classfile_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Instruction.java</h2>
+
+<p class="indented">
+    A Java Virtual Machine <b>instruction</b> consists of a one-byte <b>opcode</b> specifying the operation to be performed, followed by zero or more <b>operands</b> supplying arguments or data that are used by the operation. Many instructions have no operands and consist only of an opcode.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        instruction = opcode + operands.
+    </p>
+</div>
+
+<p class="indented">
+    在项目代码中，<code>Instruction</code>类是所有opcode类（例如，<code>ASTORE</code>、<code>IADD</code>等）的父类。<code>Instruction</code>类的定义如下：
+</p>
+
+<div title="Instruction.java" class="javacode">
+public abstract class Instruction {
+    // basic
+    public int opcode = -1; // Opcode number
+    public int length = 1;  // Length of opcode in bytes
+
+    // auxiliary
+    public Instruction pre;
+    public Instruction next;
+    public int pos;
+
+    public Instruction(final int opcode, final int length) {
+        this.opcode = opcode;
+        this.length = length;
+    }
+
+}
+</div>
+
+<h2>InstructionChain.java</h2>
+
+<p>
+    <code>InstructionChain</code>是一个链表结构，其目的是将代码当中包含的所有<code>Instruction</code>串联起来。
+</p>
+
+<div title="InstructionChain.java" class="javacode">
+public class InstructionChain {
+    public int count;
+    public Instruction start;
+    public Instruction end;
+
+    public boolean isEmpty() {
+        return start == null;
+    }
+
+    public void append(Instruction ins) {
+        if (isEmpty()) {
+            start = end = ins;
+            ins.pre = null;
+            ins.next = null;
+        }
+        else {
+            end.next = ins;
+            ins.pre = end;
+            ins.next = null;
+            end = ins;
+        }
+        count++;
+    }
+
+}
+</div>
+
+<h2>parse InstructionChain</h2>
+
+<p>
+    为了将代码的内容转换成<code>InstructionChain</code>，可以借助于<code>OpcodeReadVisitor</code>来完成：
+</p>
+
+<div title="将代码内容转换成InstructionChain" class="javacode">
+byte[] code_bytes = code_attr.code;                        // 第一步，获取代码的内容
+OpcodeReadVisitor rv = new OpcodeReadVisitor(code_bytes);  // 第二步，创建OpcodeReadVisitor对象
+InstructionChain chain = rv.getInstructionChain();         // 第三步，调用getInstructionChain()方法
+</div>
