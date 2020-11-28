@@ -1,0 +1,379 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">CSS Text</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/css/css_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div style="width:100%;border:1px solid gray;padding:8px;">
+    <p style="text-align:center;text-transform:uppercase;color:#4CAF50;">text formatting</p>
+    <p style="text-indent:50px;text-align:justify;letter-spacing:3px;">
+        This text is styled with some of the text formatting properties.
+        The heading uses the text-align, text-transform, and color properties.
+        The paragraph is indented, aligned, and the space between characters is specified.
+        The underline is removed from this colored
+        <a style="text-decoration:none;color:#008CBA;" href="javascript:void(0)">"Try it yourself"</a> link.
+    </p>
+</div>
+<hr>
+
+<h2>Text Color</h2>
+<p>The <code>color</code> property is used to set the color of the text.</p>
+<p>With CSS, a color is most often specified by:</p>
+<ul>
+    <li>a color name - like "red"</li>
+    <li>a HEX value - like "#ff0000"</li>
+    <li>an RGB value - like "rgb(255,0,0)"</li>
+</ul>
+<p>The default text color for a page is defined in the body selector.</p>
+<div class="w3-example">
+    <p>Example</p>
+    <div class="w3-code notranslate cssHigh">
+        <span class="highELE">body </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">color:</span><span class="highVAL"> blue;</span><br>}<br>
+        <br><span class="highELE">h1 </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">color:</span><span class="highVAL"> green;</span><br>}
+    </div>
+</div>
+<table class="lamp">
+    <tbody>
+    <tr>
+    <th style="width:34px">
+        <img src="/images/lamp.jpg" alt="Note" style="height:32px;width:32px">
+    </th>
+    <td>
+        <b>Note:</b> For W3C compliant CSS: If you define the <code>color</code> property, you must also define the <code>background-color</code>
+        property.
+    </td>
+
+    </tr>
+    </tbody>
+</table>
+<hr>
+
+<h2>Text Alignment</h2>
+<p>The <code>text-align</code> property is used to set the horizontal alignment of a text.</p>
+<p>A text can be left or right aligned, centered, or justified.</p>
+<p>
+    The following example shows center aligned, and left and right aligned text
+    (left alignment is default if text direction is left-to-right, and right
+    alignment is default if text direction is right-to-left):
+</p>
+<div class="w3-example">
+    <p>Example</p>
+    <div class="w3-code notranslate cssHigh">
+        <span class="highELE">h1 </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">text-align:</span><span class="highVAL"> center;</span><br>}<br><br><span class="highELE">h2 </span>{<br>&nbsp;&nbsp;&nbsp;
+        <span class="highATT">text-align:</span><span class="highVAL"> left;</span><br>}<br><br><span class="highELE">h3 </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">text-align:</span><span class="highVAL"> right;</span><br>
+        }</div>
+</div>
+
+<p>
+    When the <code>text-align</code> property is set to "justify", each line is
+    stretched so that every line has equal width, and the left and right margins are
+    straight (like in magazines and newspapers):
+</p>
+<div class="w3-example">
+    <p>Example</p>
+    <div class="w3-code notranslate cssHigh">
+        <span class="highELE">div </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">text-align:</span><span class="highVAL"> justify;</span><br>}
+    </div>
+</div>
+
+<div class="w3-example">
+    <p>Show Time</p>
+    <div class="w3-code">
+        <p>normal text</p>
+        <p style="text-align: center;">text-align: center;</p>
+        <p style="text-align: left;">text-align: left;</p>
+        <p style="text-align: right;">text-align: right;</p>
+        <p style="text-align: justify;">text-align: justify;</p>
+    </div>
+</div>
+<hr>
+
+<h2>Text Decoration</h2>
+<p>The <code>text-decoration</code> property is used to set or remove decorations from text.</p>
+<p>The value <code>text-decoration: none;</code> is often used to remove underlines from links:</p>
+<div class="w3-example">
+    <p>Example</p>
+    <div class="w3-code notranslate cssHigh">
+        <span class="highELE">a </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">text-decoration:</span><span class="highVAL"> none;</span><br>}
+    </div>
+</div>
+<p>The other <code>text-decoration</code> values are used to decorate text:</p>
+<div class="w3-example">
+    <p>Example</p>
+    <div class="w3-code notranslate cssHigh">
+        <span class="highELE">h1 </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">text-decoration:</span><span class="highVAL"> overline;</span><br>}<br>
+        <br><span class="highELE">h2 </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">text-decoration:</span><span class="highVAL"> line-through;</span><br>}<br>
+        <br><span class="highELE">h3 </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">text-decoration:</span><span class="highVAL"> underline;</span><br>}
+    </div>
+</div>
+<table class="lamp">
+    <tbody>
+    <tr>
+    <th style="width:34px">
+        <img src="/images/lamp.jpg" alt="Note" style="height:32px;width:32px">
+    </th>
+    <td>
+        <b>Note:</b> It is not recommended to underline text that is not a link, as this often confuses the reader.
+    </td>
+    </tr>
+    </tbody>
+</table>
+<div class="w3-example">
+    <p>Show Time</p>
+    <div class="w3-code">
+        <p>normal text</p>
+        <p style="text-decoration: overline;">text-decoration: overline;</p>
+        <p style="text-decoration: line-through;">text-decoration: line-through;</p>
+        <p style="text-decoration: underline;">text-decoration: underline;</p>
+    </div>
+</div>
+<hr>
+
+<p>The <code class="w3-codespan">text-decoration</code> property specifies the decoration added to text,
+    and is a shorthand property for:
+</p>
+<ul>
+    <li>text-decoration-line (required)</li>
+    <li>text-decoration-color</li>
+    <li>text-decoration-style</li>
+</ul>
+<div class="w3-code w3-border notranslate">
+    <div>
+    text-decoration: <em>text-decoration-line</em> <em>text-decoration-color</em>
+    <em>text-decoration-style</em>|initial|inherit;
+    </div>
+</div>
+<hr>
+
+<h3>text-decoration-line</h3>
+<div class="w3-example">
+    <p>Set different types of text-decoration lines:</p>
+    <div class="w3-code notranslate cssHigh"><span class="cssselectorcolor" style="color:brown">
+  div.a
+<span class="cssdelimitercolor" style="color:black">{</span><span class="csspropertycolor" style="color:red"><br>&nbsp;&nbsp;text-decoration-line<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> overline<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+</span><span class="cssdelimitercolor" style="color:black">}</span><br><br>div.b
+<span class="cssdelimitercolor" style="color:black">{</span><span class="csspropertycolor" style="color:red"><br>&nbsp;&nbsp;text-decoration-line<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> underline<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+</span><span class="cssdelimitercolor" style="color:black">}</span><br><br>div.c
+<span class="cssdelimitercolor" style="color:black">{</span><span class="csspropertycolor" style="color:red"><br>&nbsp;
+text-decoration-line<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> line-through<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+</span><span class="cssdelimitercolor" style="color:black">}</span><br><br>div.d
+<span class="cssdelimitercolor" style="color:black">{</span><span class="csspropertycolor" style="color:red"><br>&nbsp;&nbsp;text-decoration-line<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> overline underline<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+</span><span class="cssdelimitercolor" style="color:black">}</span>
+ </span></div>
+</div>
+<div class="w3-example">
+    <p>Show Time</p>
+    <div class="w3-code">
+        <p>normal text</p>
+        <p style="text-decoration-line: overline;">text-decoration-line: overline;</p>
+        <p style="text-decoration-line: underline;">text-decoration-line: underline;</p>
+        <p style="text-decoration-line: line-through;">text-decoration-line: line-through;</p>
+        <p style="text-decoration-line: overline underline;">text-decoration-line: overline underline;</p>
+    </div>
+</div>
+<hr>
+
+<h3>text-decoration-color</h3>
+<div class="w3-example">
+    <p>Set the color of the text-decoration to red:</p>
+    <div class="w3-code notranslate cssHigh"><span class="cssselectorcolor" style="color:brown">
+p
+<span class="cssdelimitercolor" style="color:black">{</span><span class="csspropertycolor" style="color:red"><br>
+  &nbsp;
+text-decoration<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> underline<span class="cssdelimitercolor" style="color:black">;</span></span><br>&nbsp;
+text-decoration-color<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> red<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+</span><span class="cssdelimitercolor" style="color:black">}</span>
+ </span></div>
+</div>
+<div class="w3-example">
+    <p>Show Time</p>
+    <div class="w3-code">
+        <p>normal text</p>
+        <p style="text-decoration-line: underline;">text-decoration-line: underline;</p>
+        <p style="text-decoration-line: underline;text-decoration-color: red;">text-decoration-line: underline;text-decoration-color: red;</p>
+    </div>
+</div>
+<hr>
+
+<h3>text-decoration-style</h3>
+<div class="w3-example">
+    <p>Set different types of text-decoration styles:</p>
+    <div class="w3-code notranslate cssHigh"><span class="cssselectorcolor" style="color:brown">
+  div.a
+<span class="cssdelimitercolor" style="color:black">{</span><span class="csspropertycolor" style="color:red"><br>&nbsp;
+text-decoration-line<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> underline<span class="cssdelimitercolor" style="color:black">;</span></span><br>&nbsp;
+text-decoration-style<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> solid<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+</span><span class="cssdelimitercolor" style="color:black">}</span><br><br>div.b
+<span class="cssdelimitercolor" style="color:black">{</span><span class="csspropertycolor" style="color:red"><br>&nbsp;
+text-decoration-line<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> underline<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+  &nbsp;
+text-decoration-style<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> wavy<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+</span><span class="cssdelimitercolor" style="color:black">}</span><br><br>div.c
+<span class="cssdelimitercolor" style="color:black">{</span><span class="csspropertycolor" style="color:red"><br>&nbsp;
+text-decoration-line<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> underline<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+  &nbsp;
+text-decoration-style<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> double<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+</span><span class="cssdelimitercolor" style="color:black">}</span><br><br>div.d
+<span class="cssdelimitercolor" style="color:black">{</span><span class="csspropertycolor" style="color:red"><br>&nbsp;
+text-decoration-line<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> overline underline<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+  &nbsp;
+text-decoration-style<span class="csspropertyvaluecolor" style="color:mediumblue"><span class="cssdelimitercolor" style="color:black">:</span> wavy<span class="cssdelimitercolor" style="color:black">;</span></span><br>
+</span><span class="cssdelimitercolor" style="color:black">}</span>
+ </span></div>
+</div>
+<div class="w3-example">
+    <p>Show Time</p>
+    <div class="w3-code">
+        <p>normal text</p>
+        <p style="text-decoration-line: underline;">text-decoration-line: underline;</p>
+        <p style="text-decoration-line: underline;text-decoration-style: solid;">text-decoration-line: underline;text-decoration-style: solid;</p>
+        <p style="text-decoration-line: underline;text-decoration-style: dotted;">text-decoration-line: underline;text-decoration-style: dotted;</p>
+        <p style="text-decoration-line: underline;text-decoration-style: dashed;">text-decoration-line: underline;text-decoration-style: dashed;</p>
+        <p style="text-decoration-line: underline;text-decoration-style: wavy;">text-decoration-line: underline;text-decoration-style: wavy;</p>
+        <p style="text-decoration-line: underline;text-decoration-style: double;">text-decoration-line: underline;text-decoration-style: double;</p>
+        <p style="text-decoration-line: overline underline;text-decoration-style: wavy;">text-decoration-line: overline underline;text-decoration-style: wavy;</p>
+    </div>
+</div>
+<hr>
+
+<h2>Text Transformation</h2>
+<p>The <code>text-transform</code> property is used to specify uppercase and lowercase letters in a text.</p>
+<p>
+    It can be used to turn everything into uppercase or lowercase letters, or
+    capitalize the first letter of each word:
+</p>
+<div class="w3-example">
+    <p>Example</p>
+    <div class="w3-code notranslate cssHigh">
+        <span class="highELE">p.uppercase </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">text-transform:</span><span class="highVAL"> uppercase;</span><br>}<br>
+        <br><span class="highELE">p.lowercase </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">text-transform:</span><span class="highVAL"> lowercase;</span><br>}<br>
+        <br><span class="highELE">p.capitalize </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">text-transform:</span><span class="highVAL"> capitalize;</span><br>}
+    </div>
+</div>
+<hr>
+
+<h2>Text Indentation</h2>
+<p>The <code>text-indent</code> property is used to specify the indentation of the first line of a text:</p>
+<div class="w3-example">
+    <p>Example</p>
+    <div class="w3-code notranslate cssHigh">
+        <span class="highELE">p </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">text-indent:</span><span class="highVAL"> 50px;</span><br>}
+    </div>
+</div>
+<hr>
+
+<h2>Letter Spacing</h2>
+<p>The <code>letter-spacing</code> property is used to specify the space between the characters in a text.</p>
+<p>The following example demonstrates how to increase or decrease the space between characters:</p>
+<div class="w3-example">
+    <p>Example</p>
+    <div class="w3-code notranslate cssHigh">
+        <span class="highELE">h1 </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">letter-spacing:</span><span class="highVAL"> 3px;</span><br>}<br><br><span class="highELE">h2 </span>{<br>&nbsp;&nbsp;&nbsp;
+        <span class="highATT">letter-spacing:</span><span class="highVAL"> -3px;</span><br>}</div>
+</div>
+<hr>
+
+<h2>Line Height</h2>
+<p>The <code>line-height</code> property is used to specify the space between lines:</p>
+<div class="w3-example">
+    <p>Example</p>
+    <div class="w3-code notranslate cssHigh">
+        <span class="highELE">p.small </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">line-height:</span><span class="highVAL"> 0.8;</span><br>}<br><br><span class="highELE">p.big </span>{<br>&nbsp;&nbsp;&nbsp;
+        <span class="highATT">line-height:</span><span class="highVAL"> 1.8;</span><br>}</div>
+</div>
+<hr>
+
+<h2>Text Direction</h2>
+<p>The <code>direction</code> property is used to change the text direction of an element:</p>
+<div class="w3-example">
+    <p>Example</p>
+    <div class="w3-code notranslate cssHigh">
+        <span class="highELE">div </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">direction:</span><span class="highVAL"> rtl;</span><br>}</div>
+</div>
+<hr>
+
+<h2>Word Spacing</h2>
+<p>The <code>word-spacing</code> property is used to specify the space between
+    the words in a text.</p>
+<p>The following example demonstrates how to increase or decrease the space between
+    words:&nbsp;</p>
+<div class="w3-example">
+    <p>Example</p>
+    <div class="w3-code notranslate cssHigh">
+        <span class="highELE">h1 </span>{<br>&nbsp;&nbsp;&nbsp; <span class="highATT">word-spacing:</span><span class="highVAL"> 10px;</span><br>}<br><br><span class="highELE">h2 </span>{<br>&nbsp;&nbsp;&nbsp;
+        <span class="highATT">word-spacing:</span><span class="highVAL"> -5px;</span><br>}</div>
+</div>
+<hr>
+
+<h2>All CSS Text Properties</h2>
+<table class="w3-table-all notranslate">
+    <tbody><tr>
+        <th style="width:20%">Property</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><a href="https://www.quanzhanketang.com/cssref/pr_text_color.html">color</a></td>
+        <td>Sets the color of text</td>
+    </tr>
+    <tr>
+        <td><a href="https://www.quanzhanketang.com/cssref/pr_text_direction.html">direction</a></td>
+        <td>Specifies the text direction/writing direction</td>
+    </tr>
+    <tr>
+        <td><a href="https://www.quanzhanketang.com/cssref/pr_text_letter-spacing.html">letter-spacing</a></td>
+        <td>Increases or decreases the space between characters in a text</td>
+    </tr>
+    <tr>
+        <td><a href="https://www.quanzhanketang.com/cssref/pr_dim_line-height.html">line-height</a></td>
+        <td>Sets the line height</td>
+    </tr>
+    <tr>
+        <td><a href="https://www.quanzhanketang.com/cssref/pr_text_text-align.html">text-align</a></td>
+        <td>Specifies the horizontal alignment of text</td>
+    </tr>
+    <tr>
+        <td><a href="https://www.quanzhanketang.com/cssref/pr_text_text-decoration.html">text-decoration</a></td>
+        <td>Specifies the decoration added to text</td>
+    </tr>
+    <tr>
+        <td><a href="https://www.quanzhanketang.com/cssref/pr_text_text-indent.html">text-indent</a></td>
+        <td>Specifies the indentation of the first line in a text-block</td>
+    </tr>
+    <tr>
+        <td><a href="https://www.quanzhanketang.com/cssref/css3_pr_text-shadow.html">text-shadow</a></td>
+        <td>Specifies the shadow effect added to text</td>
+    </tr>
+    <tr>
+        <td><a href="https://www.quanzhanketang.com/cssref/pr_text_text-transform.html">text-transform</a></td>
+        <td>Controls the capitalization of text</td>
+    </tr>
+    <tr>
+        <td><a href="https://www.quanzhanketang.com/cssref/pr_text_unicode-bidi.html">unicode-bidi</a></td>
+        <td>Used together with the <a href="https://www.quanzhanketang.com/cssref/pr_text_direction.html">direction</a>
+            property to set or return whether the text should be overridden to support
+            multiple languages in the same document</td>
+    </tr>
+    <tr>
+        <td><a href="https://www.quanzhanketang.com/cssref/pr_pos_vertical-align.html">vertical-align</a></td>
+        <td>Sets the vertical alignment of an element</td>
+    </tr>
+    <tr>
+        <td><a href="https://www.quanzhanketang.com/cssref/pr_text_white-space.html">white-space</a></td>
+        <td>Specifies how white-space inside an element is handled</td>
+    </tr>
+    <tr>
+        <td><a href="https://www.quanzhanketang.com/cssref/pr_text_word-spacing.html">word-spacing</a></td>
+        <td>Increases or decreases the space between words in a text</td>
+    </tr>
+    </tbody></table>
+<br>
+
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://www.quanzhanketang.com/css/css_text.html" target="_blank">CSS Text</a></li>
+</ul>
