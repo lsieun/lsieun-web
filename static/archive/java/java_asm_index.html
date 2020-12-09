@@ -6,6 +6,8 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+
+
 <h2>Intro</h2>
 
 <p class="indented">
@@ -34,12 +36,166 @@
 
 <h2>Main Content</h2>
 
+<p>
+    有三个基本操作：analyse、generate和transform，其中transform是最重要的操作。
+    transform的目标有ClassInfo、Field和Method，其中对于Method的变换是最重要的。
+</p>
+
+<p>
+    理论
+</p>
+
+<ul>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">Intro</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul>
+            <li>
+                <a href="/archive/java/asm/asm_intro.html">ASM Intro</a>
+            </li>
+            <li>
+                <a href="/archive/java/asm/asm_model.html">ASM Model</a>
+            </li>
+            <li>
+                <a href="/archive/java/asm/asm_architecture.html">ASM Architecture</a>
+            </li>
+            <li>
+                <a href="/archive/java/asm/asm_organization.html">ASM Organization</a>
+            </li>
+            <li>
+                <a href="/archive/java/asm/asm_maven.html">ASM Maven</a>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">Core API</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul>
+            <li><a href="/archive/java/asm/core/class_visitor.html">ClassVisitor</a></li>
+            <li><a href="/archive/java/asm/core/parse_classes.html">ClassReader: Parsing classes</a></li>
+            <li><a href="/archive/java/asm/core/generate_classes.html">ClassWriter: Generating classes</a></li>
+            <li><a href="/archive/java/asm/core/transform_classes.html">ClassReader and ClassWriter: Transforming classes</a></li>
+            <li><a href="/archive/java/asm/core/remove_class_members.html">Removing class members</a></li>
+            <li><a href="/archive/java/asm/core/attribute_remove.html">Removing Attribute</a></li>
+            <li><a href="/archive/java/asm/core/method_remove.html">Removing Method</a></li>
+            <li><a href="/archive/java/asm/core/field_remove.html">Removing Field</a></li>
+            <li><a href="/archive/java/asm/core/add_class_members.html">Adding class members</a></li>
+            <li><a href="/archive/java/asm/core/field_add.html">Adding Field</a></li>
+            <li><a href="/archive/java/asm/core/method_add.html">Adding Method</a></li>
+            <li><a href="/archive/java/asm/core/tools.html">Tools</a></li>
+            <li><a href="/archive/java/asm/core/util/trace_class_visitor.html">Tools: TraceClassVisitor</a></li>
+            <li><a href="/archive/java/asm/core/util/check_class_adapter.html">Tools: CheckClassAdapter</a></li>
+            <li><a href="/archive/java/asm/core/util/asmifier.html">Tools: ASMifier</a></li>
+            <li><a href="/archive/java/asm/core/method_visitor.html">MethodVisitor</a></li>
+            <li><a href="/archive/java/asm/core/generate_methods.html">Generating methods</a></li>
+            <li><a href="/archive/java/asm/core/transform_methods.html">Transforming methods</a></li>
+            <li><a href="/archive/java/asm/core/stateless_transformations.html">Stateless transformations</a></li>
+            <li><a href="/archive/java/asm/core/stateful_transformations.html">Stateful transformations</a></li>
+            <li><a href="/archive/java/asm/core/commons/analyzer_adapter.html">AnalyzerAdapter</a></li>
+            <li><a href="/archive/java/asm/core/commons/local_variables_sorter.html">LocalVariablesSorter</a></li>
+        </ul>
+    </li>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">Tree API Part</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul>
+            <li>
+                API
+                <ul>
+                    <li><a href="/archive/java/asm/tree/class_node.html">ClassNode</a></li>
+                    <li><a href="/archive/java/asm/tree/field_node.html">FieldNode</a></li>
+                    <li><a href="/archive/java/asm/tree/method_node.html">MethodNode</a></li>
+                </ul>
+            </li>
+            <li>
+                Examples
+                <ul>
+                    <li><a href="/archive/java/asm/tree/class_generate.html">ClassNode: Generating classes</a></li>
+                    <li><a href="/archive/java/asm/tree/field_add.html">Field: Adding Field</a></li>
+                    <li><a href="/archive/java/asm/tree/method_remove.html">Method: Removing Method</a></li>
+                </ul>
+            </li>
+
+
+        </ul>
+    </li>
+</ul>
+
+<p>
+    TODO:
+</p>
+
+<ul>
+    <li>
+        <input type="checkbox"/>
+        <code>ClassReader.accept(final ClassVisitor classVisitor, final int parsingOptions)</code>，对于<code>parsingOptions</code>的理解:
+        <code>SKIP_CODE</code>、<code>SKIP_DEBUG</code>、<code>SKIP_FRAMES</code>、<code>EXPAND_FRAMES</code>
+    </li>
+    <li>
+        <input type="checkbox"/>
+        <code>ClassWriter(final ClassReader classReader, final int flags)</code>，对于<code>flags</code>的理解: <code>COMPUTE_MAXS</code>、<code>COMPUTE_FRAMES</code>
+    </li>
+    <li>
+        <input type="checkbox"/>
+        ASM版本信息，哪一个版本是在哪一年发布的，它都支持哪些特性。我想把它放在最后面，因为首先是对它有一个基本的了解，然后再对它的版本发布感兴趣。
+    </li>
+</ul>
+
+<p>
+    知识的组织形式 和 知识的教学形式 是不一样的。
+</p>
+
+<ul>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">Core API</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul>
+            <li>
+                Field
+                <ul>
+                    <li><a href="/archive/java/asm/core/remove_class_members.html">Removing class members</a></li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<p>
+    应用
+</p>
+
+<ul>
+    <li>
+        方法
+        <ul>
+            <li>Intercepting parameter values passed between methods</li>
+            <li>calculation of execution time of methods</li>
+        </ul>
+    </li>
+</ul>
+
+<h2>More</h2>
+
+
+
+<ul>
+    <li>
+        <p>
+            <a class="external" href="https://en.wikipedia.org/wiki/FindBugs" target="_blank">FindBugs</a> uses BCEL to analyze Java bytecode for code idioms which indicate bugs.
+        </p>
+    </li>
+    <li>
+        Obfuscation
+    </li>
+</ul>
+
 
 <h2>Resources</h2>
 
 <ul>
     <li><a class="external" href="https://asm.ow2.io" target="_blank">ASM</a></li>
     <li><a class="external" href="https://asm.ow2.io/asm4-guide.pdf" target="_blank">ASM User Guild (PDF)</a></li>
+    <li><a class="external" href="https://asm.ow2.io/javadoc/overview-summary.html" target="_blank">ASM Javadoc</a></li>
     <li><a class="external" href="https://asm.ow2.io/developer-guide.html" target="_blank">ASM 6 Developer Guide</a></li>
     <li><a class="external" href="https://asm.ow2.io/faq.html" target="_blank">ASM Frequently Asked Questions</a></li>
     <li><a class="external" href="https://gitlab.ow2.org/asm/asm" target="_blank">GitLab: ASM Source Code</a></li>

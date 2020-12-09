@@ -1,0 +1,99 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASMifier</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    <span class="text-key-point"><code>ASMifier</code> class provides an alternative backend</span> for the <code>TraceClassVisitor</code> tool
+    (which by default uses a <code>Textifier</code> backend, producing the kind of output shown above).
+    <span class="text-key-point">This backend makes each method of the <code>TraceClassVisitor</code> class print the Java code that was used to call it.</span>
+    For instance calling the <code>visitEnd()</code> method prints <code>cv.visitEnd();</code>.
+    The result is that,
+    when a <code>TraceClassVisitor</code> visitor with an <code>ASMifier</code> backend visits a class,
+    it prints the source code to generate this class with ASM.
+    This is useful if you use this visitor to visit an already existing class.
+</p>
+
+<h2>Usage from Command Line</h2>
+
+<p class="indented">
+    For instance, if you don’t know how to generate some compiled class with ASM,
+    write the corresponding source code,
+    compile it with <code>javac</code>,
+    and visit the compiled class with the <code>ASMifier</code>.
+    You will get the ASM code to generate this compiled class!
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}
+</div>
+
+<div title="javac" class="plaintext">
+$ javac HelloWorld.java
+</div>
+
+<p>
+    The <code>ASMifier</code> class can be used from the command line. For example using:
+</p>
+
+<div title="Linux分隔符是“:”" class="plaintext">
+$ java -classpath asm.jar:asm-util.jar org.objectweb.asm.util.ASMifier java.lang.Runnable
+</div>
+
+<div title="Windows分隔符是“;”" class="plaintext">
+$gt; java -classpath asm.jar;asm-util.jar org.objectweb.asm.util.ASMifier java.lang.Runnable
+</div>
+
+<div title="Cygwin分隔符是“\;”" class="plaintext">
+$ java -classpath asm.jar\;asm-util.jar org.objectweb.asm.util.ASMifier java.lang.Runnable
+</div>
+
+<h2>Usage from Java Program</h2>
+
+<div title="ASMifierTest.java" class="javacode">
+import org.objectweb.asm.util.ASMifier;
+
+import java.io.IOException;
+
+public class ASMifierTest {
+    public static void main(String[] args) throws IOException {
+        String[] array = new String[] {
+                "sample.HelloWorld"
+        };
+        ASMifier.main(array);
+    }
+}
+</div>
+
+<div title="ASMifierTest.java" class="javacode">
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.util.ASMifier;
+import org.objectweb.asm.util.Printer;
+import org.objectweb.asm.util.Textifier;
+import org.objectweb.asm.util.TraceClassVisitor;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+public class ASMifierTest {
+    public static void main(String[] args) throws IOException {
+        // 下面的代码是来源于{@code org.objectweb.asm.util.Printer#main}
+        int parsingOptions = 0;
+        String className = "sample.HelloWorld";
+        // 可以使用 ASMifier 或 Textifier 来显示不同结果
+        Printer printer = new ASMifier();
+        TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, printer, new PrintWriter(System.out));
+        new ClassReader(className).accept(traceClassVisitor, parsingOptions);
+    }
+}
+</div>

@@ -84,7 +84,7 @@ How the Java virtual machine handles method invocation and return
 </div>
 
 <div class="w3-display-container w3-center">
-    <img class="w3-image w3-center" src="/images/java/classfile/aes_rotation.png" alt="Rotation"/>
+    <img class="w3-image w3-center" src="/images/java/agent/aes_rotation.png" alt=""/>
 </div>
 
 <div class="w3-display-container w3-center">
@@ -115,6 +115,8 @@ In the same vein<sub class="my_note" style="color:green">以同样的方式</sub
 <div title="HelloWorld.java" class="javacode">
 
 </div>
+
+&lt;init&gt;
 
 <div title="" hidden class="plaintext">
 

@@ -1,0 +1,128 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">TraceClassVisitor</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>tools: TraceClassVisitor</h2>
+
+<p class="indented">
+    In order to check that a generated or transformed class is conforming to what you expect,
+    the byte array returned by a <code>ClassWriter</code> is not really helpful
+    because it is unreadable by humans.
+    <span class="text-key-point">A textual representation would be much easier to use</span>.
+    This is what the <code>TraceClassVisitor</code> class provides.
+    This class, as its name implies, extends the <code>ClassVisitor</code> class,
+    and builds a textual representation of the visited class.
+    So, instead of using a <code>ClassWriter</code> to generate your classes,
+    you can use a <code>TraceClassVisitor</code>,
+    in order to get a readable trace of what is actually generated.
+    Or, even better, you can use both at the same time.
+    Indeed the <code>TraceClassVisitor</code> can,
+    in addition to its default behavior,
+    delegate all calls to its methods to another visitor,
+    for instance a <code>ClassWriter</code>:
+</p>
+
+<div title="" class="javacode">
+ClassWriter cw = new ClassWriter(0);
+TraceClassVisitor cv = new TraceClassVisitor(cw, printWriter);
+cv.visit(...);
+...
+cv.visitEnd();
+byte b[] = cw.toByteArray();
+</div>
+
+<p class="indented">
+    This code creates a <code>TraceClassVisitor</code> that delegates all the calls it receives to <code>cw</code>,
+    and that prints a textual representation of these calls to <code>printWriter</code>.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}
+</div>
+
+<div title="App.java" class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.utils.ReadUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.util.TraceClassVisitor;
+
+import java.io.PrintWriter;
+
+public class App {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = ReadUtils.readByPath(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        // cv forwards all events to cw
+        PrintWriter printWriter = new PrintWriter(System.out);
+        ClassVisitor cv = new TraceClassVisitor(cw, printWriter);
+        cv = new ChangeVersionClassAdapter(Opcodes.ASM9, cv);
+
+        //（4）两者进行结合
+        cr.accept(cv, 0);
+
+        //（5）重新生成Class
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</div>
+
+<div title="Run output" class="plaintext">
+// class version 51.0 (51)
+// access flags 0x21
+public class sample/HelloWorld {
+
+  // compiled from: HelloWorld.java
+
+  // access flags 0x1
+  public &lt;init&gt;()V
+   L0
+    LINENUMBER 3 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
+    RETURN
+   L1
+    LOCALVARIABLE this Lsample/HelloWorld; L0 L1 0
+    MAXSTACK = 1
+    MAXLOCALS = 1
+
+  // access flags 0x9
+  public static main([Ljava/lang/String;)V
+    // parameter  args
+   L0
+    LINENUMBER 5 L0
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Hello World"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+   L1
+    LINENUMBER 6 L1
+    RETURN
+   L2
+    LOCALVARIABLE args [Ljava/lang/String; L0 L2 0
+    MAXSTACK = 2
+    MAXLOCALS = 1
+}
+</div>
+

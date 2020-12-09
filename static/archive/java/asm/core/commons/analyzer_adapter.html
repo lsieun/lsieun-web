@@ -1,0 +1,62 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">AnalyzerAdapter</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div title="AnalyzerAdapter.java" class="javacode">
+package org.objectweb.asm.commons;
+
+public class AnalyzerAdapter extends MethodVisitor {
+    // ......
+}
+</div>
+
+<p class="indented">
+    This method adapter computes the <span class="text-example">stack map frames</span> before each instruction,
+    based on the frames visited in <code>visitFrame</code>.
+    Indeed, <code>visitFrame</code> is only called before some specific instructions in a method,
+    in order to save space, and because "the other frames can be easily and quickly
+    inferred from these ones". This is what this adapter does.
+</p>
+
+<div title="AddTimerMethodAdapter3.java" class="javacode">
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.commons.AnalyzerAdapter;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class AddTimerMethodAdapter3 extends AnalyzerAdapter {
+    private final String owner;
+
+    protected AddTimerMethodAdapter3(int api, String owner, int access, String name, String desc, MethodVisitor mv) {
+        super(api, owner, access, name, desc, mv);
+        this.owner = owner;
+    }
+
+    @Override
+    public void visitCode() {
+        super.visitCode();
+        super.visitFieldInsn(GETSTATIC, owner, "timer", "J");
+        super.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+        super.visitInsn(LSUB);
+        super.visitFieldInsn(PUTSTATIC, owner, "timer", "J");
+    }
+
+    @Override
+    public void visitInsn(int opcode) {
+        if ((opcode >= IRETURN && opcode <= RETURN) || opcode == ATHROW) {
+            super.visitFieldInsn(GETSTATIC, owner, "timer", "J");
+            super.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+            super.visitInsn(LADD);
+            super.visitFieldInsn(PUTSTATIC, owner, "timer", "J");
+        }
+        super.visitInsn(opcode);
+    }
+}
+</div>
+
+

@@ -98,6 +98,9 @@ public class HttpRouter {
         else if (uri_path.startsWith("/books/")) {
             return html_handler.getResource(uri_path, header);
         }
+        else if (uri_path.startsWith("/lab/")) {
+            return html_handler.getResource(uri_path, header);
+        }
         else if (uri_path.startsWith("/robots.txt")) {
             return html_handler.getResource(uri_path, header);
         }

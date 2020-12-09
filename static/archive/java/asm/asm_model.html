@@ -1,0 +1,124 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASM Model</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Two APIs</h2>
+
+<p class="indented">
+    <span class="text-key-point">The ASM library provides two APIs</span> for generating and transforming compiled classes:
+    <span class="text-key-point">the core API</span> provides an <span class="text-example">event based representation</span> of classes,
+    while <span class="text-key-point">the tree API</span> provides an <span class="text-example">object based representation</span>.
+</p>
+
+<p class="indented">
+    With the <span class="text-example">event based model</span> <span class="text-key-point">a class is represented with a sequence of events</span>,
+    each event representing an element of the class, such as its header, a field, a method declaration, an instruction, etc.
+    <span class="text-example">The event based API</span> defines <span class="text-key-point">the set of possible events and the order</span> in which they must occur,
+    and provides a <span class="text-emphasize">class parser</span> that generates one event per element that is parsed,
+    as well as a <span class="text-emphasize">class writer</span> that generates compiled classes from sequences of such events.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>梳理思路：</p>
+    <ol>
+        <li>
+            从model到API：model是一个“抽象”的概念，而API是一个“具体”的实现。
+            <ul>
+                <li>
+                    model: 模型 a simple description of a system, used for explaining how sth works or calculating what might happen, etc.
+                </li>
+                <li>
+                    API: An application programming interface (API) is a computing interface that defines interactions between multiple software intermediaries.
+                </li>
+            </ul>
+        </li>
+        <li>
+            从model的角度来说，a class = a sequence of events
+        </li>
+        <li>
+            从API的角度来说，它从三个方面来进行实现：
+            <ul>
+                <li>the set of possible events and the order</li>
+                <li>class parser，用于生成event</li>
+                <li>class writer，用于消耗event</li>
+            </ul>
+        </li>
+    </ol>
+</div>
+
+<p class="indented">
+    With the <span class="text-example">object based model</span> <span class="text-key-point">a class is represented with a tree of objects</span>,
+    each object representing a part of the class, such as the class itself, a field, a method, an instruction, etc.
+    and each object having references to the objects that represent its constituents.
+    <span class="text-example">The object based API</span> provides a way to convert <span class="text-key-point">a sequence of events</span> representing a class
+    to the <span class="text-key-point">object tree</span> representing the same class and, vice versa,
+    to convert an <span class="text-key-point">object tree</span> to <span class="text-key-point">the equivalent event sequence</span>.
+    In other words <span class="text-example">the object based API</span> is built on top of <span class="text-example">the event based API</span>.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>梳理思路：</p>
+    <ol>
+        <li>
+            从model的角度来说，a class = a tree of objects
+        </li>
+        <li>
+            从API的角度来说，它提供了两种转换方式：
+            <ul>
+                <li>a sequence of events --&gt; object tree</li>
+                <li>object tree --&gt; a sequence of events</li>
+            </ul>
+        </li>
+        <li>
+            the object based API is built on top of the event based API
+        </li>
+    </ol>
+</div>
+
+<h2>Why two APIs?</h2>
+
+<p>
+    <span class="text-key-point">ASM provides both APIs because there is no best API</span>.
+    Indeed each API has its own advantages and drawbacks:
+</p>
+
+<ul>
+    <li>
+        The <span class="text-example">event based API</span> is <span class="text-emphasize">faster</span> and
+        <span class="text-emphasize">requires less memory</span> than the <span class="text-example">object based API</span>,
+        since there is no need to create and store in memory a tree of objects representing the class.
+        <sub class="my_note" style="color:blue">笔记：event based API比object based API的优势是“执行更快、需要内存更少”</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        However implementing class transformations can be more difficult with the <span class="text-example">event based API</span>,
+        since only one element of the class is available at any given time (the element that corresponds to the current event),
+        while the whole class is available in memory with the <span class="text-example">object based API</span>.
+        <sub class="my_note" style="color:blue">笔记：event based API比object based API的劣势是“编写代码困难”</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ul>
+
+<table class="lamp">
+    <tbody>
+    <tr>
+        <th style="width:34px">
+            <img src="/images/lamp.jpg" alt="Note" style="height:32px;width:32px">
+        </th>
+        <td>
+            <b>Note:</b>
+            Note that <span class="text-key-point">the two APIs manage only one class at a time, and independently of the others</span>:
+            no information about the class hierarchy is maintained,
+            and if a class transformation affects other classes,
+            it is up to the user to modify these other classes.
+        </td>
+
+    </tr>
+    </tbody>
+</table>
+<hr>

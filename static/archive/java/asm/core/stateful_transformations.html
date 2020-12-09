@@ -1,0 +1,832 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Stateful transformations</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    The transformation seen in the previous section is local and does not depend
+    on the instructions that have been visited before the current one:
+    the code added at the beginning is always the same and is always added,
+    and likewise for the code inserted before each <code>RETURN</code> instruction.
+    Such transformations are called <span class="text-emphasize">stateless transformations</span>.
+    They are simple to implement but only the simplest transformations verify this property.
+</p>
+
+<p class="indented">
+    More complex transformations require <span class="text-example">memorizing some state about the instructions</span> that have been visited before the current one.
+    Consider for example a transformation that removes all occurrences of the <code>ICONST_0 IADD</code> sequence,
+    whose empty effect is to add <code>0</code>.
+    It is clear that when an <code>IADD</code> instruction is visited,
+    it must be removed only if the last visited instruction was an <code>ICONST_0</code>.
+    This requires storing state inside the method adapter.
+    For this reason such transformations are called <span class="text-emphasize">stateful transformations</span>.
+</p>
+
+<h2>Remove Add Zero</h2>
+
+<p class="indented">
+    Let’s look in more details at this example. When an <code>ICONST_0</code> is visited,
+    it must be removed only if the next instruction is an <code>IADD</code>.
+    <span class="text-key-point">The problem is that the next instruction is not yet known</span>.
+    The solution is to postpone this decision to the next instruction:
+    if it is an <code>IADD</code> then remove both instructions,
+    otherwise emit the <code>ICONST_0</code> and the current instruction.
+</p>
+
+<p class="indented">
+    In order to implement transformations that remove or replace some instruction sequence,
+    it is convenient to introduce a <code>MethodVisitor</code> subclass
+    whose <code>visit<i>Xxx</i>Insn()</code> methods call a common <code>visitInsn()</code> method:
+</p>
+
+<div title="PatternMethodAdapter.java" hidden class="javacode">
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+
+public abstract class PatternMethodAdapter extends MethodVisitor {
+    protected final static int SEEN_NOTHING = 0;
+    protected int state;
+
+    public PatternMethodAdapter(int api, MethodVisitor mv) {
+        super(api, mv);
+    }
+
+    @Override
+    public void visitInsn(int opcode) {
+        visitInsn();
+        super.visitInsn(opcode);
+    }
+
+    @Override
+    public void visitIntInsn(int opcode, int operand) {
+        visitInsn();
+        super.visitIntInsn(opcode, operand);
+    }
+
+    @Override
+    public void visitVarInsn(int opcode, int var) {
+        visitInsn();
+        super.visitVarInsn(opcode, var);
+    }
+
+    @Override
+    public void visitTypeInsn(int opcode, String type) {
+        visitInsn();
+        super.visitTypeInsn(opcode, type);
+    }
+
+    @Override
+    public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+        visitInsn();
+        super.visitFieldInsn(opcode, owner, name, descriptor);
+    }
+
+    @Override
+    public void visitMethodInsn(int opcode, String owner, String name, String descriptor) {
+        visitInsn();
+        super.visitMethodInsn(opcode, owner, name, descriptor);
+    }
+
+    @Override
+    public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
+        visitInsn();
+        super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+    }
+
+    @Override
+    public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle,
+                                       Object... bootstrapMethodArguments) {
+        visitInsn();
+        super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
+    }
+
+    @Override
+    public void visitJumpInsn(int opcode, Label label) {
+        visitInsn();
+        super.visitJumpInsn(opcode, label);
+    }
+
+    @Override
+    public void visitLdcInsn(Object value) {
+        visitInsn();
+        super.visitLdcInsn(value);
+    }
+
+    @Override
+    public void visitIincInsn(int var, int increment) {
+        visitInsn();
+        super.visitIincInsn(var, increment);
+    }
+
+    @Override
+    public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
+        visitInsn();
+        super.visitTableSwitchInsn(min, max, dflt, labels);
+    }
+
+    @Override
+    public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
+        visitInsn();
+        super.visitLookupSwitchInsn(dflt, keys, labels);
+    }
+
+    @Override
+    public void visitMultiANewArrayInsn(String descriptor, int numDimensions) {
+        visitInsn();
+        super.visitMultiANewArrayInsn(descriptor, numDimensions);
+    }
+
+    @Override
+    public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
+        visitInsn();
+        super.visitTryCatchBlock(start, end, handler, type);
+    }
+
+    @Override
+    public void visitLabel(Label label) {
+        visitInsn();
+        super.visitLabel(label);
+    }
+
+    @Override
+    public void visitFrame(int type, int numLocal, Object[] local, int numStack, Object[] stack) {
+        visitInsn();
+        super.visitFrame(type, numLocal, local, numStack, stack);
+    }
+
+    @Override
+    public void visitMaxs(int maxStack, int maxLocals) {
+        visitInsn();
+        super.visitMaxs(maxStack, maxLocals);
+    }
+
+    protected abstract void visitInsn();
+}
+</div>
+
+<p class="indented">
+    Then the above transformation can be implemented like this:
+</p>
+
+<div title="RemoveAddZeroMethodAdapter.java" class="javacode">
+import static org.objectweb.asm.Opcodes.IADD;
+import static org.objectweb.asm.Opcodes.ICONST_0;
+
+import org.objectweb.asm.MethodVisitor;
+
+public class RemoveAddZeroMethodAdapter extends PatternMethodAdapter {
+    private static final int SEEN_ICONST_0 = 1;
+
+    public RemoveAddZeroMethodAdapter(int api, MethodVisitor mv) {
+        super(api, mv);
+    }
+
+    @Override
+    public void visitInsn(int opcode) {
+        if (state == SEEN_ICONST_0) {
+            if (opcode == IADD) {
+                state = SEEN_NOTHING;
+                return;
+            }
+        }
+        visitInsn();
+        if (opcode == ICONST_0) {
+            state = SEEN_ICONST_0;
+            return;
+        }
+        mv.visitInsn(opcode);
+    }
+
+    @Override
+    protected void visitInsn() {
+        if (state == SEEN_ICONST_0) {
+            mv.visitInsn(ICONST_0);
+        }
+        state = SEEN_NOTHING;
+    }
+}
+</div>
+
+<p class="indented">
+    The <code>visitInsn(int)</code> method first tests <span class="text-example">if the sequence has been detected</span>.
+    In this case it reinitializes state and returns immediately,
+    which has the effect of removing the sequence.
+    <span class="text-example">In the other cases it calls the common <code>visitInsn</code> method</span>,
+    which emits an <code>ICONST_0</code> if this was the last visited instruction.
+    Then, <span class="text-example">if the current instruction is an <code>ICONST_0</code></span>,
+    it memorizes this fact and returns, in order to postpone the decision about this instruction.
+    <span class="text-example">In all other cases the current instruction is forwarded to the next visitor</span>.
+</p>
+
+<div title="RemoveAddZeroClassAdapter.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+public class RemoveAddZeroClassAdapter extends ClassVisitor {
+    public RemoveAddZeroClassAdapter(int api, ClassVisitor classVisitor) {
+        super(api, classVisitor);
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = cv.visitMethod(access, name, descriptor, signature, exceptions);
+        if (mv != null && !name.equals("&lt;init&gt;")) {
+            mv = new RemoveAddZeroMethodAdapter(api, mv);
+        }
+        return mv;
+    }
+}
+</div>
+
+<div title="sample.HelloWorld before" class="plaintext">
+  // access flags 0x1
+  public m()V
+    ALOAD 0
+    ALOAD 0
+    GETFIELD sample/HelloWorld.val : I
+    ICONST_0
+    IADD
+    PUTFIELD sample/HelloWorld.val : I
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    ALOAD 0
+    GETFIELD sample/HelloWorld.val : I
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+    RETURN
+    MAXSTACK = 3
+    MAXLOCALS = 1
+</div>
+
+<div title="App.java" hidden class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.utils.ReadUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class App {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] b1 = ReadUtils.readByPath(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(b1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(cr, 0);
+
+        //（3）串连ClassVisitor
+        // cv forwards all events to cw
+        ClassVisitor cv = new RemoveAddZeroClassAdapter(Opcodes.ASM9, cw);
+
+        //（4）两者进行结合
+        cr.accept(cv, 0);
+
+        //（5）重新生成Class
+        byte[] b2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, b2);
+    }
+}
+</div>
+
+<div title="sample.HelloWorld after" class="plaintext">
+  // access flags 0x1
+  public m()V
+    ALOAD 0
+    ALOAD 0
+    GETFIELD sample/HelloWorld.val : I
+    PUTFIELD sample/HelloWorld.val : I
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    ALOAD 0
+    GETFIELD sample/HelloWorld.val : I
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+    RETURN
+    MAXSTACK = 3
+    MAXLOCALS = 1
+</div>
+
+<h2>Labels and frames</h2>
+
+<p class="indented">
+    <span class="text-key-point">Labels and frames are visited just before their associated instruction.</span>
+    In other words they are visited at the same time as instructions, although they are not instructions themselves.
+</p>
+
+<div title="HelloWorld.java" hidden class="javacode">
+public class HelloWorld {
+    public void test(int i) {
+        byte a = 100;
+        System.out.println(i > 0 ? a + 10 : a + 0);
+    }
+}
+</div>
+
+<div title="Labels and frames are visited just before their associated instruction" hidden class="plaintext">
+  // access flags 0x1
+  public test(I)V
+    BIPUSH 100
+    ISTORE 2
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    ILOAD 1
+    IFLE L0
+    ILOAD 2
+    BIPUSH 10
+    IADD
+    GOTO L1
+   L0  // 这里是label
+   FRAME FULL [sample/HelloWorld I I] [java/io/PrintStream]    // 这里是frame
+    ILOAD 2
+    ICONST_0
+    IADD
+   L1  // 这里是label
+   FRAME FULL [sample/HelloWorld I I] [java/io/PrintStream I]  // 这里是frame
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+    RETURN
+    MAXSTACK = 3
+    MAXLOCALS = 3
+</div>
+
+<p class="indented">
+    This has an impact on transformations that detect instruction sequences,
+    but <span class="text-key-point">this impact is in fact an advantage</span>.
+    Indeed, <span class="text-example">what happens if one of the instructions we remove is the target of a jump instruction?</span>
+</p>
+
+<p class="indented">
+    <span class="text-example">If some instruction may jump to the <code>ICONST_0</code></span>,
+    this means that there is a label designating this instruction.
+    After the removal of the two instructions
+    this label will designate the instruction that follows the removed <code>IADD</code>, which is what we want.
+</p>
+
+<div title="HelloWorldDump.java" hidden class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+
+public class HelloWorldDump implements Opcodes {
+
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // 第一步，生成sample.HelloWorld的字节码内容
+        byte[] bytes = dump();
+
+        // 第二步，保存字节码内容到文件
+        FileUtils.writeBytes(filepath, bytes);
+        System.out.println("file://" + filepath);
+    }
+
+    public static byte[] dump () throws Exception {
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        cw.visit(V1_8, ACC_PUBLIC | ACC_SUPER, "sample/HelloWorld", null, "java/lang/Object", null);
+
+        {
+            MethodVisitor mv1 = cw.visitMethod(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
+            mv1.visitCode();
+            mv1.visitVarInsn(ALOAD, 0);
+            mv1.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false);
+            mv1.visitInsn(RETURN);
+            mv1.visitMaxs(1, 1);
+            mv1.visitEnd();
+        }
+        {
+            MethodVisitor mv2 = cw.visitMethod(ACC_PUBLIC, "test", "(I)V", null, null);
+            mv2.visitCode();
+            mv2.visitIntInsn(BIPUSH, 100);
+            mv2.visitVarInsn(ISTORE, 2);
+            mv2.visitVarInsn(ILOAD, 2);
+            mv2.visitVarInsn(ILOAD, 1);
+
+
+            Label else_label = new Label();
+            mv2.visitJumpInsn(IFLE, else_label);
+            mv2.visitIntInsn(BIPUSH, 10);
+            mv2.visitInsn(IADD);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitInsn(SWAP);
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+            mv2.visitInsn(RETURN);
+
+
+            mv2.visitLabel(else_label);
+            mv2.visitInsn(ICONST_0);
+            mv2.visitInsn(IADD);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitInsn(SWAP);
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+            mv2.visitInsn(RETURN);
+            mv2.visitMaxs(1, 1);
+            mv2.visitEnd();
+        }
+        cw.visitEnd();
+
+        return cw.toByteArray();
+    }
+}
+</div>
+
+<div title="If some instruction may jump to the ICONST_0" class="plaintext">
+  // access flags 0x1
+  public test(I)V
+    BIPUSH 100
+    ISTORE 2
+    ILOAD 2
+    ILOAD 1
+    IFLE L0
+    BIPUSH 10
+    IADD
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    SWAP
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+    RETURN
+   L0
+   FRAME FULL [sample/HelloWorld I I] [I]
+    ICONST_0
+    IADD
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    SWAP
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+    RETURN
+    MAXSTACK = 2
+    MAXLOCALS = 3
+</div>
+
+<div title="App.java" hidden class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.utils.ReadUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class App {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] b1 = ReadUtils.readByPath(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(b1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        // cv forwards all events to cw
+        ClassVisitor cv = new RemoveAddZeroClassAdapter(Opcodes.ASM9, cw);
+
+        //（4）两者进行结合
+        cr.accept(cv, 0);
+
+        //（5）重新生成Class
+        byte[] b2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, b2);
+    }
+}
+</div>
+
+<div title="After the removal of the two instructions" class="plaintext">
+  // access flags 0x1
+  public test(I)V
+    BIPUSH 100
+    ISTORE 2
+    ILOAD 2
+    ILOAD 1
+    IFLE L0
+    BIPUSH 10
+    IADD
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    SWAP
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+    RETURN
+   L0
+   FRAME FULL [sample/HelloWorld I I] [I]
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    SWAP
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+    RETURN
+    MAXSTACK = 2
+    MAXLOCALS = 3
+</div>
+
+<p class="indented">
+    <span class="text-example">But if some instruction may jump to the <code>IADD</code></span>,
+    we can not remove the instruction sequence
+    (we can not be sure that before this jump a <code>0</code> was pushed on the stack).
+    Hopefully, in this case, there must be a label between the <code>ICONST_0</code> and the <code>IADD</code>, which can easily be detected.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int i) {
+        int a = 100;
+        int b = a + (i > 0 ? 10 : 0);
+        System.out.println(b);
+    }
+}
+</div>
+
+<div title="But if some instruction may jump to the IADD" class="plaintext">
+  // access flags 0x1
+  public test(I)V
+    BIPUSH 100
+    ISTORE 2
+    ILOAD 2
+    ILOAD 1
+    IFLE L0
+    BIPUSH 10
+    GOTO L1
+   L0
+   FRAME FULL [sample/HelloWorld I I] [I]
+    ICONST_0
+   L1
+   FRAME FULL [sample/HelloWorld I I] [I I]
+    IADD
+    ISTORE 3
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    ILOAD 3
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+    RETURN
+    MAXSTACK = 2
+    MAXLOCALS = 4
+</div>
+
+<p class="indented">
+    The reasoning is the same for stack map frames:
+    <span class="text-key-point">if a stack map frame is visited between the two instructions, we can not remove them</span>.
+    Both cases can be handled by considering <span class="text-example">labels</span> and <span class="text-example">frames</span> as instructions in the pattern matching algorithm.
+    This can be done in <code>PatternMethodAdapter</code>
+    (note that <code>visitMaxs</code> also calls the common <code>visitInsn</code> method;
+    this is used to handle the case where the end of the method is a prefix of the sequence that must be detected):
+</p>
+
+<div title="PatternMethodAdapter.java" class="javacode">
+public abstract class PatternMethodAdapter extends MethodVisitor {
+    // ......
+
+    @Override
+    public void visitLabel(Label label) {
+        visitInsn();
+        super.visitLabel(label);
+    }
+
+    @Override
+    public void visitFrame(int type, int numLocal, Object[] local, int numStack, Object[] stack) {
+        visitInsn();
+        super.visitFrame(type, numLocal, local, numStack, stack);
+    }
+
+    @Override
+    public void visitMaxs(int maxStack, int maxLocals) {
+        visitInsn();
+        super.visitMaxs(maxStack, maxLocals);
+    }
+
+    protected abstract void visitInsn();
+}
+</div>
+
+<p class="indented">
+    A compiled method may contain information about <span class="text-example">source file line numbers</span>,
+    used for instance in exception stack traces.
+    This information is visited with the <code>visitLineNumber</code> method,
+    which is also called at the same time as instructions.
+    Here however the presence of line numbers in the middle of an instruction sequence
+    does not have any impact on the possibility to transform or remove it.
+    <span class="text-key-point">The solution is therefore to ignore them completely in the pattern matching algorithm.</span>
+</p>
+
+<h2>A more complex example</h2>
+
+<p class="indented">
+    The previous example can be easily generalized to more complex instruction sequences.
+    Consider for example a transformation that removes self field assignments,
+    generally due to typos, such as <code>f = f</code>;
+    or, in bytecode, <code>ALOAD 0 ALOAD 0 GETFIELD f PUTFIELD f</code>.
+    Before implementing this transformation,
+    it is preferable to design the state machine to recognize this sequence.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/state_machine_for_aload0_aload0_getfield_putfield.png" alt=""/>
+    <p>
+        State machine for <code>ALOAD 0 ALOAD 0 GETFIELD f PUTFIELD f</code>
+    </p>
+</div>
+
+<p class="indented">
+    Each transition is labeled with <span class="text-example">a condition</span> (the value of the current instruction)
+    and <span class="text-example">an action</span> (an instruction sequence that must be emitted, in bold).
+    For instance <span class="text-example">the transition from <code>S1</code> to <code>S0</code></span> happens
+    if the current instruction is not an <code>ALOAD 0</code>.
+    In this case the <code>ALOAD 0</code> that was visited to arrive at this state is emitted.
+    Note <span class="text-example">the transition from <code>S2</code> to itself</span>:
+    this happens when three or more consecutive <code>ALOAD 0</code> are found.
+    In this case we stay in the state where two <code>ALOAD 0</code> have been visited, and we emit the third one.
+    Once the state machine has been found, writing the corresponding method adapter is straightforward
+    (the 8 switch cases correspond to the 8 transitions in the diagram):
+</p>
+
+<div title="RemoveGetFieldPutFieldMethodAdapter.java" hidden class="javacode">
+import org.objectweb.asm.MethodVisitor;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class RemoveGetFieldPutFieldMethodAdapter extends PatternMethodAdapter {
+    private final static int SEEN_ALOAD_0 = 1;
+    private final static int SEEN_ALOAD_0_ALOAD_0 = 2;
+    private final static int SEEN_ALOAD_0_ALOAD_0_GETFIELD = 3;
+
+    private String fieldOwner;
+    private String fieldName;
+    private String fieldDesc;
+
+    public RemoveGetFieldPutFieldMethodAdapter(int api, MethodVisitor mv) {
+        super(api, mv);
+    }
+
+    @Override
+    public void visitVarInsn(int opcode, int var) {
+        switch (state) {
+            case SEEN_NOTHING:
+                if (opcode == ALOAD && var == 0) {
+                    state = SEEN_ALOAD_0;
+                    return;
+                }
+                break;
+            case SEEN_ALOAD_0:
+                if (opcode == ALOAD && var == 0) {
+                    state = SEEN_ALOAD_0_ALOAD_0;
+                    return;
+                }
+                break;
+            case SEEN_ALOAD_0_ALOAD_0:
+                if (opcode == ALOAD && var == 0) {
+                    mv.visitVarInsn(opcode, var);
+                    return;
+                }
+                break;
+        }
+        visitInsn();
+        mv.visitVarInsn(opcode, var);
+    }
+
+    @Override
+    public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+        switch (state) {
+            case SEEN_ALOAD_0_ALOAD_0:
+                if (opcode == GETFIELD) {
+                    state = SEEN_ALOAD_0_ALOAD_0_GETFIELD;
+                    fieldOwner = owner;
+                    fieldName = name;
+                    fieldDesc = descriptor;
+                    return;
+                }
+                break;
+            case SEEN_ALOAD_0_ALOAD_0_GETFIELD:
+                if (opcode == PUTFIELD && name.equals(fieldName)) {
+                    state = SEEN_NOTHING;
+                    return;
+                }
+                break;
+        }
+        visitInsn();
+        mv.visitFieldInsn(opcode, owner, name, descriptor);
+    }
+
+    @Override
+    protected void visitInsn() {
+        switch (state) {
+            case SEEN_ALOAD_0:
+                mv.visitVarInsn(ALOAD, 0);
+                break;
+            case SEEN_ALOAD_0_ALOAD_0:
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitVarInsn(ALOAD, 0);
+                break;
+            case SEEN_ALOAD_0_ALOAD_0_GETFIELD:
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitFieldInsn(GETFIELD, fieldOwner, fieldName, fieldDesc);
+                break;
+        }
+        state = SEEN_NOTHING;
+    }
+}
+</div>
+
+<div title="RemoveGetFieldPutFieldClassAdapter.java" hidden class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+public class RemoveGetFieldPutFieldClassAdapter extends ClassVisitor {
+    public RemoveGetFieldPutFieldClassAdapter(int api, ClassVisitor cv) {
+        super(api, cv);
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = cv.visitMethod(access, name, descriptor, signature, exceptions);
+        if (mv != null && !name.equals("&lt;init&gt;")) {
+            mv = new RemoveGetFieldPutFieldMethodAdapter(api, mv);
+        }
+        return mv;
+    }
+}
+</div>
+
+<div title="App.java" hidden class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.utils.ReadUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class App {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] b1 = ReadUtils.readByPath(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(b1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        // cv forwards all events to cw
+        int api = Opcodes.ASM9;
+        ClassVisitor cv = new RemoveGetFieldPutFieldClassAdapter(api, cw);
+        cv = new RemoveAddZeroClassAdapter(api, cv);
+
+        //（4）两者进行结合
+        cr.accept(cv, 0);
+
+        //（5）重新生成Class
+        byte[] b2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, b2);
+    }
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int val;
+    public void test() {
+        this.val = this.val + 0;
+        System.out.println(this.val);
+    }
+}
+</div>
+
+<div title="HelloWorld.class before" class="plaintext">
+  // access flags 0x1
+  public test()V
+    ALOAD 0
+    ALOAD 0
+    GETFIELD sample/HelloWorld.val : I
+    ICONST_0
+    IADD
+    PUTFIELD sample/HelloWorld.val : I
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    ALOAD 0
+    GETFIELD sample/HelloWorld.val : I
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+    RETURN
+    MAXSTACK = 3
+    MAXLOCALS = 1
+</div>
+
+<div title="HelloWorld.class after" class="plaintext">
+  // access flags 0x1
+  public test()V
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    ALOAD 0
+    GETFIELD sample/HelloWorld.val : I
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+    RETURN
+    MAXSTACK = 2
+    MAXLOCALS = 1
+</div>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>

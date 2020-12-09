@@ -1,0 +1,247 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">LocalVariablesSorter</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div title="LocalVariablesSorter.java" class="javacode">
+package org.objectweb.asm.commons;
+
+public class LocalVariablesSorter extends MethodVisitor {
+    // ......
+}
+</div>
+
+<p class="indented">
+    This method adapter <span class="text-example">renumbers the local variables</span>
+    used in a method in the order they appear in this method.
+</p>
+
+<p class="indented">
+    <span class="text-example">For instance</span> in a method with two parameters,
+    the first local variable read or written whose index is greater than or equal to 3 –
+    the first three local variables correspond to this and to the two method parameters,
+    and can therefore not be changed – is assigned index 3,
+    the second one is assigned index 4, and so on.
+</p>
+
+<p class="indented">
+    <span class="text-key-point">This adapter is useful to insert new local variables in a method.</span>
+    Without this adapter it would be necessary to add new local variables after all the existing ones,
+    but unfortunately their number is not known until the end of the method, in <code>visitMaxs</code>.
+</p>
+
+<p class="indented">
+    In order to show how this adapter can be used, let’s suppose that we want to
+    use <span class="text-example">a local variable</span> to implement <code>AddTimerAdapter</code>:
+</p>
+
+<div title="HelloWorld.java before" class="javacode">
+public class HelloWorld {
+    public void test(int a, int b) throws Exception {
+        int c = a + b;
+        int d = c / 10;
+        Thread.sleep(d);
+    }
+}
+</div>
+
+<div title="HelloWorld.java after" class="javacode">
+public class HelloWorld {
+    public static long timer;
+
+    public void test(int a, int b) throws Exception {
+        long t = System.currentTimeMillis(); // t 是 local variable
+        int c = a + b;
+        int d = c / 10;
+        Thread.sleep(d);
+        timer += System.currentTimeMillis() - t;
+    }
+}
+</div>
+
+<p class="indented">
+    This can be done easily by extending <code>LocalVariablesSorter</code>,
+    and by using the <code>newLocal</code> method defined in this class:
+</p>
+
+<div title="AddTimerMethodAdapter4.java" class="javacode">
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.LocalVariablesSorter;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class AddTimerMethodAdapter4 extends LocalVariablesSorter {
+    private final String owner;
+    private int time;
+
+    protected AddTimerMethodAdapter4(int api, String owner, int access, String desc, MethodVisitor mv) {
+        super(api, access, desc, mv);
+        this.owner = owner;
+    }
+
+    @Override
+    public void visitCode() {
+        super.visitCode();
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+        time = newLocal(Type.LONG_TYPE);
+        mv.visitVarInsn(LSTORE, time);
+    }
+
+    @Override
+    public void visitInsn(int opcode) {
+        if ((opcode >= IRETURN && opcode <= RETURN) || opcode == ATHROW) {
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+            mv.visitVarInsn(LLOAD, time);
+            mv.visitInsn(LSUB);
+            mv.visitFieldInsn(GETSTATIC, owner, "timer", "J");
+            mv.visitInsn(LADD);
+            mv.visitFieldInsn(PUTSTATIC, owner, "timer", "J");
+        }
+        super.visitInsn(opcode);
+    }
+
+    @Override
+    public void visitMaxs(int maxStack, int maxLocals) {
+        super.visitMaxs(maxStack + 4, maxLocals);
+    }
+}
+</div>
+
+<div title="AddTimerClassAdapter4.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class AddTimerClassAdapter4  extends ClassVisitor {
+    private String owner;
+    private boolean isInterface;
+
+    public AddTimerClassAdapter4(int api, ClassVisitor classVisitor) {
+        super(api, classVisitor);
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        cv.visit(version, access, name, signature, superName, interfaces);
+        owner = name;
+        isInterface = (access & ACC_INTERFACE) != 0;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = cv.visitMethod(access, name, descriptor, signature, exceptions);
+        if (!isInterface && mv != null && !name.equals("&lt;init&gt;")) {
+            mv = new AddTimerMethodAdapter4(api, owner, access, descriptor, mv);
+        }
+        return mv;
+    }
+
+    @Override
+    public void visitEnd() {
+        if (!isInterface) {
+            FieldVisitor fv = cv.visitField(ACC_PUBLIC | ACC_STATIC, "timer", "J", null, null);
+            if (fv != null) {
+                fv.visitEnd();
+            }
+        }
+        cv.visitEnd();
+    }
+}
+</div>
+
+<div title="App.java" class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.utils.ReadUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class App {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] b1 = ReadUtils.readByPath(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(b1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        // cv forwards all events to cw
+        ClassVisitor cv = new AddTimerClassAdapter4(Opcodes.ASM9, cw);
+
+        //（4）两者进行结合
+        cr.accept(cv, 0);
+
+        //（5）重新生成Class
+        byte[] b2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, b2);
+    }
+}
+</div>
+
+<div title="HelloWorld.class test(II)V" class="plaintext">
+  // access flags 0x1
+  public test(II)V throws java/lang/Exception
+    INVOKESTATIC java/lang/System.currentTimeMillis ()J
+    LSTORE 3
+    ILOAD 1
+    ILOAD 2
+    IADD
+    ISTORE 5
+    ILOAD 5
+    BIPUSH 10
+    IDIV
+    ISTORE 6
+    ILOAD 6
+    I2L
+    INVOKESTATIC java/lang/Thread.sleep (J)V
+    INVOKESTATIC java/lang/System.currentTimeMillis ()J
+    LLOAD 3
+    LSUB
+    GETSTATIC sample/HelloWorld.timer : J
+    LADD
+    PUTSTATIC sample/HelloWorld.timer : J
+    RETURN
+    MAXSTACK = 4
+    MAXLOCALS = 7
+</div>
+
+<div title="HelloWorldRun.java" class="javacode">
+import java.lang.reflect.Field;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        HelloWorld instance = new HelloWorld();
+        instance.test(3000, 6000);
+
+        Class&lt;HelloWorld&gt; clazz = HelloWorld.class;
+        Field timer = clazz.getField("timer");
+        Object value = timer.get(null);
+        System.out.println(value);
+    }
+}
+</div>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>

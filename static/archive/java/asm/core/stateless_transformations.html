@@ -1,0 +1,325 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Stateless transformations</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>分析问题</h2>
+
+<p class="indented">
+    Let’s suppose <span class="text-example">we want to measure the time spent in each class of a program</span>.
+    We need to add a static <code>timer</code> field in each class,
+    and we need to add the execution time of each method of this class to this <code>timer</code> field.
+    In other words we want to transform a class such as <code>HelloWorld</code>:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() throws Exception {
+        Thread.sleep(100);
+    }
+}
+</div>
+
+<p>
+    into this:
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static long timer;
+
+    public void test() throws Exception {
+        timer -= System.currentTimeMillis();
+        Thread.sleep(100);
+        timer += System.currentTimeMillis();
+    }
+}
+</div>
+
+<p class="indented">
+    In order to have an idea of how this can be implemented in ASM,
+    we can compile these two classes and compare the output of <code>TraceClassVisitor</code> on these two versions
+    (either with the default <code>Textifier</code> backend, or with an <code>ASMifier</code> backend).
+</p>
+
+<div title="ASMifierTest.java" class="javacode">
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.util.ASMifier;
+import org.objectweb.asm.util.Printer;
+import org.objectweb.asm.util.Textifier;
+import org.objectweb.asm.util.TraceClassVisitor;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+public class ASMifierTest {
+    public static void main(String[] args) throws IOException {
+        // 下面的代码是来源于{@code org.objectweb.asm.util.Printer#main}
+        int parsingOptions = 0;
+        String className = "sample.HelloWorld";
+        // 可以使用 ASMifier 或 Textifier 来显示不同结果
+        Printer printer = new Textifier();
+        TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, printer, new PrintWriter(System.out));
+        new ClassReader(className).accept(traceClassVisitor, parsingOptions);
+    }
+}
+</div>
+
+<div title="HelloWorld.class before" class="plaintext">
+// access flags 0x1
+public test()V throws java/lang/Exception
+    LDC 100
+    INVOKESTATIC java/lang/Thread.sleep (J)V
+    RETURN
+    MAXSTACK = 2
+    MAXLOCALS = 1
+</div>
+
+<div title="HelloWorld.class after" class="plaintext">
+// access flags 0x1
+public test()V throws java/lang/Exception
+    //-------------------------------------------------
+    GETSTATIC sample/HelloWorld.timer : J
+    INVOKESTATIC java/lang/System.currentTimeMillis ()J
+    LSUB
+    PUTSTATIC sample/HelloWorld.timer : J
+    //-------------------------------------------------
+    LDC 100
+    INVOKESTATIC java/lang/Thread.sleep (J)V
+    //-------------------------------------------------
+    GETSTATIC sample/HelloWorld.timer : J
+    INVOKESTATIC java/lang/System.currentTimeMillis ()J
+    LADD
+    PUTSTATIC sample/HelloWorld.timer : J
+    //-------------------------------------------------
+    RETURN
+    MAXSTACK = 4
+    MAXLOCALS = 1
+</div>
+
+<p class="indented">
+    We see that we must <span class="text-example">add four instructions at the beginning of the method</span>,
+    and <span class="text-example">four other instructions before the return instruction</span>.
+    We also need to <span class="text-example">update the maximum operand stack size</span>.
+</p>
+
+<h2>解决方案</h2>
+
+<p class="indented">
+    The beginning of the method’s code is visited with the <code>visitCode</code> method.
+    We can therefore <span class="text-example">add the first four instructions</span> by overriding this method in our method adapter:
+</p>
+
+<div title="AddTimeMethodAdapter.java" class="javacode">
+public void visitCode() {
+    mv.visitCode();
+    mv.visitFieldInsn(GETSTATIC, owner, "timer", "J");
+    mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+    mv.visitInsn(LSUB);
+    mv.visitFieldInsn(PUTSTATIC, owner, "timer", "J");
+}
+</div>
+
+<p>
+    where <code>owner</code> must be set to the name of the class that is being transformed.
+</p>
+
+<p class="indented">
+    We must now <span class="text-example">add four other instructions</span> before any <code>RETURN</code>,
+    but also before any <code>xRETURN</code> or before <code>ATHROW</code>,
+    which are all the instructions that terminate the method’s execution.
+    These instructions do not have any argument,
+    and are therefore visited in the <code>visitInsn</code> method.
+    We can then override this method in order to add our instructions:
+</p>
+
+<div title="AddTimeMethodAdapter.java" class="javacode">
+public void visitInsn(int opcode) {
+    if ((opcode >= IRETURN && opcode <= RETURN) || opcode == ATHROW) {
+        mv.visitFieldInsn(GETSTATIC, owner, "timer", "J");
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+        mv.visitInsn(LADD);
+        mv.visitFieldInsn(PUTSTATIC, owner, "timer", "J");
+    }
+    mv.visitInsn(opcode);
+}
+</div>
+
+<p class="indented">
+    Finally we must <span class="text-example">update the maximum operand stack size</span>.
+    The instructions that we add push two <code>long</code> values,
+    and therefore require four slots on the operand stack.
+    At the beginning of the method the operand stack is initially empty,
+    so we know that the four instructions added at the beginning require a stack of size 4.
+    We also know that our inserted code leaves the stack state unchanged (because it pops as many values as it pushes).
+    As a consequence, if the original code requires a stack of size <code>s</code>,
+    the maximum stack size needed by the transformed method is <code>max(4, s)</code>.
+    Unfortunately we also add four instructions before the return instructions,
+    and here we do not know the size of the operand stack just before these instructions.
+    We just know that it is less than or equal to <code>s</code>.
+    As a consequence we can just say that the code added
+    before the return instructions may require an operand stack of size up to <code>s+4</code>.
+    This worst case scenario rarely happens in practice: with common compilers
+    the operand stack before a RETURN contains only the return value, i.e.
+    it has a size of 0, 1 or 2 at most.
+    But if we want to handle all possible cases,
+    we need to use the worst case scenario.
+    We must then override the <code>visitMaxs</code> method as follows:
+</p>
+
+<div title="AddTimeMethodAdapter.java" class="javacode">
+public void visitMaxs(int maxStack, int maxLocals) {
+    mv.visitMaxs(maxStack + 4, maxLocals);
+}
+</div>
+
+<p class="indented">
+    Of course it is possible to not bother about the maximum stack size and rely on the <code>COMPUTE_MAXS</code> option that,
+    in addition, will <span class="text-example">compute the optimal value and not a worst case value</span>.
+    But for such simple transformations it does not cost much effort to update <code>maxStack</code> manually.
+</p>
+
+<div title="AddTimerMethodAdapter.java" class="javacode">
+import org.objectweb.asm.MethodVisitor;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class AddTimerMethodAdapter extends MethodVisitor {
+    private final String owner;
+
+    public AddTimerMethodAdapter(int api, MethodVisitor methodVisitor, String owner) {
+        super(api, methodVisitor);
+        this.owner = owner;
+    }
+
+    @Override
+    public void visitCode() {
+        mv.visitCode();
+        mv.visitFieldInsn(GETSTATIC, owner, "timer", "J");
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+        mv.visitInsn(LSUB);
+        mv.visitFieldInsn(PUTSTATIC, owner, "timer", "J");
+    }
+
+    @Override
+    public void visitInsn(int opcode) {
+        if ((opcode >= IRETURN && opcode <= RETURN) || opcode == ATHROW) {
+            mv.visitFieldInsn(GETSTATIC, owner, "timer", "J");
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+            mv.visitInsn(LADD);
+            mv.visitFieldInsn(PUTSTATIC, owner, "timer", "J");
+        }
+        mv.visitInsn(opcode);
+    }
+
+    @Override
+    public void visitMaxs(int maxStack, int maxLocals) {
+        mv.visitMaxs(maxStack + 4, maxLocals);
+    }
+}
+</div>
+
+<div title="AddTimerClassAdapter.java" class="javacode">
+import static org.objectweb.asm.Opcodes.*;
+
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+
+public class AddTimerClassAdapter extends ClassVisitor {
+    private String owner;
+    private boolean isInterface;
+
+    public AddTimerClassAdapter(int api, ClassVisitor classVisitor) {
+        super(api, classVisitor);
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        cv.visit(version, access, name, signature, superName, interfaces);
+        owner = name;
+        isInterface = (access & ACC_INTERFACE) != 0;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = cv.visitMethod(access, name, descriptor, signature, exceptions);
+        if (!isInterface && mv != null && !name.equals("&lt;init&gt;")) {
+            mv = new AddTimerMethodAdapter(api, mv, owner);
+        }
+        return mv;
+    }
+
+    @Override
+    public void visitEnd() {
+        if (!isInterface) {
+            FieldVisitor fv = cv.visitField(ACC_PUBLIC | ACC_STATIC, "timer", "J", null, null);
+            if (fv != null) {
+                fv.visitEnd();
+            }
+        }
+        cv.visitEnd();
+    }
+
+}
+</div>
+
+<div title="App.java" class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.utils.ReadUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class App {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = ReadUtils.readByPath(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        // cv forwards all events to cw
+        ClassVisitor cv = new AddTimerClassAdapter(Opcodes.ASM9, cw);
+
+        //（4）两者进行结合
+        cr.accept(cv, 0);
+
+        //（5）重新生成Class
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</div>
+
+<h2>方案验证</h2>
+
+<div title="HelloWorldRun.java" class="javacode">
+import java.lang.reflect.Field;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        HelloWorld instance = new HelloWorld();
+        for (int i = 0; i < 10; i++) {
+            instance.test();
+        }
+
+        Class&lt;HelloWorld&gt; clazz = HelloWorld.class;
+        Field timer = clazz.getField("timer");
+        Object value = timer.get(null);
+        System.out.println(value);
+    }
+}
+</div>

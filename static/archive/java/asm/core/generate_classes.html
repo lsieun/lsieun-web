@@ -1,0 +1,72 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassWriter: Generating classes</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    The only required component to generate a class is the <code>ClassWriter</code> component.
+</p>
+
+<p>
+    Let’s take an example to illustrate this.
+    Consider the following interface:
+</p>
+
+<div title="Measurable.java" class="javacode">
+public interface Measurable {
+}
+</div>
+
+<div title="Comparable.java" class="javacode">
+public interface Comparable extends Measurable {
+    int LESS = -1;
+    int EQUAL = 0;
+    int GREATER = 1;
+    int compareTo(Object o);
+}
+</div>
+
+<div title="ComparableDumpCore.java" class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassWriter;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class ComparableDumpCore {
+    public static void main(String[] args) {
+        ClassWriter cw = new ClassWriter(0);
+        cw.visit(V1_8, ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE, "sample/Comparable",
+                null, "java/lang/Object", new String[]{"sample/Measurable"});
+        cw.visitField(ACC_PUBLIC + ACC_FINAL + ACC_STATIC, "LESS", "I",
+                null, Integer.valueOf(-1)).visitEnd();
+        cw.visitField(ACC_PUBLIC + ACC_FINAL + ACC_STATIC, "EQUAL", "I",
+                null, Integer.valueOf(0)).visitEnd();
+        cw.visitField(ACC_PUBLIC + ACC_FINAL + ACC_STATIC, "GREATER", "I",
+                null, Integer.valueOf(1)).visitEnd();
+        cw.visitMethod(ACC_PUBLIC + ACC_ABSTRACT, "compareTo", "(Ljava/lang/Object;)I",
+                null, null).visitEnd();
+        cw.visitEnd();
+        byte[] bytes = cw.toByteArray();
+
+        MyClassLoader myClassLoader = new MyClassLoader();
+        Class&lt;?&gt; c = myClassLoader.defineClass("sample.Comparable", bytes);
+        System.out.println(c.getName());
+
+        String relative_path = "sample/Comparable.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        FileUtils.writeBytes(filepath, bytes);
+    }
+}
+</div>
+
+<div title="MyClassLoader.java" class="javacode">
+public class MyClassLoader extends ClassLoader {
+    public Class&lt;?&gt; defineClass(String name, byte[] bytes) {
+        return defineClass(name, bytes, 0, bytes.length);
+    }
+}
+</div>

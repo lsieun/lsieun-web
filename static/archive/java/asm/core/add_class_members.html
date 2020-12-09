@@ -1,0 +1,91 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Adding class members</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    Instead of <span class="text-example">forwarding fewer calls</span> than you receive, you can <span class="text-example">“forward” more</span>,
+    <span class="text-key-point">which has the effect of adding class elements</span>.
+    <sub class="my_note" style="color:blue">笔记：这里讲了forward fewer和forward more之间的区别。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    <span class="text-key-point">The new calls can be inserted at several places</span> between the original method calls,
+    <span class="text-key-point">provided that the order</span> in which the various <code>visitXxx</code> methods must be called <span class="text-key-point">is respected</span>.
+    <sub class="my_note" style="color:blue">笔记：这里讲方法“调用位置”和“调用顺序”很重要</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    For instance, if you want to <span class="text-example">add a field</span> to a class
+    you have to insert a new call to <code>visitField</code> between the original method calls,
+    and you must put this new call in one of the <code>visitXxx</code> method of your class adapter.
+    You cannot do this in the <code>visit</code> method, for example,
+    because this may result in a call to <code>visitField</code> followed by
+    <code>visitSource</code>, <code>visitOuterClass</code>, <code>visitAnnotation</code> or <code>visitAttribute</code>, which is not valid.
+    You cannot put this new call in the <code>visitSource</code>, <code>visitOuterClass</code>, <code>visitAnnotation</code> or <code>visitAttribute</code> methods,
+    for the same reason.
+    The only possibilities are the <code>visitInnerClass</code>, <code>visitField</code>, <code>visitMethod</code> or <code>visitEnd</code> methods.
+    <sub class="my_note" style="color:blue">笔记：这里举个例子，说明“调用顺序”的重要性。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+<div class="w3-panel w3-border w3-border-green">
+<p class="indented">
+    <span class="text-example">The methods</span> of the <code>ClassVisitor</code> class must be called in the following order,
+    specified in the Javadoc of this class:
+</p>
+
+<div title="The methods of ClassVisitor must be called in the following order" class="plaintext">
+visit
+[visitSource] [visitModule] [visitNestHost][ visitPermittedSubclass] [visitOuterClass]
+(visitAnnotation | visitTypeAnnotation | visitAttribute)*
+(visitNestMember | visitInnerClass | visitRecordComponent | visitField | visitMethod)*
+visitEnd.
+</div>
+</div>
+
+<p class="indented">
+    If you <span class="text-example">put the new call in the <code>visitEnd</code> method</span> <span class="text-key-point">the field will always be added</span>
+    (unless you add explicit conditions), because this method is always called.
+    If you <span class="text-example">put it in <code>visitField</code> or <code>visitMethod</code></span>,
+    <span class="text-key-point">several fields will be added: one per field or method in the original class</span>.
+    Both solutions can make sense; it depends on what you need.
+    For instance you can add a single counter field to count the invocations on an object,
+    or one counter per method, to count the invocations of each method separately.
+</p>
+
+<table class="lamp">
+    <tbody>
+    <tr>
+        <th style="width:34px" rowspan="2">
+            <img src="/images/lamp.jpg" alt="Note" style="height:32px;width:32px">
+        </th>
+        <td>
+            <b>Note:</b> In fact <span class="text-key-point">the only truly correct solution is to add new members by making additional calls in the <code>visitEnd</code> method</span>.
+            Indeed a class must not contain duplicate members,
+            and the only way to be sure that a new member is unique is to compare it with all the existing members,
+            which can only be done once they have all been visited, i.e. in the <code>visitEnd</code> method.
+            This is rather constraining.
+            Using generated names that are unlikely to be used by a programmer,
+            such as <code>_counter$</code> or <code>_4B7F_</code> is sufficient in practice to avoid duplicate members without having to add them in <code>visitEnd</code>.
+
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Note that, the tree API does not have this limitation: it is possible to add new members at any time inside a transformation with this API.
+        </td>
+    </tr>
+    </tbody>
+</table>
+<hr>
+
+
+

@@ -1,0 +1,41 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASM Architecture</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    ASM applications have a strong architectural aspect.
+    Indeed the <span class="text-example">event based API</span> is organized around
+    <span class="text-key-point">event producers</span> (the <span class="text-emphasize">class parser</span>),
+    <span class="text-key-point">event consumers</span> (the <span class="text-emphasize">class writer</span>) and
+    <span class="text-key-point">various predefined event filters</span>,
+    to which user defined producers, consumers and filters can be added.
+</p>
+
+<p>
+    Using this API is therefore a <span class="text-key-point">two step process</span>:
+</p>
+
+<ul>
+    <li>
+        assembling event producer, filter and consumer components into possibly complex architectures,
+    </li>
+    <li>
+        and then starting the event producers to run the generation or transformation process.
+    </li>
+</ul>
+
+<p>
+    The <span class="text-example">object based API</span> also has an architectural aspect:
+    indeed <span class="text-key-point">class generator or transformer components</span> that operate on object trees can be composed,
+    <span class="text-key-point">the links between them</span> representing the order of transformations.
+</p>
+
+<p>
+    这里还有不一部分内容，我暂时不明白，因此没有记录下来
+</p>
+

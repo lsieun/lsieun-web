@@ -1,0 +1,79 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASM Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>What is ASM?</h2>
+
+<p>
+    The ASM library was designed to work on <span class="text-example">compiled Java classes</span>.
+</p>
+
+<p>
+    The goal of the ASM library is to
+    <span class="text-example">generate</span>,
+    <span class="text-example">transform</span> and
+    <span class="text-example">analyze</span> compiled Java classes,
+    represented as byte arrays (as they are stored on disk and loaded in the Java Virtual Machine).
+</p>
+
+<ul>
+    <li>
+        <span class="text-example">Program analysis</span>, which can range from a simple syntaxic parsing to a full semantic analysis,
+        can be used to find potential bugs in applications,
+        to detect unused code, to reverse engineer code, etc.
+        <sub class="my_note" style="color:blue">笔记：这里只分析，不改变原有的东西</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        <span class="text-example">Program generation</span> is used in compilers.
+        This include traditional compilers, but also stub or skeleton compilers used for distributed programming,
+        Just in Time compilers, etc.
+        <sub class="my_note" style="color:blue">笔记：从无到有的过程</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        <span class="text-example">Program transformation</span> can be used to optimize or obfuscate programs,
+        to insert debugging or performance monitoring code into applications,
+        for aspect oriented programming, etc.
+        <sub class="my_note" style="color:blue">笔记：把原有的事物改变成新的事物</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ul>
+
+<table class="lamp">
+    <tbody>
+    <tr>
+        <th style="width:34px">
+            <img src="/images/lamp.jpg" alt="Note" style="height:32px;width:32px">
+        </th>
+        <td>
+            <b>Note:</b> The <span class="text-emphasize">ASM</span> name does not mean anything:
+            it is just a reference to the <code>__asm__</code> keyword in C,
+            which allows some functions to be implemented in assembly language.
+        </td>
+
+    </tr>
+    </tbody>
+</table>
+<hr>
+
+<h2>How ASM was designed?</h2>
+
+<p>
+    The ASM was designed to be as <span class="text-example">fast</span> and as <span class="text-example">small</span> as possible.
+    Being as <span class="text-example">fast</span> as possible is important in order not to slow down too much the applications that use ASM at runtime,
+    for dynamic class generation or transformation.
+    And being as <span class="text-example">small</span> as possible is important in order to be used in memory constrained environments,
+    and to avoid bloating the size of small applications or libraries using ASM.
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://asm.ow2.io" target="_blank">ASM</a></li>
+</ul>
