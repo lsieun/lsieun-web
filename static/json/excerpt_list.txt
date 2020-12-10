@@ -1,5 +1,3 @@
 2020-08-20 14:54#To a Mouse#Robert Burns##/archive/poem/to_a_mouse.html#致老鼠.
-2020-04-08 19:52#Three Branches of Government#USA##/archive/usa/three_branches_of_government.html#USA federal government has three parts. They are the Executive (President and about 5,000,000 workers), Legislative (Senate and House of Representatives) and Judicial (Supreme Court and lower Courts).
-2020-04-08 19:33#Why Does The President Need a Cabinet?#USA##/archive/usa/why_does_the_president_need_a_cabinet.html#The President of the United States delegates much work to the Cabinet. Each Cabinet member is the head of an executive department of the government. The President meets with his/her Cabinet frequently to hear their reports and their suggestions.
-2020-03-19 23:01#American Dream#USA##/archive/usa/American_Dream.html#Life should be better and richer and fuller for everyone, with opportunity for each according to ability or achievement regardless of social class or circumstances of birth.
+2020-12-11 08:00#USA#USA##/archive/usa/usa_index.html#美国.
 2020-03-08 13:14#Ten things we know to be true#Google#/images/google_logo.png#/archive/excerpt/google_ten_things.html#We first wrote these “10 things” when Google was just a few years old. From time to time we revisit this list to see if it still holds true. We hope it does—and you can hold us to that.

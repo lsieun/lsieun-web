@@ -126,6 +126,9 @@ In the same vein<sub class="my_note" style="color:green">以同样的方式</sub
 
 </div>
 
+<h2>预期目标</h2>
+<h2>编码实现</h2>
+<h2>验证结果</h2>
 
 <p class="indented">
 

@@ -27,38 +27,25 @@ public class PageListHandler extends FileHandler {
         HttpResource resource = null;
         if ("/".equals(uri_path)) {
             resource = getPageList("In My Humble Opinion", "home_list.txt");
-        }
-        else if ("/excerpt/".equals(uri_path) || "/excerpt".equals(uri_path)) {
+        } else if ("/excerpt/".equals(uri_path) || "/excerpt".equals(uri_path)) {
             resource = getPageList("Excerpt", "excerpt_list.txt");
-        }
-        else if ("/whim/".equals(uri_path) || "/whim".equals(uri_path)) {
-            resource = getPageList("Whim", "whim_list.txt");
-        }
-        else if ("/life/".equals(uri_path) || "/life".equals(uri_path)) {
+        } else if ("/life/".equals(uri_path) || "/life".equals(uri_path)) {
             resource = getPageList("Life", "life_list.txt");
-        }
-        else if ("/code/".equals(uri_path) || "/code".equals(uri_path)) {
+        } else if ("/code/".equals(uri_path) || "/code".equals(uri_path)) {
             resource = getPageList("Code", "code_list.txt");
-        }
-        else if ("/front/".equals(uri_path) || "/front".equals(uri_path)) {
+        } else if ("/front/".equals(uri_path) || "/front".equals(uri_path)) {
             resource = getPageList("Front End", "front_list.txt");
-        }
-        else if ("/os/".equals(uri_path) || "/os".equals(uri_path)) {
+        } else if ("/os/".equals(uri_path) || "/os".equals(uri_path)) {
             resource = getPageList("OS", "os_list.txt");
-        }
-        else if ("/tools/".equals(uri_path) || "/tools".equals(uri_path)) {
+        } else if ("/tools/".equals(uri_path) || "/tools".equals(uri_path)) {
             resource = getPageList("Tools", "tools_list.txt");
-        }
-        else if ("/books/".equals(uri_path) || "/books".equals(uri_path)) {
-            resource = getPageList("Tools", "books_list.txt");
-        }
-        else if ("/english/".equals(uri_path) || "/english".equals(uri_path)) {
+        } else if ("/books/".equals(uri_path) || "/books".equals(uri_path)) {
+            resource = getPageList("Books", "book_list.txt");
+        } else if ("/english/".equals(uri_path) || "/english".equals(uri_path)) {
             resource = getPageList("English", "english_list.txt");
-        }
-        else if ("/about/".equals(uri_path) || "/about".equals(uri_path)) {
+        } else if ("/about/".equals(uri_path) || "/about".equals(uri_path)) {
             resource = super.getResource("/about.html", header);
-        }
-        else {
+        } else {
             // TODO: 这里应该怎么处理呢？
         }
 
@@ -91,32 +78,29 @@ public class PageListHandler extends FileHandler {
             int totalPages = remainder == 0 ? quotient : quotient + 1;
 
             String base_url;
-            if ("excerpt_list.txt".equals(filename)) {
-                base_url = "/json/excerpt/list/";
-            }
-            else if ("whim_list.txt".equals(filename)) {
-                base_url = "/json/whim/list/";
-            }
-            else if ("life_list.txt".equals(filename)) {
-                base_url = "/json/life/list/";
+            if ("book_list.txt".equals(filename)) {
+                base_url = "/json/books/list/";
             }
             else if ("code_list.txt".equals(filename)) {
                 base_url = "/json/code/list/";
             }
+            else if ("english_list.txt".equals(filename)) {
+                base_url = "/json/english/list/";
+            }
+            else if ("excerpt_list.txt".equals(filename)) {
+                base_url = "/json/excerpt/list/";
+            }
             else if ("front_list.txt".equals(filename)) {
                 base_url = "/json/front/list/";
+            }
+            else if ("life_list.txt".equals(filename)) {
+                base_url = "/json/life/list/";
             }
             else if ("os_list.txt".equals(filename)) {
                 base_url = "/json/os/list/";
             }
             else if ("tools_list.txt".equals(filename)) {
                 base_url = "/json/tools/list/";
-            }
-            else if ("books_list.txt".equals(filename)) {
-                base_url = "/json/books/list/";
-            }
-            else if ("english_list.txt".equals(filename)) {
-                base_url = "/json/english/list/";
             }
             else {
                 base_url = "/json/home/list/";
@@ -174,8 +158,7 @@ public class PageListHandler extends FileHandler {
         List<BlogEntry> entryList;
         if ("home_list.txt".equals(filename)) {
             entryList = BlogUtils.getHomeList();
-        }
-        else {
+        } else {
             entryList = BlogUtils.getEntryList(filename);
         }
         return entryList;

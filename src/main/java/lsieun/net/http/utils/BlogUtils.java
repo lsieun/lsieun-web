@@ -14,7 +14,6 @@ public class BlogUtils {
     public static List<BlogEntry> getHomeList() {
 //        List<BlogEntry> list = new ArrayList<>();
 //        list.addAll(getExcerptList());
-//        list.addAll(getWhimList());
 //        list.addAll(getLifeList());
 //        list.addAll(getCodeList());
 //        list.sort(Comparator.comparing(BlogEntry::getTimestamp).reversed());
@@ -22,24 +21,40 @@ public class BlogUtils {
         return getEntryList("home_list.txt");
     }
 
-    public static List<BlogEntry> getExcerptList() {
-        return getEntryList("excerpt_list.txt");
-    }
-
-    public static List<BlogEntry> getWhimList() {
-        return getEntryList("whim_list.txt");
-    }
-
-    public static List<BlogEntry> getLifeList() {
-        return getEntryList("life_list.txt");
+    public static List<BlogEntry> getBookList() {
+        return getEntryList("book_list.txt");
     }
 
     public static List<BlogEntry> getCodeList() {
         return getEntryList("code_list.txt");
     }
 
+    public static List<BlogEntry> getEnglishList() {
+        return getEntryList("english_list.txt");
+    }
+
+    public static List<BlogEntry> getExcerptList() {
+        return getEntryList("excerpt_list.txt");
+    }
+
+    public static List<BlogEntry> getFrontList() {
+        return getEntryList("front_list.txt");
+    }
+
+    public static List<BlogEntry> getLifeList() {
+        return getEntryList("life_list.txt");
+    }
+
+    public static List<BlogEntry> getOSList() {
+        return getEntryList("os_list.txt");
+    }
+
     public static List<BlogEntry> getPopularList() {
         return getEntryList("popular_list.txt");
+    }
+
+    public static List<BlogEntry> getToolsList() {
+        return getEntryList("tools_list.txt");
     }
 
     public static List<BlogEntry> getEntryList(final String filename) {

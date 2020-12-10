@@ -52,17 +52,29 @@ public class JsonHandler extends ResourceHandler {
         if (uri_path.startsWith("/json/home/list/")) {
             list = BlogUtils.getHomeList();
         }
+        else if (uri_path.startsWith("/json/books/list/")) {
+            list = BlogUtils.getBookList();
+        }
+        else if (uri_path.startsWith("/json/code/list/")) {
+            list = BlogUtils.getCodeList();
+        }
+        else if (uri_path.startsWith("/json/english/list/")) {
+            list = BlogUtils.getEnglishList();
+        }
         else if (uri_path.startsWith("/json/excerpt/list/")) {
             list = BlogUtils.getExcerptList();
         }
-        else if (uri_path.startsWith("/json/whim/list/")) {
-            list = BlogUtils.getWhimList();
+        else if (uri_path.startsWith("/json/front/list/")) {
+            list = BlogUtils.getFrontList();
         }
         else if (uri_path.startsWith("/json/life/list/")) {
             list = BlogUtils.getLifeList();
         }
-        else if (uri_path.startsWith("/json/code/list/")) {
-            list = BlogUtils.getCodeList();
+        else if (uri_path.startsWith("/json/os/list/")) {
+            list = BlogUtils.getOSList();
+        }
+        else if (uri_path.startsWith("/json/tools/list/")) {
+            list = BlogUtils.getToolsList();
         }
         else {
             list = Collections.emptyList();

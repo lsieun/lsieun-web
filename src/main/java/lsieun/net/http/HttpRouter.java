@@ -59,7 +59,6 @@ public class HttpRouter {
             // TODO: 这里的路径匹配，要不断添加才对
                 "/".equals(uri_path) ||
                         "/excerpt/".equals(uri_path) || "/excerpt".equals(uri_path) ||
-                        "/whim/".equals(uri_path) || "/whim".equals(uri_path) ||
                         "/life/".equals(uri_path) || "/life".equals(uri_path) ||
                         "/code/".equals(uri_path) || "/code".equals(uri_path) ||
                         "/front/".equals(uri_path) || "/front".equals(uri_path) ||

@@ -70,7 +70,7 @@
     <li>
         <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">Core API</a>
         <img src="/images/list.png" onclick="$(this).next().toggle()"/>
-        <ul>
+        <ul style="display: none;">
             <li><a href="/archive/java/asm/core/class_visitor.html">ClassVisitor</a></li>
             <li><a href="/archive/java/asm/core/parse_classes.html">ClassReader: Parsing classes</a></li>
             <li><a href="/archive/java/asm/core/generate_classes.html">ClassWriter: Generating classes</a></li>
@@ -113,6 +113,27 @@
                     <li><a href="/archive/java/asm/tree/class_generate.html">ClassNode: Generating classes</a></li>
                     <li><a href="/archive/java/asm/tree/field_add.html">Field: Adding Field</a></li>
                     <li><a href="/archive/java/asm/tree/method_remove.html">Method: Removing Method</a></li>
+                </ul>
+            </li>
+
+
+        </ul>
+    </li>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">Template</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul>
+            <li>
+                Class Transformations
+                <ul>
+                    <li><a href="/archive/java/asm/template/interface_add.html">Introducing Interface</a></li>
+                    <li><a href="/archive/java/asm/template/field_add.html">Adding a New Field</a></li>
+                </ul>
+            </li>
+            <li>
+                Method Transformations
+                <ul>
+                    <li><a href="/archive/java/asm/template/class_generate.html">ClassNode: Generating classes</a></li>
                 </ul>
             </li>
 
@@ -199,4 +220,7 @@
     <li><a class="external" href="https://asm.ow2.io/developer-guide.html" target="_blank">ASM 6 Developer Guide</a></li>
     <li><a class="external" href="https://asm.ow2.io/faq.html" target="_blank">ASM Frequently Asked Questions</a></li>
     <li><a class="external" href="https://gitlab.ow2.org/asm/asm" target="_blank">GitLab: ASM Source Code</a></li>
+    <li><a class="external" href="https://github.com/cglib/cglib" target="_blank">Github: cglib</a>: Byte Code Generation Library is high level API to generate and transform JAVA byte code.</li>
+    <li><a class="external" href="https://github.com/cobertura/cobertura" target="_blank">Github: COBERTURA</a>: Cobertura is a free Java code coverage reporting tool.</li>
+    <li><a class="external" href="https://www.eclemma.org/jacoco/" target="_blank">EclEmma: JaCoCo</a>: Java Code Coverage Library. JaCoCo is a free code coverage library for Java, which has been created by the EclEmma team based on the lessons learned from using and integration existing libraries for many years.</li>
 </ul>
