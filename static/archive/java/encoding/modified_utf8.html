@@ -1,0 +1,255 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Modified UTF-8</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div>
+    <ul>
+        <li>
+            <p>
+                Code points in the range '<code class="literal">\u0001</code>' to '<code class="literal">\u007F</code>' are represented by a single byte:
+            </p>
+            <table border="1">
+                <tbody>
+                <tr>
+                    <td><span><em>0</em></span></td>
+                    <td><span><em>bits 6-0</em></span></td>
+                </tr>
+                </tbody>
+            </table>
+            <p>
+                The 7 bits of data in the byte give the value of the code point represented.
+            </p>
+        </li>
+        <li>
+            <p>
+                The null code point ('<code class="literal">\u0000</code>') and
+                code points in the range '<code class="literal">\u0080</code>' to '<code class="literal">\u07FF</code>'
+                are represented by a pair of bytes <code class="literal">x</code> and <code class="literal">y</code>:
+            </p>
+            <table border="0">
+                <tbody>
+                <tr>
+                    <td><code class="literal">x</code>:</td>
+                    <td>
+                        <table border="1">
+                            <tbody>
+                            <tr>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>0</em></span></td>
+                                <td colspan="5"><span><em>bits 10-6</em></span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code class="literal">y</code>:</td>
+                    <td>
+                        <table border="1">
+                            <tbody>
+                            <tr>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>0</em></span></td>
+                                <td colspan="6"><span><em>bits 5-0</em></span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <p>
+                The two bytes represent the code point with the value: <code>((x &amp; 0x1f) &lt;&lt; 6) + (y &amp; 0x3f)</code>
+            </p>
+        </li>
+        <li>
+            <p>
+                Code points in the range '<code class="literal">\u0800</code>' to '<code class="literal">\uFFFF</code>' are represented
+                by 3 bytes <code class="literal">x</code>, <code class="literal">y</code>, and <code class="literal">z</code>:
+            </p>
+            <table border="0">
+                <tbody>
+                <tr>
+                    <td><code class="literal">x</code>:</td>
+                    <td>
+                        <table border="1">
+                            <tbody>
+                            <tr>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>0</em></span></td>
+                                <td colspan="4"><span><em>bits 15-12</em></span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code class="literal">y</code>:</td>
+                    <td>
+                        <table border="1">
+                            <tbody>
+                            <tr>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>0</em></span></td>
+                                <td colspan="6"><span><em>bits 11-6</em></span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code class="literal">z</code>:</td>
+                    <td>
+                        <table border="1">
+                            <tbody>
+                            <tr>
+                                <td><span><em>1</em></span>
+                                </td>
+                                <td><span><em>0</em></span>
+                                </td>
+                                <td colspan="6"><span><em>bits 5-0</em></span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <p>
+                The three bytes represent the code point with the value: <code>((x &amp; 0xf) &lt;&lt; 12) + ((y &amp; 0x3f) &lt;&lt; 6) + (z &amp; 0x3f)</code>
+            </p>
+        </li>
+        <li>
+            <p>
+                Characters with code points above U+FFFF (so-called <span><em>supplementary characters</em></span>) are
+                represented by separately encoding the two surrogate code units of their UTF-16 representation.
+                Each of the surrogate code units is represented by three bytes.
+                This means supplementary characters are represented by six bytes,
+                <code class="literal">u</code>,
+                <code class="literal">v</code>,
+                <code class="literal">w</code>,
+                <code class="literal">x</code>,
+                <code class="literal">y</code>,
+                and <code class="literal">z</code>:
+            </p>
+            <table border="0">
+                <tbody>
+                <tr>
+                    <td><code class="literal">u</code>:</td>
+                    <td>
+                        <table border="1">
+                            <tbody>
+                            <tr>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>0</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>0</em></span></td>
+                                <td><span><em>1</em></span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code class="literal">v</code>:</td>
+                    <td>
+                        <table border="1">
+                            <tbody>
+                            <tr>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>0</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>0</em></span></td>
+                                <td colspan="4"><span><em>(bits 20-16)-1</em></span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code class="literal">w</code>:</td>
+                    <td>
+                        <table border="1">
+                            <tbody>
+                            <tr>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>0</em></span></td>
+                                <td colspan="6"><span><em>bits 15-10</em></span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code class="literal">x</code>:</td>
+                    <td>
+                        <table border="1">
+                            <tbody>
+                            <tr>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>0</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>0</em></span></td>
+                                <td><span><em>1</em></span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code class="literal">y</code>:</td>
+                    <td>
+                        <table border="1">
+                            <tbody>
+                            <tr>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>0</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>1</em></span></td>
+                                <td colspan="4"><span><em>bits 9-6</em></span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code class="literal">z</code>:</td>
+                    <td>
+                        <table border="1">
+                            <tbody>
+                            <tr>
+                                <td><span><em>1</em></span></td>
+                                <td><span><em>0</em></span></td>
+                                <td colspan="6"><span><em>bits 5-0</em></span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <p>
+                The six bytes represent the code point with the value:
+            </p>
+            <p>
+                <code>0x10000 + ((v &amp; 0x0f) &lt;&lt; 16) + ((w &amp; 0x3f) &lt;&lt; 10) + ((y &amp; 0x0f) &lt;&lt; 6) + (z &amp; 0x3f)</code>
+            </p>
+        </li>
+    </ul>
+</div>

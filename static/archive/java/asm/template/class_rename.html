@@ -1,0 +1,358 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Renaming a Class</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>预期目标</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int intValue;
+
+    public int add(int a, int b) {
+        return a + b;
+    }
+
+    public void test(int a, int b) {
+        Class&lt;?&gt; clazz = HelloWorld.class;
+        this.intValue = add(a, b);
+        System.out.println("value = " + this.intValue);
+    }
+}
+</div>
+
+<div title="GoodChild.java" class="javacode">
+public class GoodChild {
+    public int intValue;
+
+    public int add(int a, int b) {
+        return a + b;
+    }
+
+    public void test(int a, int b) {
+        Class&lt;?&gt; clazz = GoodChild.class;
+        this.intValue = add(a, b);
+        System.out.println("value = " + this.intValue);
+    }
+}
+</div>
+
+<p>
+    从<span class="text-compare-green">本质</span>上来说，是做在一件事情：就是将<code>HelloWorld</code>类重新命名成<code>GoodChild</code>类。
+</p>
+
+<p>
+    从<span class="text-compare-green">实际操作</span>上来说，要处理的地方有四个：
+</p>
+
+<ul>
+    <li>
+        <input type="checkbox"/>
+        第一个地方，从类层面，ClassInfo部分的类名
+        <ul>
+            <li>
+                <input type="checkbox"/>
+                类名
+            </li>
+            <li>
+                <input type="checkbox"/>
+                字段的类型，<code>HelloWorld oneField;</code>
+            </li>
+            <li>
+                <input type="checkbox"/>
+                方法的描述符（接收参数、返回参数），<code>public HelloWorld process(String name, int age, HelloWorld instance)</code>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <input type="checkbox"/>
+        第二个地方，从方法层面，ClassInfo部分的类名
+        <ul>
+            <li>
+                <input type="checkbox"/>
+                加载类的常量，<code>Class&lt;?&gt; clazz = HelloWorld.class;</code>
+            </li>
+            <li>
+                <input type="checkbox"/>
+                对字段的使用，<code>this.intValue = 10;</code>
+            </li>
+            <li>
+                <input type="checkbox"/>
+                对方法的使用，<code>int sum = add(a, b);</code>
+            </li>
+        </ul>
+    </li>
+    <li></li>
+</ul>
+
+<p>
+    没有处理的情况：
+</p>
+
+<ul>
+    <li>
+        数组：<code>HelloWorld[] array</code>
+    </li>
+    <li>
+        泛型：<code>Comparable&lt;HelloWorld&gt;</code>
+    </li>
+    <li>
+        注解：<code>@MyTag</code>，如果将注解类型，变一个名字，要怎么处理呢？
+    </li>
+</ul>
+
+<h2>编码实现</h2>
+
+<div title="ClassRenameAdapter.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+public class ClassRenameAdapter extends ClassVisitor {
+    private final String oldOwner;
+    private final String newOwner;
+
+    public ClassRenameAdapter(int api, ClassVisitor classVisitor, String oldOwner, String newOwner) {
+        super(api, classVisitor);
+        this.oldOwner = oldOwner;
+        this.newOwner = newOwner;
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        if (name.equals(oldOwner)) {
+            super.visit(version, access, newOwner, signature, superName, interfaces);
+        }
+        else {
+            super.visit(version, access, name, signature, superName, interfaces);
+        }
+    }
+
+    @Override
+    public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
+        String oldDesc = getDescriptor(oldOwner);
+        if (descriptor.contains(oldDesc)) {
+            String newDesc = getDescriptor(newOwner);
+            String desc = descriptor.replaceAll(oldDesc, newDesc);
+            return super.visitField(access, name, desc, signature, value);
+        }
+        return super.visitField(access, name, descriptor, signature, value);
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        String desc = descriptor;
+        String oldDesc = getDescriptor(oldOwner);
+        if (descriptor.contains(oldDesc)) {
+            String newDesc = getDescriptor(newOwner);
+            desc = descriptor.replaceAll(oldDesc, newDesc);
+        }
+        MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
+        if (mv != null) {
+            mv = new RefRenameAdapter(api, mv, oldOwner, newOwner);
+        }
+        return mv;
+    }
+
+    public String getDescriptor(String internalName) {
+        return String.format("L%s;", internalName);
+    }
+}
+</div>
+
+<div title="RefRenameAdapter.java" class="javacode">
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
+
+public class RefRenameAdapter extends MethodVisitor {
+    private final String oldOwner;
+    private final String newOwner;
+
+    public RefRenameAdapter(int api, MethodVisitor mv, String oldOwner, String newOwner) {
+        super(api, mv);
+        this.oldOwner = oldOwner;
+        this.newOwner = newOwner;
+    }
+
+    @Override
+    public void visitLdcInsn(Object value) {
+        if (value instanceof Type) {
+            Type t = Type.getType(getDescriptor(oldOwner));
+            if (value.equals(t)) {
+                super.visitLdcInsn(Type.getType(getDescriptor(newOwner)));
+                return;
+            }
+        }
+        super.visitLdcInsn(value);
+    }
+
+    public String getDescriptor(String internalName) {
+        return String.format("L%s;", internalName);
+    }
+
+    @Override
+    public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+        if (owner.equals(this.oldOwner)) {
+            super.visitFieldInsn(opcode, newOwner, name, descriptor);
+        }
+        else {
+            super.visitFieldInsn(opcode, owner, name, descriptor);
+        }
+    }
+
+    @Override
+    public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
+        if (owner.equals(this.oldOwner)) {
+            super.visitMethodInsn(opcode, newOwner, name, descriptor, isInterface);
+        }
+        else {
+            super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+        }
+    }
+}
+</div>
+
+<div title="ClassRenameAdapterRun.java" class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.utils.ReadUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class ClassRenameAdapterRun {
+    public static void main(String[] args) {
+        String origin_name = "sample/HelloWorld";
+        String target_name = "sample/GoodChild";
+        String origin_filepath = getFilePath(origin_name);
+        byte[] bytes1 = ReadUtils.readByPath(origin_filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        ClassVisitor cv = new ClassRenameAdapter(Opcodes.ASM9, cw, origin_name, target_name);
+
+        //（4）两者进行结合
+        cr.accept(cv, 0);
+
+        //（5）重新生成Class
+        byte[] bytes2 = cw.toByteArray();
+
+        String target_filepath = getFilePath(target_name);
+        FileUtils.writeBytes(target_filepath, bytes2);
+    }
+
+    public static String getFilePath(String internalName) {
+        String relative_path = String.format("%s.class", internalName);
+        return FileUtils.getFilePath(relative_path);
+    }
+}
+</div>
+
+<h2>验证结果</h2>
+
+<div title="HelloWorldRun.java" class="javacode">
+import java.lang.reflect.Method;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Class&lt;?&gt; clazz = Class.forName("sample.GoodChild");
+        Object obj = clazz.newInstance();
+
+        Method method = clazz.getDeclaredMethod("test");
+        method.invoke(obj);
+    }
+}
+</div>
+
+<h3>Class Name</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Class&lt;?&gt; clazz = getClass();
+        System.out.println(clazz);
+    }
+}
+</div>
+
+<h3>Field Descriptor</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private HelloWorld oneField;
+    private HelloWorld[] arrayFields;
+
+    public void test() {
+        Class&lt;?&gt; clazz = getClass();
+        System.out.println(clazz);
+    }
+}
+</div>
+
+<h3>Method Descriptor</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public HelloWorld process(String name, int age, HelloWorld instance) {
+        return null;
+    }
+
+    public void test() {
+        Class&lt;?&gt; clazz = getClass();
+        System.out.println(clazz);
+    }
+}
+</div>
+
+<h3>Method Opcode</h3>
+
+<h4>visitLdcInsn</h4>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        Class&lt;?&gt; clazz = HelloWorld.class;
+        System.out.println(clazz);
+    }
+}
+</div>
+
+<h4>visitFieldInsn</h4>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int intValue;
+
+    public void test() {
+        this.intValue = 10;
+        int val = this.intValue;
+        System.out.println("val = " + val);
+    }
+}
+</div>
+
+<h4>visitMethodInsn</h4>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int add(int a, int b) {
+        return a + b;
+    }
+
+    public void test() {
+        int a = 1;
+        int b = 100;
+        int sum = add(a, b);
+        System.out.println("val = " + sum);
+    }
+}
+</div>

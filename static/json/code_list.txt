@@ -1,6 +1,7 @@
 2020-08-01 09:00#Java 8 ClassFile#Java##/archive/java/java_classfile_index.html#Java 8 ClassFile.
 2020-11-29 09:00#Java Agent#Java##/archive/java/java_agent_index.html#Java Agent.
 2020-11-29 16:00#Java ASM#Java##/archive/java/java_asm_index.html#Java ASM.
+2020-12-17 14:30#Java Encoding#Java##/archive/java/java_encoding_index.html#Standard UTF-8/Modified UTF-8.
 2020-11-13 12:55#Java Lambda#Java##/archive/java/java_lambda_index.html#Java Lambda.
 2020-11-25 16:54#Java Glossary#Java##/archive/java/java_glossary_index.html#Java Glossary.
 2020-11-09 14:38#Java Versions#Java##/archive/java/java_versions.html#Java Versions and Features.
@@ -15,4 +16,3 @@
 2020-06-16 22:51#Java Network#Java##/archive/java/Java_Network.html#URL/URLConnection/Socket/ServerSocket/Proxy.
 2020-06-11 14:41#Java Radix#Java##/archive/java/Java_Radix.html#Radix.
 2020-06-10 22:19#Java Number#Java##/archive/java/Java_Number.html#BigInteger.
-2020-04-30 20:14#Convert Java To Html#Widgets##/archive/widgets/java2html.html#Convert Java Source Code To Html.

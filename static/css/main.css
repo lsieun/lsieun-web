@@ -1,3 +1,7 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
 .indented {
     text-indent:2em;
 }
@@ -9,6 +13,22 @@
 
 .literal {
     font-family: monospace;
+}
+
+.name-of-book {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.name-of-person {
+    font-weight: bold;
+    text-decoration-line: underline;
+    text-decoration-style: double;
+}
+
+.name-of-place {
+    color: #444444;
+    font-weight: bold;
 }
 
 .text-compare-blue {
@@ -48,7 +68,9 @@
 }
 
 .text-key-point {
+    /*color: purple;*/
     font-weight: bold;
+    /*font-family: "courier new", sans-serif;*/
     text-decoration-line: underline;
     text-decoration-color: red;
 }
@@ -56,6 +78,59 @@
 .text-underline {
     text-decoration-line: underline;
     text-decoration-style: wavy;
+}
+
+.text-double-underline {
+    text-decoration-line: underline;
+    text-decoration-color: grey;
+    text-decoration-style: double;
+}
+
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    /*display: inline-block;*/
+    border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 360px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+
+    /* Position the tooltip text */
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -180px;
+
+    /* Fade in tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/* Tooltip arrow */
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }
 
 .w3-tangerine {

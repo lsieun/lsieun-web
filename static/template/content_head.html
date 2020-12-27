@@ -96,7 +96,9 @@
             $('#main_content sub.my_note').toggle();
         }
 
-        function display_img(img) {
+        function display_img(id) {
+            console.log("id = " + id);
+            let img = document.getElementById(id);
             document.getElementById('img_container').src=img.src;
             document.getElementById('img_modal').style.display='block'
         }

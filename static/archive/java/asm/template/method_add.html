@@ -1,0 +1,147 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Adding a New Method</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>预期目标</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+}
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+
+    public void test(String name) {
+        String line = String.format("Hello, %s", name);
+        System.out.println(line);
+    }
+
+}
+</div>
+
+<h2>编码实现</h2>
+
+<div title="MethodAdder.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+
+public class MethodAdder extends ClassVisitor implements Opcodes {
+    private final int methodAccess;
+    private final String methodName;
+    private final String methodDesc;
+    private final String methodSignature;
+    private final String[] methodExceptions;
+    private boolean isMethodPresent;
+
+    public MethodAdder(int api, ClassVisitor cv, int methodAccess, String methodName, String methodDesc, String signature, String[] exceptions) {
+        super(api, cv);
+        this.methodAccess = methodAccess;
+        this.methodName = methodName;
+        this.methodDesc = methodDesc;
+        this.methodSignature = signature;
+        this.methodExceptions = exceptions;
+        this.isMethodPresent = false;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        if (name.equals(methodName) && descriptor.equals(methodDesc)) {
+            isMethodPresent = true;
+        }
+        return super.visitMethod(access, name, descriptor, signature, exceptions);
+    }
+
+    @Override
+    public void visitEnd() {
+        if (!isMethodPresent) {
+            MethodVisitor mv = super.visitMethod(methodAccess, methodName, methodDesc, methodSignature, methodExceptions);
+            if (mv != null) {
+                // create method body
+                generateMethodBody(mv);
+            }
+        }
+
+        super.visitEnd();
+    }
+
+    protected void generateMethodBody(MethodVisitor mv) {
+        mv.visitCode();
+        mv.visitLdcInsn("Hello, %s");
+        mv.visitInsn(ICONST_1);
+        mv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+        mv.visitInsn(DUP);
+        mv.visitInsn(ICONST_0);
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitInsn(AASTORE);
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/String", "format", "(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;", false);
+        mv.visitVarInsn(ASTORE, 2);
+        mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        mv.visitVarInsn(ALOAD, 2);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(5, 3);
+        mv.visitEnd();
+    }
+}
+</div>
+
+<div title="MethodAdderRun.java" class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.utils.ReadUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class MethodAdderRun {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = ReadUtils.readByPath(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        ClassVisitor cv = new MethodAdder(Opcodes.ASM9, cw, Opcodes.ACC_PUBLIC, "test", "(Ljava/lang/String;)V", null, null);
+
+        //（4）两者进行结合
+        cr.accept(cv, 0);
+
+        //（5）重新生成Class
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</div>
+
+<h2>验证结果</h2>
+
+<div title="HelloWorldRun.java" class="javacode">
+import java.lang.reflect.Method;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        HelloWorld instance = new HelloWorld();
+
+        Class&lt;?&gt; clazz = HelloWorld.class;
+        Method method = clazz.getDeclaredMethod("test", String.class);
+        method.invoke(instance, "Tomcat");
+    }
+}
+</div>
+
+<div title="Run output" class="plaintext">
+Hello, Tomcat
+</div>

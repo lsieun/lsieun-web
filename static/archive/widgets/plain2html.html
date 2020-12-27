@@ -1,0 +1,64 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Convert Text To Html</span></h1>
+<!-- 内容 -->
+
+<div style="font-size: 20px; text-align: left;">
+    Paste your java source code below:
+</div>
+
+<textarea cols="110" id="java_source" rows="11">
+public class HelloWorld {
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>();
+        System.out.println("Hello World");
+    }
+}
+</textarea>
+
+<div class="w3-display-container w3-text-white w3-center">
+    <input class="w3-button w3-green" type="button" value="Click Me to Convert !" onclick="text2html();"/>
+</div>
+
+<br/><br/>
+
+<div style="font-size: 20px; text-align: left;">
+    Copy paste the following HTML Code into your blog:
+</div>
+
+<textarea cols="110" id="html_code" rows="10"></textarea>
+
+<div style="font-size: 20px; text-align: left;">
+    It will look like this:
+</div>
+
+<pre id="output" style="text-align: left; border: 1px dashed #008DEF; line-height: 18px; padding: 15px; font-size: 13px; overflow: auto;"></pre>
+
+<script language="javascript" type="text/javascript">
+    function htmlEscape(currentChar) {
+        if (currentChar === '<')
+            return "&lt;"
+        else if (currentChar === '>')
+            return "&gt;"
+    }
+
+    function text2html() {
+        let resultText = ""
+        document.getElementById("html_code").value = "";
+        document.getElementById("output").innerHTML = "";
+
+        let sourceText = document.getElementById("java_source").value;
+
+        for (let index = 0; index < sourceText.length; index++) {
+            let currentChar = sourceText.charAt(index);
+            if (currentChar === '<' || currentChar === '>') {
+                currentChar = htmlEscape(currentChar);
+                resultText = resultText + currentChar;
+            }else {
+                resultText = resultText + currentChar;
+            }
+        }
+
+        document.getElementById("html_code").value = resultText;
+        document.getElementById("output").innerHTML = resultText;
+    }
+</script>

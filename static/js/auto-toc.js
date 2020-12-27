@@ -73,10 +73,14 @@
             // document.getElementById('toc_div').style.display='block';
 
             //Smooth Scroll between sections
-            $("a").on('click', function (e) {
+            $("#toc_div .auto-toc a").on('click', function (e) {
                 if (this.hash !== "") {
                     e.preventDefault();
                     let hash = this.hash;
+                    let target = $(hash);
+                    if (target.length === 0) {
+                        return;
+                    }
                     $('html, body').animate({
                         scrollTop: $(hash).offset().top
                     }, 500, function () {
