@@ -53,6 +53,12 @@ let words = [
         "related": "bazaars"
     },
     {
+        "id": "beak",
+        "type": "n.",
+        "ch": "鸟喙",
+        "en": "the hard pointed or curved outer part of a bird's mouth"
+    },
+    {
         "id": "bleach",
         "type": "v.",
         "ch": "（使）变白，漂白，晒白",
@@ -104,6 +110,12 @@ let words = [
         "related": "carpets"
     },
     {
+        "id": "chariot",
+        "type": "n.",
+        "ch": "（古代用于战斗或比赛的）双轮敞篷马车",
+        "en": "an open vehicle with two wheels, pulled by horses, used in ancient times in battle and for racing"
+    },
+    {
         "id": "chieftain",
         "type": "n.",
         "ch": "首领；酋长；（苏格兰的）族长",
@@ -141,6 +153,19 @@ let words = [
         "type": "n.",
         "ch": "陪伴；做伴",
         "en": "the fact of being with sb else and not alone"
+    },
+    {
+        "id": "confiscate",
+        "type": "v.",
+        "ch": "（尤指作为惩罚）没收",
+        "en": "to officially take sth away from sb, especially as a punishment",
+        "related": "confiscated"
+    },
+    {
+        "id": "conquistador",
+        "type": "n.",
+        "ch": "（16 世纪侵占墨西哥和秘鲁的）西班牙征服者",
+        "en": "one of the Spanish people who took control of Mexico and Peru by force in the 16th century"
     },
     {
         "id": "corral",
@@ -327,11 +352,23 @@ let words = [
         "related": "fringes"
     },
     {
+        "id": "furious",
+        "type": "adj.",
+        "ch": "狂怒的；暴怒的",
+        "en": "very angry"
+    },
+    {
         "id": "gallop",
         "type": "v.",
         "ch": "飞跑；奔跑",
         "en": "to run very quickly",
         "related": "galloped"
+    },
+    {
+        "id": "game",
+        "type": "n.",
+        "ch": "猎物；野禽；野味",
+        "en": "wild animals or birds that people hunt for sport or food"
     },
     {
         "id": "garment",
@@ -445,6 +482,12 @@ let words = [
         "en": "a square piece of cloth worn on the head or around the neck"
     },
     {
+        "id": "knapsack",
+        "type": "n.",
+        "ch": "小背包",
+        "en": "a small rucksack"
+    },
+    {
         "id": "Koran",
         "type": "n.",
         "ch": "《古兰经》",
@@ -512,6 +555,12 @@ let words = [
         "type": "n.",
         "ch": "麦加（沙特阿拉伯城市，伊斯兰教圣地，先知穆罕默德出生地）",
         "en": "a city in Saudi Arabia that is the holiest city of Islam, being the place where Muhammad was born"
+    },
+    {
+        "id": "melancholy",
+        "type": "adj.",
+        "ch": "（令人）悲哀的；（令人）沮丧的",
+        "en": "very sad or making you feel sadness"
     },
     {
         "id": "mercury",
@@ -681,6 +730,12 @@ let words = [
         "en": "the owner of a business, a hotel, etc."
     },
     {
+        "id": "rabbi",
+        "type": "n.",
+        "ch": "拉比（犹太教经师或神职人员）",
+        "en": "a Jewish religious leader or a teacher of Jewish law"
+    },
+    {
         "id": "raid",
         "type": "n.",
         "ch": "突然袭击",
@@ -803,6 +858,19 @@ let words = [
         "en": "a person whose job is to take care of sheep"
     },
     {
+        "id": "shovel",
+        "type": "n.",
+        "ch": "铲；铁铲",
+        "en": "a tool with a long handle and a broad blade with curved edges, used for moving earth, snow, sand, etc."
+    },
+    {
+        "id": "shred",
+        "type": "n.",
+        "ch": "（撕或切的）细条，碎片",
+        "en": "a small thin piece that has been torn or cut from sth",
+        "related": "shreds"
+    },
+    {
         "id": "shrub",
         "type": "n.",
         "ch": "灌木",
@@ -816,11 +884,24 @@ let words = [
         "related": "smothered"
     },
     {
+        "id": "sorcerer",
+        "type": "n.",
+        "ch": "（故事中的）术士，男巫，巫师",
+        "en": "(in stories) a man with magic powers, who is helped by evil spirits",
+        "related": "sorcerers"
+    },
+    {
         "id": "spice",
         "type": "n.",
         "ch": "（调味）香料",
         "en": "one of the various types of powder or seed that come from plants and are used in cooking. Spices have a strong taste and smell",
         "related": "spices"
+    },
+    {
+        "id": "spoil",
+        "type": "v.",
+        "ch": "变坏；变质；腐败",
+        "en": "to become bad so that it can no longer be eaten",
     },
     {
         "id": "squint",
@@ -861,6 +942,12 @@ let words = [
         "en": "an American plane tree"
     },
     {
+        "id": "symphony",
+        "type": "n.",
+        "ch": "交响乐；交响曲",
+        "en": "a long complicated piece of music for a large orchestra , in three or four main parts (called movements)"
+    },
+    {
         "id": "tablet",
         "type": "n.",
         "ch": "（固定于墙上作纪念的）牌，碑，匾",
@@ -872,6 +959,13 @@ let words = [
         "ch": "壁毯；挂毯",
         "en": "a picture or pattern that is made by weaving coloured wool onto heavy cloth",
         "related": "tapestries"
+    },
+    {
+        "id": "tether",
+        "type": "n.",
+        "ch": "（拴牲畜的）拴绳，拴链",
+        "en": "a rope or chain used to tie an animal to sth, allowing it to move around in a small area",
+        "related": "tethers"
     },
     {
         "id": "theology",
@@ -915,7 +1009,8 @@ let words = [
         "id": "turban",
         "type": "n.",
         "ch": "（穆斯林或锡克教男教徒等用的）包头巾",
-        "en": "a long piece of cloth wound tightly around the head, worn, for example, by Muslim or Sikh men"
+        "en": "a long piece of cloth wound tightly around the head, worn, for example, by Muslim or Sikh men",
+        "related": "turbans"
     },
     {
         "id": "unsheathe",
