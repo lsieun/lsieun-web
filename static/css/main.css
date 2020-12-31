@@ -75,6 +75,11 @@
     text-decoration-color: red;
 }
 
+.text-monospace {
+    font-weight: bold;
+    font-family: monospace;
+}
+
 .text-underline {
     text-decoration-line: underline;
     text-decoration-style: wavy;

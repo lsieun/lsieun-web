@@ -11,6 +11,7 @@ import static lsieun.utils.LogUtils.audit;
 public class PropertyUtils {
     private static final String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
     private static final Properties props = new Properties();
+    public static boolean production;
 
     static {
         try {
@@ -19,10 +20,12 @@ public class PropertyUtils {
             audit.config(() -> "READ File: " + configPath);
 
             props.load(new FileInputStream(configPath));
+            production = true;
 
             String dev_filepath = rootPath + "/dev";
             File dev_file = new File(dev_filepath);
             if (dev_file.exists() && dev_file.isFile()) {
+                production = false;
                 String dev_config_filepath = rootPath + "/application-dev.properties";
                 File dev_config_file = new File(dev_config_filepath);
                 if (dev_config_file.exists() && dev_config_file.isFile()) {
@@ -34,6 +37,10 @@ public class PropertyUtils {
             audit.log(Level.SEVERE, "unexpected error: " + ex.getMessage(), ex);
             System.exit(1);
         }
+    }
+
+    public static boolean isProduction() {
+        return production;
     }
 
     public static String getRootPath() {

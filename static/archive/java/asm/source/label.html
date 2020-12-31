@@ -1,0 +1,78 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASM Label</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_source_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indent">
+    Since <code>Label</code> objects must be stored in several data structures at the same time,
+    they have several distinct fields that encode these data structures:
+</p>
+
+<ul>
+    <li>
+        the <code>nextBasicBlock</code> field is used to encode the list of labels of a method, in the order they are visited.
+    </li>
+    <li>
+        the <code>outgoingEdges</code> field is used to store the list of <code>Edge</code> objects
+        (linked through their <code>nextEdge</code> field) that represent the control flow graph data structure.
+    </li>
+    <li>
+        the <code>nextListElement</code> field is used to store temporary lists of labels in the algorithms
+        used to compute <span class="text-compare-grey">the maximum stack size</span> and <span class="text-compare-grey">stack map frames</span> of methods.
+    </li>
+</ul>
+
+<p class="indent">
+    From a user point of view the <code>Label</code> class is used to <span class="text-compare-blue">reference instructions</span>.
+    Internally it is used to store <span class="text-compare-green">the bytecode offset of an instruction</span>
+    (i.e. the bytecode array index of the first byte of the instruction),
+    and to compute <span class="text-compare-green">relative bytecode offsets</span>
+    (i.e. the difference between the bytecode offsets of two instructions).
+    It is also used to represent <span class="text-compare-blue">basic blocks</span>,
+    which are used for the automatic computation of <span class="text-compare-grey">the maximum stack size</span>
+    and of <span class="text-compare-grey">the stack map frames</span> of a method.
+</p>
+
+<h2>Jump instructions</h2>
+
+<ul>
+    <li>
+        Jump instructions
+        <ul>
+            <li>backward jump</li>
+            <li>forward jump</li>
+        </ul>
+    </li>
+</ul>
+
+<h3>forward jump</h3>
+
+<p class="indent">
+    Jump instructions such as <code>IFEQ</code> or <code>GOTO</code> are stored in bytecode
+    as an opcode followed by a relative bytecode offset to the target instruction
+    (this relative offset is the difference between the bytecode offset of the target instruction and the bytecode offset of the jump instruction).
+    This relative offset can be computed easily in the case of a backward jump
+    (i.e. a jump to an instruction that is before the jump instruction in the bytecode),
+    but it cannot be computed at all in the case of a forward jump
+    (i.e. a jump to an instruction that is after the jump instruction) since, in this case,
+    the target instruction has not been visited yet, and so its bytecode offset is unknown.
+    The case of forward jumps is solved in the following way:
+</p>
+
+<ul>
+    <li>The jump instruction is written with a (temporary) relative offset equal to 0.</li>
+    <li>
+        The target Label object is updated to memorize the fact that this jump instruction makes a forward reference to this label
+        (the <code>forwardReferences</code> array in <code>Label</code> is used for that).
+    </li>
+    <li>
+        When this label is visited, i.e. when its bytecode offset becomes known,
+        all the forward jump instructions to this label (given by <code>forwardReferences</code>) are updated,
+        to replace the temporary relative offsets with their real values, which can now be computed.
+    </li>
+</ul>
+

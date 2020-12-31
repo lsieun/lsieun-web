@@ -1,0 +1,66 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASM MethodWriter</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_source_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Instead, in order to be able to automatically compute <span class="text-compare-grey">the maximum stack size</span>,
+    <span class="text-compare-grey">the maximum number of local variables</span> and <span class="text-compare-grey">the stack map frames</span>,
+    each <code>visitXxxInsn</code> method does the following:
+</p>
+
+<ul>
+    <li>append the instruction to the <code>code</code> byte vector</li>
+    <li>
+        <span class="text-monospace">if (currentBasicBlock != null)</span> // if some automatic computation is needed
+        <ul>
+            <li>
+                <code>if (compute == COMPUTE_ALL_FRAMES || compute == COMPUTE_INSERTED_FRAMES)</code>
+                <ul>
+                    <li>simulate the execution of this instruction on the stack frame</li>
+                </ul>
+            </li>
+            <li>
+                else // <code>compute == COMPUTE_MAX_STACK_AND_LOCAL</code>
+                <ul>
+                    <li>simulate the execution of this instruction on the stack height</li>
+                </ul>
+            </li>
+            <li>keep track of the local variables used, if any</li>
+            <li>keep track of the successors of this instruction</li>
+            <li>update <code>currentBasicBlock</code></li>
+        </ul>
+    </li>
+</ul>
+
+<p>
+    <span class="text-compare-grey">The maximum stack size</span> or <span class="text-compare-grey">the stack map frames</span> are actually computed
+    in the <code>computeMaxStackAndLocal</code> and <code>computeAllFrames</code> methods,
+    by using <span class="text-compare-grey">the control flow graph</span> constructed in the <code>visitXxxInsn</code> methods.
+</p>
+
+<h2>toByteArray</h2>
+
+<p>
+    The <code>toByteArray</code> method in <code>ClassWriter</code> puts together all the pieces constructed in the various writer classes
+    in order to get the full byte representation of the class.
+    This is done in <span class="text-emphasize">two steps</span>:
+</p>
+
+<ul>
+    <li>
+        the size of the class is computed by summing the size of all the pieces,
+        which is given by the <code>getSize</code> method
+        (this method can add items to the constant pool, which modifies its size;
+        this is why the constant pool size is added only at the very end).
+    </li>
+    <li>
+        a byte vector of this size is allocated, and the pieces are copied into this vector in the right order.
+        This is done by calling the <code>putXxx</code> method on each piece (e.g. <code>putFieldInfo</code> on each <code>FieldWriter</code>).
+    </li>
+</ul>
+

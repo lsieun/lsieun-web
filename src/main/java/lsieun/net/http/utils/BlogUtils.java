@@ -2,6 +2,7 @@ package lsieun.net.http.utils;
 
 import lsieun.net.http.bean.BlogEntry;
 import lsieun.utils.FileUtils;
+import lsieun.utils.PropertyUtils;
 
 import java.io.File;
 import java.util.*;
@@ -87,6 +88,9 @@ public class BlogUtils {
         for (String line : lines) {
             BlogEntry entry = BlogEntry.parse(line);
             if (entry == null) continue;
+            if (PropertyUtils.isProduction() && entry.title.endsWith("Beta")) {
+                continue;
+            }
             list.add(entry);
         }
         return list;

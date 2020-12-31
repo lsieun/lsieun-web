@@ -295,6 +295,12 @@ let words = [
         "en": "an artificial language invented in 1887 as a means of international communication, based on the main European languages but with easy grammar and pronunciation"
     },
     {
+        "id": "euphoria",
+        "type": "n.",
+        "ch": "（通常指持续时间较短的）极度兴奋的情绪",
+        "en": "an extremely strong feeling of happiness and excitement that usually lasts only a short time"
+    },
+    {
         "id": "ewe",
         "type": "n.",
         "ch": "母羊；雌羊；牝羊",

@@ -21,7 +21,7 @@ public class HTMLHandler extends FileHandler {
         HttpResource resource = super.getResource(uri_path, header);
 
         Date now = new Date();
-        Date expireDate = DateUtils.addMinutes(now, 5);
+        Date expireDate = DateUtils.addMonths(now, 6);
 
         header.add("Date", DateUtils.getGMTFormat(now));
         header.add("Server", "Chaos Server");
