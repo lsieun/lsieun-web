@@ -71,7 +71,7 @@ function toggle_all_sub_note() {
 </div>
 ```
 
-How the Java virtual machine handles method invocation and return
+
 
 ## Image
 

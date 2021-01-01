@@ -1,4 +1,6 @@
 2020-08-01 09:00#Java 8 ClassFile#Java##/archive/java/java_classfile_index.html#Java 8 ClassFile.
+2021-01-01 08:30#Road to IntelliJ IDEA#Java##/archive/whim/road_to_idea.html#胡思乱想.
+2021-01-02 01:30#Rethink IntelliJ IDEA Beta#Java##/archive/whim/rethink_idea.html#胡思乱想.
 2020-11-29 09:00#Java Agent Beta#Java##/archive/java/java_agent_index.html#Java Agent.
 2020-11-29 16:00#Java ASM Beta#Java##/archive/java/java_asm_index.html#Java ASM.
 2020-12-31 15:30#Java ASM Source Beta#Java##/archive/java/java_asm_source_index.html#Java ASM.

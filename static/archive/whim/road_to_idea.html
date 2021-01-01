@@ -1,0 +1,148 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Road to IntelliJ IDEA</span></h1>
+<!-- 内容 -->
+
+<p class="indented">
+    关于这篇文章，我就是想想，而没有动手实践。任何渺小的想法，都需要付诸于一系列的实践；否则，将只是空谈。然而，我只是躺在床上，睡不着觉，心里琢磨着如何破解IntelliJ IDEA。如果读完了文章，有人可能觉得有道理，或者认为胡说八道，都是正常的。
+</p>
+
+<h2>分析IDEA</h2>
+
+<p class="indented">
+    在使用IDEA软件的时候，会经历三个步骤：<span class="text-emphasize">入口 --&gt; 验证机制 --&gt; 使用</span>。
+</p>
+
+<p class="indented">
+    IDEA软件提供的<span class="text-compare-red">入口</span>有四个：Evaluate for free、JB Account、Activation code和License Server。破解的着手点，也是从这四个入口开始。
+</p>
+
+<div id="intellij_idea_licenses" class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/ide/intellij_idea_licenses.png" alt=""/>
+</div>
+
+<p class="indented">
+    <span class="text-compare-red">验证机制</span>，就是指IDEA对已经选择的<span class="text-compare-red">入口</span>进行有效性验证。这套<span class="text-compare-red">验证机制</span>位于IDEA软件的内部，更进一步说，可能位于某一个jar包当中，它具体是什么，我们可能并不清楚。但是，我们可以做一些推测/假设，然后依据这些推测/假设来设计出相应的解决方案。
+</p>
+
+<p class="indented">
+    <span class="text-compare-red">使用</span>，就是我们正常的使用IDEA进行开发，没有太多可以说的内容。
+</p>
+
+<p class="indented">
+    破解的思路：我们先对<span class="text-compare-red">验证机制</span>做一个推测/假设，然后按照这个推测/假设来研究一个破解方案。如果破解方案生效了，那么说明当初的推测是对的；如果破解方案没有成功，那说明当初的推测可能是存在问题的，可能是推测的局部有问题，也可能整体推测都是错的。
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        破解的本质：绕过验证机制。
+    </p>
+</div>
+
+<p class="indented">
+    接下来，说一下从四个入口（Evaluate for free、JB Account、Activation code和License Server）所对应的破解思路。不必每一个方法都要尝试，只要一个方法尝试成功，就可以了。条条大路通罗马，我们的目的是到达罗马，而不是要把通向罗马的路都走一遍。
+</p>
+
+<h2>破解思路</h2>
+
+<h3>Evaluate for free</h3>
+
+<p class="indented">
+    如果选择了“Evaluate for free”，就会有30天的试用期。如果过了30天，IDEA就会提示过期了，然后退出。另外，如果删除用户目录下的<code>*IntelliJIdea*</code>文件夹，30天试用期就会重置。
+</p>
+
+<p class="indented">
+    推测/假设：IDEA软件是对“试用期的开始时间”和“当下的时间”进行比较，如果超出了30天，就会调用<code>System.exit()</code>或<code>Runtime.exit()</code>方法进行退出。根据这里的推测/假设，我觉得至少存在三个破解思路。
+</p>
+
+<p class="indented">
+    第一个破解思路：不断重置试用期。这个破解思路，针对的是IntelliJ IDEA的配置文件。如果能够找到那个关键性的文件，就能够实现重置试用器。
+</p>
+
+<p class="indented">
+    第二个破解思路：修改字节码，让时间判断永不过期。
+</p>
+
+<p class="indented">
+    第三个破解思路：修改字节码，试用期过了，但IDEA不退出。
+</p>
+
+<h3>JB Account</h3>
+
+<p class="indented">
+    如果选择了“JB Account”，那就需要输入账号和密码。
+</p>
+
+<p class="indented">
+    推测/假设：在IDEA界面输入用户名和密码，接着IDEA软件会把用户名和密码发送于Jetbrains的服务器，再接着Jetbrains服务器会根据用户名和密码找到用户的ID，然后再根据用户ID找到相应的License信息，最后Jetbrains服务器会将License信息返回给IDEA软件，IDEA软件对License信息进行验证来实现激活。
+</p>
+
+<p class="indented">
+    破解思路：准备一个有效的账号和密码，然后探索出在IDEA软件中的处理流程，在有些地方通过修改字节码来伪造License和绕过验证机制就可以了。
+</p>
+
+<h3>Activation code</h3>
+
+<p class="indented">
+    如果选择了“Activation code”，那就需要输入激活码。
+</p>
+
+<p class="indented">
+    推测/假设：IDEA软件会使用Jetbrains的公钥来对激活码进行验证。
+</p>
+
+<p class="indented">
+    第一个破解思路：替换公钥。首先，自己生成公钥和私钥对；然后，使用自己的私钥来生成激活码；最后，将Jetbrains的公钥替换成自己的公钥。
+</p>
+
+<p class="indented">
+    第二个破解思路：使用过期的key。网络上有一些key，这些key曾经有效过，但现在已经过期了。这里要注意的点是：这些key曾经有效过，说明这些key能够通过验证机制。对于时间过期这件事情，可以修改字节码，让它不过期。
+</p>
+
+<h3>License Server</h3>
+
+<p class="indented">
+    如果选择了“License Server”，那就需要输入License服务器。
+</p>
+
+<p class="indented">
+    推测/假设：IDEA软件会向License Server发送请求，而License Server会将一个具体的License返回给IDEA软件。
+</p>
+
+<p class="indented">
+    破解思路：找一个有效的License Server，然后研究IDEA软件的验证过程，最后通过修改字节码的方式来实现激活。
+</p>
+
+<h2>研究现有的破解方法</h2>
+
+<p>
+    现有的破解方法有
+</p>
+
+<ul>
+    <li><a class="external" href="https://shaka.rover.plus/zh/" target="_blank">Rover</a></li>
+    <li><a class="external" href="https://zhile.io/" target="_blank">zhile</a></li>
+    <li><a class="external" href="http://idea.studycoder.com/10086.html" target="_blank">BetterIntelliJ</a></li>
+</ul>
+
+<p>
+    这些破解方法的jar包，都通过了混淆处理，想要研究其字节码比较困难。
+</p>
+
+<p>
+    研究思路一：使用deobfuscator。
+</p>
+
+<p>
+    研究思路二：借助于Java Agent，对比class文件修改前和修改后的差异。
+</p>
+
+<h2>最后</h2>
+
+<p class="indented">
+    看完自己写的文章，心里不禁想哈哈大笑，因为这文章当中也没有写出什么有用的东西来。
+</p>
+
+<p class="indented">
+    如果你实现了我的破解思路，如果你有不一样的破解思路，如果你有自己的破解方案，若有兴趣，可以告诉我。我的QQ：515882294。
+</p>
+

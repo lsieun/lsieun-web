@@ -1,0 +1,48 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Jump instructions encoding algorithm</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_source_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    The jump instructions such as <code>IFEQ</code> and <code>GOTO</code> store <span class="text-compare-grey">relative bytecode offsets</span> with signed values encoded in two bytes.
+    <span class="text-compare-grey">This offset</span> can therefore vary between <span>-32768</span> and 32767.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/opcode_if_cond.png" alt=""/>
+    <img class="w3-image w3-center" src="/images/java/classfile/opcode_goto.png" alt=""/>
+    <br/>
+    <span>
+        The unsigned bytes <code>branchbyte1</code> and <code>branchbyte2</code><br/>
+        are used to construct a signed 16-bit <code>branchoffset</code>,<br/>
+        where <code>branchoffset</code> is <code>(branchbyte1 << 8) | branchbyte2</code>.
+    </span>
+</div>
+
+
+<p class="indented">
+    However <span class="text-key-point">the bytecode of a method can be as large as 65535 bytes</span>:
+    it is therefore possible to have relative bytecode offsets that cannot be represented with signed, two bytes values.
+    Hopefully there are two special jump instructions that store their relative bytecode offset in signed, four bytes values, namely <code>GOTO_W</code> and <code>JSR_W</code>.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>对于一个方法来说，它最多包含65535个字节。对于这一点，大家可以参考<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.3" target="_blank">这里（即Code属性的code_length描述）</a>：The value of code_length must be greater than zero (as the code array must not be empty) and less than 65536.</p>
+</div>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
