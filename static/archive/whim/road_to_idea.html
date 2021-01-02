@@ -78,7 +78,26 @@
 
 <p class="indented">
     破解思路：准备一个有效的账号和密码，然后探索出在IDEA软件中的处理流程，在有些地方通过修改字节码来伪造License和绕过验证机制就可以了。
+    <a href="javascript:void(0);" onclick="$('#jb_account_thinking').toggle()">Click Me</a>
 </p>
+
+<div id="jb_account_thinking" style="display:none;" class="w3-panel w3-light-grey w3-border w3-round">
+    <p>第一步，使用Username和Password进行登陆</p>
+    <p>返回：一个ObtainUserIdResponse对象，包含了userId</p>
+    <p>第二步，IDEA会根据userId向JetBrains官网进行查询</p>
+    <p>返回：一个ObtainLicenseResponse对象，里面包含了一个集合对象Collection&lt;EncodedAsset&gt;。顾其名，思其义，EncodedAsset=Encoded(进行编码之后)+Asset(资产)，也就是说这些资产都是经过“加密”的。</p>
+    <p>&gt; 思路：可以自己伪造这样一个集合</p>
+    <p>第三步：EncodedAsset类有一个decode()方法</p>
+    <p>返回：一个License对象</p>
+    <p>&gt; 思路：可以自己提供解析的方法</p>
+    <p>第四步：JetBrains一定会对License进行某种验证</p>
+    <p>问题：进行验证的代码，究竟在哪里呢？</p>
+    <p>&gt; 思路：可以根据EncodedAsset.decode()方法的Stack Trace进行查找</p>
+    <p>第五步：JetBrains会把EncodedAsset和License对象封装到一个类中，暂且将这个类叫“百万富翁类”（可以将EncodedAsset和License想象成它的财产）</p>
+    <p>问题：代码经过加密，无法理解验证的算法是如何进行的（这个“百万富翁类”的一个儿子非常负责任，牢牢的把守着通往Freedom的大门）</p>
+    <p>&gt; 思路：这个“百万富翁类”可能有多个儿子，找一个别的儿子来打开这扇门。</p>
+    <p></p>
+</div>
 
 <h3>Activation code</h3>
 
@@ -97,6 +116,15 @@
 <p class="indented">
     第二个破解思路：使用过期的key。网络上有一些key，这些key曾经有效过，但现在已经过期了。这里要注意的点是：这些key曾经有效过，说明这些key能够通过验证机制。对于时间过期这件事情，可以修改字节码，让它不过期。
 </p>
+
+<p class="indented">
+    对于第一个破解思路，如果能够实现它，那么也就能够写一个程序来判断一个activation code的有效性，正如下图当中提出的问题。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/ide/check_idea_key_validity.jpg" alt=""/>
+</div>
+
 
 <h3>License Server</h3>
 
@@ -136,13 +164,20 @@
     研究思路二：借助于Java Agent，对比class文件修改前和修改后的差异。
 </p>
 
-<h2>最后</h2>
+<h2>最后的感想</h2>
 
 <p class="indented">
-    看完自己写的文章，心里不禁想哈哈大笑，因为这文章当中也没有写出什么有用的东西来。
+    要实现破解IntelliJ IDEA，需要三个要素：心念、思路和技术手段。
 </p>
 
 <p class="indented">
-    如果你实现了我的破解思路，如果你有不一样的破解思路，如果你有自己的破解方案，若有兴趣，可以告诉我。我的QQ：515882294。
+    心念，就是相信自己能行，believe in yourself。如果别人能够破解成功，那么我也有这个能力。如果一开始就想着“我不行”，那这条路就走不下去了。另外，在破解的过程中，尝试了多次都失败了，那该怎么办呢？在《牧羊少年奇幻之旅》这本书中讲到，成功的秘密，就是你跌倒七次，然后第八次站起来。这个“心念”对应了人体的“心”这个部位。
 </p>
 
+<p class="indented">
+    思路，就是构建自己的破解思路。初始尝试破解，可能陷入这样的循环：因为不知道怎么破解，所以就没有破解思路；因为没有破解思路，所以就破解不了；因为破解不了，所以就没有思路……事实上，要形成破解思路，需要先做一些推测或假设，然后按照这个推测或假设去探索，这样才能逐步形成自己的思路。另外，看到别人破解成功了，也不要盲目的学习他人的思路，很可能有一个更好的思路隐藏在你的头脑中，可能比他人的更好，只是这个更好的思路等待着你的“挖掘”。构建自己的思路，比学习他人的思路更好的一点是，你的破解思路是直接针对IDEA的，就类似于这样“你的思路－IDEA”，它是一个两层的关系；如果你学习别人的思路，那么就类似于这样“你的思路－别人的思路－IDEA”，它是一个三层的关系。不可否认，学习别人的思路，会让自己有所收获。但是，我觉得，“自己的思路”才是“主体”，“别人的思路”是帮助你理解问题的“辅助”。这个“思路”对应了人体的“大脑”这个部位。
+</p>
+
+<p class="indented">
+    技术手段，就是能够将思路转换成代码的编程能力。根据采用的破解思路不同，那么可能需要的技术手段也不同。就比如说，要想实现重置试用期，只需要找到哪些文件和试用期紧密相关，那么只需要会Java的I/O知识就可以了，就是把那些文件删除或修改访问时间就可以了；如果想修改.class文件，那就需要Java字节码的相关知识；如果想理解activation code验证的过程，那么可能就需要理解公钥/私钥、加密/解密的相关知识了。这个“技术手段”对应了人体的“双手”这个部位。
+</p>

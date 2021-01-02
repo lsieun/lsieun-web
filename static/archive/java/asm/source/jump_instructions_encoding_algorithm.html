@@ -27,13 +27,187 @@
 <p class="indented">
     However <span class="text-key-point">the bytecode of a method can be as large as 65535 bytes</span>:
     it is therefore possible to have relative bytecode offsets that cannot be represented with signed, two bytes values.
-    Hopefully there are two special jump instructions that store their relative bytecode offset in signed, four bytes values, namely <code>GOTO_W</code> and <code>JSR_W</code>.
+    Hopefully there are two special jump instructions that store their relative bytecode offset in signed,
+    four bytes values, namely <code>GOTO_W</code> and <code>JSR_W</code>.
 </p>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>对于一个方法来说，它最多包含65535个字节。对于这一点，大家可以参考<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.3" target="_blank">这里（即Code属性的code_length描述）</a>：The value of code_length must be greater than zero (as the code array must not be empty) and less than 65536.</p>
 </div>
 
+<p class="indented">
+    In the case of <span class="text-compare-grey">backward jumps</span> the jump offset is known when the jump instruction is visited.
+    It is then easy to use <code>GOTO</code> or <code>GOTO_W</code>, depending on the value of this relative offset.
+    But in the case of <span class="text-compare-grey">forward jumps</span> this is not possible.
+
+
+
+</p>
+
+<ul>
+    <li>
+        <span class="text-compare-green">A first solution</span> is to assume that this offset will require 4 bytes,
+        and to always use a <code>GOTO_W</code> for forward jumps. But this is not very optimal.
+    </li>
+    <li>
+        <span class="text-compare-green">A second solution</span> is to assume that this offset will require 2 bytes,
+        and to use a normal jump instruction, with 2 bytes reserved to store the offset when it becomes known.
+        The problem is that if the offset turns out to require 4 bytes,
+        the jump instruction must be replaced with another one using a 4 bytes offset,
+        which can invalidate already computed offsets used in other jump instructions.
+    </li>
+</ul>
+
+<p class="indented">
+    <span class="text-key-point">In ASM the second solution was chosen.</span>
+    It requires a method to replace the forward jump instructions that turn out to require long offsets.
+    The algorithm used for this is presented in the rest of this section.
+</p>
+
+<h2>Basic algorithm</h2>
+
+<p>
+    The algorithm uses the following properties:
+</p>
+
+<ul>
+    <li>
+        the maximum method size, and therefore forward jump offset, is 65535, which can be stored in an unsigned two bytes value,
+    </li>
+    <li>
+        the opcodes of the JVM bytecode instructions set do not use all the 255 possible values and, in fact, there are enough unused opcodes to define an unsigned equivalent of each standard jump instruction opcode (that we note <code>ASM_GOTO</code>, <code>ASM_JSR</code>, <code>ASM_IFEQ</code>, and so on).
+    </li>
+</ul>
+
+<div title="Constants.java" hidden class="javacode">
+package org.objectweb.asm;
+
+final class Constants {
+    // Constants to convert JVM opcodes to the equivalent ASM specific opcodes, and vice versa.
+
+    // The delta between the ASM_IFEQ, ..., ASM_IF_ACMPNE, ASM_GOTO and ASM_JSR opcodes
+    // and IFEQ, ..., IF_ACMPNE, GOTO and JSR.
+    static final int ASM_OPCODE_DELTA = 49;
+
+    // The delta between the ASM_IFNULL and ASM_IFNONNULL opcodes and IFNULL and IFNONNULL.
+    static final int ASM_IFNULL_OPCODE_DELTA = 20;
+
+    // ASM specific opcodes, used for long forward jump instructions.
+
+    static final int ASM_IFEQ = Opcodes.IFEQ + ASM_OPCODE_DELTA;
+    static final int ASM_IFNE = Opcodes.IFNE + ASM_OPCODE_DELTA;
+    static final int ASM_IFLT = Opcodes.IFLT + ASM_OPCODE_DELTA;
+    static final int ASM_IFGE = Opcodes.IFGE + ASM_OPCODE_DELTA;
+    static final int ASM_IFGT = Opcodes.IFGT + ASM_OPCODE_DELTA;
+    static final int ASM_IFLE = Opcodes.IFLE + ASM_OPCODE_DELTA;
+    static final int ASM_IF_ICMPEQ = Opcodes.IF_ICMPEQ + ASM_OPCODE_DELTA;
+    static final int ASM_IF_ICMPNE = Opcodes.IF_ICMPNE + ASM_OPCODE_DELTA;
+    static final int ASM_IF_ICMPLT = Opcodes.IF_ICMPLT + ASM_OPCODE_DELTA;
+    static final int ASM_IF_ICMPGE = Opcodes.IF_ICMPGE + ASM_OPCODE_DELTA;
+    static final int ASM_IF_ICMPGT = Opcodes.IF_ICMPGT + ASM_OPCODE_DELTA;
+    static final int ASM_IF_ICMPLE = Opcodes.IF_ICMPLE + ASM_OPCODE_DELTA;
+    static final int ASM_IF_ACMPEQ = Opcodes.IF_ACMPEQ + ASM_OPCODE_DELTA;
+    static final int ASM_IF_ACMPNE = Opcodes.IF_ACMPNE + ASM_OPCODE_DELTA;
+    static final int ASM_GOTO = Opcodes.GOTO + ASM_OPCODE_DELTA;
+    static final int ASM_JSR = Opcodes.JSR + ASM_OPCODE_DELTA;
+    static final int ASM_IFNULL = Opcodes.IFNULL + ASM_IFNULL_OPCODE_DELTA;
+    static final int ASM_IFNONNULL = Opcodes.IFNONNULL + ASM_IFNULL_OPCODE_DELTA;
+    static final int ASM_GOTO_W = 220;
+}
+</div>
+
+<p class="indented">
+    Given these properties, if it turns out, in <code>visitLabel</code>, that a forward offset is greater than 32737,
+    the opcode of the corresponding instruction is changed to the equivalent non standard opcode with unsigned offset,
+    and the offset is stored as an unsigned short.
+</p>
+
+<p class="indented">
+    Then, when all the class has been visited and converted to a byte array,
+    if some non standard opcodes have been used, they must be replaced with standard ones. For this:
+</p>
+
+<ul>
+    <li>
+        the content of the <code>ClassWriter</code> is cleared (except its symbol table),
+        and the byte array is parsed with a <code>ClassReader</code> chained to this <code>ClassWriter</code>, to rebuild the class.
+        The class is parsed with the special <code>EXPAND_ASM_INSNS</code> class reader flag.
+    </li>
+    <li>
+        the class reader converts the ASM specific instructions to standard ones,
+        with explicit <code>GOTO_W</code> and <code>JSR_W</code> instructions and,
+        because of the <code>EXPAND_ASM_INSNS</code> flag,
+        leaves the existing <code>GOTO_W</code> and <code>JSR_W</code> instructions unchanged
+        (normally they are converted to <code>GOTO</code> and <code>JSR</code>, but not here,
+        since we know 4 bytes offsets will be needed -
+        this is also needed to avoid infinite loops where the <code>ClassWriter</code> is cleared and reconstructed indefinitely).
+    </li>
+</ul>
+
+<p class="indented">
+    This process removes the existing ASM specific instructions, but can introduce new ones.
+    Indeed, because the ASM specific instructions are replaced with longer sequences of standard instructions,
+    some relative offsets between existing instructions, which were just below the 32737 limit, can become larger than this limit.
+    In this case the process is repeated: the byte array containing the new ASM specific instructions is parsed again with a new <code>ClassReader</code>
+    (after the <code>ClassWriter</code> content has been cleared) chained to the <code>ClassWriter</code>.
+    Eventually this process will converge and the result will be a class with only standard instruction opcodes.
+</p>
+
+<h2>Impact on stack map frames</h2>
+
+<p class="indented">
+    An <code>IFXxx</code> instruction with a forward offset larger than 32767 must be replaced with an <code>IFNotX GOTO_W</code> sequence,
+    which requires a stack map frame after the <code>GOTO_W</code> (for Java 7 or more classes).
+    This stack map frame may not be already present, in which case it needs to be computed and inserted.
+    <sub class="my_note" style="color:blue">笔记：这里提出了一个问题</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    For this, <span class="text-compare-green">one solution</span> would be to recompute all the stack map frames, but this is not always possible
+    (computing the stack map frames may require access to the class hierarchy, may load classes, etc) and would not be efficient.
+    <sub class="my_note" style="color:blue">笔记：提出第一种方案，ASM没有采用</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Instead, we use the existing stack map frames to compute the one we need to insert.
+    Indeed, by definition, the existing stack map frames are sufficient to compute the state of the local variables and of the stack at each instruction,
+    with a linear algorithm parsing the instructions and the frames from the beginning to the end.
+    <sub class="my_note" style="color:blue">笔记：提出第二种方案，ASM使用了它</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    This is implemented as follows:
+</p>
+
+<ul>
+    <li>
+        when the <code>ClassWriter</code> is cleared to replace the ASM specific instructions,
+        it is put in a <code>COMPUTE_INSERTED_FRAMES</code> mode.
+    </li>
+    <li>
+        in this mode, the <code>MethodWriter</code> uses a <code>CurrentFrame</code> instead of a <code>Frame</code> to simulate the execution of each instruction,
+        which has the effect of computing explicitly the state of the local variables and of the stack at each instruction
+        (normally, in <code>COMPUTE_FRAMES</code> mode, this explicit state is only computed at the basic block level, not at the instruction level).
+        The existing frames are also used as is, to replace the <code>CurrentFrame</code> with the visited frame.
+        Finally, if a frame with the special type <code>F_INSERT</code> is visited,
+        then the current frame state is used to insert a frame at the current bytecode offset.
+    </li>
+    <li>
+        in the <code>ClassReader</code> used to replace the ASM specific instructions,
+        when an <code>IFXxx</code> instruction is replaced with an <code>IFNotX GOTO_W</code> sequence,
+        a <code>visitFrame(F_INSERT, ...)</code> is emitted, with an empty content, in order to insert a frame at this location.
+    </li>
+</ul>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
 <p class="indented"></p>
 <p class="indented"></p>
 <p class="indented"></p>

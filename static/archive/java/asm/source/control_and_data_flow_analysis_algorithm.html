@@ -1,0 +1,356 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Control and data flow analysis algorithm</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_source_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    This article presents the algorithm used to compute <span class="text-compare-grey">the maximum stack size</span> and <span class="text-compare-grey">the stack map frames</span> of a method.
+    This algorithm is a <span class="text-emphasize">control and data flow analysis algorithm</span>,
+    based on the decomposition of the method into <span class="text-compare-green">a control flow graph of basic blocks</span>.
+</p>
+
+<p class="indented">
+    A <span class="text-compare-green">basic block</span> is a sequence of instructions
+    where only the first instruction is the target of a jump instruction,
+    and where only the last instruction can jump to other basic blocks.
+</p>
+<p class="indented">
+    The <span class="text-compare-green">control flow graph of a method</span> is the graph
+    whose <span class="text-compare-green">nodes</span> are the basic blocks,
+    and whose <span class="text-compare-green">edges</span> connect the basic blocks that are linked by jump instructions.
+    This graph is constructed during the visit of each instruction.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <ul>
+        <li>
+            control flow graph of a method
+            <ul>
+                <li>
+                    nodes
+                    <ul>
+                        <li>basic blocks = a sequence of instructions</li>
+                    </ul>
+                </li>
+                <li>
+                    edges
+                    <ul>
+                        <li>connect the basic blocks that are linked by jump instructions</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<p class="indented">
+    In the following we explain the algorithm used to compute <span class="text-compare-grey">the stack map frames</span>,
+    implemented in the <code>computeAllFrames</code> method.
+    The algorithm to compute <span class="text-compare-grey">the maximum stack size</span>,
+    implemented in the <code>computeMaxStackAndLocal</code> method,
+    is similar but simpler (since only the size of the stack is needed),
+    so it is not detailed here (except for the handling of subroutines).
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        <code>computeAllFrames</code> method --&gt; compute the stack map frames
+    </p>
+    <p>
+        <code>computeMaxStackAndLocal</code> method --&gt; compute the maximum stack size
+    </p>
+</div>
+
+<h2>Basic data flow analysis algorithm</h2>
+
+<p>
+    Stack map frames are computed in a <span class="text-compare-green">two steps process</span>:
+</p>
+
+<ul>
+    <li>
+        During the visit of each instruction, <span class="text-underline">the state of the frame</span> at the end of <span class="text-underline">the current basic block</span>
+        is updated by simulating the action of the instruction on the previous state of this so called "output frame".
+    </li>
+    <li>
+        In <code>computeAllFrames</code>, <span class="text-compare-green">a fix point algorithm</span> is used to compute the "input frame" of each basic block,
+        i.e. the stack map frame at the beginning of the basic block,
+        starting from the input frame of the first basic block (which is computed from the method descriptor),
+        and by using the previously computed output frames to compute the input state of the other blocks.
+    </li>
+</ul>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <ul>
+        <li>
+            the first basic block
+            <ul>
+                <li>input frame &lt;-- method descriptor</li>
+                <li>... updated by simulating the action of the instruction</li>
+                <li>output frame</li>
+            </ul>
+        </li>
+        <li>......</li>
+        <li>
+            the current basic block
+            <ul>
+                <li>input frame</li>
+                <li>... updated by simulating the action of the instruction</li>
+                <li>output frame</li>
+            </ul>
+        </li>
+        <li>......</li>
+        <li>
+            the last basic block
+            <ul>
+                <li>input frame</li>
+                <li>... updated by simulating the action of the instruction</li>
+                <li>output frame</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<p class="indented">
+    Let's take a simple example in order to explain the details of this algorithm.
+    Consider the following very simple method (where B is a subclass of A):
+</p>
+
+<div title="simple method" class="plaintext">
+public static m(Z)LA;
+  GETSTATIC B.VALUE : LB;
+  ASTORE 1
+  GOTO L0
+ L1
+  GETSTATIC A.VALUE : LA;
+  ASTORE 1
+ L0
+  ILOAD 0
+  IFNE L1
+  ALOAD 1
+  ARETURN
+</div>
+
+<h3>First step</h3>
+
+<p class="indented">
+    As stated above, during <span class="text-compare-green">the first step of the algorithm</span>,
+    which takes place in each <code>visitXxxInsn</code> method in <code>ClassWriter</code>,
+    the state of <span class="text-compare-grey">the output frame</span> of each basic block is updated by simulating the action of the visited instruction.
+</p>
+
+<p class="indented">
+    It is important to note that the algorithm works at <span class="text-compare-grey">the basic block level</span>, and not at <span class="text-compare-grey">the instruction level</span>.
+    This means that <span class="text-compare-grey">input and output frames</span> are associated to <span class="text-compare-grey">basic blocks</span>, and not to individual instructions.
+    In practice, they are stored in a <code>Frame</code> object that is associated to a <code>Label</code> object,
+    which marks the beginning of <span class="text-compare-grey">basic blocks</span>.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>从概念的角度来说</p>
+    <ul>
+        <li>
+            basic block
+            <ul>
+                <li>input frame</li>
+                <li>output frame</li>
+            </ul>
+        </li>
+    </ul>
+    <p>从ASM API的角度来说</p>
+    <ul>
+        <li>
+            ASM API
+            <ul>
+                <li>
+                    <code>Label</code> object (= basic block)
+                    <ul>
+                        <li><code>Frame</code> object</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+
+    </ul>
+</div>
+
+<p class="indented">
+    The effect of this first step for the above example method is illustrated on the table below:
+</p>
+
+<div title="simple method" class="plaintext">
+public static m(Z)LA;
+  GETSTATIC B.VALUE : LB;
+  ASTORE 1
+  GOTO L0
+ L1
+  GETSTATIC A.VALUE : LA;
+  ASTORE 1
+ L0
+  ILOAD 0
+  IFNE L1
+  ALOAD 1
+  ARETURN
+</div>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <table>
+        <tbody>
+        <tr>
+            <th style="text-align: left;">Label</th>
+            <th style="text-align: left;">Instruction</th>
+            <th style="text-align: left;">Output frame</th>
+            <th style="text-align: left;">Comment</th>
+        </tr>
+        <tr>
+            <td></td>
+            <td><code>GETSTATIC B.VALUE : LB;</code></td>
+            <td>O1 = [??] [?B]</td>
+            <td>getstatic pushes a value of type B on the stack</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><code>ASTORE 1</code></td>
+            <td>O1 = [?B] [?]</td>
+            <td>astore consumes this value and stores it in local
+                1</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><code>GOTO L0</code></td>
+            <td>O1 = [?B] [?]</td>
+            <td>goto does not change the frame</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td><code>L1</code></td>
+            <td><code>GETSTATIC A.VALUE : LA;</code></td>
+            <td>O2 = [??] [?A]</td>
+            <td>each basic block starts with a new, unknown
+                frame</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><code>ASTORE 1</code></td>
+            <td>O2 = [?A] [?]</td>
+            <td>astore stores the value produced by getstatic in
+                local 1</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td><code>L0</code></td>
+            <td><code>ILOAD 0</code></td>
+            <td>O3 = [??] [?I]</td>
+            <td>iload pushes the value of local 0, which is of type
+                int</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><code>IFNE L1</code></td>
+            <td>O3 = [??] [?]</td>
+            <td>ifne consumes this value</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><code>ALOAD 1</code></td>
+            <td>O4 = [??] [?L1]</td>
+            <td>aload pushes the value of local 1, which is
+                unknown</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><code>ARETURN</code></td>
+            <td>O4 = [??] [?]</td>
+            <td>areturn consumes this value</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<p class="indented">
+    At the beginning, the output frame O1 of the first basic block is completely unknown.
+    During the visit of the first instruction, the action of <code>GETSTATIC</code> is simulated:
+    the result is that a new value of type <code>B</code> is pushed on the stack,
+    on top of the previous values
+    (although we know here that the stack is initially empty, we do not take this into account and
+    do as if the stack could previously contain any number of values of any type - hence the <code>[?B]</code>).
+    During the visit of the second instruction, the output frame O1 is updated to simulate the effect of <code>ASTORE</code>:
+    the result is that the value previously pushed on the stack is popped and stored in the local variable 1.
+    The visit of the third instruction does not change the output frame O1, but changes <span class="text-compare-grey">the current basic block</span> to <code>null</code>.
+</p>
+
+<p class="indented">
+    The visit of the <code>L1</code> label makes <code>L1</code> become <span class="text-compare-grey">the new current basic block</span>.
+    Like for the first basic block, the output frame O2 of this basic block is initially completely unknown. The visit of the instructions of this basic block is then similar to the visit of the previous instructions.
+</p>
+
+<div title="MethodWriter.visitLabel()" class="javacode">
+@Override
+public void visitLabel(final Label label) {
+    // Make it the new current basic block.
+    currentBasicBlock = label;
+    // Here label.frame should be null.
+    label.frame = new Frame(label);
+}
+</div>
+
+<p class="indented">
+    The visit of the <code>L0</code> label makes <code>L0</code> become <span class="text-compare-grey">the new current basic block</span>.
+    Here again we start with a completely unknown output frame O3 although,
+    in this case, we could start from the value of O2 (since this basic block is a successor of the previous one).
+    The <code>ILOAD</code> instruction loads the value of local variable 0,
+    which is necessarily of type <code>int</code> (the whole algorithm is based on the assumption that the code is correct), and pushes it on the stack.
+    The <code>IFNE</code> instruction consumes this value.
+</p>
+
+<p class="indented">
+    Another effect of simulating the action of the <code>IFNE</code> instruction is to create a new basic block,
+    and to make it <span class="text-compare-grey">the new current basic block</span>.
+    This is why, although there is no label just after this instruction, <span class="text-key-point">the basic block changes</span>.
+    Here again, the output frame O4 of this basic block is initially completely unknown
+    (although, as before and for the same reason, we could start from the value of O3).
+    The <code>ALOAD</code> instruction loads the value of local variable 1,
+    whose type is unknown since the frame is initially completely unknown.
+    The only thing we know is that, after the execution of this method,
+    the stack contains one additional value whose type is the type of local variable 1
+    before this instruction was executed (hence the <code>[?L1]</code>).
+</p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+<h3>Second step</h3>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+<h2>Uninitialized types</h2>
+<h2>Exception handlers</h2>
+<h2>Dead code</h2>
+<h2>Subroutines</h2>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>

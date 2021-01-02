@@ -82,7 +82,7 @@
 
 .text-underline {
     text-decoration-line: underline;
-    text-decoration-style: wavy;
+    text-decoration-style: solid;
 }
 
 .text-double-underline {
