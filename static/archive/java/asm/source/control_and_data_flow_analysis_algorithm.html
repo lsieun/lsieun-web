@@ -73,14 +73,23 @@
 
 <ul>
     <li>
-        During the visit of each instruction, <span class="text-underline">the state of the frame</span> at the end of <span class="text-underline">the current basic block</span>
+        <span class="text-compare-green">During the visit of each instruction</span>,
+        <sub class="my_note" style="color:green">笔记：在访问每一个instruction的时候</sub>
+        <span class="text-underline">the state of the frame</span> at the end of <span class="text-underline">the current basic block</span>
         is updated by simulating the action of the instruction on the previous state of this so called "output frame".
+        <sub class="my_note" style="color:blue">笔记：第一步，计算每一个basic block的output frame。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
     </li>
     <li>
-        In <code>computeAllFrames</code>, <span class="text-compare-green">a fix point algorithm</span> is used to compute the "input frame" of each basic block,
+        <span class="text-compare-green">After all instructions have been visited</span>,
+        <sub class="my_note" style="color:green">笔记：在访问完所有instruction之后</sub>
+        in <code>MethodWriter.computeAllFrames()</code>,
+        <span class="text-underline">a fix point algorithm</span> is used to compute the "input frame" of each basic block,
         i.e. the stack map frame at the beginning of the basic block,
         starting from the input frame of the first basic block (which is computed from the method descriptor),
         and by using the previously computed output frames to compute the input state of the other blocks.
+        <sub class="my_note" style="color:blue">笔记：第二步，计算每一个basic block的input frame。</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
     </li>
 </ul>
 
@@ -139,7 +148,7 @@ public static m(Z)LA;
 
 <p class="indented">
     As stated above, during <span class="text-compare-green">the first step of the algorithm</span>,
-    which takes place in each <code>visitXxxInsn</code> method in <code>ClassWriter</code>,
+    which takes place in each <code>visitXxxInsn</code> method in <code>MethodWriter</code>,
     the state of <span class="text-compare-grey">the output frame</span> of each basic block is updated by simulating the action of the visited instruction.
 </p>
 
@@ -331,23 +340,250 @@ public void visitLabel(final Label label) {
 
 <h3>Second step</h3>
 
-<p class="indented"></p>
-<p class="indented"></p>
+<p class="indented">
+    During <span class="text-compare-green">the second step of the algorithm</span>, which takes place in the <code>computeAllFrames</code> method,
+    the input frames of each basic block are computed by using <span class="text-compare-green">an iterative fix point algorithm</span>
+    (i.e. an algorithm to find a fix point <code>x</code> of a function <code>f</code>, defined by <code>f(x)=x</code>.
+    If <code>x</code> values define a complete lattice and if <code>f</code> is monotonic,
+    <code>x<sub>n+1</sub>=f(x<sub>n</sub>)</code> converges to the smallest fix point of <code>f</code>, according to the <span class="text-emphasize">Tarski theorem</span>.
+    Here <code>x</code> is a control flow graph with input and output frames,
+    <code>f</code> is a "merge" function and the order relation is based on the subtyping relation for the verification type system).
+
+</p>
+
+<p class="indented">
+    First the input frame <code>I1</code> of <span class="text-compare-grey">the first basic block</span>
+    is computed from the method descriptor "<code>public static m(Z)LA;</code>", which gives <code>I1 = [I] []</code>.
+    Then the first basic block is marked as "changed", and the fix point algorithm starts:
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <table>
+        <tbody>
+        <tr style="text-align: left;">
+            <th>Iteration</th>
+            <th>Changed</th>
+            <th>Output frames</th>
+            <th>Input frames</th>
+            <th>Comment</th>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>B1</td>
+            <td>O1 = [?B] [?]<br>
+                O2 = [?A] [?]<br>
+                O3 = [??] [?]<br>
+                O4 = [??] [?]</td>
+            <td><b>I1= [I-] []</b><br>
+                I2 = [??] [?]<br>
+                I3 = [??] [?]<br>
+                I4 = [??] [?]</td>
+            <td>Initialization of input frame I1 from the method's
+                descriptor,<br>
+                B1 marked as "changed"</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>B3</td>
+            <td></td>
+            <td>I1= [I-] []<br>
+                I2 = [??] [?]<br>
+                <b>I3 = [IB] []</b><br>
+                I4 = [??] [?]</td>
+            <td>B1 marked as "unchanged",<br>
+                merge of I1 and O1 into I3 (B3 is a successor of B1),<br>
+                B3 marked as "changed"</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>B2, B4</td>
+            <td></td>
+            <td>I1= [I-] []<br>
+                <b>I2 = [IB][]</b><br>
+                I3 = [IB] []<br>
+                <b>I4 = [IB] []</b></td>
+            <td>B3 marked as "unchanged",<br>
+                merge of I3 and O3 into I2 (B2 is a successor of B3),<br>
+                B2 marked as changed,<br>
+                merge of I3 and O3 into I4 (B4 is as successor of
+                B3),<br>
+                B4 marked as changed</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>B4, B3</td>
+            <td></td>
+            <td>I1= [I-] []<br>
+                I2 = [IB] []<br>
+                <b>I3 = [IA] []</b><br>
+                I4 = [IB] []</td>
+            <td>B2 marked as "unchanged",<br>
+                merge of I2 and O2 into I3 (B3 is a successor of B2),<br>
+                B3 marked as changed.</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>B3</td>
+            <td></td>
+            <td>I1= [I-] []<br>
+                I2 = [IB] []<br>
+                I3 = [IA] []<br>
+                I4 = [IB] []</td>
+            <td>B4 marked as "unchanged"</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>B2, B4</td>
+            <td></td>
+            <td>I1= [I-] []<br>
+                <b>I2 = [IA] []</b><br>
+                I3 = [IA] []<br>
+                <b>I4 = [IA] []</b></td>
+            <td>B3 marked as "unchanged",<br>
+                merge of I3 and O3 into I2 (B2 is a successor of B3),<br>
+                B2 marked as changed,<br>
+                merge of I3 and O3 into I4 (B4 is as successor of
+                B3),<br>
+                B4 marked as changed</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>B4</td>
+            <td></td>
+            <td>I1= [I-] []<br>
+                I2 = [IA] []<br>
+                I3 = [IA] []<br>
+                I4 = [IA] []</td>
+            <td>B2 marked as "unchanged",<br>
+                merge of I2 and O2 into I3 (B3 is a successor of B2),<br>
+                B3 <b>not</b> marked as changed.</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td></td>
+            <td></td>
+            <td>I1= [I-] []<br>
+                I2 = [IA] []<br>
+                I3 = [IA] []<br>
+                I4 = [IA] []</td>
+            <td>B4 marked as "unchanged"</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
 <p class="indented"></p>
 <p class="indented"></p>
 
 <h2>Uninitialized types</h2>
+
+<p class="indented">
+    The simulation of a <code>NEW T</code> instruction results in <span class="text-compare-blue">a special uninitialized type</span> being pushed on the stack.
+    This special type contains the offset of the <code>NEW</code> instruction that created it.
+    When an <code>INVOKESPECIAL</code> instruction for a <code>T</code> constructor is simulated,
+    all occurrences of this special type in the current stack map frame must be replaced with the normal <code>T</code> type.
+</p>
+
+<div title="Uninitialized_variable_info" class="plaintext">
+Uninitialized_variable_info {
+    u1 tag = ITEM_Uninitialized;
+    u2 offset;
+}
+</div>
+
+<p class="indented">
+    The basic block input and output frame data structures presented in the previous section are not sufficient to take <span class="text-compare-grey">uninitialized types</span> into account.
+    Indeed, when <span class="text-underline">a constructor invocation</span> is visited, the type of the target may be unknown,
+    and many local variable and operand stack types may also be unknown.
+    It is therefore impossible to replace all occurrences of the target type everywhere in the stack map frame.
+</p>
+
+<p class="indented">
+    For this reason <span class="text-underline">an additional data structure</span> is associated with <span class="text-compare-grey">each basic block</span>,
+    namely <span class="text-compare-grey">the list of types</span> that are initialized in this basic block
+    (these types can be relative to the unknown input stack map frame of the basic block).
+    This data structure is constructed during the visit of instructions,
+    and is used in <code>computeAllFrames</code>, when all the types are known.
+</p>
+
+
 <h2>Exception handlers</h2>
+
+<p class="indented">
+    For all the instructions covered by an exception handler, the control flow can jump to the exception handler block. This means that, inside the region covered by an exception handler, and as a consequence of the definition of basic blocks, basic blocks are reduced to individual instructions. In this case the advantage of using an algorithm working at the basic block level is lost, since there are as many basic blocks as instructions.
+</p>
+
+<p class="indented">
+    Hopefully it is not necessary to really use one basic block per instruction inside regions covered by exception handlers. This is because not all the frames associated to these instructions have an impact on the input frame of the exception handler. Indeed this input frame only contains local variable types, and its stack is reduced to a single element that depends only on the type of exception caught by this handler. As a consequence only the frames associated with the instructions that affect local variables are important. In practice, this means that, inside regions covered by exception handlers, xSTORE instructions end the current basic block (and start a new one) like, for instance, an IFEQ instruction.
+</p>
+
+<p class="indented">
+    As an example, consider the following method:
+</p>
+
+<div title="" class="plaintext">
+public m(Ljava/lang/Integer;Ljava/lang/Float;)Ljava/lang/Number;
+  TRYCATCHBLOCK L0 L1 L1 java/lang/Exception
+  ACONST_NULL
+  ASTORE 3
+ L0
+  ALOAD 1
+  ASTORE 3
+  ALOAD 2
+  ASTORE 3
+  ALOAD 3
+  ARETURN
+ L1
+  ASTORE 4
+  ALOAD 3
+  ARETURN
+</div>
+
+<p class="indented">
+    Normally, due to the exception handler, each instruction between L0 and L1 should be a distinct basic block, which would give 6 basic blocks inside this region. In practice, thanks to the above optimization, only the ASTORE instructions change the current basic block, which gives 3 basic blocks (ALOAD 1 ASTORE 3, ALOAD 2 ASTORE 3 and ALOAD 3 ARETURN). Note that if the instructions between L0 and L1 were considered as a single basic block, the frame computed for L1 would be incorrect: it would indeed be the same as the output frame of the previous block, where local variable 3 is of type Float (whereas the correct value is the common super type of Integer and Float, i.e. Number).
+</p>
+
+<p class="indented">
+    <b>Note</b>: the edges of the control flow graph that connect basic blocks to exception handler blocks are not constructed in the visitTryCatchBlock method but in the computeAllFrames method. Indeed, since the visitTryCatchBlock method must be called before the labels passed as arguments to this method are visited, it is not possible to know in this method which labels belong to the range protected by this handler.
+</p>
+
 <h2>Dead code</h2>
+
+<p class="indented">
+    The fix point algorithm used in the second step of the algorithm described in section 3.5.1 is limited to reachable code. Indeed, by definition, reachable code is code that can be reached from the initial basic block in the control flow graph, and the fix point algorithm is precisely looking at these blocks. As a consequence the algorithm does not compute the input frame of dead basic blocks.
+</p>
+
+<p class="indented">
+    Unfortunately the Java 6 split verifier requires a stack map frame for every basic block, even unreachable ones. The problem, as shown above, is that these frames are not computed and, even worse, cannot be computed. Indeed an unreachable basic block can contain illegal bytecode sequences, such as ISTORE 1 ALOAD 1 (more precisely this was possible with the JVM verifier prior to Java 6; but this is no longer possible with the new verifier).
+</p>
+
+<p class="indented">
+    The consequence of all this is that dead code must either be removed or replaced with a valid bytecode sequence whose stack map frame can be easily computed. The first solution was judged too complicated. So the second solution has been chosen.
+</p>
+
+<p class="indented">
+    A simple solution is to replace dead code with NOP instructions. In this case any stack map frame will be ok for these blocks. The only problem is that execution can fall from the end of a dead code block to the end of the method or to the start of a reachable block. So either the stack map frame for the dead code block must be consistent with the frame of the next block, or the last instruction of the dead code block must not be replaced with a NOP but with an instruction without successor, such as RETURN, GOTO, or ATHROW.
+</p>
+
+<p class="indented">
+    The first solution is too complicated; the second one is possible, but the fact that the dead code block can be reduced to a single byte must be taken into account: there is not always enough room to replace it with NOP instructions followed by a GOTO, for example. xRETURN can be used (this is a single byte instruction), but this requires adjustments to the method's return type. The ATHROW instruction does not have this problem, and is also a single byte instruction. It was therefore chosen to end the dead code blocks.
+</p>
+
+<p class="indented">
+    Note that it is not necessary to insert instructions to create something on stack before ATHROW: the stack map frame for this block can "declare" that, when the execution of this basic block begins, there is already an exception on stack (there will be no consistency problem with other frames since this block is unreachable. Also there is no problem with declared exceptions, because the verifier does not check that ATHROW instructions are consistent with declared exceptions).
+</p>
+
+<p class="indented">
+    But declaring a stack map frame of the form [] [java/lang/Throwable] for dead basic blocks may cause a problem if this block is in the range of an exception handler: the stack map frame for this handler may be inconsistent, with a non empty list of local variable types (the stack part will always be consistent since it always has the form [exception type] for an exception handler). To solve this, we remove the dead basic blocks from the exception handler ranges (which may remove a handler, decrease its range, or split its range in two sub ranges).
+</p>
+
+<p class="indented">
+    In summary, the solution for dead code blocks is to replace these blocks with NOP ... NOP ATHROW, to declare a [] [java/lang/Throwable] stack map frame for these blocks, and to remove the dead code blocks from the exception handlers.
+</p>
+
 <h2>Subroutines</h2>
 
-<p class="indented"></p>
-<p class="indented"></p>
-<p class="indented"></p>
-<p class="indented"></p>
-<p class="indented"></p>
-<p class="indented"></p>
-<p class="indented"></p>
 <p class="indented"></p>
 <p class="indented"></p>
 <p class="indented"></p>

@@ -1,9 +1,9 @@
 2020-08-01 09:00#Java 8 ClassFile#Java##/archive/java/java_classfile_index.html#Java 8 ClassFile.
+2020-11-29 16:00#Java ASM Beta#Java##/archive/java/java_asm_index.html#Java ASM.
+2020-11-29 09:00#Java Agent Beta#Java##/archive/java/java_agent_index.html#Java Agent.
+2020-12-31 15:30#Java ASM Source Beta#Java##/archive/java/java_asm_source_index.html#Java ASM.
 2021-01-01 08:30#Road to IntelliJ IDEA Beta#Java##/archive/whim/road_to_idea.html#胡思乱想.
 2021-01-02 01:30#Rethink IntelliJ IDEA Beta#Java##/archive/whim/rethink_idea.html#胡思乱想.
-2020-11-29 09:00#Java Agent Beta#Java##/archive/java/java_agent_index.html#Java Agent.
-2020-11-29 16:00#Java ASM Beta#Java##/archive/java/java_asm_index.html#Java ASM.
-2020-12-31 15:30#Java ASM Source Beta#Java##/archive/java/java_asm_source_index.html#Java ASM.
 2020-12-17 14:30#Java Encoding Beta#Java##/archive/java/java_encoding_index.html#Standard UTF-8/Modified UTF-8.
 2020-11-13 12:55#Java Lambda Beta#Java##/archive/java/java_lambda_index.html#Java Lambda.
 2020-11-25 16:54#Java Glossary Beta#Java##/archive/java/java_glossary_index.html#Java Glossary.
