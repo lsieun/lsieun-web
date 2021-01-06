@@ -1,0 +1,73 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Hello ASM</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_source_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}
+</div>
+
+<div title="HelloWorldDump.java" class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.cst.Version;
+
+import static org.objectweb.asm.cst.AccessFlag.*;
+
+public class HelloWorldDump implements Opcodes {
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // 第一步，生成sample.HelloWorld的字节码内容
+        byte[] bytes = dump();
+
+        // 第二步，保存字节码内容到文件
+        FileUtils.writeBytes(filepath, bytes);
+        System.out.println("file://" + filepath);
+    }
+
+    public static byte[] dump () throws Exception {
+
+        ClassWriter cw = new ClassWriter();
+        ClassVisitor cv = cw;
+
+        cv.visit(Version.V1_8,ACC_PUBLIC | ACC_SUPER, "sample/HelloWorld", "java/lang/Object", null);
+        {
+            MethodVisitor mv1 = cv.visitMethod(ACC_PUBLIC, "&lt;init&gt;", "()V");
+            mv1.visitCode();
+            mv1.visitVarInsn(ALOAD, 0);
+            mv1.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false);
+            mv1.visitInsn(RETURN);
+            mv1.visitMaxs(1, 1);
+            mv1.visitEnd();
+        }
+        {
+            MethodVisitor mv2 = cv.visitMethod(ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V");
+            mv2.visitCode();
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("Hello ASM");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitInsn(RETURN);
+            mv2.visitMaxs(2, 1);
+            mv2.visitEnd();
+        }
+        cv.visitEnd();
+
+        return cw.toByteArray();
+    }
+}
+
+</div>
+

@@ -25,6 +25,11 @@
     <img class="w3-image w3-center" src="/images/java/classfile/opcode_wide.png" alt="wide"/>
 </div>
 
+<p class="indented">
+    另外，与<code>wide</code>相关的opcode有<code>ldc_w</code>、<code>ldc2_w</code>、<code>goto_w</code>和<code>jsr_w</code>（已经弃用）。
+</p>
+
+<h2>The first form</h2>
 
 <div title="HelloWorld.java" class="javacode">
 public class HelloWorld {
@@ -45,16 +50,16 @@ public class HelloWorld {
 }
 </div>
 
-<div title="test:()V" class="plaintext">
+<div title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 0000: iconst_1             // 04
 0001: istore_1             // 3C
 ... ...
 1140: sipush          256  // 110100
-1143: wide                 // C4
+1143: wide                 // C4        // 关注点：wide
 1144: istore          256  // 360100
 1147: sipush          257  // 110101
-1150: wide                 // C4
+1150: wide                 // C4        // 关注点：wide
 1151: istore          257  // 360101
 1154: return               // B1
 
@@ -67,6 +72,67 @@ index  start_pc  length  name_and_type
   257      1154       1  var257:I
 </div>
 
+<h2>The second form</h2>
+
 <p class="indented">
-    另外，与<code>wide</code>相关的opcode有<code>ldc_w</code>、<code>ldc2_w</code>、<code>goto_w</code>和<code>jsr_w</code>（已经弃用）。
+    当使用<code>iinc</code>时，如果local variable值的变化范围大于<code>127</code>或者小于<code>-128</code>，就会生成<code>wide</code>指令。
 </p>
+
+<h3>+=128</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int val) {
+        val += 128;
+    }
+}
+</div>
+
+<div title="test:(I)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:(I)V
+=== === ===  === === ===  === === ===
+max_stack = 0
+max_locals = 2
+code_length = 7
+code = C48400010080B1
+=== === ===  === === ===  === === ===
+0000: wide                 // C4        // 关注点：wide
+0001: iinc       1    128  // 8400010080
+0006: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       7  this:Lsample/HelloWorld;
+    1         0       7  val:I
+</div>
+
+<h3>-=129</h3>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int val) {
+        val -= 129;
+    }
+}
+</div>
+
+<div title="test:(I)V" hidden class="plaintext">
+=== === ===  === === ===  === === ===
+Method test:(I)V
+=== === ===  === === ===  === === ===
+max_stack = 0
+max_locals = 2
+code_length = 7
+code = C4840001FF7FB1
+=== === ===  === === ===  === === ===
+0000: wide                 // C4        // 关注点：wide
+0001: iinc       1    -129 // 840001FF7F
+0006: return               // B1
+=== === ===  === === ===  === === ===
+LocalVariableTable:
+index  start_pc  length  name_and_type
+    0         0       7  this:Lsample/HelloWorld;
+    1         0       7  val:I
+</div>
+

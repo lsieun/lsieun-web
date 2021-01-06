@@ -17,5 +17,5 @@
 2020-06-23 14:10#Computer Conception Beta#Computer##/archive/computer/computer_conception.html#Computer Conception.
 2020-09-19 23:16#Java Generics Beta#Java##/archive/java/java_generics_index.html#Java Generics/Type Erasure.
 2020-06-16 22:51#Java Network Beta#Java##/archive/java/Java_Network.html#URL/URLConnection/Socket/ServerSocket/Proxy.
-2020-06-11 14:41#Java Radix Beta#Java##/archive/java/Java_Radix.html#Radix.
+2020-06-11 14:41#Java Radix Beta#Java##/archive/java/java_radix_index.html#Radix.
 2020-06-10 22:19#Java Number Beta#Java##/archive/java/Java_Number.html#BigInteger.

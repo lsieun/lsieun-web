@@ -1,0 +1,78 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">From int To Binary</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_radix_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div title="IntegerUtils.java" class="javacode">
+public class IntegerUtils {
+    public static String toBinary(int num) {
+        return toBinary(num, Integer.SIZE);
+    }
+
+    public static String toBinary(int num, int size) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = size - 1; i >= 0; i--) {
+            sb.append((num >> i) & 0x01);
+        }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        int val = 0x100;
+        String str = toBinary(val);
+        System.out.println(str);
+    }
+}
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>Value</th>
+        <th>二进制</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><code>0x7FFFFFFF</code></td>
+        <td>01111111111111111111111111111111</td>
+    </tr>
+    <tr>
+        <td><code>-1</code></td>
+        <td>11111111111111111111111111111111</td>
+    </tr>
+    <tr>
+        <td><code>0</code></td>
+        <td>00000000000000000000000000000000</td>
+    </tr>
+    <tr>
+        <td><code>1</code></td>
+        <td>00000000000000000000000000000001</td>
+    </tr>
+    <tr>
+        <td><code>0xFFFF</code></td>
+        <td>00000000000000001111111111111111</td>
+    </tr>
+    <tr>
+        <td><code>0x10000</code></td>
+        <td>00000000000000010000000000000000</td>
+    </tr>
+    <tr>
+        <td><code>65536</code></td>
+        <td>00000000000000010000000000000000</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+

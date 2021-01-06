@@ -116,8 +116,6 @@ In the same vein<sub class="my_note" style="color:green">以同样的方式</sub
 
 </div>
 
-&lt;init&gt;
-
 <div title="" hidden class="plaintext">
 
 </div>
@@ -125,6 +123,8 @@ In the same vein<sub class="my_note" style="color:green">以同样的方式</sub
 <div title="" class="plaintext">
 
 </div>
+
+&lt;init&gt;
 
 <h2>预期目标</h2>
 <h2>编码实现</h2>
