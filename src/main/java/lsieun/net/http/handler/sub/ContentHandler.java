@@ -48,6 +48,9 @@ public class ContentHandler extends FileHandler {
 
             String content = FileUtils.readHtml(filepath);
             String title = HTMLUtils.getTitle(content);
+            if (title != null) {
+                title = title.replaceAll("<br/>", "");
+            }
 
             String html = head.replace(HttpConst.TITLE, title) +
                     body.replace(HttpConst.NAVIGATION_BAR, nav_bar)

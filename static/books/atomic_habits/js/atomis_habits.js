@@ -19,6 +19,12 @@ let words = [
         "en": "a feature or quality that is typical of sb/sth"
     },
     {
+        "id": "hassle",
+        "type": "n.",
+        "ch": "困难；麻烦",
+        "en": "a situation that is annoying because it involves doing sth difficult or complicated that needs a lot of effort"
+    },
+    {
         "id": "tectonic",
         "type": "adj.",
         "ch": "地壳构造的",

@@ -112,17 +112,17 @@ In the same vein<sub class="my_note" style="color:green">以同样的方式</sub
 <sub class="my_note" style="color:blue">笔记：</sub>
 <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 
-</div>
+</pre>
 
-<div title="" hidden class="plaintext">
+<pre title="" hidden class="plaintext">
 
-</div>
+</pre>
 
-<div title="" class="plaintext">
+<pre title="" class="plaintext">
 
-</div>
+</pre>
 
 &lt;init&gt;
 

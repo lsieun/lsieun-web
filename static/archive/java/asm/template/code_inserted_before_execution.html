@@ -1,0 +1,126 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Insert Code before Method,<br/> Constructor or Static Initializer Execution</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>预期目标</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    static {
+        System.out.println("static initialization method");
+    }
+
+    public void test() {
+        System.out.println("test method");
+    }
+
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+        instance.test();
+    }
+}
+</div>
+
+<pre title="Run output" class="plaintext">
+static initialization method
+test method
+</pre>
+
+<h2>编码实现</h2>
+
+<h3>MethodEnteringAdapter.java</h3>
+
+<pre title="MethodEnteringAdapter.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+public class MethodEnteringAdapter extends ClassVisitor {
+    public MethodEnteringAdapter(int api, ClassVisitor cv) {
+        super(api, cv);
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        if (mv != null) {
+            mv = new MethodEnteringConverter(api, mv, access, name, descriptor);
+        }
+        return mv;
+    }
+}
+</pre>
+
+<h3>MethodEnteringConverter.java</h3>
+
+<pre title="MethodEnteringConverter.java" class="javacode">
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.commons.AdviceAdapter;
+
+public class MethodEnteringConverter extends AdviceAdapter {
+    private final String methodName;
+
+    public MethodEnteringConverter(int api, MethodVisitor mv, int access, String name, String descriptor) {
+        super(api, mv, access, name, descriptor);
+        this.methodName = name;
+    }
+
+    @Override
+    protected void onMethodEnter() {
+        super.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        super.visitLdcInsn("Entering " + methodName + " Method");
+        super.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+    }
+}
+</pre>
+
+<h3>MethodEnteringAdapterRun.java</h3>
+
+<pre title="MethodEnteringAdapterRun.java" class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.utils.ReadUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class MethodEnteringAdapterRun {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = ReadUtils.readByPath(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        ClassVisitor cv = new MethodEnteringAdapter(Opcodes.ASM9, cw);
+
+        //（4）两者进行结合
+        cr.accept(cv, 0);
+
+        //（5）重新生成Class
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<h2>验证结果</h2>
+
+<pre title="Run output" class="plaintext">
+Entering &lt;clinit&gt; Method
+static initialization method
+Entering main Method
+Entering &lt;init&gt; Method
+Entering test Method
+test method
+</pre>

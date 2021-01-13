@@ -1,0 +1,171 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Insert Code before Method Exit</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>预期目标</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+import java.util.Random;
+
+public class HelloWorld {
+    static {
+        System.out.println("static initialization method");
+    }
+
+    public HelloWorld() {
+        System.out.println("instance initialization method");
+    }
+
+    public void test() {
+        System.out.println("test method");
+    }
+
+    public void testException() {
+        Random r = new Random();
+        boolean flag = r.nextBoolean();
+        if (flag) {
+            throw new RuntimeException("flag is True");
+        }
+        else {
+            System.out.println("textException Method");
+        }
+    }
+
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+        instance.test();
+        instance.testException();
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+static initialization method
+instance initialization method
+test method
+Exception in thread "main" java.lang.RuntimeException: flag is True
+	at sample.HelloWorld.testException(HelloWorld.java)
+	at sample.HelloWorld.main(HelloWorld.java)
+</pre>
+
+<h2>编码实现</h2>
+
+<h3>MethodExitingAdapter.java</h3>
+
+<pre title="MethodExitingAdapter.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+public class MethodExitingAdapter extends ClassVisitor {
+    public MethodExitingAdapter(int api, ClassVisitor cv) {
+        super(api, cv);
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        if (mv != null) {
+            mv = new MethodExitingConverter(api, mv, access, name, descriptor);
+        }
+        return mv;
+    }
+}
+</pre>
+
+<h3>MethodExitingConverter.java</h3>
+
+<pre title="MethodExitingConverter.java" class="javacode">
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.commons.AdviceAdapter;
+
+public class MethodExitingConverter extends AdviceAdapter {
+    private final String methodName;
+
+    protected MethodExitingConverter(int api, MethodVisitor mv, int access, String name, String descriptor) {
+        super(api, mv, access, name, descriptor);
+        this.methodName = name;
+    }
+
+    @Override
+    protected void onMethodExit(int opcode) {
+        super.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        if (opcode == Opcodes.ATHROW) {
+            super.visitLdcInsn("Exiting on exception " + methodName + " Method");
+        }
+        else {
+            super.visitLdcInsn("Exiting " + methodName + " Method");
+        }
+
+        super.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+    }
+}
+</pre>
+
+<h3>MethodExitingAdapterRun.java</h3>
+
+<pre title="MethodExitingAdapterRun.java" class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.utils.ReadUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class MethodExitingAdapterRun {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = ReadUtils.readByPath(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        ClassVisitor cv = new MethodExitingAdapter(Opcodes.ASM9, cw);
+
+        //（4）两者进行结合
+        cr.accept(cv, ClassReader.SKIP_FRAMES);
+
+        //（5）重新生成Class
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<h2>验证结果</h2>
+
+<pre title="Run output" class="plaintext">
+static initialization method
+Exiting &lt;clinit&gt; Method
+instance initialization method
+Exiting &lt;init&gt; Method
+test method
+Exiting test Method
+Exiting on exception testException Method
+Exception in thread "main" java.lang.RuntimeException: flag is True
+	at sample.HelloWorld.testException(HelloWorld.java)
+	at sample.HelloWorld.main(HelloWorld.java)
+</pre>
+
+<pre title="Run output 2" class="plaintext">
+static initialization method
+Exiting &lt;clinit&gt; Method
+instance initialization method
+Exiting &lt;init&gt; Method
+test method
+Exiting test Method
+textException Method
+Exiting testException Method
+Exiting main Method
+</pre>

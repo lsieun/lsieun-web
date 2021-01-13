@@ -123,6 +123,12 @@ let words = [
         "related": "chieftains"
     },
     {
+        "id": "calamitous",
+        "type": "adj.",
+        "ch": "（对人命、财产等）引起灾难的，灾难性的",
+        "en": "causing great damage to people's lives, property, etc.",
+    },
+    {
         "id": "clover",
         "type": "n.",
         "ch": "三叶草；车轴草",
@@ -594,6 +600,12 @@ let words = [
         "related": "Moors"
     },
     {
+        "id": "motif",
+        "type": "n.",
+        "ch": "（文学作品或音乐的）主题， 主旨， 动机",
+        "en": "a subject, an idea or a phrase that is repeated and developed in a work of literature or a piece of music",
+    },
+    {
         "id": "mule",
         "type": "n.",
         "ch": "骡子",
@@ -929,6 +941,12 @@ let words = [
         "en": "a horse to ride on"
     },
     {
+        "id": "stellar",
+        "type": "adj.",
+        "ch": "优秀的；精彩的；杰出的",
+        "en": "excellent"
+    },
+    {
         "id": "suffuse",
         "type": "v.",
         "ch": "布满；弥漫于；充满",
@@ -1010,6 +1028,12 @@ let words = [
         "type": "adj.",
         "ch": "有潜在危险的",
         "en": "dangerous, especially when seeming safe"
+    },
+    {
+        "id": "trek",
+        "type": "vi.",
+        "ch": "（尤指徒步）长途跋涉",
+        "en": "to make a long or difficult journey, especially on foot"
     },
     {
         "id": "turban",
