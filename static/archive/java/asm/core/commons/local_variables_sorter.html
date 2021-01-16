@@ -7,7 +7,7 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<div title="LocalVariablesSorter.java" class="javacode">
+<pre title="LocalVariablesSorter.java" class="javacode">
 package org.objectweb.asm.commons;
 
 public class LocalVariablesSorter extends MethodVisitor {
@@ -39,7 +39,7 @@ public class LocalVariablesSorter extends MethodVisitor {
     use <span class="text-example">a local variable</span> to implement <code>AddTimerAdapter</code>:
 </p>
 
-<div title="HelloWorld.java before" class="javacode">
+<pre title="HelloWorld.java before" class="javacode">
 public class HelloWorld {
     public void test(int a, int b) throws Exception {
         int c = a + b;
@@ -49,7 +49,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="HelloWorld.java after" class="javacode">
+<pre title="HelloWorld.java after" class="javacode">
 public class HelloWorld {
     public static long timer;
 
@@ -68,7 +68,7 @@ public class HelloWorld {
     and by using the <code>newLocal</code> method defined in this class:
 </p>
 
-<div title="AddTimerMethodAdapter4.java" class="javacode">
+<pre title="AddTimerMethodAdapter4.java" class="javacode">
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.LocalVariablesSorter;
@@ -112,7 +112,7 @@ public class AddTimerMethodAdapter4 extends LocalVariablesSorter {
 }
 </div>
 
-<div title="AddTimerClassAdapter4.java" class="javacode">
+<pre title="AddTimerClassAdapter4.java" class="javacode">
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -156,7 +156,7 @@ public class AddTimerClassAdapter4  extends ClassVisitor {
 }
 </div>
 
-<div title="App.java" class="javacode">
+<pre title="App.java" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;
@@ -191,7 +191,7 @@ public class App {
 }
 </div>
 
-<div title="HelloWorld.class test(II)V" class="plaintext">
+<pre title="HelloWorld.class test(II)V" class="plaintext">
   // access flags 0x1
   public test(II)V throws java/lang/Exception
     INVOKESTATIC java/lang/System.currentTimeMillis ()J
@@ -218,7 +218,7 @@ public class App {
     MAXLOCALS = 7
 </div>
 
-<div title="HelloWorldRun.java" class="javacode">
+<pre title="HelloWorldRun.java" class="javacode">
 import java.lang.reflect.Field;
 
 public class HelloWorldRun {

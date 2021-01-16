@@ -14,7 +14,7 @@
     In JDK 7, you can use a <code>String</code> object as the selector. For example,
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test(String direction) {
         switch (direction) {   // switch on String selector
@@ -35,9 +35,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:(Ljava/lang/String;)V" class="plaintext">
+<pre title="test:(Ljava/lang/String;)V" class="plaintext">
 === === ===  === === ===  === === ===
 0000: aload_1              // 2B
 0001: astore_2             // 4D
@@ -114,11 +114,11 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0     189  this:Lsample/HelloWorld;
     1         0     189  direction:Ljava/lang/String;
-</div>
+</pre>
 
 <h2>String.hashCode:()I</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static void main(String[] args) {
         System.out.println("NE".hashCode()); // 2487
@@ -127,11 +127,11 @@ public class HelloWorld {
         System.out.println("SW".hashCode()); // 2660
     }
 }
-</div>
+</pre>
 
 <h2>switch int</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test(String direction) {
         String copy = direction;
@@ -179,9 +179,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:(Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="test:(Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 0000: aload_1              // 2B
 0001: astore_2             // 4D
@@ -261,7 +261,7 @@ index  start_pc  length  name_and_type
     1         0     193  direction:Ljava/lang/String;
     2         2     191  copy:Ljava/lang/String;
     3         4     189  val:I
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

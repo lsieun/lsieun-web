@@ -30,14 +30,14 @@
     The <code>EnclosingMethod</code> attribute has the following format:
 </p>
 
-<div title="EnclosingMethod_attribute" class="plaintext">
+<pre title="EnclosingMethod_attribute" class="plaintext">
 EnclosingMethod_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
     u2 class_index;
     u2 method_index;
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>EnclosingMethod_attribute</code> structure are as follows:
@@ -68,7 +68,7 @@ EnclosingMethod_attribute {
 
 <h3>Local Class</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         class LocalClass {
@@ -76,9 +76,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="HelloWorld$1LocalClass.class Attribute" hidden class="plaintext">
+<pre title="HelloWorld$1LocalClass.class Attribute" hidden class="plaintext">
 constant_pool_count='001D' (29)
 constant_pool
     ......
@@ -96,7 +96,7 @@ attribute_length='00000004' (4)
 class_index='0014' (#20)
 method_index='0015' (#21)
 ......
-</div>
+</pre>
 
 <h3>Anonymous Class</h3>
 
@@ -104,7 +104,7 @@ method_index='0015' (#21)
     第一种形式，匿名类定义在方法当中
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Runnable r = new Runnable() {
@@ -115,9 +115,9 @@ public class HelloWorld {
         };
     }
 }
-</div>
+</pre>
 
-<div title="HelloWorld$1.class Attribute" hidden class="plaintext">
+<pre title="HelloWorld$1.class Attribute" hidden class="plaintext">
 constant_pool_count='001F' (31)
 constant_pool
     ... ...
@@ -155,13 +155,13 @@ classes[0] {
     inner_name_index='0000' (#0)
     inner_class_access_flags='0000' ([])
 }
-</div>
+</pre>
 
 <p>
     第二种形式，匿名类直接定义在类当中
 </p>
 
-<div title="HelloWorld.java Attribute" class="javacode">
+<pre title="HelloWorld.java Attribute" class="javacode">
 public class HelloWorld {
     Runnable r = new Runnable() {
         @Override
@@ -170,9 +170,9 @@ public class HelloWorld {
         }
     };
 }
-</div>
+</pre>
 
-<div title="HelloWorld$1.class" hidden class="plaintext">
+<pre title="HelloWorld$1.class" hidden class="plaintext">
 constant_pool_count='001D' (29)
 constant_pool
     ......
@@ -188,5 +188,5 @@ attribute_name_index='0015' (#21)
 attribute_length='00000004' (4)
 class_index='0016' (#22)
 method_index='0000' (#0)
-</div>
+</pre>
 

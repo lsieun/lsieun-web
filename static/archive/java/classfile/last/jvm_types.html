@@ -294,15 +294,15 @@
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         boolean flag = true;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V boolean value" hidden class="plaintext">
+<pre title="test:()V boolean value" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -319,7 +319,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       3  this:Lsample/HelloWorld;
     1         2       1  flag:Z
-</div>
+</pre>
 
 <h3>boolean array</h3>
 
@@ -336,7 +336,7 @@ index  start_pc  length  name_and_type
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         boolean[] array = new boolean[3];
@@ -344,9 +344,9 @@ public class HelloWorld {
         boolean flag = array[1];
     }
 }
-</div>
+</pre>
 
-<div title="test:()V boolean array" hidden class="plaintext">
+<pre title="test:()V boolean array" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -376,7 +376,7 @@ index  start_pc  length  name_and_type
     0         0      13  this:Lsample/HelloWorld;
     1         4       9  array:[Z
     2        12       1  flag:Z
-</div>
+</pre>
 
 <p class="indented">
     In Oracle’s Java Virtual Machine implementation, <code>boolean</code> arrays in the Java programming language are encoded as

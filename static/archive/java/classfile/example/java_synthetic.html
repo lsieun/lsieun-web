@@ -15,14 +15,14 @@
 
 <h2>Synthetic Class</h2>
 
-<div title="Day.java" class="javacode">
+<pre title="Day.java" class="javacode">
 public enum Day {
     SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
     THURSDAY, FRIDAY, SATURDAY
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void tellItLikeItIs(Day day) {
         switch (day) {
@@ -45,13 +45,13 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
 <p>
     经过编译之后，此时的关注重点，不再是<code>HelloWorld</code>类，而是新生成的<code>HelloWorld$1</code>类。
 </p>
 
-<div title="Example: ACC_SYNTHETIC" class="plaintext">
+<pre title="Example: ACC_SYNTHETIC" class="plaintext">
 constant_pool_count='002F' (47)
 constant_pool
     ...
@@ -64,21 +64,21 @@ class_info='10200009000A0000'
     super_class='000A' (10)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <p>
     另外，与之对比的一个示例是这样的：
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     class InnerClass {
 
     }
 }
-</div>
+</pre>
 
-<div title="并没有带有ACC_SYNTHETIC标识" class="plaintext">
+<pre title="并没有带有ACC_SYNTHETIC标识" class="plaintext">
 constant_pool_count='001A' (26)
 constant_pool
     ...
@@ -91,7 +91,7 @@ class_info='0020000300040000'
     super_class='0004' (4)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <h2>Synthetic Field</h2>
 
@@ -99,14 +99,14 @@ class_info='0020000300040000'
     下面的代码，在ClassFile中会生成隐藏的<code>$VALUES</code>字段，由于是compiler生成的，因此带有<code>ACC_SYNTHETIC</code>；对于MONDAY~SUNDAY则带有<code>ACC_ENUM</code>标识。
 </p>
 
-<div title="Day.java" class="javacode">
+<pre title="Day.java" class="javacode">
 public enum Day {
     SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
     THURSDAY, FRIDAY, SATURDAY
 }
-</div>
+</pre>
 
-<div title="synthetic example" class="plaintext">
+<pre title="synthetic example" class="plaintext">
 fields_count='0008' (8)
 fields
     FieldInfo {Value='SUNDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]'}
@@ -117,7 +117,7 @@ fields
     FieldInfo {Value='FRIDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]'}
     FieldInfo {Value='SATURDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]'}
     FieldInfo {Value='$VALUES:[Lsample/Day;', AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_FINAL,ACC_SYNTHETIC]'}
-</div>
+</pre>
 
 <h2>Synthetic Method</h2>
 
@@ -127,7 +127,7 @@ fields
     The Java compiler must create synthetic methods on <b>nested classes</b> when their attributes specified with the <code>private</code> modifier are accessed by the <b>enclosing class</b>.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public class InnerClass {
         private int value;
@@ -138,20 +138,20 @@ public class HelloWorld {
         instance.value = 100;
     }
 }
-</div>
+</pre>
 
-<div title="HelloWorld$InnerClass.class" class="plaintext">
+<pre title="HelloWorld$InnerClass.class" class="plaintext">
 methods_count='0002' (2)
 methods
     MethodInfo {Value='&lt;init&gt;:(Lsample/HelloWorld;)V', AccessFlags='[ACC_PUBLIC]'}
     MethodInfo {Value='access$002:(Lsample/HelloWorld$InnerClass;I)I', AccessFlags='[ACC_STATIC,ACC_SYNTHETIC]'}
-</div>
+</pre>
 
 <p class="indented">
     稍微修改一下代码，将<code>InnerClass</code>的修饰符<code>public</code>修改为<code>private</code>，如下：
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     private class InnerClass { // 注意：将原来的public变成private
         private int value;
@@ -162,15 +162,15 @@ public class HelloWorld {
         instance.value = 100;
     }
 }
-</div>
+</pre>
 
-<div title="HelloWorld$InnerClass.class" class="plaintext">
+<pre title="HelloWorld$InnerClass.class" class="plaintext">
 methods_count='0003' (3)
 methods
     MethodInfo {Value='&lt;init&gt;:(Lsample/HelloWorld;)V', AccessFlags='[ACC_PRIVATE]'}
     MethodInfo {Value='&lt;init&gt;:(Lsample/HelloWorld;Lsample/HelloWorld$1;)V', AccessFlags='[ACC_SYNTHETIC]'}
     MethodInfo {Value='access$102:(Lsample/HelloWorld$InnerClass;I)I', AccessFlags='[ACC_STATIC,ACC_SYNTHETIC]'}
-</div>
+</pre>
 
 <h3>Second Example: lambda</h3>
 
@@ -178,7 +178,7 @@ methods
     下面的代码会将Lambda Expression(<code>(i) -> i + 5</code>)生成名为<code>lambda$main$0</code>的方法，并带有<code>ACC_SYNTHETIC</code>标志。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Function;
 
 public class HelloWorld {
@@ -188,14 +188,14 @@ public class HelloWorld {
         System.out.println(value);
     }
 }
-</div>
+</pre>
 
-<div title="Example: ACC_SYNTHETIC" class="plaintext">
+<pre title="Example: ACC_SYNTHETIC" class="plaintext">
 methods_count='0003' (3)
 methods
     MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]'}
     MethodInfo {Value='main:([Ljava/lang/String;)V', AccessFlags='[ACC_PUBLIC,ACC_STATIC]'}
     MethodInfo {Value='lambda$main$0:(Ljava/lang/Integer;)Ljava/lang/Integer;',
                 AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_SYNTHETIC]'}
-</div>
+</pre>
 

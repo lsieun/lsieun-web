@@ -41,14 +41,14 @@
     The <code>RuntimeVisibleAnnotations</code> attribute has the following format:
 </p>
 
-<div title="RuntimeVisibleAnnotations_attribute" class="plaintext">
+<pre title="RuntimeVisibleAnnotations_attribute" class="plaintext">
 RuntimeVisibleAnnotations_attribute {
     u2         attribute_name_index;
     u4         attribute_length;
     u2         num_annotations;
     annotation annotations[num_annotations];
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
@@ -106,14 +106,14 @@ RuntimeVisibleAnnotations_attribute {
     The <code>RuntimeInvisibleAnnotations</code> attribute has the following format:
 </p>
 
-<div title="RuntimeInvisibleAnnotations_attribute" class="plaintext">
+<pre title="RuntimeInvisibleAnnotations_attribute" class="plaintext">
 RuntimeInvisibleAnnotations_attribute {
     u2         attribute_name_index;
     u4         attribute_length;
     u2         num_annotations;
     annotation annotations[num_annotations];
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
@@ -143,25 +143,25 @@ RuntimeInvisibleAnnotations_attribute {
 
 <h2>Examples</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @MyTag
 public class HelloWorld {
     //
 }
-</div>
+</pre>
 
 <h3>First Example</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME) // 注意，这里是RUNTIME
 public @interface MyTag {
 }
-</div>
+</pre>
 
-<div title="RuntimeVisibleAnnotations" hidden class="plaintext">
+<pre title="RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0012' (18)
 constant_pool
     ......
@@ -180,20 +180,20 @@ annotation[0] {
     type_index='000E' (#14)
     num_element_value_pairs='0000' (0)
 }
-</div>
+</pre>
 
 <h3>Second Example</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.CLASS) // 注意，这里是CLASS
 public @interface MyTag {
 }
-</div>
+</pre>
 
-<div title="RuntimeInvisibleAnnotations" hidden class="plaintext">
+<pre title="RuntimeInvisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0012' (18)
 constant_pool
     ......
@@ -212,4 +212,4 @@ annotation[0] {
     type_index='000E' (#14)
     num_element_value_pairs='0000' (0)
 }
-</div>
+</pre>

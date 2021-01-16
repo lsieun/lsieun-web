@@ -26,13 +26,13 @@
     The <code>Signature</code> attribute has the following format:
 </p>
 
-<div title="Signature_attribute" class="plaintext">
+<pre title="Signature_attribute" class="plaintext">
 Signature_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
     u2 signature_index;
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>Signature_attribute</code> structure are as follows:
@@ -52,12 +52,12 @@ Signature_attribute {
 
 <h2>Examples</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld&lt;T&gt; {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Signature Attribute" class="plaintext">
+<pre title="HelloWorld.class Signature Attribute" class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -81,4 +81,4 @@ HexCode: 000F000000020010
 attribute_name_index='000F' (#15)
 attribute_length='00000002' (2)
 sourcefile_index='0010' (#16)
-</div>
+</pre>

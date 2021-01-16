@@ -34,7 +34,7 @@
     The <code>LocalVariableTable</code> attribute has the following format:
 </p>
 
-<div title="LocalVariableTable_attribute" class="plaintext">
+<pre title="LocalVariableTable_attribute" class="plaintext">
 LocalVariableTable_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -46,7 +46,7 @@ LocalVariableTable_attribute {
         u2 index;
     } local_variable_table[local_variable_table_length];
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>LocalVariableTable_attribute</code> structure are as follows:
@@ -117,16 +117,16 @@ LocalVariableTable_attribute {
     </li>
 </ul>
 
-<div title="javac example" class="plaintext">
+<pre title="javac example" class="plaintext">
 javac -g:vars Main.java
 javac -g:vars,lines Main.java
-</div>
+</pre>
 
 <h2>Examples</h2>
 
 <h3>First Example</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int a = 0;
@@ -134,9 +134,9 @@ public class HelloWorld {
         int c = 2;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -199,9 +199,9 @@ local_variable_table[3] {
     descriptor_index='000D' (#13)
     index='0003' (3)
 }
-</div>
+</pre>
 
-<div title="test:()V Human Readable" hidden class="plaintext">
+<pre title="test:()V Human Readable" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -224,11 +224,11 @@ index  start_pc  length  name_and_type
     1         2       5  a:I
     2         4       3  b:I
     3         6       1  c:I
-</div>
+</pre>
 
 <h3>Second Example</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test(int x, int y) { // 注意，添加了x和y两个参数
         int a = 0;
@@ -236,9 +236,9 @@ public class HelloWorld {
         int c = 2;
     }
 }
-</div>
+</pre>
 
-<div title="test:(II)V Human Readable" hidden class="plaintext">
+<pre title="test:(II)V Human Readable" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:(II)V
 === === ===  === === ===  === === ===
@@ -263,11 +263,11 @@ index  start_pc  length  name_and_type
     3         2       7  a:I
     4         5       4  b:I
     5         8       1  c:I
-</div>
+</pre>
 
 <h3>Third Example</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static void test(int x, int y) { // 注意，添加了static关键字
         int a = 0;
@@ -275,9 +275,9 @@ public class HelloWorld {
         int c = 2;
     }
 }
-</div>
+</pre>
 
-<div title="test:(II)V Human Readable" hidden class="plaintext">
+<pre title="test:(II)V Human Readable" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:(II)V
 === === ===  === === ===  === === ===
@@ -301,5 +301,5 @@ index  start_pc  length  name_and_type
     2         2       6  a:I
     3         4       4  b:I
     4         7       1  c:I
-</div>
+</pre>
 

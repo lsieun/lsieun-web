@@ -17,13 +17,13 @@
     All attributes have the following general format:
 </p>
 
-<div title="attribute_info" class="plaintext">
+<pre title="attribute_info" class="plaintext">
 attribute_info {
     u2 attribute_name_index;
     u4 attribute_length;
     u1 info[attribute_length];
 }
-</div>
+</pre>
 
 <ul>
     <li>
@@ -151,25 +151,25 @@ attribute_info {
 
 <p>AnnotationDefault</p>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
     String name() default "tomcat"; // AnnotationDefault
     int age()     default 12;       // AnnotationDefault
 }
-</div>
+</pre>
 
 <p>RuntimeVisibleAnnotations</p>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME) // 注意，RUNTIME可以换成CLASS
 public @interface MyTag {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @MyTag // RuntimeVisibleAnnotations
 public class HelloWorld {
 
@@ -181,30 +181,30 @@ public class HelloWorld {
         //
     }
 }
-</div>
+</pre>
 
 <p>RuntimeVisibleParameterAnnotations</p>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME) // 注意，RUNTIME可以换成CLASS
 public @interface MyTag {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test(@MyTag String name, int age) { // RuntimeVisibleParameterAnnotations
         System.out.println(name + ":" + age);
     }
 }
-</div>
+</pre>
 
 <p>RuntimeVisibleTypeAnnotations</p>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -214,21 +214,21 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME) // 注意，RUNTIME可以换成CLASS
 public @interface MyTag {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         @MyTag String str = null; // RuntimeVisibleTypeAnnotations
     }
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld&lt;@MyTag T&gt; {
     //
 }
-</div>
+</pre>
 
 <h3>属性出现的位置</h3>
 

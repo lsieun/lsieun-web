@@ -9,12 +9,12 @@
 
 <h2>预期目标</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
 }
 </div>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
 
     public void test(String name) {
@@ -27,7 +27,7 @@ public class HelloWorld {
 
 <h2>编码实现</h2>
 
-<div title="MethodAdder.java" class="javacode">
+<pre title="MethodAdder.java" class="javacode">
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -92,7 +92,7 @@ public class MethodAdder extends ClassVisitor implements Opcodes {
 }
 </div>
 
-<div title="MethodAdderRun.java" class="javacode">
+<pre title="MethodAdderRun.java" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;
@@ -128,7 +128,7 @@ public class MethodAdderRun {
 
 <h2>验证结果</h2>
 
-<div title="HelloWorldRun.java" class="javacode">
+<pre title="HelloWorldRun.java" class="javacode">
 import java.lang.reflect.Method;
 
 public class HelloWorldRun {
@@ -142,6 +142,6 @@ public class HelloWorldRun {
 }
 </div>
 
-<div title="Run output" class="plaintext">
+<pre title="Run output" class="plaintext">
 Hello, Tomcat
 </div>

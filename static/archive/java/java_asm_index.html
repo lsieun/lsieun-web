@@ -15,7 +15,25 @@
 </p>
 
 <p>
+    Class层一级叫Visitor，而Field/Method/Annotation一级叫Adapter。
+</p>
+
+<p>
+    有人讲到Spring-core用到ASM，我要调查一下。
+</p>
+
+<p>
     有一些学术论文，在讨论ASM的使用。
+</p>
+
+<p>
+    首先，讲ClassReader -&gt; ClassVisitor --&gt; ClassWriter放到一起。
+    ClassReader和ClassVisitor一起讲；ClassVisitor和ClassWriter一起讲。
+    地下水渗透模型。
+</p>
+
+<p>
+    visitEnd()要特别讲一下：所谓靠谱的人，就是凡事有交代，件件有着落，事事有回音！说是三件事，其实是一件事，就是你要在协作中完成闭环。所谓闭环，就是一件事有开头，就必有结尾。但是一般人做到这一条并不容易。
 </p>
 
 <ul>
@@ -110,6 +128,7 @@
             <li><a href="/archive/java/asm/core/stateful_transformations.html">Stateful transformations</a></li>
             <li><a href="/archive/java/asm/core/commons/analyzer_adapter.html">AnalyzerAdapter</a></li>
             <li><a href="/archive/java/asm/core/commons/local_variables_sorter.html">LocalVariablesSorter</a></li>
+            <li><a href="/archive/java/asm/core/try_catch.html">Try Catch</a></li>
         </ul>
     </li>
     <li>
@@ -156,6 +175,8 @@
                 <ul>
                     <li><a href="/archive/java/asm/template/code_inserted_before_execution.html">Insert Code before Method, Constructor or Static Initializer Execution</a></li>
                     <li><a href="/archive/java/asm/template/code_inserted_before_exit.html">Insert Code before Method Exit</a></li>
+                    <li><a href="/archive/java/asm/template/field_access_replace.html">Replace Field Access</a></li>
+                    <li><a href="/archive/java/asm/template/method_call_replace.html">Replace Method Call</a></li>
                 </ul>
             </li>
 

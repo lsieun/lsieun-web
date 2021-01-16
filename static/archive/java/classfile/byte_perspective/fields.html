@@ -9,7 +9,7 @@
 
 <h2>Fields in ClassFile</h2>
 
-<div title="ClassFile" class="plaintext">
+<pre title="ClassFile" class="plaintext">
 ClassFile {
     u4             magic;
     u2             minor_version;
@@ -30,7 +30,7 @@ ClassFile {
     u2             attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 <ul>
     <li>
@@ -46,19 +46,19 @@ ClassFile {
     </li>
 </ul>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static final int class_variable = 10;
     public int instance_variable = 20;
 }
-</div>
+</pre>
 
 <p class="indented">
     Each field is described by a <code>field_info</code> structure. No two fields in one class file may have the same <b>name</b> and <b>descriptor</b>.
     The structure has the following format:
 </p>
 
-<div title="field_info" class="plaintext">
+<pre title="field_info" class="plaintext">
 field_info {
     u2             access_flags;
     u2             name_index;
@@ -66,7 +66,7 @@ field_info {
     u2             attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 <div class="w3-display-container w3-center">
     <img class="w3-image w3-center" src="/images/java/classfile/classfile_field_info.png" alt="field_info"/>
@@ -175,7 +175,7 @@ field_info {
 
 <h3>ACC_PUBLIC～ACC_TRANSIENT</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int publicField;
     private int privateField;
@@ -187,9 +187,9 @@ public class HelloWorld {
     volatile int volatileField;
     transient int transientField;
 }
-</div>
+</pre>
 
-<div title="Example" class="plaintext">
+<pre title="Example" class="plaintext">
 constant_pool_count='001C' (28)
 constant_pool
     ... ...
@@ -213,7 +213,7 @@ fields
     FieldInfo {Value='finalField:I', AccessFlags='[ACC_FINAL]', Attrs='[ConstantValue]', HexCode='0010000A00060001...'}
     FieldInfo {Value='volatileField:I', AccessFlags='[ACC_VOLATILE]', Attrs='[]', HexCode='0040000D00060000'}
     FieldInfo {Value='transientField:I', AccessFlags='[ACC_TRANSIENT]', Attrs='[]', HexCode='0080000E00060000'}
-</div>
+</pre>
 
 <h3>ACC_SYNTHETIC and ACC_ENUM</h3>
 
@@ -229,14 +229,14 @@ fields
     下面的代码，在ClassFile中会生成隐藏的<code>$VALUES</code>字段，由于是compiler生成的，因此带有<code>ACC_SYNTHETIC</code>；对于MONDAY~SUNDAY则带有<code>ACC_ENUM</code>标识。
 </p>
 
-<div title="Day.java" class="javacode">
+<pre title="Day.java" class="javacode">
 public enum Day {
     SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
     THURSDAY, FRIDAY, SATURDAY
 }
-</div>
+</pre>
 
-<div title="Example" class="plaintext">
+<pre title="Example" class="plaintext">
 fields_count='0008' (8)
 fields
     FieldInfo {Value='SUNDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
@@ -247,7 +247,7 @@ fields
     FieldInfo {Value='FRIDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
     FieldInfo {Value='SATURDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
     FieldInfo {Value='$VALUES:[Lsample/Day;', AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_FINAL,ACC_SYNTHETIC]', Attrs='[]'}
-</div>
+</pre>
 
 <p class="indented">
     The <code>ACC_ENUM</code> flag indicates that this field is used to hold an element of an enumerated type.
@@ -257,17 +257,17 @@ fields
     如果我们在<code>HelloWorld.java</code>中定义<code>Day</code>类型的字段，它会带有<code>ACC_ENUM</code>标识吗？
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public Day day;
 }
-</div>
+</pre>
 
-<div title="fields" class="plaintext">
+<pre title="fields" class="plaintext">
 fields_count='0001' (1)
 fields
     FieldInfo {Value='day:Lsample/Day;', AccessFlags='[ACC_PUBLIC]', Attrs='[]'}
-</div>
+</pre>
 
 <h3>Interface Fields: ACC_PUBLIC, ACC_STATIC 和 ACC_FINAL</h3>
 
@@ -278,17 +278,17 @@ fields
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public interface HelloWorld {
     int width = 10;
 }
-</div>
+</pre>
 
-<div title="Example" class="plaintext">
+<pre title="Example" class="plaintext">
 fields_count='0001' (1)
 fields
     FieldInfo {Value='width:I', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL]', Attrs='[ConstantValue]'}
-</div>
+</pre>
 
 <h2>attributes</h2>
 
@@ -302,13 +302,13 @@ fields
     在这里我们只介绍一个<code>ConstantValue</code>属性。在本课程的第3章，会详细的介绍<code>ConstantValue</code>属性，这里只是举一个例子。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static final int intValue = 10;
 }
-</div>
+</pre>
 
-<div title="intValue:I" hidden class="plaintext">
+<pre title="intValue:I" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -324,9 +324,9 @@ name_index='0004'(#4)
 descriptor_index='0005'(#5)
 attributes_count='0001'(1)
 --->ConstantValue=0006000000020007
-</div>
+</pre>
 
-<div title="intValue:I ConstantValue" hidden class="plaintext">
+<pre title="intValue:I ConstantValue" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -340,11 +340,11 @@ HexCode: 0006000000020007
 attribute_name_index='0006' (#6)
 attribute_length='00000002' (2)
 constantvalue_index='0007' (#7)
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 
-<div title="field_info" class="plaintext">
+<pre title="field_info" class="plaintext">
 field_info {
     u2             access_flags;
     u2             name_index;
@@ -352,7 +352,7 @@ field_info {
     u2             attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 <div class="w3-display-container w3-center">
     <img class="w3-image w3-center" src="/images/java/classfile/classfile_field_info.png" alt="field_info"/>

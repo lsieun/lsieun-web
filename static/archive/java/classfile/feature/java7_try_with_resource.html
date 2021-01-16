@@ -14,7 +14,7 @@
     We need a <code>finally</code> block, to ensure that the resources are properly closed regardless of whether the <code>try</code> completes normally or abruptly.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.io.*;
 
 public class FileCopyPreJDK7 {
@@ -48,9 +48,9 @@ public class FileCopyPreJDK7 {
         }
     }
 }
-</div>
+</pre>
 
-<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="main:([Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -133,7 +133,7 @@ index  start_pc  length  name_and_type
     2         4     103  dest:Ljava/io/BufferedWriter;
     3        44      22  line:Ljava/lang/String;
     3        78       4  ex:Ljava/io/IOException;
-</div>
+</pre>
 
 <h2>JDK 7</h2>
 
@@ -142,7 +142,7 @@ index  start_pc  length  name_and_type
     This results in cleaner codes.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.io.*;
 
 public class FileCopyJDK7 {
@@ -162,9 +162,9 @@ public class FileCopyJDK7 {
         // No need for finally to explicitly close the resources.
     }
 }
-</div>
+</pre>
 
-<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="main:([Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -324,13 +324,13 @@ index  start_pc  length  name_and_type
     1       226       4  ex:Ljava/io/IOException;
     3        36     115  dest:Ljava/io/BufferedWriter;
     5        46      24  line:Ljava/lang/String;
-</div>
+</pre>
 
 
 
 <h2>Simple Example</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -348,9 +348,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test()V" hidden class="plaintext">
+<pre title="test()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -443,7 +443,7 @@ index  start_pc  length  name_and_type
     1        10      93  fin:Ljava/io/FileInputStream;
     1       107       4  e:Ljava/io/IOException;
     3        18      14  ch:I
-</div>
+</pre>
 
 <p>
     梳理思路：

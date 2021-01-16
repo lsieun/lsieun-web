@@ -59,14 +59,14 @@
     </tr>
 </table>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld  {
     public int intValue = 32768; // CONSTANT_Integer_info
     public long longValue = 65538L; // CONSTANT_Long_info
     public float floatValue = 3.14F; // CONSTANT_Float_info
     public double doubleValue = 6.28D; // CONSTANT_Double_info
 }
-</div>
+</pre>
 
 <p class="indented">
     在上面的表格中，我们并没有看到Java programming language中的<code>byte</code>、<code>short</code>、<code>char</code>和<code>boolean</code>这些类型在Java class file format当中得到体现。换句话说，在Java class file format当中，并没有出现<code>CONSTANT_Byte_info</code>、<code>CONSTANT_Short_info</code>、<code>CONSTANT_Char_info</code>或<code>CONSTANT_Boolean_info</code>这样的结构。这个问题，要从opcode角度才能回答。
@@ -76,7 +76,7 @@ public class HelloWorld  {
     另外，<code>boolean</code>、<code>byte</code>、<code>short</code>、<code>char</code>和<code>int</code>类型的字段在带有<code>final</code>关键字，也会生成<code>CONSTANT_Integer_info</code>类型的常量。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public final boolean flag = false;
     public final int intValue = 1;
@@ -84,7 +84,7 @@ public class HelloWorld {
     public final short s = 3;
     public final char ch = 4;
 }
-</div>
+</pre>
 
 <h2>CP (8): CONSTANT_String</h2>
 
@@ -100,11 +100,11 @@ public class HelloWorld {
     </tr>
 </table>
 
-<div title="String在JavaFile中表达形式" class="javacode">
+<pre title="String在JavaFile中表达形式" class="javacode">
 String str = "AAABBB";
-</div>
+</pre>
 
-<div title="String在ClassFile中的表达方式" class="plaintext">
+<pre title="String在ClassFile中的表达方式" class="plaintext">
 CONSTANT_String_info {
     u1 tag(8);
     u2 string_index;
@@ -118,7 +118,7 @@ CONSTANT_Utf8_info {
 
 |002| 08 00 12 // string_index = 18
 |018| 01 00 06 41 41 41 42 42 42 // AAABBB
-</div>
+</pre>
 
 <br/>
 
@@ -136,7 +136,7 @@ CONSTANT_Utf8_info {
     </tr>
 </table>
 
-<div title="CONSTANT_Class_info Example" class="plaintext">
+<pre title="CONSTANT_Class_info Example" class="plaintext">
 CONSTANT_Class_info {
     u1 tag(7);
     u2 name_index;
@@ -150,7 +150,7 @@ CONSTANT_Utf8_info {
 
 |004| 07 00 14 // name_index = 20
 |020| 01 00 10 6A 61 76 61 2F 6C 61 6E 67 2F 4F 62 6A 65 63 74 // java/lang/Object
-</div>
+</pre>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
@@ -183,7 +183,7 @@ CONSTANT_Utf8_info {
 
 <h2>CP (9-12): Fieldref/Methodref</h2>
 
-<div title="Fieldref/Methodref" class="plaintext">
+<pre title="Fieldref/Methodref" class="plaintext">
 CONSTANT_Fieldref_info {
     u1 tag;
     u2 class_index;
@@ -207,7 +207,7 @@ CONSTANT_NameAndType_info {
     u2 name_index;
     u2 descriptor_index;
 }
-</div>
+</pre>
 
 <p class="indented">
     为了理解这几个table，我们需要先区分开的概念就是，将“Field Definition、Method Definition”和“Field Invocation、Method Invocation”区分开。
@@ -348,7 +348,7 @@ CONSTANT_NameAndType_info {
     A <b>field descriptor</b> is a string that indicates the field's type.
 </p>
 
-<div title="field_info" class="plaintext">
+<pre title="field_info" class="plaintext">
 field_info {
     u2             access_flags;
     u2             name_index;
@@ -356,7 +356,7 @@ field_info {
     u2             attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 <div class="w3-display-container w3-center">
     <img class="w3-image w3-center" src="/images/java/classfile/classfile_field_info.png" alt="field_info"/>
@@ -368,7 +368,7 @@ field_info {
     A <b>method descriptor</b> is a string that indicates the method's return type and the number, order, and types of its parameters.
 </p>
 
-<div title="method_info" class="plaintext">
+<pre title="method_info" class="plaintext">
 method_info {
     u2             access_flags;
     u2             name_index;
@@ -376,23 +376,23 @@ method_info {
     u2             attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 <div class="w3-display-container w3-center">
     <img class="w3-image w3-center" src="/images/java/classfile/classfile_method_info.png" alt="method_info"/>
 </div>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static void main(String[] args) {
         //
     }
 }
-</div>
+</pre>
 
-<div title="descriptor" class="plaintext">
+<pre title="descriptor" class="plaintext">
 ([Ljava/lang/String;)V
-</div>
+</pre>
 
 <h2>Descriptor Vs Signature</h2>
 
@@ -420,7 +420,7 @@ public class HelloWorld {
 
 <h2>CP (15-18)</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Supplier;
 
 public class HelloWorld  {
@@ -432,7 +432,7 @@ public class HelloWorld  {
         return HelloWorld::lambdiseMe;
     }
 }
-</div>
+</pre>
 
 <p>
     暂时，先不讲这部分内容。因为这部分内容，需要结合<code>invokedynamic</code>指令才能讲清楚。

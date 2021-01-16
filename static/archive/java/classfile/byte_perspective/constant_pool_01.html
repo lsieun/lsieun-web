@@ -13,7 +13,7 @@
     A class file consists of a single <code>ClassFile</code> structure:
 </p>
 
-<div title="ClassFile" class="plaintext">
+<pre title="ClassFile" class="plaintext">
 ClassFile {
     u4             magic;
     u2             minor_version;
@@ -34,7 +34,7 @@ ClassFile {
     u2             attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 <ul>
     <li>
@@ -65,12 +65,12 @@ ClassFile {
     All <code>constant_pool</code> table entries have the following general format:
 </p>
 
-<div title="cp_info" class="plaintext">
+<pre title="cp_info" class="plaintext">
 cp_info {
     u1 tag;
     u1 info[];
 }
-</div>
+</pre>
 
 <p class="indented">
     Each item in the <code>constant_pool</code> table must begin with a 1-byte <code>tag</code> indicating the kind of <code>cp_info</code> entry.

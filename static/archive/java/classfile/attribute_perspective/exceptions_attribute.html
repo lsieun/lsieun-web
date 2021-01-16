@@ -30,14 +30,14 @@
     The <code>Exceptions</code> attribute has the following format:
 </p>
 
-<div title="Exceptions_attribute" class="plaintext">
+<pre title="Exceptions_attribute" class="plaintext">
 Exceptions_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
     u2 number_of_exceptions;
     u2 exception_index_table[number_of_exceptions];
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>Exceptions_attribute</code> structure are as follows:
@@ -61,7 +61,7 @@ Exceptions_attribute {
 
 <h2>Examples</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -69,9 +69,9 @@ public class HelloWorld {
     public void test() throws FileNotFoundException, IOException {
     }
 }
-</div>
+</pre>
 
-<div title="Exceptions Attribute" hidden class="plaintext">
+<pre title="Exceptions Attribute" hidden class="plaintext">
 constant_pool_count='0016' (22)
 constant_pool
     ... ...
@@ -114,4 +114,4 @@ exception_index_table {
     exception_index='000D' (#13)
     exception_index='000E' (#14)
 }
-</div>
+</pre>

@@ -542,7 +542,7 @@
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="HelloWorld.java" hidden class="javacode">
+<pre title="HelloWorld.java" hidden class="javacode">
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -559,9 +559,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V Code Attribute" hidden class="plaintext">
+<pre title="test:()V Code Attribute" hidden class="plaintext">
 constant_pool_count='0037' (55)
 constant_pool
     ......
@@ -599,9 +599,9 @@ attributes_count='0003' (3)
     LineNumberTable: 00110000002600090000000A000A000B000F00100012000C0013000D001B0010001E000E001F000F00270011
     LocalVariableTable: 00120000002A0004000A000500160017000100130008001800190001001F00080018001A000100000028001300140000
     StackMapTable: 001B0000000B00035207001C4B07001D08
-</div>
+</pre>
 
-<div title="test:()V Exception Table" hidden class="plaintext">
+<pre title="test:()V Exception Table" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -640,7 +640,7 @@ index  start_pc  length  name_and_type
     1        10       5  fin:Ljava/io/FileInputStream;
     1        19       8  e:Ljava/io/FileNotFoundException;
     1        31       8  e:Ljava/io/IOException;
-</div>
+</pre>
 
 <p class="indented">
     When a method throws an exception, the Java virtual machine uses <b>the exception table</b> referred to by the frame data to determine how to handle the exception.

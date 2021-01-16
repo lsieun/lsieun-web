@@ -20,7 +20,7 @@
     which <span class="text-key-point">does nothing else than just forwarding all the method calls it receives</span>.
 </p>
 
-<div title="MethodVisitor.java" class="javacode">
+<pre title="MethodVisitor.java" class="javacode">
 public abstract class MethodVisitor {
 
     protected final int api;
@@ -66,7 +66,7 @@ public abstract class MethodVisitor {
 
 <h2>Remove Nop</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         System.out.println("Hello World");
@@ -74,7 +74,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="check 1" class="plaintext">
+<pre title="check 1" class="plaintext">
 $ javap -c sample.HelloWorld
 public class sample.HelloWorld {
   public sample.HelloWorld();
@@ -92,7 +92,7 @@ public class sample.HelloWorld {
 }
 </div>
 
-<div title="HelloWorldDump.java" class="javacode">
+<pre title="HelloWorldDump.java" class="javacode">
 import lsieun.utils.FileUtils;
 import org.objectweb.asm.*;
 
@@ -145,7 +145,7 @@ public class HelloWorldDump implements Opcodes {
 }
 </div>
 
-<div title="check 2" class="plaintext">
+<pre title="check 2" class="plaintext">
 $ javap -c sample.HelloWorld
 public class sample.HelloWorld {
   public sample.HelloWorld();
@@ -173,7 +173,7 @@ public class sample.HelloWorld {
     (they can be removed without problems since they do nothing):
 </p>
 
-<div title="RemoveNopMethodAdapter.java" class="javacode">
+<pre title="RemoveNopMethodAdapter.java" class="javacode">
 import org.objectweb.asm.MethodVisitor;
 
 import static org.objectweb.asm.Opcodes.NOP;
@@ -199,7 +199,7 @@ public class RemoveNopMethodAdapter extends MethodVisitor {
     This can be done as follows:
 </p>
 
-<div title="RemoveNopClassAdapter.java" class="javacode">
+<pre title="RemoveNopClassAdapter.java" class="javacode">
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 
@@ -223,7 +223,7 @@ public class RemoveNopClassAdapter extends ClassVisitor {
 
 </p>
 
-<div title="App.java" class="javacode">
+<pre title="App.java" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;
@@ -258,7 +258,7 @@ public class App {
 }
 </div>
 
-<div title="check 3" class="plaintext">
+<pre title="check 3" class="plaintext">
 $ javap -c sample.HelloWorld
 public class sample.HelloWorld {
   public sample.HelloWorld();

@@ -27,13 +27,13 @@
     The <code>SourceFile</code> attribute has the following format:
 </p>
 
-<div title="SourceFile_attribute" class="plaintext">
+<pre title="SourceFile_attribute" class="plaintext">
 SourceFile_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
     u2 sourcefile_index;
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>SourceFile_attribute</code> structure are as follows:
@@ -64,21 +64,21 @@ SourceFile_attribute {
     </li>
 </ul>
 
-<div title="javac example" class="plaintext">
+<pre title="javac example" class="plaintext">
 javac -g:vars Main.java
 javac -g:vars,lines Main.java
-</div>
+</pre>
 
 <h2>Examples</h2>
 
 <h3>HelloWorld</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
 }
-</div>
+</pre>
 
-<div title="Example: SourceFile" class="plaintext">
+<pre title="Example: SourceFile" class="plaintext">
 constant_pool_count='0010' (16)
 constant_pool
     ... ...
@@ -93,11 +93,11 @@ HexCode: 000B00000002000C
 attribute_name_index='000B' (11)
 attribute_length='00000002' (2)
 sourcefile_index='000C' (12)
-</div>
+</pre>
 
 <h3>AAA</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     //
 }
@@ -105,9 +105,9 @@ public class HelloWorld {
 class AAA {
     // 注意，AAA定义在HelloWorld.java文件内
 }
-</div>
+</pre>
 
-<div title="AAA.class Attribute" class="plaintext">
+<pre title="AAA.class Attribute" class="plaintext">
 constant_pool_count='0010' (16)
 constant_pool
     ... ...
@@ -121,4 +121,4 @@ HexCode: 000B00000002000C
 attribute_name_index='000B' (#11)
 attribute_length='00000002' (2)
 sourcefile_index='000C' (#12)
-</div>
+</pre>

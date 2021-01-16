@@ -39,7 +39,7 @@
     The <code>RuntimeVisibleParameterAnnotations</code> attribute has the following format:
 </p>
 
-<div title="RuntimeVisibleParameterAnnotations_attribute" class="plaintext">
+<pre title="RuntimeVisibleParameterAnnotations_attribute" class="plaintext">
 RuntimeVisibleParameterAnnotations_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -48,7 +48,7 @@ RuntimeVisibleParameterAnnotations_attribute {
         annotation annotations[num_annotations];
     } parameter_annotations[num_parameters];
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
@@ -118,7 +118,7 @@ RuntimeVisibleParameterAnnotations_attribute {
     The <code>RuntimeInvisibleParameterAnnotations</code> attribute has the following format:
 </p>
 
-<div title="RuntimeInvisibleParameterAnnotations_attribute" class="plaintext">
+<pre title="RuntimeInvisibleParameterAnnotations_attribute" class="plaintext">
 RuntimeInvisibleParameterAnnotations_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -127,7 +127,7 @@ RuntimeInvisibleParameterAnnotations_attribute {
         annotation annotations[num_annotations];
     } parameter_annotations[num_parameters];
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
@@ -167,26 +167,26 @@ RuntimeInvisibleParameterAnnotations_attribute {
 
 <h2>Examples</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test(@MyTag String name, int age) {
         System.out.println(name + ":" + age);
     }
 }
-</div>
+</pre>
 
 <h3>First Example</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME) // 注意，这里是RUNTIME
 public @interface MyTag {
 }
-</div>
+</pre>
 
-<div title="RuntimeVisibleParameterAnnotations" hidden class="plaintext">
+<pre title="RuntimeVisibleParameterAnnotations" hidden class="plaintext">
 constant_pool_count='0036' (54)
 constant_pool
     ......
@@ -211,20 +211,20 @@ parameter_annotations[0] {
 parameter_annotations[1] {
     num_annotations='0000' (0)
 }
-</div>
+</pre>
 
 <h3>Second Example</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.CLASS) // 注意，这里是CLASS
 public @interface MyTag {
 }
-</div>
+</pre>
 
-<div title="RuntimeInvisibleParameterAnnotations" hidden class="plaintext">
+<pre title="RuntimeInvisibleParameterAnnotations" hidden class="plaintext">
 constant_pool_count='0036' (54)
 constant_pool
     ......
@@ -249,5 +249,5 @@ parameter_annotations[0] {
 parameter_annotations[1] {
     num_annotations='0000' (0)
 }
-</div>
+</pre>
 

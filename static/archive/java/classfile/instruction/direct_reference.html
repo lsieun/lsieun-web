@@ -81,15 +81,15 @@
     As an example, consider this hierarchy of three classes and one interface:
 </p>
 
-<div title="Friendly.java" class="javacode">
+<pre title="Friendly.java" class="javacode">
 public interface Friendly {
     void sayHello();
 
     void sayGoodbye();
 }
-</div>
+</pre>
 
-<div title="Dog.java" class="javacode">
+<pre title="Dog.java" class="javacode">
 public class Dog {
     // How many times this dog wags its tail when saying hello.
     private int wagCount = ((int) (Math.random() * 5.0)) + 1;
@@ -106,9 +106,9 @@ public class Dog {
         return "Woof!";
     }
 }
-</div>
+</pre>
 
-<div title="CockerSpaniel.java" class="javacode">
+<pre title="CockerSpaniel.java" class="javacode">
 public class CockerSpaniel extends Dog implements Friendly {
     // How many times this Cocker Spaniel woofs when saying hello.
     private int woofCount = ((int) (Math.random() * 4.0)) + 1;
@@ -135,9 +135,9 @@ public class CockerSpaniel extends Dog implements Friendly {
         System.out.println(".");
     }
 }
-</div>
+</pre>
 
-<div title="Cat.java" class="javacode">
+<pre title="Cat.java" class="javacode">
 public class Cat implements Friendly {
     public void eat() {
         System.out.println("Chomp, chomp, chomp.");
@@ -155,7 +155,7 @@ public class Cat implements Friendly {
         System.out.println("Meow!");
     }
 }
-</div>
+</pre>
 
 <h3>instance variables</h3>
 
@@ -325,7 +325,7 @@ public class Cat implements Friendly {
     or any other object whose class implements the <code>Friendly</code> interface.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         CockerSpaniel cs = new CockerSpaniel();
@@ -343,9 +343,9 @@ public class HelloWorld {
         fr.sayGoodbye();
     }
 }
-</div>
+</pre>
 
-<div title="test()V" hidden class="plaintext">
+<pre title="test()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -383,7 +383,7 @@ index  start_pc  length  name_and_type
     1         8      36  cs:Lsample/CockerSpaniel;
     2        14      30  dog:Lsample/Dog;
     3        23      21  fr:Lsample/Friendly;
-</div>
+</pre>
 
 <p class="indented">
     Local variable <code>fr</code> invokes <code>sayGoodbye()</code> on both a <code>CockerSpaniel</code> object and a <code>Cat</code> object.

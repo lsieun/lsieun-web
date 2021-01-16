@@ -9,7 +9,7 @@
 
 <h2>预期目标</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public String name;
     public int age;
@@ -35,7 +35,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="HelloWorldRun.java" class="javacode">
+<pre title="HelloWorldRun.java" class="javacode">
 import java.io.*;
 
 public class HelloWorldRun {
@@ -84,7 +84,7 @@ public class HelloWorldRun {
 
 <h2>编码实现</h2>
 
-<div title="InterfaceAdder.java" class="javacode">
+<pre title="InterfaceAdder.java" class="javacode">
 import org.objectweb.asm.ClassVisitor;
 
 import java.util.Arrays;
@@ -113,7 +113,7 @@ public class InterfaceAdder extends ClassVisitor {
 }
 </div>
 
-<div title="InterfaceAdderRun.java" class="javacode">
+<pre title="InterfaceAdderRun.java" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;
@@ -153,7 +153,7 @@ public class InterfaceAdderRun {
 
 <h2>验证结果</h2>
 
-<div title="check 1 (before)" class="plaintext">
+<pre title="check 1 (before)" class="plaintext">
 $ javap sample.HelloWorld
 public class sample.HelloWorld {
   public java.lang.String name;
@@ -165,7 +165,7 @@ public class sample.HelloWorld {
 }
 </div>
 
-<div title="check 2 (after)" class="plaintext">
+<pre title="check 2 (after)" class="plaintext">
 javap sample.HelloWorld
 public class sample.HelloWorld implements java.io.Serializable,java.lang.Cloneable {
   public java.lang.String name;

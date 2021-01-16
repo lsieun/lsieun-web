@@ -37,7 +37,7 @@
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Supplier;
 
 public class HelloWorld {
@@ -49,7 +49,7 @@ public class HelloWorld {
         return HelloWorld::lambdiseMe;
     }
 }
-</div>
+</pre>
 
 <p class="indented">
     From bytecode perspective, the <code>getSupplier</code> method is of the same basic form of the <code>lambdiseMe</code> method:
@@ -61,7 +61,7 @@ public class HelloWorld {
     In <code>lambdiseMe</code>, it use <code>ldc</code> to load a constant:
 </p>
 
-<div title="lambdiseMe:()Ljava/lang/String;" class="plaintext">
+<pre title="lambdiseMe:()Ljava/lang/String;" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 0
@@ -70,13 +70,13 @@ code = 1202B0
 === === ===  === === ===  === === ===
 0000: ldc             #2   // 1202       || Hello World!
 0002: areturn              // B0
-</div>
+</pre>
 
 <p>
     In <code>getSupplier</code>, it use <code>invokedynamic</code> to put the value on the operand stack:
 </p>
 
-<div title="getSupplier:()Ljava/util/function/Supplier;" class="plaintext">
+<pre title="getSupplier:()Ljava/util/function/Supplier;" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 0
@@ -85,7 +85,7 @@ code = BA00030000B0
 === === ===  === === ===  === === ===
 0000: invokedynamic   #3   // BA00030000 || #0:get:()Ljava/util/function/Supplier;
 0005: areturn              // B0
-</div>
+</pre>
 
 <p class="indented">
     The <code>invokedynamic</code> instruction was introduced in Java 7 to support dynamic languages that ran on the JVM, such as JRuby and Groovy.
@@ -112,19 +112,19 @@ code = BA00030000B0
     </p>
 </div>
 
-<div title="constant_pool" class="plaintext">
+<pre title="constant_pool" class="plaintext">
 constant_pool
     ... ...
     |003| CONSTANT_InvokeDynamic {Value='#0:get:()Ljava/util/function/Supplier;', HexCode='120000001C'}
-</div>
+</pre>
 
-<div title="CONSTANT_InvokeDynamic_info" class="plaintext">
+<pre title="CONSTANT_InvokeDynamic_info" class="plaintext">
 CONSTANT_InvokeDynamic_info {
     u1 tag;
     u2 bootstrap_method_attr_index;
     u2 name_and_type_index;
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_InvokeDynamic</p>
@@ -144,7 +144,7 @@ CONSTANT_InvokeDynamic_info {
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="BootstrapMethods" class="plaintext">
+<pre title="BootstrapMethods" class="plaintext">
 BootstrapMethods:
   0: #24 invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
             Ljava/lang/invoke/MethodHandles$Lookup;   // 由JVM 提供，本例中，这里是HelloWorld
@@ -158,9 +158,9 @@ BootstrapMethods:
       #25 ()Ljava/lang/Object;
       #26 invokestatic sample/HelloWorld.lambdiseMe:()Ljava/lang/String; // 注意，这里是invokestatic
       #27 ()Ljava/lang/String;
-</div>
+</pre>
 
-<div title="BootstrapMethods" class="plaintext">
+<pre title="BootstrapMethods" class="plaintext">
 constant_pool_count='002F' (47)
 constant_pool
     ... ...
@@ -193,7 +193,7 @@ num_bootstrap_methods='0001' (1)
 bootstrap_method_ref='0018' (#24)
 num_bootstrap_arguments='0003' (3)
 bootstrap_arguments='0019001A001B' ([#25,#26,#27])
-</div>
+</pre>
 
 
 
@@ -233,7 +233,7 @@ bootstrap_arguments='0019001A001B' ([#25,#26,#27])
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Consumer;
 
 public class HelloWorld {
@@ -241,9 +241,9 @@ public class HelloWorld {
         return System.out::println;
     }
 }
-</div>
+</pre>
 
-<div title="getConsumer:()Ljava/util/function/Consumer;" class="plaintext">
+<pre title="getConsumer:()Ljava/util/function/Consumer;" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 1
@@ -260,7 +260,7 @@ code = B2000259B6000357BA00040000B0
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      14  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <p class="indented">
     If we compare this to the previous function, we see that there is a bit more going on.
@@ -274,7 +274,7 @@ index  start_pc  length  name_and_type
     So that is our method reference, and the instance to invoke it on is also passed into the bootstrap method.
 </p>
 
-<div title="BootstrapMethods" class="plaintext">
+<pre title="BootstrapMethods" class="plaintext">
 BootstrapMethods:
   0: #25 invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
             Ljava/lang/invoke/MethodHandles$Lookup;
@@ -288,17 +288,17 @@ BootstrapMethods:
       #26 (Ljava/lang/Object;)V
       #27 invokevirtual java/io/PrintStream.println:(Ljava/lang/String;)V  // 注意，这里是invokevirtual
       #28 (Ljava/lang/String;)V
-</div>
+</pre>
 
 <p class="indented">
     Aside from that difference, this is all very similar to what we saw before. But what is that stuff in instructions 3, 4, and 7?
 </p>
 
-<div title="instructions 3, 4, and 7" class="plaintext">
+<pre title="instructions 3, 4, and 7" class="plaintext">
 0003: dup                  // 59
 0004: invokevirtual   #3   // B60003     || java/lang/Object.getClass:()Ljava/lang/Class;
 0007: pop                  // 57
-</div>
+</pre>
 
 <p class="indented">
     It is possible that this variable came from some other classloader far away, or that it was somehow gamed into existence.
@@ -330,7 +330,7 @@ BootstrapMethods:
     However, <b>we do not have a particular instance</b> that is being called in this case, so it can’t act like the bound instance method reference. How does it work?
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.math.BigInteger;
 import java.util.function.Function;
 
@@ -339,9 +339,9 @@ public class HelloWorld {
         return BigInteger::toString;
     }
 }
-</div>
+</pre>
 
-<div title="getFunction:()Ljava/util/function/Function;" class="plaintext">
+<pre title="getFunction:()Ljava/util/function/Function;" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -354,7 +354,7 @@ code = BA00020000B0
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       6  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <p class="indented">
     It may seem like the <b>free instance method</b> is the strangest of all three types of <b>method references</b>, but the actual implementation is just as simple as the <b>static method reference</b>!
@@ -363,7 +363,7 @@ index  start_pc  length  name_and_type
     So there is no difference between creating a static and a free instance method, except in the way the implementation calls the methods.
 </p>
 
-<div title="BootstrapMethods" class="plaintext">
+<pre title="BootstrapMethods" class="plaintext">
 BootstrapMethods:
   0: #20 invokestatic java/lang/invoke/LambdaMetafactory.metafactory:(
             Ljava/lang/invoke/MethodHandles$Lookup;
@@ -377,7 +377,7 @@ BootstrapMethods:
       #21 (Ljava/lang/Object;)Ljava/lang/Object;
       #22 invokevirtual java/math/BigInteger.toString:()Ljava/lang/String; // 注意，这里是invokevirtual
       #23 (Ljava/math/BigInteger;)Ljava/lang/String;
-</div>
+</pre>
 
 <h2>Inline Lambda Definitions and Lambda Lifting</h2>
 
@@ -387,7 +387,7 @@ BootstrapMethods:
     You may consider code like this:
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Supplier;
 
 public class HelloWorld {
@@ -395,9 +395,9 @@ public class HelloWorld {
         return () -&gt; "Hello World!";
     }
 }
-</div>
+</pre>
 
-<div title="javap -v -p HelloWorld.class" class="plaintext">
+<pre title="javap -v -p HelloWorld.class" class="plaintext">
 $ javap -v -p HelloWorld.class
 ... ...
 {
@@ -441,7 +441,7 @@ BootstrapMethods:
       #24 ()Ljava/lang/Object;
       #25 invokestatic sample/HelloWorld.lambda$getSupplier$0:()Ljava/lang/String; // 注意，这里是invokestatic
       #26 ()Ljava/lang/String;
-</div>
+</pre>
 
 <p class="indented">
     What the compiler will do in this case is create a method for you with that implementation.
@@ -457,7 +457,7 @@ BootstrapMethods:
     After all, these lambdas are closures: they enclose their scope. This kind of stuff is their job! How is the compiler going to deal with that complexity? The answer is in Following.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Supplier;
 
 public class HelloWorld {
@@ -469,9 +469,9 @@ public class HelloWorld {
         return () -&gt; this.provideMessage(message);
     }
 }
-</div>
+</pre>
 
-<div title="javap -v -p HelloWorld.class" class="plaintext">
+<pre title="javap -v -p HelloWorld.class" class="plaintext">
 $ javap -v -p HelloWorld.class
 ... ...
 {
@@ -545,7 +545,7 @@ BootstrapMethods:
       #28 ()Ljava/lang/Object;
       #29 invokespecial sample/HelloWorld.lambda$getSupplier$0:(Ljava/lang/String;)Ljava/lang/String; // 注意，这里是invokespecial
       #30 ()Ljava/lang/String;
-</div>
+</pre>
 
 <p class="indented">
     Now things have gotten really quite strange. We see the example of the synthetic method with the strange name: <code>lambda$getSupplier$0(java.lang.String);</code>.

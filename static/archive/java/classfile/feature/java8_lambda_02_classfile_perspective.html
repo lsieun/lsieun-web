@@ -7,7 +7,7 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Function;
 
 public class HelloWorld {
@@ -15,25 +15,25 @@ public class HelloWorld {
         Function&lt;Integer, Integer&gt; func = item -> item + 5;
     }
 }
-</div>
+</pre>
 
 <h2>Constant Pool</h2>
 
-<div title="CONSTANT_InvokeDynamic" class="plaintext">
+<pre title="CONSTANT_InvokeDynamic" class="plaintext">
 |002| CONSTANT_InvokeDynamic {Value='#0:apply:()Ljava/util/function/Function;', HexCode='1200000023'}
-</div>
+</pre>
 
-<div title="CONSTANT_InvokeDynamic_info" class="plaintext">
+<pre title="CONSTANT_InvokeDynamic_info" class="plaintext">
 CONSTANT_InvokeDynamic_info {
     u1 tag;
     u2 bootstrap_method_attr_index;
     u2 name_and_type_index;
 }
-</div>
+</pre>
 
 <h2>Methods</h2>
 
-<div title="HelloWorld.class methods" class="plaintext">
+<pre title="HelloWorld.class methods" class="plaintext">
 methods_count='0003' (3)
 methods
     MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
@@ -42,7 +42,7 @@ methods
     MethodInfo {Value='lambda$main$0:(Ljava/lang/Integer;)Ljava/lang/Integer;',
                 AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_SYNTHETIC]',
                 Attrs='[Code, MethodParameters]'}
-</div>
+</pre>
 
 <p>
     注意，在<code>HelloWorld.class</code>文件中，生成了一个<code>lambda$main$0</code>方法。
@@ -50,7 +50,7 @@ methods
 
 <h3>main</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Function;
 
 public class HelloWorld {
@@ -58,9 +58,9 @@ public class HelloWorld {
         Function&lt;Integer, Integer&gt; func = item -> item + 5;
     }
 }
-</div>
+</pre>
 
-<div title="main:([Ljava/lang/String;)V" class="plaintext">
+<pre title="main:([Ljava/lang/String;)V" class="plaintext">
 constant_pool
     ......
     |002| CONSTANT_InvokeDynamic {Value='#0:apply:()Ljava/util/function/Function;', HexCode='1200000023'}
@@ -81,7 +81,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       7  args:[Ljava/lang/String;
     1         6       1  func:Ljava/util/function/Function;
-</div>
+</pre>
 
 <p class="indented">
     For compensation, <b>the lambda expression</b> is itself substituted by an <code>invokedynamic</code> call site.
@@ -103,7 +103,7 @@ index  start_pc  length  name_and_type
 
 <h3>lambda$X$Y</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Function;
 
 public class HelloWorld {
@@ -111,7 +111,7 @@ public class HelloWorld {
         Function&lt;Integer, Integer&gt; func = item -> item + 5; // lambda expression
     }
 }
-</div>
+</pre>
 
 <p class="indented">
     Whenever the Java compiler translates <b>a lambda expression</b> into <b>byte code</b>,
@@ -120,11 +120,11 @@ public class HelloWorld {
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="lambda$main$0" class="plaintext">
+<pre title="lambda$main$0" class="plaintext">
 MethodInfo {Value='lambda$main$0:(Ljava/lang/Integer;)Ljava/lang/Integer;',
             AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_SYNTHETIC]',
             Attrs='[Code, MethodParameters]'}
-</div>
+</pre>
 
 <p class="indented">
     These methods are named <code>lambda$X$Y</code> with <code>X</code> being the name of the method that contains the lambda expression
@@ -146,7 +146,7 @@ MethodInfo {Value='lambda$main$0:(Ljava/lang/Integer;)Ljava/lang/Integer;',
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="lambda$main$0 opcode" class="plaintext">
+<pre title="lambda$main$0 opcode" class="plaintext">
 === === ===  === === ===  === === ===
 Method lambda$main$0:(Ljava/lang/Integer;)Ljava/lang/Integer;
 === === ===  === === ===  === === ===
@@ -165,13 +165,13 @@ code = 2AB600030860B80004B0
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      10  item:Ljava/lang/Integer;
-</div>
+</pre>
 
 
 
 <h2>Attributes</h2>
 
-<div title="BootstrapMethods" class="plaintext">
+<pre title="BootstrapMethods" class="plaintext">
 constant_pool_count='003F' (63)
 constant_pool
     ......
@@ -205,7 +205,7 @@ bootstrap_methods[0] {
     num_bootstrap_arguments='0003' (3)
     bootstrap_arguments='002000210022' ([#32,#33,#34])
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>

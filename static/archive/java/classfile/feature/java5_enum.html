@@ -9,12 +9,12 @@
 
 <h2>enum type</h2>
 
-<div title="Day.java" class="javacode">
+<pre title="Day.java" class="javacode">
 public enum Day {
     SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
     THURSDAY, FRIDAY, SATURDAY
 }
-</div>
+</pre>
 
 <p class="indented">
     A class member that does not appear in the source code must be marked using a <code>Synthetic</code> attribute, or else it must have its <code>ACC_SYNTHETIC</code> flag set.
@@ -26,7 +26,7 @@ public enum Day {
 
 <h3>ClassInfo</h3>
 
-<div title="class_info" class="plaintext">
+<pre title="class_info" class="plaintext">
 constant_pool_count='0047' (71)
 constant_pool
     ... ...
@@ -40,7 +40,7 @@ class_info='4031000400160000'
     super_class='0016' (#22)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <p>
     注意两点：
@@ -53,7 +53,7 @@ class_info='4031000400160000'
 
 <h3>fields</h3>
 
-<div title="fields" class="plaintext">
+<pre title="fields" class="plaintext">
 fields_count='0008' (8)
 fields
     FieldInfo {Value='SUNDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
@@ -64,7 +64,7 @@ fields
     FieldInfo {Value='FRIDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
     FieldInfo {Value='SATURDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
     FieldInfo {Value='$VALUES:[Lsample/Day;', AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_FINAL,ACC_SYNTHETIC]', Attrs='[]'}
-</div>
+</pre>
 
 <p>
     一方面，我们需要注意：<code>SUNDAY</code>~<code>SATURDAY</code>这些字段的类型是<code>Day</code>，它们带有<code>ACC_PUBLIC</code>、<code>ACC_STATIC</code>、<code>ACC_FINAL</code>和<code>ACC_ENUM</code>标识。
@@ -76,14 +76,14 @@ fields
 
 <h3>methods</h3>
 
-<div title="methods" class="plaintext">
+<pre title="methods" class="plaintext">
 methods_count='0004' (4)
 methods
     MethodInfo {Value='values:()[Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC]', Attrs='[Code]'}
     MethodInfo {Value='valueOf:(Ljava/lang/String;)Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC]', Attrs='[Code, MethodParameters]'}
     MethodInfo {Value='&lt;init&gt;:(Ljava/lang/String;I)V', AccessFlags='[ACC_PRIVATE]', Attrs='[Code, MethodParameters, Signature]'}
     MethodInfo {Value='&lt;clinit&gt;:()V', AccessFlags='[ACC_STATIC]', Attrs='[Code]'}
-</div>
+</pre>
 
 <h4>init</h4>
 
@@ -91,7 +91,7 @@ methods
     这里是<code>Day</code>的instance initialization method(<code>&lt;init&gt;</code>)，它的标识是<code>ACC_PRIVATE</code>，说明不能从类的外部创建<code>Day</code>对象；另外，它接收两个参数，第一个参数是<code>String</code>类型，第二个参数是<code>int</code>类型。
 </p>
 
-<div title="instance initialization method" hidden class="plaintext">
+<pre title="instance initialization method" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method &lt;init&gt;:(Ljava/lang/String;I)V
 === === ===  === === ===  === === ===
@@ -109,18 +109,18 @@ code = 2A2B1CB70006B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       7  this:Lsample/Day;
-</div>
+</pre>
 
 <p>
     从上面的instruction中，可以看到调用了<code>Enum</code>类的构造方法。
 </p>
 
-<div title="Enum.java" class="javacode">
+<pre title="Enum.java" class="javacode">
 protected Enum(String name, int ordinal) {
     this.name = name;
     this.ordinal = ordinal;
 }
-</div>
+</pre>
 
 <h4>clinit</h4>
 
@@ -128,7 +128,7 @@ protected Enum(String name, int ordinal) {
     这里是<code>Day</code>的class initialization method(<code>&lt;clinit&gt;</code>)，它主要负责对类里面定义的静态字段进行赋值。
 </p>
 
-<div title="class initialization method" hidden class="plaintext">
+<pre title="class initialization method" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method &lt;clinit&gt;:()V
 === === ===  === === ===  === === ===
@@ -227,11 +227,11 @@ code = BB000459120703B70008B30009BB00045912......
 0140: putstatic       #1   // B30001     || sample/Day.$VALUES:[Lsample/Day;
 0143: return               // B1
 === === ===  === === ===  === === ===
-</div>
+</pre>
 
 <h4>values()</h4>
 
-<div title="values()" hidden class="plaintext">
+<pre title="values()" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method values:()[Lsample/Day;
 === === ===  === === ===  === === ===
@@ -245,11 +245,11 @@ code = B20001B60002C00003B0
 0006: checkcast       #3   // C00003     || [Lsample/Day;
 0009: areturn              // B0
 === === ===  === === ===  === === ===
-</div>
+</pre>
 
 <h4>valueOf()</h4>
 
-<div title="valueOf()" hidden class="plaintext">
+<pre title="valueOf()" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method valueOf:(Ljava/lang/String;)Lsample/Day;
 === === ===  === === ===  === === ===
@@ -267,11 +267,11 @@ code = 12042AB80005C00004B0
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      10  name:Ljava/lang/String;
-</div>
+</pre>
 
 <h2>switch enum type</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void tellItLikeItIs(Day day) {
         switch (day) {
@@ -294,13 +294,13 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
 <h3>HelloWorld$1.class</h3>
 
 <h4>class_info</h4>
 
-<div title="class_info" hidden class="plaintext">
+<pre title="class_info" hidden class="plaintext">
 constant_pool_count='002F' (47)
 constant_pool
     ... ...
@@ -313,7 +313,7 @@ class_info='10200009000A0000'
     super_class='000A' (#10)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <p>
     注意，<code>HelloWorld$1</code>带有<code>ACC_SYNTHETIC</code>标识。
@@ -325,21 +325,21 @@ class_info='10200009000A0000'
     在<code>HelloWorld$1</code>有一个字段<code>$SwitchMap$sample$Day</code>，其类型是<code>int[]</code>；同时，该字段带有<code>ACC_STATIC</code>、<code>ACC_FINAL</code>和<code>ACC_SYNTHETIC</code>标识。
 </p>
 
-<div title="fields" hidden class="plaintext">
+<pre title="fields" hidden class="plaintext">
 fields_count='0001' (1)
 fields
     FieldInfo {Value='$SwitchMap$sample$Day:[I', AccessFlags='[ACC_STATIC,ACC_FINAL,ACC_SYNTHETIC]', Attrs='[]'}
-</div>
+</pre>
 
 <h4>methods</h4>
 
-<div title="methods" hidden class="plaintext">
+<pre title="methods" hidden class="plaintext">
 methods_count='0001' (1)
 methods
     MethodInfo {Value='&lt;clinit&gt;:()V', AccessFlags='[ACC_STATIC]', Attrs='[Code]'}
-</div>
+</pre>
 
-<div title="clinit" hidden class="plaintext">
+<pre title="clinit" hidden class="plaintext">
 === === ===  === === ===  === === ===    创建数组，存储到HelloWorld$1.$SwitchMap$sample$Day字段
 0000: invokestatic    #1   // B80001     || sample/Day.values:()[Lsample/Day;
 0003: arraylength          // BE
@@ -384,11 +384,11 @@ methods
 === === ===  === === ===  === === ===
 0069: return               // B1
 === === ===  === === ===  === === ===
-</div>
+</pre>
 
 <h3>HelloWorld.class</h3>
 
-<div title="tellItLikeItIs:(Lsample/Day;)V" hidden class="plaintext">
+<pre title="tellItLikeItIs:(Lsample/Day;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method tellItLikeItIs:(Lsample/Day;)V
 === === ===  === === ===  === === ===
@@ -434,4 +434,4 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      82  this:Lsample/HelloWorld;
     1         0      82  day:Lsample/Day;
-</div>
+</pre>

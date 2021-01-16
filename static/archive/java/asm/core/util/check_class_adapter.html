@@ -23,7 +23,7 @@
     and finally <span class="text-example">create a byte array representation</span>, you should use something like:
 </p>
 
-<div title="" class="javacode">
+<pre title="" class="javacode">
 ClassWriter cw = new ClassWriter(0);
 TraceClassVisitor tcv = new TraceClassVisitor(cw, printWriter);
 CheckClassAdapter cv = new CheckClassAdapter(tcv);
@@ -39,13 +39,13 @@ byte b[] = cw.toByteArray();
     For example, with the following code, <span class="text-example">the checks</span> will take place after <span class="text-example">the trace</span>:
 </p>
 
-<div title="" class="javacode">
+<pre title="" class="javacode">
 ClassWriter cw = new ClassWriter(0);
 CheckClassAdapter cca = new CheckClassAdapter(cw);
 TraceClassVisitor cv = new TraceClassVisitor(cca, printWriter);
 </div>
 
-<div title="App.java" class="javacode">
+<pre title="App.java" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;

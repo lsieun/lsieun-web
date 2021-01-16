@@ -112,6 +112,10 @@ In the same vein<sub class="my_note" style="color:green">以同样的方式</sub
 <sub class="my_note" style="color:blue">笔记：</sub>
 <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 
+<h2>预期目标</h2>
+<h2>编码实现</h2>
+<h2>验证结果</h2>
+
 <pre title="HelloWorld.java" class="javacode">
 
 </pre>
@@ -125,10 +129,6 @@ In the same vein<sub class="my_note" style="color:green">以同样的方式</sub
 </pre>
 
 &lt;init&gt;
-
-<h2>预期目标</h2>
-<h2>编码实现</h2>
-<h2>验证结果</h2>
 
 <p class="indented">
 

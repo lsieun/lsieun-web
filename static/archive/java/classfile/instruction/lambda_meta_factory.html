@@ -11,7 +11,7 @@
 
 <h3>Runnable</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.lang.invoke.*;
 
 public class HelloWorld {
@@ -49,13 +49,13 @@ public class HelloWorld {
         System.out.println("hello world");
     }
 }
-</div>
+</pre>
 
 <p class="indented">
     我们将<code>HelloWorld.java</code>当中的<code>main</code>方法，复制到<code>GoodBoy.java</code>内。
 </p>
 
-<div title="GoodBoy.java" class="javacode">
+<pre title="GoodBoy.java" class="javacode">
 import java.lang.invoke.*;
 
 public class GoodBoy {
@@ -89,7 +89,7 @@ public class GoodBoy {
         r.run();
     }
 }
-</div>
+</pre>
 
 <p class="indented">
     运行<code>GoodBoy.java</code>的<code>main</code>方法，会出现错误。出错误的原因：我们试图在<code>GoodBoy.java</code>中去访问<code>HelloWorld.java</code>中的私有（private）方法<code>print</code>。如果我们将<code>HelloWorld.java</code>中的<code>print</code>方法修改为<code>public</code>，就不会出现错误了。
@@ -97,7 +97,7 @@ public class GoodBoy {
 
 <h3>Supplier</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.lang.invoke.*;
 import java.util.function.Supplier;
 
@@ -138,7 +138,7 @@ public class HelloWorld {
         return "Hello Java";
     }
 }
-</div>
+</pre>
 
 <h3>Consumer</h3>
 
@@ -146,7 +146,7 @@ public class HelloWorld {
     这个示例代码参考自<a class="external" href="https://stackoverflow.com/a/46874622" target="_blank">StackOverflow</a>。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.lang.invoke.*;
 import java.util.function.Consumer;
 
@@ -189,7 +189,7 @@ public class HelloWorld {
         c.accept("bar");
     }
 }
-</div>
+</pre>
 
 <h3>BiFunction</h3>
 
@@ -197,7 +197,7 @@ public class HelloWorld {
     这个示例代码参考自<a class="external" href="https://stackoverflow.com/a/57244388" target="_blank">StackOverflow</a>。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.lang.invoke.*;
 import java.util.function.BiFunction;
 
@@ -238,7 +238,7 @@ class SimpleBean {
         return "The parameter was " + str;
     }
 }
-</div>
+</pre>
 
 <h3>生成两个bootstrap方法</h3>
 
@@ -246,7 +246,7 @@ class SimpleBean {
     在下面的代码中，我们使用了两个lambda表达式，因此在<code>BootstrapMethods</code>属性中会有两个bootstrap method。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.Random;
 import java.util.function.BiFunction;
 
@@ -271,11 +271,11 @@ public class HelloWorld {
         HelloWorld.test(flag ? HelloWorld::add : HelloWorld::sub, 20, 5);
     }
 }
-</div>
+</pre>
 
 <h2>LambdaMetafactory</h2>
 
-<div title="LambdaMetafactory.java" class="javacode">
+<pre title="LambdaMetafactory.java" class="javacode">
     public static CallSite metafactory(MethodHandles.Lookup caller,
                                        String invokedName,
                                        MethodType invokedType,
@@ -291,9 +291,9 @@ public class HelloWorld {
         mf.validateMetafactoryArgs();
         return mf.buildCallSite(); // 第二步，找到该类的buildCallSite方法
     }
-</div>
+</pre>
 
-<div title="InnerClassLambdaMetafactory.java" class="javacode">
+<pre title="InnerClassLambdaMetafactory.java" class="javacode">
     CallSite buildCallSite() throws LambdaConversionException {
         final Class&lt;?&gt; innerClass = spinInnerClass(); // 第三步，找到spinInnerClass()方法
         ......
@@ -339,22 +339,22 @@ public class HelloWorld {
 
         return UNSAFE.defineAnonymousClass(targetClass, classBytes, null);
     }
-</div>
+</pre>
 
-<div title="第一步" class="plaintext">
+<pre title="第一步" class="plaintext">
 invokedynamic    ---->    CONSTANT_InvokeDynamic    ---->    LambdaMetafactory.metafactory()
    (Code)                    (Constant Pool)                        (BootstrapMethods)
-</div>
+</pre>
 
-<div title="第二步" class="plaintext">
+<pre title="第二步" class="plaintext">
 理解LambdaMetafactory.metafactory()方法的6个参数的含义
-</div>
+</pre>
 
-<div title="第三步" class="plaintext">
+<pre title="第三步" class="plaintext">
 从LambdaMetafactory.metafactory()方法的源代码入手，找到新生成的.class文件，如何输出出来。
-</div>
+</pre>
 
-<!--<div title="第四步，OpenJDK/JVM实现" class="plaintext">-->
+<!--<pre title="第四步，OpenJDK/JVM实现" class="plaintext">-->
 
 <!--</div>-->
 

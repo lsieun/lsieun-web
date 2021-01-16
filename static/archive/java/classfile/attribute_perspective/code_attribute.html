@@ -13,19 +13,19 @@
     简单的来说，当一个方法有具体的Java代码实现的时候，才会在<code>method_info</code>上生成<code>Code</code>属性。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         // 有Code属性
     }
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public interface HelloWorld {
     void test(); // 没有Code属性
 }
-</div>
+</pre>
 
 <h2>Structure</h2>
 
@@ -55,7 +55,7 @@ public interface HelloWorld {
     The <code>Code</code> attribute has the following format:
 </p>
 
-<div title="Code_attribute" class="plaintext">
+<pre title="Code_attribute" class="plaintext">
 Code_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -72,7 +72,7 @@ Code_attribute {
     u2 attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>Code_attribute</code> structure are as follows:
@@ -133,7 +133,7 @@ Code_attribute {
 
 <h2>Examples</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         try {
@@ -143,9 +143,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V Code" hidden class="plaintext">
+<pre title="test:()V Code" hidden class="plaintext">
 constant_pool_count='0022' (34)
 constant_pool
     ... ...
@@ -183,9 +183,9 @@ attributes_count='0003' (3)
     LineNumberTable: 000C000000160005000000070006000A00090008000A0009000E000B
     LocalVariableTable: 000D000000160002000A00040011001200010000000F000E000F0000
     StackMapTable: 00130000000700024907001404
-</div>
+</pre>
 
-<div title="test:()V Code code" hidden class="plaintext">
+<pre title="test:()V Code code" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -209,7 +209,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      15  this:Lsample/HelloWorld;
     1        10       4  e:Ljava/lang/InterruptedException;
-</div>
+</pre>
 
 <h2>Without Code Attribute</h2>
 
@@ -247,9 +247,9 @@ index  start_pc  length  name_and_type
     <code>System</code>类的<code>currentTimeMillis()</code>方法是一个native method，它不带有<code>Code</code>属性。
 </p>
 
-<div title="System.class" class="plaintext">
+<pre title="System.class" class="plaintext">
 MethodInfo {Value='currentTimeMillis:()J', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_NATIVE]', Attrs='[]'}
-</div>
+</pre>
 
 <h3>abstract method</h3>
 
@@ -261,82 +261,82 @@ MethodInfo {Value='currentTimeMillis:()J', AccessFlags='[ACC_PUBLIC,ACC_STATIC,A
     第一种情况，抽象类的抽象方法：
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public abstract class HelloWorld {
     public abstract void test(); // 抽象类的抽象方法
 }
-</div>
+</pre>
 
-<div title="抽象类的抽象方法" class="plaintext">
+<pre title="抽象类的抽象方法" class="plaintext">
 methods_count='0002' (2)
 methods
     MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]', HexCode='0001000400050001...'}
     MethodInfo {Value='test:()V', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[]', HexCode='0401000B00050000'}
-</div>
+</pre>
 
 <p>
     第二种情况，接口内的抽象方法：
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public interface HelloWorld {
     void test(); // 接口内的方法
 }
-</div>
+</pre>
 
-<div title="接口内的方法" class="plaintext">
+<pre title="接口内的方法" class="plaintext">
 methods_count='0001' (1)
 methods
     MethodInfo {Value='test:()V', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[]', HexCode='0401000300040000'}
-</div>
+</pre>
 
 <p>
     另外，相比于Java 7，Java 8支持“接口默认方法”（default methods in interface）和“接口静态方法”（static method in interface）。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public interface HelloWorld {
     default void test() {
         // 接口中的default method
     }
 }
-</div>
+</pre>
 
-<div title="接口中的default method" class="plaintext">
+<pre title="接口中的default method" class="plaintext">
 methods_count='0001' (1)
 methods
     MethodInfo {Value='test:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]', HexCode='0001000300040001...'}
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public interface HelloWorld {
     static void test() {
         // 接口中的static method
     }
 }
-</div>
+</pre>
 
-<div title="接口中的static method" class="plaintext">
+<pre title="接口中的static method" class="plaintext">
 methods_count='0001' (1)
 methods
     MethodInfo {Value='test:()V', AccessFlags='[ACC_PUBLIC,ACC_STATIC]', Attrs='[Code]', HexCode='0009000300040001...'}
-</div>
+</pre>
 
 <p>
     第三种情况，annotation type内的抽象方法：
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public @interface HelloWorld {
     String name();
 }
-</div>
+</pre>
 
-<div title="methods" hidden class="plaintext">
+<pre title="methods" hidden class="plaintext">
 methods_count='0001' (1)
 methods
     MethodInfo {Value='name:()Ljava/lang/String;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[]'}
-</div>
+</pre>
 
 
 <h2>exception_table Vs Exceptions Attribute</h2>
@@ -351,7 +351,7 @@ methods
     而有些“意外情况”则超出了我们的承受能力或处理能力，我们买个保险，让别人或别的机构帮助我们处理，这就是Exceptions Attribute。
 </p>
 
-<div title="Code_attribute" class="plaintext">
+<pre title="Code_attribute" class="plaintext">
 Code_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -368,7 +368,7 @@ Code_attribute {
     u2 attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 <p class="indented">
     Each entry in the <code>exception_table[]</code> array describes one exception handler in the <code>code</code> array.
@@ -376,16 +376,16 @@ Code_attribute {
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="Exceptions_attribute" class="plaintext">
+<pre title="Exceptions_attribute" class="plaintext">
 Exceptions_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
     u2 number_of_exceptions;
     u2 exception_index_table[number_of_exceptions];
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.io.IOException;
 
 public class HelloWorld {
@@ -398,11 +398,11 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
 
 
-<div title="test:()V Attribute" hidden class="plaintext">
+<pre title="test:()V Attribute" hidden class="plaintext">
 constant_pool_count='0025' (37)
 constant_pool
     ... ...
@@ -448,4 +448,4 @@ number_of_exceptions='0001' (1)
 exception_index_table {
     exception_index='0016' (#22)
 }
-</div>
+</pre>

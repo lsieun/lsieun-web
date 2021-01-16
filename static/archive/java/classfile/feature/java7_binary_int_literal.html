@@ -13,15 +13,15 @@
     Before JDK 7, you can use octal values (with prefix '<code>0</code>') or hexadecimal values (with prefix '<code>0x</code>' or '<code>0X</code>').
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int val = 0xFF; // 255
     }
 }
-</div>
+</pre>
 
-<div title="test()V" class="plaintext">
+<pre title="test()V" class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -38,13 +38,13 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
     1         4       1  val:I
-</div>
+</pre>
 
 <p class="indented">
     In JDK 7, you can express literal values in binary with prefix '<code>0b</code>' (or '<code>0B</code>') for integral types (<code>byte</code>, <code>short</code>, <code>int</code> and <code>long</code>), similar to C/C++ language.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int number1 = 0b01010000101000101101000010100010;
@@ -52,9 +52,9 @@ public class HelloWorld {
         int number3 = 2_123_456;  // break the digits with underscore
     }
 }
-</div>
+</pre>
 
-<div title="test()V" hidden class="plaintext">
+<pre title="test()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -77,7 +77,7 @@ index  start_pc  length  name_and_type
     1         3       7  number1:I
     2         6       4  number2:I
     3         9       1  number3:I
-</div>
+</pre>
 
 <h2>Underscore in Numeric Literals</h2>
 
@@ -85,7 +85,7 @@ index  start_pc  length  name_and_type
     In JDK 7, You are also permitted to use underscore (<code>_</code>) to break the digits to improve the readability but you must start and end with a digit.
 </p>
 
-<div title="int, byte, short, long" class="javacode">
+<pre title="int, byte, short, long" class="javacode">
 // Some 32-bit 'int' literal values
 int anInt1 = 0b0101_0000_1010_0010_1101_0000_1010_0010;
 int anInt2 = 0b0011_1000;
@@ -99,13 +99,13 @@ short aShort = (short)0b0111_0101_0000_0101;
 
 // A 64-bit 'long' literal value. Long literals requires suffix "L".
 long aLong = 0b1000_0101_0001_0110_1000_0101_0000_1010_0010_1101_0100_0101_1010_0001_0100_0101L;
-</div>
+</pre>
 
-<div title="float and double" class="javacode">
+<pre title="float and double" class="javacode">
 int anInt = 0b10101000_01010001_01101000_01010001;
 double aDouble = 3.1415_9265;
 float  aFloat = 3.14_15_92_65f;
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

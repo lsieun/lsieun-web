@@ -34,7 +34,7 @@
     The LineNumberTable attribute has the following format:
 </p>
 
-<div title="LineNumberTable_attribute" class="plaintext">
+<pre title="LineNumberTable_attribute" class="plaintext">
 LineNumberTable_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -43,7 +43,7 @@ LineNumberTable_attribute {
         u2 line_number;
     } line_number_table[line_number_table_length];
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>LineNumberTable_attribute</code> structure are as follows:
@@ -92,14 +92,14 @@ LineNumberTable_attribute {
     </li>
 </ul>
 
-<div title="javac example" class="plaintext">
+<pre title="javac example" class="plaintext">
 javac -g:vars Main.java
 javac -g:vars,lines Main.java
-</div>
+</pre>
 
 <h2>Examples</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int a = 0;
@@ -107,9 +107,9 @@ public class HelloWorld {
         int c = 2;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 0000: iconst_0             // 03
 0001: istore_1             // 3C
@@ -148,4 +148,4 @@ line_number_table[3] {
     line_number='0008' (8)
 }
 ... ...
-</div>
+</pre>

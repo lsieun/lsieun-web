@@ -31,7 +31,7 @@
 
 <h2>The first form</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int var001 = 1;
@@ -48,9 +48,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 0000: iconst_1             // 04
 0001: istore_1             // 3C
@@ -70,7 +70,7 @@ index  start_pc  length  name_and_type
     ... ...
   256      1147       8  var256:I
   257      1154       1  var257:I
-</div>
+</pre>
 
 <h2>The second form</h2>
 
@@ -80,15 +80,15 @@ index  start_pc  length  name_and_type
 
 <h3>+=128</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test(int val) {
         val += 128;
     }
 }
-</div>
+</pre>
 
-<div title="test:(I)V" hidden class="plaintext">
+<pre title="test:(I)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:(I)V
 === === ===  === === ===  === === ===
@@ -105,19 +105,19 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       7  this:Lsample/HelloWorld;
     1         0       7  val:I
-</div>
+</pre>
 
 <h3>-=129</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test(int val) {
         val -= 129;
     }
 }
-</div>
+</pre>
 
-<div title="test:(I)V" hidden class="plaintext">
+<pre title="test:(I)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:(I)V
 === === ===  === === ===  === === ===
@@ -134,5 +134,5 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       7  this:Lsample/HelloWorld;
     1         0       7  val:I
-</div>
+</pre>
 

@@ -25,13 +25,13 @@
     The <code>CONSTANT_Utf8_info</code> structure is used to represent constant string values:
 </p>
 
-<div title="CONSTANT_Utf8_info" class="plaintext">
+<pre title="CONSTANT_Utf8_info" class="plaintext">
 CONSTANT_Utf8_info {
     u1 tag;
     u2 length;
     u1 bytes[length];
 }
-</div>
+</pre>
 
 <ul>
     <li>
@@ -54,14 +54,14 @@ CONSTANT_Utf8_info {
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static void main(String[] args) {
         String str = "\u4f18\u79c0"; // 优秀
         System.out.println(str);
     }
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_Utf8_info Example: 优秀</p>
@@ -72,7 +72,7 @@ public class HelloWorld {
     </div>
 </div>
 
-<div title="将bytes转换成Standard UTF8" class="javacode">
+<pre title="将bytes转换成Standard UTF8" class="javacode">
 import lsieun.utils.HexFormat;
 import lsieun.utils.HexUtils;
 
@@ -86,9 +86,9 @@ public class TestRun {
         System.out.println(str); // 优秀
     }
 }
-</div>
+</pre>
 
-<div title="将bytes转换成Modified UTF8" hidden class="javacode">
+<pre title="将bytes转换成Modified UTF8" hidden class="javacode">
 import lsieun.utils.HexFormat;
 import lsieun.utils.HexUtils;
 
@@ -117,7 +117,7 @@ public class TestRun {
         return new String(chars, 0, strLength);
     }
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
@@ -142,18 +142,18 @@ public class TestRun {
 
 <h3>CONSTANT_Integer(3)</h3>
 
-<div title="CONSTANT_Integer_info" class="plaintext">
+<pre title="CONSTANT_Integer_info" class="plaintext">
 CONSTANT_Integer_info {
     u1 tag;
     u4 bytes;
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public final int value = 10007;
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_Integer_info Example: 10007</p>
@@ -163,7 +163,7 @@ public class HelloWorld {
     </div>
 </div>
 
-<div title="将bytes转换成int" class="javacode">
+<pre title="将bytes转换成int" class="javacode">
 import lsieun.utils.HexFormat;
 import lsieun.utils.HexUtils;
 
@@ -180,22 +180,22 @@ public class TestRun {
         System.out.println(sum); // 10007
     }
 }
-</div>
+</pre>
 
 <h3>CONSTANT_Float(4)</h3>
 
-<div title="CONSTANT_Float_info" class="plaintext">
+<pre title="CONSTANT_Float_info" class="plaintext">
 CONSTANT_Float_info {
     u1 tag;
     u4 bytes;
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public final float value = 3.14F;
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_Float_info Example: 3.14F</p>
@@ -205,7 +205,7 @@ public class HelloWorld {
     </div>
 </div>
 
-<div title="将bytes转换成float" class="javacode">
+<pre title="将bytes转换成float" class="javacode">
 import lsieun.utils.HexFormat;
 import lsieun.utils.HexUtils;
 
@@ -224,23 +224,23 @@ public class TestRun {
         System.out.println(val); // 3.14
     }
 }
-</div>
+</pre>
 
 <h3>CONSTANT_Long(5)</h3>
 
-<div title="CONSTANT_Long_info" class="plaintext">
+<pre title="CONSTANT_Long_info" class="plaintext">
 CONSTANT_Long_info {
     u1 tag;
     u4 high_bytes;
     u4 low_bytes;
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public final long value = 100L;
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_Long_info Example: 100L</p>
@@ -251,7 +251,7 @@ public class HelloWorld {
     </div>
 </div>
 
-<div title="将bytes转换成long" class="javacode">
+<pre title="将bytes转换成long" class="javacode">
 import lsieun.utils.HexFormat;
 import lsieun.utils.HexUtils;
 
@@ -270,23 +270,23 @@ public class TestRun {
         System.out.println(val); // 100
     }
 }
-</div>
+</pre>
 
 <h3>CONSTANT_Double(6)</h3>
 
-<div title="CONSTANT_Double_info" class="plaintext">
+<pre title="CONSTANT_Double_info" class="plaintext">
 CONSTANT_Double_info {
     u1 tag;
     u4 high_bytes;
     u4 low_bytes;
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public final double value = 0.618D;
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_Double_info Example: 0.618D</p>
@@ -297,7 +297,7 @@ public class HelloWorld {
     </div>
 </div>
 
-<div title="将bytes转换成double" class="javacode">
+<pre title="将bytes转换成double" class="javacode">
 import lsieun.utils.HexFormat;
 import lsieun.utils.HexUtils;
 
@@ -316,23 +316,23 @@ public class TestRun {
         System.out.println(val); // 0.618
     }
 }
-</div>
+</pre>
 
 <h2>CP (7-8)</h2>
 
 <h3>CONSTANT_Class(7)</h3>
 
-<div title="CONSTANT_Class_info" class="plaintext">
+<pre title="CONSTANT_Class_info" class="plaintext">
 CONSTANT_Class_info {
     u1 tag;
     u2 name_index;
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_Class Example</p>
@@ -342,7 +342,7 @@ public class HelloWorld {
     </div>
 </div>
 
-<div title="将bytes转换成int" class="javacode">
+<pre title="将bytes转换成int" class="javacode">
 import lsieun.utils.HexFormat;
 import lsieun.utils.HexUtils;
 
@@ -359,22 +359,22 @@ public class TestRun {
         System.out.println(name_index); // 14
     }
 }
-</div>
+</pre>
 
 <h3>CONSTANT_String(8)</h3>
 
-<div title="CONSTANT_String_info" class="plaintext">
+<pre title="CONSTANT_String_info" class="plaintext">
 CONSTANT_String_info {
     u1 tag;
     u2 string_index;
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public final String value = "Hello Java";
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_String_info Example</p>
@@ -388,15 +388,15 @@ public class HelloWorld {
 
 <h3>CONSTANT_Fieldref(9)</h3>
 
-<div title="CONSTANT_Fieldref_info" class="plaintext">
+<pre title="CONSTANT_Fieldref_info" class="plaintext">
 CONSTANT_Fieldref_info {
     u1 tag;
     u2 class_index;
     u2 name_and_type_index;
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     private String value;
 
@@ -407,7 +407,7 @@ public class HelloWorld {
         String str = this.value;
     }
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_Fieldref_info Example</p>
@@ -426,15 +426,15 @@ public class HelloWorld {
 
 <h3>CONSTANT_Methodref(10)</h3>
 
-<div title="CONSTANT_Methodref_info" class="plaintext">
+<pre title="CONSTANT_Methodref_info" class="plaintext">
 CONSTANT_Methodref_info {
     u1 tag;
     u2 class_index;
     u2 name_and_type_index;
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void print() {
         //
@@ -444,7 +444,7 @@ public class HelloWorld {
         this.print(); // Method Ref
     }
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_Methodref_info Example</p>
@@ -463,21 +463,21 @@ public class HelloWorld {
 
 <h3>CONSTANT_InterfaceMethodref(11)</h3>
 
-<div title="CONSTANT_InterfaceMethodref_info" class="plaintext">
+<pre title="CONSTANT_InterfaceMethodref_info" class="plaintext">
 CONSTANT_InterfaceMethodref_info {
     u1 tag;
     u2 class_index;
     u2 name_and_type_index;
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test(Runnable r) {
         r.run();
     }
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_InterfaceMethodref_info Example</p>
@@ -496,18 +496,18 @@ public class HelloWorld {
 
 <h3>CONSTANT_NameAndType(12)</h3>
 
-<div title="CONSTANT_NameAndType_info" class="plaintext">
+<pre title="CONSTANT_NameAndType_info" class="plaintext">
 CONSTANT_NameAndType_info {
     u1 tag;
     u2 name_index;
     u2 descriptor_index;
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_NameAndType_info Example</p>
@@ -526,7 +526,7 @@ public class HelloWorld {
 
 <h2>CP (15-18)</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Supplier;
 
 public class HelloWorld  {
@@ -538,7 +538,7 @@ public class HelloWorld  {
         return HelloWorld::lambdiseMe;
     }
 }
-</div>
+</pre>
 
 <h3>CONSTANT_MethodHandle(15)</h3>
 
@@ -558,13 +558,13 @@ public class HelloWorld  {
 </div>
 
 
-<div title="CONSTANT_MethodHandle_info" class="plaintext">
+<pre title="CONSTANT_MethodHandle_info" class="plaintext">
 CONSTANT_MethodHandle_info {
     u1 tag;
     u1 reference_kind;
     u2 reference_index;
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_MethodHandle_info Example</p>
@@ -575,9 +575,9 @@ CONSTANT_MethodHandle_info {
     </div>
 </div>
 
-<div title="解析后的结果" class="plaintext">
+<pre title="解析后的结果" class="plaintext">
 CONSTANT_MethodHandle {Value='invokestatic sample/HelloWorld.lambdiseMe:()Ljava/lang/String;', HexCode='0F060021'}
-</div>
+</pre>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
@@ -597,12 +597,12 @@ CONSTANT_MethodHandle {Value='invokestatic sample/HelloWorld.lambdiseMe:()Ljava/
     </p>
 </div>
 
-<div title="CONSTANT_MethodType_info" class="plaintext">
+<pre title="CONSTANT_MethodType_info" class="plaintext">
 CONSTANT_MethodType_info {
     u1 tag;
     u2 descriptor_index;
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_MethodType_info Example</p>
@@ -612,9 +612,9 @@ CONSTANT_MethodType_info {
     </div>
 </div>
 
-<div title="解析后的结果" class="plaintext">
+<pre title="解析后的结果" class="plaintext">
 CONSTANT_MethodType {Value='()Ljava/lang/String;', HexCode='10000E'}
-</div>
+</pre>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
@@ -628,13 +628,13 @@ CONSTANT_MethodType {Value='()Ljava/lang/String;', HexCode='10000E'}
     The <code>CONSTANT_InvokeDynamic_info</code> structure is used by an <code>invokedynamic</code> instruction to specify a bootstrap method, the dynamic invocation name, the argument and return types of the call, and optionally, a sequence of additional constants called static arguments to the bootstrap method.
 </p>
 
-<div title="CONSTANT_InvokeDynamic_info" class="plaintext">
+<pre title="CONSTANT_InvokeDynamic_info" class="plaintext">
 CONSTANT_InvokeDynamic_info {
     u1 tag;
     u2 bootstrap_method_attr_index;
     u2 name_and_type_index;
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">CONSTANT_MethodType_info Example</p>
@@ -645,9 +645,9 @@ CONSTANT_InvokeDynamic_info {
     </div>
 </div>
 
-<div title="解析后的结果" class="plaintext">
+<pre title="解析后的结果" class="plaintext">
 CONSTANT_InvokeDynamic {Value='#0:get:()Ljava/util/function/Supplier;', HexCode='120000001C'}
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

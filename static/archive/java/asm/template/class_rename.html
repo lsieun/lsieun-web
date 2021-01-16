@@ -9,7 +9,7 @@
 
 <h2>预期目标</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int intValue;
 
@@ -25,7 +25,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="GoodChild.java" class="javacode">
+<pre title="GoodChild.java" class="javacode">
 public class GoodChild {
     public int intValue;
 
@@ -107,7 +107,7 @@ public class GoodChild {
 
 <h2>编码实现</h2>
 
-<div title="ClassRenameAdapter.java" class="javacode">
+<pre title="ClassRenameAdapter.java" class="javacode">
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -164,7 +164,7 @@ public class ClassRenameAdapter extends ClassVisitor {
 }
 </div>
 
-<div title="RefRenameAdapter.java" class="javacode">
+<pre title="RefRenameAdapter.java" class="javacode">
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
@@ -216,7 +216,7 @@ public class RefRenameAdapter extends MethodVisitor {
 }
 </div>
 
-<div title="ClassRenameAdapterRun.java" class="javacode">
+<pre title="ClassRenameAdapterRun.java" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;
@@ -259,7 +259,7 @@ public class ClassRenameAdapterRun {
 
 <h2>验证结果</h2>
 
-<div title="HelloWorldRun.java" class="javacode">
+<pre title="HelloWorldRun.java" class="javacode">
 import java.lang.reflect.Method;
 
 public class HelloWorldRun {
@@ -275,7 +275,7 @@ public class HelloWorldRun {
 
 <h3>Class Name</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Class&lt;?&gt; clazz = getClass();
@@ -286,7 +286,7 @@ public class HelloWorld {
 
 <h3>Field Descriptor</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     private HelloWorld oneField;
     private HelloWorld[] arrayFields;
@@ -300,7 +300,7 @@ public class HelloWorld {
 
 <h3>Method Descriptor</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public HelloWorld process(String name, int age, HelloWorld instance) {
         return null;
@@ -317,7 +317,7 @@ public class HelloWorld {
 
 <h4>visitLdcInsn</h4>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Class&lt;?&gt; clazz = HelloWorld.class;
@@ -328,7 +328,7 @@ public class HelloWorld {
 
 <h4>visitFieldInsn</h4>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int intValue;
 
@@ -342,7 +342,7 @@ public class HelloWorld {
 
 <h4>visitMethodInsn</h4>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int add(int a, int b) {
         return a + b;

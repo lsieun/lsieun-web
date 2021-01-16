@@ -13,7 +13,7 @@
     在学习Java ClassFile的过程中，“映射”是一个非常重要的学习思路。换句话说，<code>.class</code>文件中包含的内容，其中的大部分都是由相应的<code>.java</code>文件里的内容转换过来的。
 </p>
 
-<div title="ClassFile" class="plaintext">
+<pre title="ClassFile" class="plaintext">
 ClassFile {
     ------------------------------------------------------------------------
     u4             magic;                                 // Magic Number部分
@@ -40,7 +40,7 @@ ClassFile {
     attribute_info attributes[attributes_count];         // attributes部分
     ------------------------------------------------------------------------
 }
-</div>
+</pre>
 
 <h2>JavaFile VS ClassFile</h2>
 
@@ -86,12 +86,12 @@ ClassFile {
     在Constant Pool部分，在Java 8这个版本中，定义了14种具体类型的Constant，它由<code>tag</code>进行标识。
 </p>
 
-<div title="cp_info" class="plaintext">
+<pre title="cp_info" class="plaintext">
 cp_info {
     u1 tag;
     u1 info[];
 }
-</div>
+</pre>
 
 <p class="indented">
     在这14种具体类型的Constant中，需要大家重点理解其中的11个。不需要大家记忆每个Constant具体的结构是什么样的，而是看到它的结构之后，能够理解其中每一项内容的含义，以及如何写一段Java代码能够在<code>.class</code>文件中生成这样一个Constant。
@@ -176,7 +176,7 @@ cp_info {
     从结构上来说，<code>field_info</code>和<code>method_info</code>结构上是完全一样的。但是，从解读其含义的角度来说，两者会有相当大的差异：field和method在<code>access_flag</code>有不同的定义，在descriptor的表达也有差异，所支持的attributes上的差异则更加明显。
 </p>
 
-<div title="field_info" class="plaintext">
+<pre title="field_info" class="plaintext">
 field_info {
     u2             access_flags;
     u2             name_index;
@@ -184,9 +184,9 @@ field_info {
     u2             attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
-<div title="method_info" class="plaintext">
+<pre title="method_info" class="plaintext">
 method_info {
     u2             access_flags;
     u2             name_index;
@@ -194,7 +194,7 @@ method_info {
     u2             attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 <p class="indented">
     从学习的角度上来说，<code>field_info</code>和<code>method_info</code>中<code>access_flag</code>有一个浅显的了解就可以了，对于descriptor则希望大家能够切实的理解它，能够根据descriptor的内容解读出相应的Java文件中表示的类型。

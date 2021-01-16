@@ -9,7 +9,7 @@
 
 <h2>Anonymous classes</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Runnable r = new Runnable() {
@@ -21,7 +21,7 @@ public class HelloWorld {
         r.run();
     }
 }
-</div>
+</pre>
 
 <h3>HelloWorld.class</h3>
 
@@ -31,7 +31,7 @@ public class HelloWorld {
     在<code>HelloWorld.class</code>中，<code>test()</code>方法的code如下所示。其中，我们注意到，创建了<code>HelloWorld$1</code>类型的对象。
 </p>
 
-<div title="HelloWorld.class test:()V" hidden class="plaintext">
+<pre title="HelloWorld.class test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -53,7 +53,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      16  this:Lsample/HelloWorld;
     1         9       7  r:Ljava/lang/Runnable;
-</div>
+</pre>
 
 <h4>Attributes Part</h4>
 
@@ -61,7 +61,7 @@ index  start_pc  length  name_and_type
     在<code>HelloWorld.class</code>中，生成了一个<code>InnerClasses</code>属性。
 </p>
 
-<div title="HelloWorld.class InnerClasses" hidden class="plaintext">
+<pre title="HelloWorld.class InnerClasses" hidden class="plaintext">
 constant_pool_count='001E' (30)
 constant_pool
     ......
@@ -83,7 +83,7 @@ classes[0] {
     inner_name_index='0000' (#0)
     inner_class_access_flags='0000' ([])
 }
-</div>
+</pre>
 
 <h3>HelloWorld$1.class</h3>
 
@@ -93,7 +93,7 @@ classes[0] {
     在<code>HelloWorld$1.class</code>的Class Info信息中，我们可以看到这个类实现了<code>Runnable</code>接口。
 </p>
 
-<div title="HelloWorld$1.class ClassInfo" hidden class="plaintext">
+<pre title="HelloWorld$1.class ClassInfo" hidden class="plaintext">
 constant_pool_count='002D' (45)
 constant_pool
     ......
@@ -107,7 +107,7 @@ class_info='00200006000700010008'
     super_class='0007' (#7)
     interfaces_count='0001' (1)
     interfaces='0008' ([#8])
-</div>
+</pre>
 
 <h4>Fields Part</h4>
 
@@ -115,7 +115,7 @@ class_info='00200006000700010008'
     在<code>HelloWorld$1.class</code>的Fields信息中，我们可以看到这个类有一个<code>this$0</code>字段，该字段带有<code>ACC_FINAL</code>和<code>ACC_SYNTHETIC</code>标识。
 </p>
 
-<div title="HelloWorld$1.class Fields" hidden class="plaintext">
+<pre title="HelloWorld$1.class Fields" hidden class="plaintext">
 constant_pool_count='002D' (45)
 constant_pool
     ......
@@ -130,7 +130,7 @@ access_flags='1010'([ACC_FINAL,ACC_SYNTHETIC])
 name_index='0009'(#9)
 descriptor_index='000A'(#10)
 attributes_count='0000'(0)
-</div>
+</pre>
 
 <h4>Methods Part</h4>
 
@@ -138,18 +138,18 @@ attributes_count='0000'(0)
     在<code>HelloWorld$1.class</code>的Methods信息中，我们可以看到这个类有两个方法，一个是<code>&lt;init&gt;</code>方法，另一个是<code>run</code>方法。
 </p>
 
-<div title="HelloWorld$1.class methods" hidden class="plaintext">
+<pre title="HelloWorld$1.class methods" hidden class="plaintext">
 methods_count='0002' (2)
 methods
     MethodInfo {Value='&lt;init&gt;:(Lsample/HelloWorld;)V', AccessFlags='[]', Attrs='[Code, MethodParameters]'}
     MethodInfo {Value='run:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
-</div>
+</pre>
 
 <p>
     在<code>HelloWorld$1.class</code>中，<code>&lt;init&gt;</code>方法的主要作用为<code>this$0</code>字段赋值。
 </p>
 
-<div title="HelloWorld$1.class init method" hidden class="plaintext">
+<pre title="HelloWorld$1.class init method" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method &lt;init&gt;:(Lsample/HelloWorld;)V
 === === ===  === === ===  === === ===
@@ -170,13 +170,13 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      10  this:Lsample/HelloWorld$1;
     1         0      10  this$0:Lsample/HelloWorld;
-</div>
+</pre>
 
 <p>
     在<code>HelloWorld$1.class</code>中，<code>run</code>方法的主要作用打印<b>"Hello World"</b>。
 </p>
 
-<div title="HelloWorld$1.class run method" hidden class="plaintext">
+<pre title="HelloWorld$1.class run method" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method run:()V
 === === ===  === === ===  === === ===
@@ -193,7 +193,7 @@ code = B200031204B60005B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       9  this:Lsample/HelloWorld$1;
-</div>
+</pre>
 
 <h4>Attributes Part</h4>
 
@@ -201,7 +201,7 @@ index  start_pc  length  name_and_type
     在<code>HelloWorld$1.class</code>的Attributes信息中，我们特别关注其中的两个属性，一个是<code>EnclosingMethod</code>属性，另一个是<code>InnerClasses</code>属性。
 </p>
 
-<div title="HelloWorld$1.class Attributes" hidden class="plaintext">
+<pre title="HelloWorld$1.class Attributes" hidden class="plaintext">
 constant_pool_count='002D' (45)
 constant_pool
     ......
@@ -239,7 +239,7 @@ classes[0] {
     inner_name_index='0000' (#0)           // 这本是一个匿名类，没有显式的名字
     inner_class_access_flags='0000' ([])
 }
-</div>
+</pre>
 
 <h2>Local Classes</h2>
 

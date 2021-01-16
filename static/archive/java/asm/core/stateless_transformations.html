@@ -16,7 +16,7 @@
     In other words we want to transform a class such as <code>HelloWorld</code>:
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() throws Exception {
         Thread.sleep(100);
@@ -28,7 +28,7 @@ public class HelloWorld {
     into this:
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static long timer;
 
@@ -46,7 +46,7 @@ public class HelloWorld {
     (either with the default <code>Textifier</code> backend, or with an <code>ASMifier</code> backend).
 </p>
 
-<div title="ASMifierTest.java" class="javacode">
+<pre title="ASMifierTest.java" class="javacode">
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.util.ASMifier;
 import org.objectweb.asm.util.Printer;
@@ -69,7 +69,7 @@ public class ASMifierTest {
 }
 </div>
 
-<div title="HelloWorld.class before" class="plaintext">
+<pre title="HelloWorld.class before" class="plaintext">
 // access flags 0x1
 public test()V throws java/lang/Exception
     LDC 100
@@ -79,7 +79,7 @@ public test()V throws java/lang/Exception
     MAXLOCALS = 1
 </div>
 
-<div title="HelloWorld.class after" class="plaintext">
+<pre title="HelloWorld.class after" class="plaintext">
 // access flags 0x1
 public test()V throws java/lang/Exception
     //-------------------------------------------------
@@ -114,7 +114,7 @@ public test()V throws java/lang/Exception
     We can therefore <span class="text-example">add the first four instructions</span> by overriding this method in our method adapter:
 </p>
 
-<div title="AddTimeMethodAdapter.java" class="javacode">
+<pre title="AddTimeMethodAdapter.java" class="javacode">
 public void visitCode() {
     mv.visitCode();
     mv.visitFieldInsn(GETSTATIC, owner, "timer", "J");
@@ -137,7 +137,7 @@ public void visitCode() {
     We can then override this method in order to add our instructions:
 </p>
 
-<div title="AddTimeMethodAdapter.java" class="javacode">
+<pre title="AddTimeMethodAdapter.java" class="javacode">
 public void visitInsn(int opcode) {
     if ((opcode >= IRETURN && opcode <= RETURN) || opcode == ATHROW) {
         mv.visitFieldInsn(GETSTATIC, owner, "timer", "J");
@@ -171,7 +171,7 @@ public void visitInsn(int opcode) {
     We must then override the <code>visitMaxs</code> method as follows:
 </p>
 
-<div title="AddTimeMethodAdapter.java" class="javacode">
+<pre title="AddTimeMethodAdapter.java" class="javacode">
 public void visitMaxs(int maxStack, int maxLocals) {
     mv.visitMaxs(maxStack + 4, maxLocals);
 }
@@ -183,7 +183,7 @@ public void visitMaxs(int maxStack, int maxLocals) {
     But for such simple transformations it does not cost much effort to update <code>maxStack</code> manually.
 </p>
 
-<div title="AddTimerMethodAdapter.java" class="javacode">
+<pre title="AddTimerMethodAdapter.java" class="javacode">
 import org.objectweb.asm.MethodVisitor;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -223,7 +223,7 @@ public class AddTimerMethodAdapter extends MethodVisitor {
 }
 </div>
 
-<div title="AddTimerClassAdapter.java" class="javacode">
+<pre title="AddTimerClassAdapter.java" class="javacode">
 import static org.objectweb.asm.Opcodes.*;
 
 import org.objectweb.asm.ClassVisitor;
@@ -269,7 +269,7 @@ public class AddTimerClassAdapter extends ClassVisitor {
 }
 </div>
 
-<div title="App.java" class="javacode">
+<pre title="App.java" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;
@@ -306,7 +306,7 @@ public class App {
 
 <h2>方案验证</h2>
 
-<div title="HelloWorldRun.java" class="javacode">
+<pre title="HelloWorldRun.java" class="javacode">
 import java.lang.reflect.Field;
 
 public class HelloWorldRun {

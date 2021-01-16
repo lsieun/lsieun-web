@@ -9,7 +9,7 @@
 
 <h2>Constant Pool Index</h2>
 
-<div title="ClassFile" class="plaintext">
+<pre title="ClassFile" class="plaintext">
 ClassFile {
     u4             magic;
     u2             minor_version;
@@ -30,7 +30,7 @@ ClassFile {
     u2             attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 <p>
     The value of the <code>constant_pool_count</code> item is equal to <b>the number of entries in the <code>constant_pool</code></b> table plus <b>one</b>.
@@ -91,74 +91,74 @@ ClassFile {
     另外，需要注意的一点是，对于symbolic reference来说，它也会有一些<code>index</code>指向Constant Pool，这个时候需要注意该<code>index</code>位置的Constant的类型。
 </p>
 
-<div title="CONSTANT_Class_info" hidden class="plaintext">
+<pre title="CONSTANT_Class_info" hidden class="plaintext">
 CONSTANT_Class_info {
     u1 tag;
     u2 name_index; --&gt; CONSTANT_Utf8_info
 }
-</div>
+</pre>
 
-<div title="CONSTANT_String_info" hidden class="plaintext">
+<pre title="CONSTANT_String_info" hidden class="plaintext">
 CONSTANT_String_info {
     u1 tag;
     u2 string_index; --&gt; CONSTANT_Utf8_info
 }
-</div>
+</pre>
 
-<div title="CONSTANT_Fieldref_info" hidden class="plaintext">
+<pre title="CONSTANT_Fieldref_info" hidden class="plaintext">
 CONSTANT_Fieldref_info {
     u1 tag;
     u2 class_index; --&gt; CONSTANT_Class_info
     u2 name_and_type_index; --&gt; CONSTANT_NameAndType_info
 }
-</div>
+</pre>
 
-<div title="CONSTANT_Methodref_info" hidden class="plaintext">
+<pre title="CONSTANT_Methodref_info" hidden class="plaintext">
 CONSTANT_Methodref_info {
     u1 tag;
     u2 class_index; --&gt; CONSTANT_Class_info
     u2 name_and_type_index; --&gt; CONSTANT_NameAndType_info
 }
-</div>
+</pre>
 
-<div title="CONSTANT_InterfaceMethodref_info" hidden class="plaintext">
+<pre title="CONSTANT_InterfaceMethodref_info" hidden class="plaintext">
 CONSTANT_InterfaceMethodref_info {
     u1 tag;
     u2 class_index; --&gt; CONSTANT_Class_info
     u2 name_and_type_index; --&gt; CONSTANT_NameAndType_info
 }
-</div>
+</pre>
 
-<div title="CONSTANT_NameAndType_info" hidden class="plaintext">
+<pre title="CONSTANT_NameAndType_info" hidden class="plaintext">
 CONSTANT_NameAndType_info {
     u1 tag;
     u2 name_index; --&gt; CONSTANT_Utf8_info
     u2 descriptor_index; --&gt; CONSTANT_Utf8_info
 }
-</div>
+</pre>
 
-<div title="CONSTANT_MethodHandle_info" hidden class="plaintext">
+<pre title="CONSTANT_MethodHandle_info" hidden class="plaintext">
 CONSTANT_MethodHandle_info {
     u1 tag;
     u1 reference_kind; --&gt; must be in the range 1 to 9
     u2 reference_index; --&gt; CONSTANT_Fieldref_info/CONSTANT_Methodref_info/CONSTANT_InterfaceMethodref_info
 }
-</div>
+</pre>
 
-<div title="CONSTANT_MethodType_info" hidden class="plaintext">
+<pre title="CONSTANT_MethodType_info" hidden class="plaintext">
 CONSTANT_MethodType_info {
     u1 tag;
     u2 descriptor_index; --&gt; CONSTANT_Utf8_info
 }
-</div>
+</pre>
 
-<div title="CONSTANT_InvokeDynamic_info" hidden class="plaintext">
+<pre title="CONSTANT_InvokeDynamic_info" hidden class="plaintext">
 CONSTANT_InvokeDynamic_info {
     u1 tag;
     u2 bootstrap_method_attr_index; --&gt; a valid index into the bootstrap_methods array of the bootstrap method table
     u2 name_and_type_index; --&gt; CONSTANT_NameAndType_info
 }
-</div>
+</pre>
 
 <h2>From Symbolic Reference to Direct Reference</h2>
 
@@ -200,7 +200,7 @@ CONSTANT_InvokeDynamic_info {
     The <code>CONSTANT_Long_info</code> and <code>CONSTANT_Double_info</code> represent 8-byte numeric (<code>long</code> and <code>double</code>) constants:
 </p>
 
-<div title="" class="plaintext">
+<pre title="" class="plaintext">
 CONSTANT_Long_info {
     u1 tag;
     u4 high_bytes;
@@ -212,7 +212,7 @@ CONSTANT_Double_info {
     u4 high_bytes;
     u4 low_bytes;
 }
-</div>
+</pre>
 
 <p class="indented">
     All 8-byte constants take up two entries in the <code>constant_pool</code> table of the class file.

@@ -48,15 +48,15 @@
 
 <h2>return void</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         // do nothing
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" class="plaintext">
+<pre title="test:()V" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 0
 max_locals = 1 // 用于存放this变量；如果是static方法，则不需要存放this变量。
@@ -68,7 +68,7 @@ code = B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       1  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <p class="indented">
     The <code>return</code> instruction, which is implicit in the source code but which is mandatory in the compiled code, destroys the current execution frame and returns to the caller.
@@ -78,15 +78,15 @@ index  start_pc  length  name_and_type
 
 <h3>return int</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int test() {
         return 0;
     }
 }
-</div>
+</pre>
 
-<div title="test:()I" class="plaintext">
+<pre title="test:()I" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -99,7 +99,7 @@ code = 03AC
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       2  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>return boolean</h3>
 
@@ -107,15 +107,15 @@ index  start_pc  length  name_and_type
     The Java Virtual Machine internally converts values of types <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> to type <code>int</code>.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public boolean test() {
         return false;
     }
 }
-</div>
+</pre>
 
-<div title="test:()Z" class="plaintext">
+<pre title="test:()Z" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -128,7 +128,7 @@ code = 03AC
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       2  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>return byte</h3>
 
@@ -136,15 +136,15 @@ index  start_pc  length  name_and_type
     The Java Virtual Machine internally converts values of types <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> to type <code>int</code>.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public byte test() {
         return 0;
     }
 }
-</div>
+</pre>
 
-<div title="test:()B" class="plaintext">
+<pre title="test:()B" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -157,7 +157,7 @@ code = 03AC
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       2  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>return short</h3>
 
@@ -165,15 +165,15 @@ index  start_pc  length  name_and_type
     The Java Virtual Machine internally converts values of types <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> to type <code>int</code>.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public short test() {
         return 0;
     }
 }
-</div>
+</pre>
 
-<div title="test:()S" class="plaintext">
+<pre title="test:()S" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -186,7 +186,7 @@ code = 03AC
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       2  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>return char</h3>
 
@@ -194,15 +194,15 @@ index  start_pc  length  name_and_type
     The Java Virtual Machine internally converts values of types <code>boolean</code>, <code>byte</code>, <code>short</code>, and <code>char</code> to type <code>int</code>.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public char test() {
         return 0;
     }
 }
-</div>
+</pre>
 
-<div title="test:()C" class="plaintext">
+<pre title="test:()C" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -215,19 +215,19 @@ code = 03AC
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       2  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>return long</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public long test() {
         return 0;
     }
 }
-</div>
+</pre>
 
-<div title="test:()J" class="plaintext">
+<pre title="test:()J" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2 // 注意，这里变成了2
 max_locals = 1
@@ -240,19 +240,19 @@ code = 09AD
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       2  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>return float</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public float test() {
         return 0;
     }
 }
-</div>
+</pre>
 
-<div title="test:()F" class="plaintext">
+<pre title="test:()F" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -265,19 +265,19 @@ code = 0BAE
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       2  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>return double</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public double test() {
         return 0;
     }
 }
-</div>
+</pre>
 
-<div title="test:()D" class="plaintext">
+<pre title="test:()D" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2 // 注意，这里变成了2
 max_locals = 1
@@ -290,21 +290,21 @@ code = 0EAF
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       2  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h2>Return Reference Type</h2>
 
 <h3>return Object</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public Object test() {
         return null;
     }
 }
-</div>
+</pre>
 
-<div title="test:()Ljava/lang/Object;" class="plaintext">
+<pre title="test:()Ljava/lang/Object;" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -317,21 +317,21 @@ code = 01B0
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       2  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>return Array</h3>
 
 <h4>return int array</h4>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int[] test() {
         return null;
     }
 }
-</div>
+</pre>
 
-<div title="test:()[I" class="plaintext">
+<pre title="test:()[I" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -344,19 +344,19 @@ code = 01B0
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       2  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h4>return Object Array</h4>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public Object[] test() {
         return null;
     }
 }
-</div>
+</pre>
 
-<div title="test:()[Ljava/lang/Object;" class="plaintext">
+<pre title="test:()[Ljava/lang/Object;" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -369,7 +369,7 @@ code = 01B0
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       2  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

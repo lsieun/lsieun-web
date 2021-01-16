@@ -33,12 +33,12 @@
     The <code>Synthetic</code> attribute has the following format:
 </p>
 
-<div title="Synthetic_attribute" class="plaintext">
+<pre title="Synthetic_attribute" class="plaintext">
 Synthetic_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
 }
-</div>
+</pre>
 
 <ul>
     <li>
@@ -51,21 +51,21 @@ Synthetic_attribute {
 
 <h2>Examples</h2>
 
-<div title="Day.java" class="javacode">
+<pre title="Day.java" class="javacode">
 public enum Day {
     SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
     THURSDAY, FRIDAY, SATURDAY
 }
-</div>
+</pre>
 
-<div title="Day.class" class="plaintext">
+<pre title="Day.class" class="plaintext">
 methods_count='0004' (4)
 methods
     MethodInfo {Value='values:()[Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC]'}
     MethodInfo {Value='valueOf:(Ljava/lang/String;)Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC]'}
     MethodInfo {Value='&lt;init&gt;:(Ljava/lang/String;I)V', AccessFlags='[ACC_PRIVATE]'}
     MethodInfo {Value='&lt;clinit&gt;:()V', AccessFlags='[ACC_STATIC]'}
-</div>
+</pre>
 
 <h2>References</h2>
 

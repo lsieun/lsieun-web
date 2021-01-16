@@ -14,7 +14,7 @@
     which is returned by the <code>ClassVisitor</code>'s <code>visitMethod</code> method.
 </p>
 
-<div title="ClassVisitor.java" class="javacode">
+<pre title="ClassVisitor.java" class="javacode">
 public abstract class ClassVisitor {
     public MethodVisitor visitMethod(final int access, final String name, final String descriptor,
                                      final String signature, final String[] exceptions) {
@@ -32,7 +32,7 @@ public abstract class ClassVisitor {
     based on the number and type of arguments of these instructions.
 </p>
 
-<div title="MethodVisitor.java" hidden class="javacode">
+<pre title="MethodVisitor.java" hidden class="javacode">
 public abstract class MethodVisitor {
     public void visitParameter(final String name, final int access);
     public AnnotationVisitor visitAnnotationDefault();
@@ -97,7 +97,7 @@ public abstract class MethodVisitor {
     Javadoc of the <code>MethodVisitor</code> interface):
 </p>
 
-<div title="The methods of MethodVisitor class must be called in the following order" class="plaintext">
+<pre title="The methods of MethodVisitor class must be called in the following order" class="plaintext">
 (visitParameter)*
 [visitAnnotationDefault]
 (visitAnnotation | visitAnnotableParameterCount | visitParameterAnnotation | visitTypeAnnotation | visitAttribute)*
@@ -137,7 +137,7 @@ visitEnd.
     The <code>ClassVisitor</code> and <code>MethodVisitor</code> classes can be combined in order to generate complete classes:
 </p>
 
-<div title="" class="javacode">
+<pre title="" class="javacode">
 ClassVisitor cv = ...;
 cv.visit(...);
 MethodVisitor mv1 = cv.visitMethod(..., "m1", ...);

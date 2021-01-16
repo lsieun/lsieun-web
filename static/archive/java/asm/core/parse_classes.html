@@ -17,7 +17,7 @@
     Suppose that we would like to print the content of a class, in a similar way as the <code>javap</code> tool.
 </p>
 
-<div title="javap" class="plaintext">
+<pre title="javap" class="plaintext">
 $ javap -p java.lang.Runnable
 Compiled from "Runnable.java"
 public interface java.lang.Runnable {
@@ -31,7 +31,7 @@ public interface java.lang.Runnable {
     Here is a possible, overly simplified implementation:
 </p>
 
-<div title="ClassPrinter.java" hidden class="javacode">
+<pre title="ClassPrinter.java" hidden class="javacode">
 import static org.objectweb.asm.Opcodes.*;
 
 import org.objectweb.asm.AnnotationVisitor;
@@ -99,7 +99,7 @@ public class ClassPrinter extends ClassVisitor {
     so that the events produced by the <code>ClassReader</code> are consumed by our <code>ClassPrinter</code>:
 </p>
 
-<div title="App.java" class="javacode">
+<pre title="App.java" class="javacode">
 import org.objectweb.asm.ClassReader;
 
 public class App {
@@ -111,7 +111,7 @@ public class App {
 }
 </div>
 
-<div title="Run output" class="plaintext">
+<pre title="Run output" class="plaintext">
 java/lang/Runnable extends java/lang/Object {
     run ()V
 }
@@ -127,7 +127,7 @@ java/lang/Runnable extends java/lang/Object {
     or <span class="text-example">by value</span>, as <span class="text-emphasize">a byte array</span> or as an <code>InputStream</code>.
 </p>
 
-<div title="ClassReader.java Constructors" class="javacode">
+<pre title="ClassReader.java Constructors" class="javacode">
 public class ClassReader {
 
     public ClassReader(final byte[] classFile) { // 第一种，接收byte array参数
@@ -181,7 +181,7 @@ public class ClassReader {
 
 <h3>accept方法</h3>
 
-<div title="ClassReader.java accept" class="javacode">
+<pre title="ClassReader.java accept" class="javacode">
 public class ClassReader {
     public void accept(final ClassVisitor classVisitor, final int parsingOptions) {
         accept(classVisitor, new Attribute[0], parsingOptions);
@@ -276,7 +276,7 @@ public class ClassReader {
     specified in the Javadoc of this class:
 </p>
 
-<div title="The methods of ClassVisitor must be called in the following order" class="plaintext">
+<pre title="The methods of ClassVisitor must be called in the following order" class="plaintext">
 visit
 [visitSource] [visitModule] [visitNestHost][ visitPermittedSubclass] [visitOuterClass]
 (visitAnnotation | visitTypeAnnotation | visitAttribute)*

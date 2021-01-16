@@ -19,7 +19,7 @@
     The <code>element_value</code> structure is a discriminated union representing the value of an element-value pair. It has the following format:
 </p>
 
-<div title="element_value" class="plaintext">
+<pre title="element_value" class="plaintext">
 element_value {
     u1 tag;
     union {
@@ -38,7 +38,7 @@ element_value {
         } array_value;
     } value;
 }
-</div>
+</pre>
 
 <p>
     The <code>tag</code> item uses a single ASCII character to indicate the type of the value of the element-value pair. This determines which item of the <code>value</code> union is in use.
@@ -147,12 +147,12 @@ element_value {
     The <code>const_value_index</code> item denotes either <b>a primitive constant value</b> or a <code>String</code> literal.
 </p>
 
-<div title="element_value" class="plaintext">
+<pre title="element_value" class="plaintext">
 element_value {
     u1 tag;
     u2 const_value_index;
 }
-</div>
+</pre>
 
 <table class="w3-table-all w3-hoverable w3-centered">
     <thead onclick="$(this).next().toggle()">
@@ -227,14 +227,14 @@ element_value {
     The <code>enum_const_value</code> item denotes an enum constant
 </p>
 
-<div title="element_value" class="plaintext">
+<pre title="element_value" class="plaintext">
 element_value {
     u1 tag;
     {   u2 type_name_index;
         u2 const_name_index;
     } enum_const_value;
 }
-</div>
+</pre>
 
 <p>
     The <code>enum_const_value</code> item consists of the following two items:
@@ -274,12 +274,12 @@ element_value {
     The <code>class_info_index</code> item denotes a class literal.
 </p>
 
-<div title="element_value" class="plaintext">
+<pre title="element_value" class="plaintext">
 element_value {
     u1 tag;
     u2 class_info_index;
 }
-</div>
+</pre>
 
 <p class="indented">
     The <code>class_info_index</code> item must be a valid index into the <code>constant_pool</code> table. The constant_pool entry at that index must be a <code>CONSTANT_Utf8_info</code> structure representing <a href="/doc/javase/jvms/se8/jvms-4.html#jvms-4.3.3" target="_blank">a return descriptor</a>. The return descriptor gives the type corresponding to the class literal represented by this <code>element_value</code> structure. Types correspond to class literals as follows:
@@ -333,12 +333,12 @@ element_value {
     The <code>annotation_value</code> item denotes a "nested" annotation.
 </p>
 
-<div title="element_value" class="plaintext">
+<pre title="element_value" class="plaintext">
 element_value {
     u1 tag;
     annotation annotation_value;
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
@@ -346,7 +346,7 @@ element_value {
     </p>
 </div>
 
-<div title="annotation" class="plaintext">
+<pre title="annotation" class="plaintext">
 annotation {
     u2 type_index;
     u2 num_element_value_pairs;
@@ -354,7 +354,7 @@ annotation {
         element_value value;
     } element_value_pairs[num_element_value_pairs];
 }
-</div>
+</pre>
 
 <table class="w3-table-all w3-hoverable w3-centered">
     <thead onclick="$(this).next().toggle()">
@@ -381,14 +381,14 @@ annotation {
     The <code>array_value</code> item denotes an array.
 </p>
 
-<div title="element_value" class="plaintext">
+<pre title="element_value" class="plaintext">
 element_value {
     u1 tag;
     {   u2            num_values;
         element_value values[num_values];
     } array_value;
 }
-</div>
+</pre>
 
 <p>
     The <code>array_value</code> item consists of the following two items:

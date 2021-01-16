@@ -9,7 +9,7 @@
 
 <h2>Attributes in ClassFile</h2>
 
-<div title="ClassFile" class="plaintext">
+<pre title="ClassFile" class="plaintext">
 ClassFile {
     u4             magic;
     u2             minor_version;
@@ -30,7 +30,7 @@ ClassFile {
     attribute_info attributes[attributes_count];           本节内容关注点
     ------------------------------------------------------------------------
 }
-</div>
+</pre>
 
 <ul>
     <li>
@@ -45,13 +45,13 @@ ClassFile {
     All attributes have the following general format:
 </p>
 
-<div title="attribute_info" class="plaintext">
+<pre title="attribute_info" class="plaintext">
 attribute_info {
     u2 attribute_name_index;
     u4 attribute_length;
     u1 info[attribute_length];
 }
-</div>
+</pre>
 
 <p class="indented">
     For all attributes, the <code>attribute_name_index</code> must be a valid unsigned 16-bit index into the constant pool of the class. The <code>constant_pool</code> entry at <code>attribute_name_index</code> must be a <code>CONSTANT_Utf8_info</code> structure representing the name of the attribute. The value of the <code>attribute_length</code> item indicates the length of the subsequent information in bytes. The length does not include the initial six bytes that contain the <code>attribute_name_index</code> and <code>attribute_length</code> items.

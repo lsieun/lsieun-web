@@ -15,7 +15,7 @@
 
 <h3>iconst_&lt;i&gt;: -1~5</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int int_m1 = -1;
@@ -27,9 +27,9 @@ public class HelloWorld {
         int int_5 = 5;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 8
@@ -62,11 +62,11 @@ index  start_pc  length  name_and_type
     5        12       7  int_3:I
     6        15       4  int_4:I
     7        18       1  int_5:I
-</div>
+</pre>
 
 <h3>bipush: -128~-2 and 6~127</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int int_m128 = -128;
@@ -75,9 +75,9 @@ public class HelloWorld {
         int int_127 = 127;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 5
@@ -101,11 +101,11 @@ index  start_pc  length  name_and_type
     2         6       8  int_m2:I
     3         9       5  int_6:I
     4        13       1  int_127:I
-</div>
+</pre>
 
 <h3>sipush: -32768~-129 and 128~32767</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int int_m32768 = -32768;
@@ -114,9 +114,9 @@ public class HelloWorld {
         int int_32767 = 32767;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 5
@@ -140,11 +140,11 @@ index  start_pc  length  name_and_type
     2         8      10  int_m129:I
     3        12       6  int_128:I
     4        17       1  int_32767:I
-</div>
+</pre>
 
 <h3>ldc</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int int_min = Integer.MIN_VALUE;
@@ -153,9 +153,9 @@ public class HelloWorld {
         int int_max = Integer.MAX_VALUE;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='001C' (28)
 constant_pool
     ... ...
@@ -187,11 +187,11 @@ index  start_pc  length  name_and_type
     2         6       8  int_m32789:I
     3         9       5  int_32768:I
     4        13       1  int_max:I
-</div>
+</pre>
 
 <h3>int Range</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static void main(String[] args) {
         System.out.println("Byte Min=" + Byte.MIN_VALUE + ", MAX=" + Byte.MAX_VALUE);
@@ -199,28 +199,28 @@ public class HelloWorld {
         System.out.println("Integer Min=" + Integer.MIN_VALUE + ", MAX=" + Integer.MAX_VALUE);
     }
 }
-</div>
+</pre>
 
-<div title="Run Output" class="plaintext">
+<pre title="Run Output" class="plaintext">
 Byte Min=-128, MAX=127
 Short Min=-32768, MAX=32767
 Integer Min=-2147483648, MAX=2147483647
-</div>
+</pre>
 
 <h2>long</h2>
 
 <h3>lconst_&lt;l&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         long long_0 = 0;
         long long_1 = 1;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 5
@@ -238,20 +238,20 @@ index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
     1         2       3  long_0:J
     3         4       1  long_1:J
-</div>
+</pre>
 
 <h3>ldc2_w</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         long long_2 = 2;
         long long_max = Long.MAX_VALUE;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='001A' (26)
 constant_pool
     ... ...
@@ -278,13 +278,13 @@ index  start_pc  length  name_and_type
     0         0       9  this:Lsample/HelloWorld;
     1         4       5  long_2:J
     3         8       1  long_max:J
-</div>
+</pre>
 
 <h2>float</h2>
 
 <h3>fconst_&lt;f&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         float float_0 = 0;
@@ -292,9 +292,9 @@ public class HelloWorld {
         float float_2 = 2;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 4
@@ -315,19 +315,19 @@ index  start_pc  length  name_and_type
     1         2       5  float_0:F
     2         4       3  float_1:F
     3         6       1  float_2:F
-</div>
+</pre>
 
 <h3>ldc</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         float float_PI = 3.14F;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 constant_pool_count='0014' (20)
 constant_pool
@@ -350,22 +350,22 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       4  this:Lsample/HelloWorld;
     1         3       1  float_PI:F
-</div>
+</pre>
 
 <h2>double</h2>
 
 <h3>dconst_&lt;d&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         double double_0 = 0;
         double double_1 = 1;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 5
@@ -383,19 +383,19 @@ index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
     1         2       3  double_0:D
     3         4       1  double_1:D
-</div>
+</pre>
 
 <h3>ldc2_w</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         double double_PI = 3.14D;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -418,21 +418,21 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
     1         4       1  double_PI:D
-</div>
+</pre>
 
 <h2>Reference Type</h2>
 
 <h3>null: aconst_null</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Object obj_null = null;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -447,19 +447,19 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       3  this:Lsample/HelloWorld;
     1         2       1  obj_null:Ljava/lang/Object;
-</div>
+</pre>
 
 <h3>String: ldc</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         String str = "GoodBoy";
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -481,19 +481,19 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       4  this:Lsample/HelloWorld;
     1         3       1  str:Ljava/lang/String;
-</div>
+</pre>
 
 <h3>Class&lt;?&gt;: ldc</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Class clazz = HelloWorld.class;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0013' (19)
 constant_pool
     ... ...
@@ -515,11 +515,11 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       4  this:Lsample/HelloWorld;
     1         3       1  clazz:Ljava/lang/Class;
-</div>
+</pre>
 
 <h2>ldc and ldc_w</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     private String str001 = "str001";
     // ... ... 省略255个
@@ -537,9 +537,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -554,7 +554,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
     1         4       1  str:Ljava/lang/String;
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

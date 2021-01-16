@@ -1,0 +1,188 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Replace Method Call</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>预期目标</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int a, int b) {
+        int result = add(a, b);
+        System.out.println("result = " + result);
+    }
+
+    public int add(int a, int b) {
+        return a + b;
+    }
+
+    public int sub(int a, int b) {
+        return a - b;
+    }
+
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+        instance.test(30, 20);
+    }
+}
+</pre>
+
+<h2>编码实现</h2>
+
+<h3>Info.java</h3>
+
+<pre title="Info.java" class="javacode">
+public class Info {
+    public final int srcOpcode;
+    public final String srcOwner;
+    public final String srcName;
+    public final String srcDesc;
+
+    public final int targetOpcode;
+    public final String targetOwner;
+    public final String targetName;
+    public final String targetDesc;
+
+    public Info(
+            int srcOpcode, String srcOwner, String srcName, String srcDesc,
+            int targetOpcode, String targetOwner, String targetName, String targetDesc) {
+        this.srcOpcode = srcOpcode;
+        this.srcOwner = srcOwner;
+        this.srcName = srcName;
+        this.srcDesc = srcDesc;
+        this.targetOpcode = targetOpcode;
+        this.targetOwner = targetOwner;
+        this.targetName = targetName;
+        this.targetDesc = targetDesc;
+    }
+}
+</pre>
+
+<h3>MethodCallAdapter.java</h3>
+
+<pre title="MethodCallAdapter.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+import java.util.List;
+
+public class MethodCallAdapter extends ClassVisitor {
+    private final List&lt;Info&gt; list;
+
+    public MethodCallAdapter(int api, ClassVisitor cv, List&lt;Info&gt; list) {
+        super(api, cv);
+        this.list = list;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        if (mv != null) {
+            mv = new MethodCallConverter(api, mv, list);
+        }
+        return mv;
+    }
+}
+</pre>
+
+<h3>MethodCallConverter.java</h3>
+
+<pre title="MethodCallConverter.java" class="javacode">
+import org.objectweb.asm.MethodVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MethodCallConverter extends MethodVisitor {
+    private final List&lt;Info&gt; list;
+
+    public MethodCallConverter(int api, MethodVisitor mv, List&lt;Info&gt; list) {
+        super(api, mv);
+        if (list == null) {
+            this.list = new ArrayList&lt;&gt;();
+        }
+        else {
+            this.list = list;
+        }
+    }
+
+    @Override
+    public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
+        Info info = matchingInfo(opcode, owner, name, descriptor);
+        if (info != null) {
+            super.visitMethodInsn(info.targetOpcode, info.targetOwner, info.targetName, info.targetDesc, false);
+            return;
+        }
+        super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+    }
+
+    private Info matchingInfo(int opcode, String owner, String name, String descriptor) {
+        for (Info info : list) {
+            if (opcode == info.srcOpcode &&
+                    owner.equals(info.srcOwner) &&
+                    name.equals(info.srcName) &&
+                    descriptor.equals(info.srcDesc)) {
+                return info;
+            }
+        }
+        return null;
+    }
+}
+</pre>
+
+<h3>MethodCallAdapterRun.java</h3>
+
+<pre title="MethodCallAdapterRun.java" class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.utils.ReadUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MethodCallAdapterRun {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = ReadUtils.readByPath(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        Info info1 = new Info(Opcodes.INVOKEVIRTUAL, "sample/HelloWorld", "add", "(II)I",
+                Opcodes.INVOKEVIRTUAL, "sample/HelloWorld", "sub", "(II)I");
+        List&lt;Info&gt; list = new ArrayList&lt;&gt;();
+        list.add(info1);
+        ClassVisitor cv = new MethodCallAdapter(Opcodes.ASM9, cw, list);
+
+        //（4）两者进行结合
+        cr.accept(cv, ClassReader.SKIP_FRAMES);
+
+        //（5）重新生成Class
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<h2>验证结果</h2>
+
+<pre title="Run output 1" class="plaintext">
+result = 50
+</pre>
+
+<pre title="Run output 2" class="plaintext">
+result = 10
+</pre>

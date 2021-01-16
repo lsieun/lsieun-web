@@ -9,7 +9,7 @@
 
 <h2>LambdaMetafactory.metafactory()</h2>
 
-<div title="LambdaMetafactory.metafactory()" class="javacode">
+<pre title="LambdaMetafactory.metafactory()" class="javacode">
 public static CallSite metafactory(MethodHandles.Lookup caller,
                                    String invokedName,
                                    MethodType invokedType,
@@ -25,7 +25,7 @@ public static CallSite metafactory(MethodHandles.Lookup caller,
     mf.validateMetafactoryArgs();
     return mf.buildCallSite();
 }
-</div>
+</pre>
 
 <ul>
     <li>
@@ -61,7 +61,7 @@ public static CallSite metafactory(MethodHandles.Lookup caller,
     第一个示例：<code>HelloWorld.java</code>
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Consumer;
 
 public class HelloWorld {
@@ -70,7 +70,7 @@ public class HelloWorld {
         c.accept("Hello");
     }
 }
-</div>
+</pre>
 
 <h4>GoodBoy.java</h4>
 
@@ -78,7 +78,7 @@ public class HelloWorld {
     第二个示例：<code>GoodBoy.java</code>
 </p>
 
-<div title="GoodBoy.java" class="javacode">
+<pre title="GoodBoy.java" class="javacode">
 import java.util.function.Function;
 
 public class GoodBoy {
@@ -88,7 +88,7 @@ public class GoodBoy {
         System.out.println(result);
     }
 }
-</div>
+</pre>
 
 <h4>GoodGirl.java</h4>
 
@@ -96,7 +96,7 @@ public class GoodBoy {
     第三个示例：<code>GoodGirl.java</code>
 </p>
 
-<div title="GoodGirl.java" class="javacode">
+<pre title="GoodGirl.java" class="javacode">
 import java.util.function.BiFunction;
 
 public class GoodGirl {
@@ -110,11 +110,11 @@ public class GoodGirl {
         System.out.println(result);
     }
 }
-</div>
+</pre>
 
 <h3>caller</h3>
 
-<div title="LambdaMetafactory.metafactory()" class="javacode">
+<pre title="LambdaMetafactory.metafactory()" class="javacode">
 public static CallSite metafactory(MethodHandles.Lookup caller,
                                    String invokedName,
                                    MethodType invokedType,
@@ -124,7 +124,7 @@ public static CallSite metafactory(MethodHandles.Lookup caller,
         throws LambdaConversionException {
     // ......
 }
-</div>
+</pre>
 
 <p>
     在这里，我们只关注<code>metafactory</code>方法的第一个参数（<code>caller</code>）。
@@ -144,7 +144,7 @@ public static CallSite metafactory(MethodHandles.Lookup caller,
 
 <h3>invokedName and invokedType</h3>
 
-<div title="LambdaMetafactory.metafactory()" class="javacode">
+<pre title="LambdaMetafactory.metafactory()" class="javacode">
 public static CallSite metafactory(MethodHandles.Lookup caller,
                                    String invokedName,
                                    MethodType invokedType,
@@ -154,7 +154,7 @@ public static CallSite metafactory(MethodHandles.Lookup caller,
         throws LambdaConversionException {
     // ......
 }
-</div>
+</pre>
 
 <p>
     在这里，我们只关注<code>metafactory</code>方法的第二个参数（<code>invokedName</code>）和第三个参数（<code>invokedType</code>）。
@@ -201,14 +201,14 @@ public static CallSite metafactory(MethodHandles.Lookup caller,
     </li>
 </ul>
 
-<div title="java.util.function.Consumer.java" hidden class="javacode">
+<pre title="java.util.function.Consumer.java" hidden class="javacode">
 @FunctionalInterface
 public interface Consumer&lt;T&gt; {
     void accept(T t); // 注意：invokedName来自于这里
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class main:([Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="HelloWorld.class main:([Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -232,9 +232,9 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      23  args:[Ljava/lang/String;
     1        14       9  c:Ljava/util/function/Consumer;
-</div>
+</pre>
 
-<div title="HelloWorld.class ConstantPool" hidden class="plaintext">
+<pre title="HelloWorld.class ConstantPool" hidden class="plaintext">
 constant_pool_count='0045' (69)
 constant_pool
     ......
@@ -245,7 +245,7 @@ constant_pool
     |051| CONSTANT_Utf8 {Value='accept', HexCode='010006616363657074'}
     |052| CONSTANT_Utf8 {Value='(Ljava/io/PrintStream;)Ljava/util/function/Consumer;', HexCode='01003428......'}
     ......
-</div>
+</pre>
 
 <h4>GoodBoy.java</h4>
 
@@ -258,14 +258,14 @@ constant_pool
     </li>
 </ul>
 
-<div title="java.util.function.Function.java" hidden class="javacode">
+<pre title="java.util.function.Function.java" hidden class="javacode">
 @FunctionalInterface
 public interface Function&lt;T, R&gt; {
     R apply(T t); // 注意：invokedName来自于这里
 }
-</div>
+</pre>
 
-<div title="GoodBoy.class main:([Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="GoodBoy.class main:([Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -292,9 +292,9 @@ index  start_pc  length  name_and_type
     0         0      29  args:[Ljava/lang/String;
     1         6      23  func:Ljava/util/function/Function;
     2        21       8  result:Ljava/lang/Integer;
-</div>
+</pre>
 
-<div title="GoodBoy.class ConstantPool" hidden class="plaintext">
+<pre title="GoodBoy.class ConstantPool" hidden class="plaintext">
 constant_pool_count='0050' (80)
 constant_pool
     ......
@@ -305,7 +305,7 @@ constant_pool
     |055| CONSTANT_Utf8 {Value='apply', HexCode='0100056170706C79'}
     |056| CONSTANT_Utf8 {Value='()Ljava/util/function/Function;', HexCode='01001F28......'}
     ......
-</div>
+</pre>
 
 <h4>GoodGirl.java</h4>
 
@@ -318,14 +318,14 @@ constant_pool
     </li>
 </ul>
 
-<div title="java.util.function.BiFunction.java" hidden class="javacode">
+<pre title="java.util.function.BiFunction.java" hidden class="javacode">
 @FunctionalInterface
 public interface BiFunction&lt;T, U, R&gt; {
     R apply(T t, U u); // 注意：invokedName来自于这里
 }
-</div>
+</pre>
 
-<div title="GoodGirl.class main:([Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="GoodGirl.class main:([Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -354,9 +354,9 @@ index  start_pc  length  name_and_type
     0         0      34  args:[Ljava/lang/String;
     1         6      28  func:Ljava/util/function/BiFunction;
     2        26       8  result:Ljava/lang/Integer;
-</div>
+</pre>
 
-<div title="GoodGirl.class ConstantPool" hidden class="plaintext">
+<pre title="GoodGirl.class ConstantPool" hidden class="plaintext">
 constant_pool_count='004F' (79)
 constant_pool
     ......
@@ -367,11 +367,11 @@ constant_pool
     |056| CONSTANT_Utf8 {Value='apply', HexCode='0100056170706C79'}
     |057| CONSTANT_Utf8 {Value='()Ljava/util/function/BiFunction;', HexCode='0100212829......'}
     ......
-</div>
+</pre>
 
 <h3>samMethodType~instantiatedMethodType</h3>
 
-<div title="LambdaMetafactory.metafactory()" class="javacode">
+<pre title="LambdaMetafactory.metafactory()" class="javacode">
 public static CallSite metafactory(MethodHandles.Lookup caller,
                                    String invokedName,
                                    MethodType invokedType,
@@ -381,7 +381,7 @@ public static CallSite metafactory(MethodHandles.Lookup caller,
         throws LambdaConversionException {
     // ......
 }
-</div>
+</pre>
 
 <ul>
     <li>
@@ -424,7 +424,7 @@ public static CallSite metafactory(MethodHandles.Lookup caller,
     </li>
 </ul>
 
-<div title="HelloWorld.class BootstrapMethods" hidden class="plaintext">
+<pre title="HelloWorld.class BootstrapMethods" hidden class="plaintext">
 constant_pool_count='0045' (69)
 constant_pool
     ......
@@ -455,7 +455,7 @@ bootstrap_methods[0] {
     num_bootstrap_arguments='0003' (3)
     bootstrap_arguments='002100220023' ([#33,#34,#35])
 }
-</div>
+</pre>
 
 <h4>GoodBoy.java</h4>
 
@@ -471,7 +471,7 @@ bootstrap_methods[0] {
     </li>
 </ul>
 
-<div title="GoodBoy.class BootstrapMethods" hidden class="plaintext">
+<pre title="GoodBoy.class BootstrapMethods" hidden class="plaintext">
 constant_pool_count='0050' (80)
 constant_pool
     ......
@@ -501,7 +501,7 @@ bootstrap_methods[0] {
     num_bootstrap_arguments='0003' (3)
     bootstrap_arguments='002500260027' ([#37,#38,#39])
 }
-</div>
+</pre>
 
 <h4>GoodGirl.java</h4>
 
@@ -517,7 +517,7 @@ bootstrap_methods[0] {
     </li>
 </ul>
 
-<div title="GoodGirl.class BootstrapMethods" hidden class="plaintext">
+<pre title="GoodGirl.class BootstrapMethods" hidden class="plaintext">
 constant_pool_count='004F' (79)
 constant_pool
     ......
@@ -547,7 +547,7 @@ bootstrap_methods[0] {
     num_bootstrap_arguments='0003' (3)
     bootstrap_arguments='002600270028' ([#38,#39,#40])
 }
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

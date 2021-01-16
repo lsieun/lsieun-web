@@ -15,20 +15,20 @@
     在<code>java.lang.invoke.InnerClassLambdaMetafactory</code>的<code>buildCallSite()</code>会调用<code>spinInnerClass()</code>方法。
 </p>
 
-<div title="InnerClassLambdaMetafactory#buildCallSite()" class="javacode">
+<pre title="InnerClassLambdaMetafactory#buildCallSite()" class="javacode">
 @Override
 CallSite buildCallSite() throws LambdaConversionException {
     final Class<?> innerClass = spinInnerClass();
     // ......
 }
-</div>
+</pre>
 
 <p class="indented">
     对于<code>spinInnerClass()</code>的描述是“Generate a class file which implements the functional interface, define and return the class”。换句话说，这个<code>spinInnerClass()</code>方法会生成一个类，我们想做的事情就是得到这个类的二进制表示形式（<code>byte[]</code>）。
 </p>
 
 
-<div title="InnerClassLambdaMetafactory#spinInnerClass()" class="javacode">
+<pre title="InnerClassLambdaMetafactory#spinInnerClass()" class="javacode">
 private Class&lt;?&gt; spinInnerClass() throws LambdaConversionException {
     String[] interfaces;
     String samIntf = samBase.getName().replace('.', '/');
@@ -80,7 +80,7 @@ private Class&lt;?&gt; spinInnerClass() throws LambdaConversionException {
 
     return UNSAFE.defineAnonymousClass(targetClass, classBytes, null);
 }
-</div>
+</pre>
 
 <p class="indented">
     在上面的代码中，添加了“第一步”、“第二步”、“第三步”和“第四步”的代码注释，目的是简略性介绍生成类的过程。同时，也标识出了“解决方案一”和“解决方案二”所针对的位置。
@@ -94,9 +94,9 @@ private Class&lt;?&gt; spinInnerClass() throws LambdaConversionException {
     首先，找到下面的代码所在的位置，并打上“断点”。
 </p>
 
-<div title="InnerClassLambdaMetafactory#spinInnerClass()" class="javacode">
+<pre title="InnerClassLambdaMetafactory#spinInnerClass()" class="javacode">
 final byte[] classBytes = cw.toByteArray(); // 注意：解决方案一，来自于这里
-</div>
+</pre>
 
 <p>
     其次，以Debug方式运行，让代码执行过这一行后暂停。
@@ -110,7 +110,7 @@ final byte[] classBytes = cw.toByteArray(); // 注意：解决方案一，来自
     第四，通过下面代码，将字符串转换成<code>byte[]</code>
 </p>
 
-<div title="GoodBoy.java" class="javacode">
+<pre title="GoodBoy.java" class="javacode">
 public class GoodBoy {
     public static byte[] getBytes() {
         String byte_array_str = "[-54, -2, -70, -66, ......]";
@@ -124,7 +124,7 @@ public class GoodBoy {
         return bytes;
     }
 }
-</div>
+</pre>
 
 <p>
     最后，利用项目当中的工具类对<code>byte[]</code>内容进行解析。
@@ -142,7 +142,7 @@ public class GoodBoy {
     在<code>InnerClassLambdaMetafactory</code>类中，有一个<code>dumper</code>字段，其类型是<code>ProxyClassesDumper</code>。
 </p>
 
-<div title="InnerClassLambdaMetafactory.dumper字段" class="javacode">
+<pre title="InnerClassLambdaMetafactory.dumper字段" class="javacode">
 // For dumping generated classes to disk, for debugging purposes
 private static final ProxyClassesDumper dumper;
 
@@ -153,25 +153,25 @@ static {
             new PropertyPermission(key , "read"));
     dumper = (null == path) ? null : ProxyClassesDumper.getInstance(path);
 }
-</div>
+</pre>
 
 <p>
     第一种使用方式，添加JVM的启动参数。
 </p>
 
-<div title="JVM Option" class="plaintext">
+<pre title="JVM Option" class="plaintext">
 java -Djdk.internal.lambda.dumpProxyClasses=/path/to/directory/ HelloWorld
-</div>
+</pre>
 
 <p>
     第二种使用方式，在程序代码中设置<code>jdk.internal.lambda.dumpProxyClasses</code>参数。
 </p>
 
-<div title="jdk.internal.lambda.dumpProxyClasses" class="javacode">
+<pre title="jdk.internal.lambda.dumpProxyClasses" class="javacode">
 System.setProperty("jdk.internal.lambda.dumpProxyClasses","D:/git-repo/java8-classfile-tutorial/target/classes");
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Consumer;
 
 public class HelloWorld {
@@ -181,7 +181,7 @@ public class HelloWorld {
         c.accept("Hello");
     }
 }
-</div>
+</pre>
 
 <h3>进一步研究</h3>
 

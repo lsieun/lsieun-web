@@ -55,14 +55,14 @@
     The <code>RuntimeVisibleTypeAnnotations</code> attribute has the following format:
 </p>
 
-<div title="RuntimeVisibleTypeAnnotations_attribute" class="plaintext">
+<pre title="RuntimeVisibleTypeAnnotations_attribute" class="plaintext">
 RuntimeVisibleTypeAnnotations_attribute {
     u2              attribute_name_index;
     u4              attribute_length;
     u2              num_annotations;
     type_annotation annotations[num_annotations];
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
@@ -128,14 +128,14 @@ RuntimeVisibleTypeAnnotations_attribute {
     The <code>RuntimeInvisibleTypeAnnotations</code> attribute has the following format:
 </p>
 
-<div title="RuntimeInvisibleTypeAnnotations_attribute" class="plaintext">
+<pre title="RuntimeInvisibleTypeAnnotations_attribute" class="plaintext">
 RuntimeInvisibleTypeAnnotations_attribute {
     u2              attribute_name_index;
     u4              attribute_length;
     u2              num_annotations;
     type_annotation annotations[num_annotations];
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
@@ -164,7 +164,7 @@ RuntimeInvisibleTypeAnnotations_attribute {
 
 <h2>Examples</h2>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -174,19 +174,19 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MyTag {
 }
-</div>
+</pre>
 
 <h3>First Example</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public class HelloWorld {
     public void test() {
         @MyTag String str = null; // 注意，MyTag修饰String类型
     }
 }
-</div>
+</pre>
 
-<div title="RuntimeVisibleTypeAnnotations" hidden class="plaintext">
+<pre title="RuntimeVisibleTypeAnnotations" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ......
@@ -220,17 +220,17 @@ annotations[0] {
     type_index='000F' (#15)
     num_element_value_pairs='0000' (0)
 }
-</div>
+</pre>
 
 <h3>Second Example</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public class HelloWorld&lt;@MyTag T&gt; {
     //
 }
-</div>
+</pre>
 
-<div title="RuntimeInvisibleTypeAnnotations" hidden class="plaintext">
+<pre title="RuntimeInvisibleTypeAnnotations" hidden class="plaintext">
 constant_pool_count='0016' (22)
 constant_pool
     ......
@@ -258,4 +258,4 @@ annotations[0] {
     type_index='0012' (#18)
     num_element_value_pairs='0000' (0)
 }
-</div>
+</pre>

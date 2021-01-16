@@ -15,7 +15,7 @@
     <code>ClassFile.java</code>是对JVM文档中<code>ClassFile Structure</code>在Java Code层面的映射。
 </p>
 
-<div title="ClassFile.java" class="javacode">
+<pre title="ClassFile.java" class="javacode">
 public final class ClassFile extends Node {
     public MagicNumber magic_number;
     public CompilerVersion compiler_version;
@@ -25,9 +25,9 @@ public final class ClassFile extends Node {
     public Methods methods;
     public Attributes attributes;
 }
-</div>
+</pre>
 
-<div title="ClassFile Structure" hidden class="plaintext">
+<pre title="ClassFile Structure" hidden class="plaintext">
 ClassFile {
     ------------------------------------------------------------------------
     u4             magic;                                 // Magic Number部分
@@ -54,7 +54,7 @@ ClassFile {
     attribute_info attributes[attributes_count];         // attributes部分
     ------------------------------------------------------------------------
 }
-</div>
+</pre>
 
 <h3>Starting Point</h3>
 
@@ -62,18 +62,18 @@ ClassFile {
     在<code>ClassFile</code>当中，有一个<code>public static ClassFile parse(byte[] bytes)</code>方法，它是使用ClassFile的起点。
 </p>
 
-<div title="ClassFile.java parse method" class="javacode">
+<pre title="ClassFile.java parse method" class="javacode">
     public static ClassFile parse(byte[] bytes) {
         ByteDashboard bd = new ByteDashboard(bytes);
         return new ClassFile(bd);
     }
-</div>
+</pre>
 
 <p class="indented">
     当有一个<code>.class</code>文件，我们将文件里的内容读取到一个<code>byte[]</code>中，然后将这个<code>byte[]</code>对象传入<code>parse</code>方法中，就可以得到一个<code>ClassFile</code>对象。
 </p>
 
-<div title="parse example" class="javacode">
+<pre title="parse example" class="javacode">
 // 第一步，输入参数
 String relative_path = "sample/HelloWorld.class";
 
@@ -83,7 +83,7 @@ byte[] bytes = ReadUtils.readByPath(filepath);
 
 // 第三步，生成ClassFile对象
 ClassFile classfile = ClassFile.parse(bytes);
-</div>
+</pre>
 
 <h2>SuperClass: Node</h2>
 
@@ -91,7 +91,7 @@ ClassFile classfile = ClassFile.parse(bytes);
     与<code>ClassFile</code>相关的大部分类文件，都继承自<code>Node</code>父类。在<code>Node</code>类，定义了两个字段（<code>bytes</code>和<code>value</code>）和一个方法（<code>hex()</code>）。
 </p>
 
-<div title="Node.java" class="javacode">
+<pre title="Node.java" class="javacode">
 public abstract class Node {
     public byte[] bytes;
     public String value;
@@ -100,7 +100,7 @@ public abstract class Node {
         return HexUtils.toHex(this.bytes);
     }
 }
-</div>
+</pre>
 
 <ul>
     <li><code>byte[] bytes</code>: 记录一个结构（例如，field_info）对应的二进制数据</li>
@@ -108,7 +108,7 @@ public abstract class Node {
     <li><code>hex()</code>: 将<code>byte[] bytes</code>显示为十六进制形式。</li>
 </ul>
 
-<div title="MagicNumber.java" class="javacode">
+<pre title="MagicNumber.java" class="javacode">
 public final class MagicNumber extends Node {
     public MagicNumber(ByteDashboard bd) {
         super.bytes = bd.nextN(4); // 注意：将数据存储进父类（Node）的bytes字段
@@ -123,7 +123,7 @@ public final class MagicNumber extends Node {
         v.visitMagicNumber(this);
     }
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
@@ -137,7 +137,7 @@ public final class MagicNumber extends Node {
     除了<code>ClassFile</code>类，其它与Java ClassFile相关的类，普遍上都没有Getter和Setter方法。
 </p>
 
-<div title="CompilerVersion.java" class="javacode">
+<pre title="CompilerVersion.java" class="javacode">
 public final class CompilerVersion extends Node {
     public final int minor_version;
     public final int major_version;
@@ -156,7 +156,7 @@ public final class CompilerVersion extends Node {
     }
 
 }
-</div>
+</pre>
 
 <p class="indented">
     其主要目的是保持与JVM文档中名称的一致性。例如，在JVM文档中，有minor_version和major_version，那么，在代码中也使用minor_version和major_version的名字，并没有使用getMinorVersion()和getMajorVersion()的Getter形式。

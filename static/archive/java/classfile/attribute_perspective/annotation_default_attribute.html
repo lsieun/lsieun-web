@@ -33,12 +33,12 @@
     <img class="w3-image w3-center" src="/images/java/classfile/annotation_type_example_annotation_default.png" alt="AnnotationDefault"/>
 </div>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
     String name() default "tomcat";
     int age() default 12;
 }
-</div>
+</pre>
 
 <h2>Structure</h2>
 
@@ -70,13 +70,13 @@ public @interface MyTag {
     The <code>AnnotationDefault</code> attribute has the following format:
 </p>
 
-<div title="AnnotationDefault_attribute" class="plaintext">
+<pre title="AnnotationDefault_attribute" class="plaintext">
 AnnotationDefault_attribute {
     u2            attribute_name_index;
     u4            attribute_length;
     element_value default_value;
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>AnnotationDefault_attribute</code> structure are as follows:
@@ -105,12 +105,12 @@ AnnotationDefault_attribute {
 
 <h3>const_value_index</h3>
 
-<div title="element_value" class="plaintext">
+<pre title="element_value" class="plaintext">
 element_value {
     u1 tag;
     u2 const_value_index;
 }
-</div>
+</pre>
 
 <table class="w3-table-all w3-hoverable w3-centered">
     <thead onclick="$(this).next().toggle()">
@@ -179,7 +179,7 @@ element_value {
     </tbody>
 </table>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
 //    byte testByte() default 10;
 //    char testChar() default 20;
@@ -194,16 +194,16 @@ public @interface MyTag {
     String name() default "tomcat";
     int age() default 12;
 }
-</div>
+</pre>
 
-<div title="methods" hidden class="plaintext">
+<pre title="methods" hidden class="plaintext">
 methods_count='0002' (2)
 methods
     MethodInfo {Value='name:()Ljava/lang/String;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]'}
     MethodInfo {Value='age:()I', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]'}
-</div>
+</pre>
 
-<div title="name:()Ljava/lang/String;" hidden class="plaintext">
+<pre title="name:()Ljava/lang/String;" hidden class="plaintext">
 constant_pool_count='0010' (16)
 constant_pool
     ... ...
@@ -220,9 +220,9 @@ element_value {
     tag='73' (s)
     const_value_index='0007' (#7: tomcat)
 }
-</div>
+</pre>
 
-<div title="age:()I" hidden class="plaintext">
+<pre title="age:()I" hidden class="plaintext">
 constant_pool_count='0010' (16)
 constant_pool
     ... ...
@@ -240,18 +240,18 @@ element_value {
     tag='49' (I)
     const_value_index='000A' (#10: 12)
 }
-</div>
+</pre>
 
 <h3>enum_const_value</h3>
 
-<div title="element_value" class="plaintext">
+<pre title="element_value" class="plaintext">
 element_value {
     u1 tag;
     {   u2 type_name_index;
         u2 const_name_index;
     } enum_const_value;
 }
-</div>
+</pre>
 
 <table class="w3-table-all w3-hoverable w3-centered">
     <thead onclick="$(this).next().toggle()">
@@ -272,26 +272,26 @@ element_value {
     </tbody>
 </table>
 
-<div title="Day.java" class="javacode">
+<pre title="Day.java" class="javacode">
 public enum Day {
     SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
     THURSDAY, FRIDAY, SATURDAY
 }
-</div>
+</pre>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
     Day when() default Day.FRIDAY;
 }
-</div>
+</pre>
 
-<div title="methods" hidden class="plaintext">
+<pre title="methods" hidden class="plaintext">
 methods_count='0001' (1)
 methods
     MethodInfo {Value='when:()Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]'}
-</div>
+</pre>
 
-<div title="when:()Lsample/Day; AnnotationDefault" hidden class="plaintext">
+<pre title="when:()Lsample/Day; AnnotationDefault" hidden class="plaintext">
 constant_pool_count='000E' (14)
 constant_pool
     ... ...
@@ -310,16 +310,16 @@ element_value {
     type_name_index='0007' (#7)
     const_name_index='0008' (#8)
 }
-</div>
+</pre>
 
 <h3>class_info_index</h3>
 
-<div title="element_value" class="plaintext">
+<pre title="element_value" class="plaintext">
 element_value {
     u1 tag;
     u2 class_info_index;
 }
-</div>
+</pre>
 
 <table class="w3-table-all w3-hoverable w3-centered">
     <thead onclick="$(this).next().toggle()">
@@ -342,19 +342,19 @@ element_value {
 
 <h4>Object.class</h4>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
     Class&lt;?&gt; type() default Object.class;;
 }
-</div>
+</pre>
 
-<div title="methods" hidden class="plaintext">
+<pre title="methods" hidden class="plaintext">
 methods_count='0001' (1)
 methods
     MethodInfo {Value='type:()Ljava/lang/Class;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault, Signature]'}
-</div>
+</pre>
 
-<div title="type:()Ljava/lang/Class; AnnotationDefault" hidden class="plaintext">
+<pre title="type:()Ljava/lang/Class; AnnotationDefault" hidden class="plaintext">
 constant_pool_count='000F' (15)
 constant_pool
     ... ...
@@ -379,17 +379,17 @@ HexCode: 0008000000020009
 attribute_name_index='0008' (#8)
 attribute_length='00000002' (2)
 signature_index='0009' (#9)
-</div>
+</pre>
 
 <h4>int.class</h4>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
     Class<?> type() default int.class;
 }
-</div>
+</pre>
 
-<div title="type:()Ljava/lang/Class; AnnotationDefault" hidden class="plaintext">
+<pre title="type:()Ljava/lang/Class; AnnotationDefault" hidden class="plaintext">
 constant_pool_count='000F' (15)
 constant_pool
     ... ...
@@ -414,17 +414,17 @@ HexCode: 0008000000020009
 attribute_name_index='0008' (#8)
 attribute_length='00000002' (2)
 signature_index='0009' (#9)
-</div>
+</pre>
 
 <h4>void.class</h4>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
     Class&lt;?&gt; type() default void.class;
 }
-</div>
+</pre>
 
-<div title="type:()Ljava/lang/Class; AnnotationDefault" hidden class="plaintext">
+<pre title="type:()Ljava/lang/Class; AnnotationDefault" hidden class="plaintext">
 constant_pool_count='000F' (15)
 constant_pool
     ... ...
@@ -449,17 +449,17 @@ HexCode: 0008000000020009
 attribute_name_index='0008' (#8)
 attribute_length='00000002' (2)
 signature_index='0009' (#9)
-</div>
+</pre>
 
 <h4>Void.class</h4>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
     Class&lt;?&gt; type() default Void.class;
 }
-</div>
+</pre>
 
-<div title="type:()Ljava/lang/Class; AnnotationDefault" hidden class="plaintext">
+<pre title="type:()Ljava/lang/Class; AnnotationDefault" hidden class="plaintext">
 constant_pool_count='000F' (15)
 constant_pool
     ... ...
@@ -484,16 +484,16 @@ HexCode: 0008000000020009
 attribute_name_index='0008' (#8)
 attribute_length='00000002' (2)
 signature_index='0009' (#9)
-</div>
+</pre>
 
 <h3>annotation_value</h3>
 
-<div title="element_value" class="plaintext">
+<pre title="element_value" class="plaintext">
 element_value {
     u1 tag;
     annotation annotation_value;
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-light-grey w3-border w3-round">
     <p>
@@ -501,7 +501,7 @@ element_value {
     </p>
 </div>
 
-<div title="annotation" class="plaintext">
+<pre title="annotation" class="plaintext">
 annotation {
     u2 type_index;
     u2 num_element_value_pairs;
@@ -509,7 +509,7 @@ annotation {
         element_value value;
     } element_value_pairs[num_element_value_pairs];
 }
-</div>
+</pre>
 
 <table class="w3-table-all w3-hoverable w3-centered">
     <thead onclick="$(this).next().toggle()">
@@ -530,26 +530,26 @@ annotation {
     </tbody>
 </table>
 
-<div title="UserInfo.java" class="javacode">
+<pre title="UserInfo.java" class="javacode">
 public @interface UserInfo {
     String name();
     int age();
 }
-</div>
+</pre>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
     UserInfo user() default @UserInfo(name = "tomcat", age=12);
 }
-</div>
+</pre>
 
-<div title="methods" hidden class="plaintext">
+<pre title="methods" hidden class="plaintext">
 methods_count='0001' (1)
 methods
     MethodInfo {Value='user:()Lsample/UserInfo;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]'}
-</div>
+</pre>
 
-<div title="user:()Lsample/UserInfo; AnnotationDefault" hidden class="plaintext">
+<pre title="user:()Lsample/UserInfo; AnnotationDefault" hidden class="plaintext">
 constant_pool_count='0011' (17)
 constant_pool
     ... ...
@@ -585,18 +585,18 @@ element_value {
         }
     }
 }
-</div>
+</pre>
 
 <h3>array_value</h3>
 
-<div title="element_value" class="plaintext">
+<pre title="element_value" class="plaintext">
 element_value {
     u1 tag;
     {   u2            num_values;
         element_value values[num_values];
     } array_value;
 }
-</div>
+</pre>
 
 <table class="w3-table-all w3-hoverable w3-centered">
     <thead onclick="$(this).next().toggle()">
@@ -617,19 +617,19 @@ element_value {
     </tbody>
 </table>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
     int[] score() default {97, 98, 99};
 }
-</div>
+</pre>
 
-<div title="methods" hidden class="plaintext">
+<pre title="methods" hidden class="plaintext">
 methods_count='0001' (1)
 methods
     MethodInfo {Value='score:()[I', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]'}
-</div>
+</pre>
 
-<div title="score:()[I AnnotationDefault" hidden class="plaintext">
+<pre title="score:()[I AnnotationDefault" hidden class="plaintext">
 constant_pool_count='000F' (15)
 constant_pool
     ... ...
@@ -660,7 +660,7 @@ element_value {
         const_value_index='0009' (#9: 99)
     }
 }
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

@@ -7,7 +7,7 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     private int value; // (0)这里是定义字段， Definition
 
@@ -19,7 +19,7 @@ public class HelloWorld {
         this.value = value; // (2)这里也是使用字段，设置字段的值
     }
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
@@ -31,7 +31,7 @@ public class HelloWorld {
 
 <h3>getfield</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int value;
 
@@ -39,9 +39,9 @@ public class HelloWorld {
         int i = this.value;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0016' (22)
 constant_pool
     ... ...
@@ -62,11 +62,11 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       6  this:Lsample/HelloWorld;
     1         5       1  i:I
-</div>
+</pre>
 
 <h3>putfield</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int value;
 
@@ -74,9 +74,9 @@ public class HelloWorld {
         this.value = 0;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -96,13 +96,13 @@ code = 2A03B50002B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       6  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h2>static field</h2>
 
 <h3>getstatic</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static int staticValue;
 
@@ -110,9 +110,9 @@ public class HelloWorld {
         int i = HelloWorld.staticValue;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0016' (22)
 constant_pool
     ... ...
@@ -132,11 +132,11 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
     1         4       1  i:I
-</div>
+</pre>
 
 <h3>putstatic</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static int staticValue;
 
@@ -144,9 +144,9 @@ public class HelloWorld {
         HelloWorld.staticValue = 1;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -165,7 +165,7 @@ code = 04B30002B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

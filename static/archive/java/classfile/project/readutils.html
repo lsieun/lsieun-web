@@ -41,24 +41,24 @@
 
 <h2>Usage</h2>
 
-<div title="readByPath" class="javacode">
+<pre title="readByPath" class="javacode">
 byte[] bytes = ReadUtils.readByPath("/home/liusen/Workspace/tmp/HelloWorld.class");
-</div>
+</pre>
 
-<div title="readByProject" class="javacode">
+<pre title="readByProject" class="javacode">
 byte[] bytes = ReadUtils.readByProject("lsieun.classfile.MagicNumber");
-</div>
+</pre>
 
-<div title="readByClassLoader" class="javacode">
+<pre title="readByClassLoader" class="javacode">
 byte[] bytes = ReadUtils.readByClassLoader(Object.class);
-</div>
+</pre>
 
-<div title="readByJar" class="javacode">
+<pre title="readByJar" class="javacode">
 // Linux操作系统
 byte[] bytes = ReadUtils.readByJar("/usr/local/jdk8/jre/lib/rt.jar", "java/lang/Object.class");
 // Windows操作系统
 byte[] bytes = ReadUtils.readByJar("C:\\Program Files\\Java\\jdk1.8.0_261\\jre\\lib\\rt.jar", "java/lang/Object.class");
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

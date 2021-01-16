@@ -9,7 +9,7 @@
 
 <h2>Class Info in ClassFile</h2>
 
-<div title="ClassFile" class="plaintext">
+<pre title="ClassFile" class="plaintext">
 ClassFile {
     u4             magic;
     u2             minor_version;
@@ -30,7 +30,7 @@ ClassFile {
     u2             attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 <div class="w3-display-container w3-center">
     <img class="w3-image w3-center" src="/images/java/classfile/classfile_classinfo.png" alt="ClassInfo"/>
@@ -206,13 +206,13 @@ ClassFile {
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 class HelloWorld {
 
 }
-</div>
+</pre>
 
-<div title="Example: ACC_SUPER" class="plaintext">
+<pre title="Example: ACC_SUPER" class="plaintext">
 constant_pool_count='0010' (16)
 constant_pool
     ... ...
@@ -225,17 +225,17 @@ class_info='0020000200030000'
     super_class='0003' (#3)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <h3>ACC_ABSTRACT</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 abstract class HelloWorld {
 
 }
-</div>
+</pre>
 
-<div title="Example: ACC_ABSTRACT" class="plaintext">
+<pre title="Example: ACC_ABSTRACT" class="plaintext">
 constant_pool_count='0010' (16)
 constant_pool
     ... ...
@@ -248,7 +248,7 @@ class_info='0420000200030000'
     super_class='0003' (#3)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <h3>ACC_INTERFACE</h3>
 
@@ -264,13 +264,13 @@ class_info='0420000200030000'
     If the <code>ACC_INTERFACE</code> flag is not set, any of the other flags may be set except <code>ACC_ANNOTATION</code>.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 interface HelloWorld {
 
 }
-</div>
+</pre>
 
-<div title="Example: ACC_INTERFACE" class="plaintext">
+<pre title="Example: ACC_INTERFACE" class="plaintext">
 constant_pool_count='0007' (7)
 constant_pool
     |001| CONSTANT_Class {Value='sample/HelloWorld', HexCode='070005'}
@@ -282,17 +282,17 @@ class_info='0600000100020000'
     super_class='0002' (#2)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <h3>ACC_FINAL</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 final class HelloWorld {
 
 }
-</div>
+</pre>
 
-<div title="Example: ACC_FINAL" class="plaintext">
+<pre title="Example: ACC_FINAL" class="plaintext">
 constant_pool_count='0010' (16)
 constant_pool
     ... ...
@@ -305,7 +305,7 @@ class_info='0030000200030000'
     super_class='0003' (#3)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <h3>ACC_ENUM</h3>
 
@@ -317,13 +317,13 @@ class_info='0030000200030000'
     The <code>ACC_ENUM</code> flag indicates that this class or its superclass is declared as an enumerated type.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 enum HelloWorld {
 
 }
-</div>
+</pre>
 
-<div title="Example: ACC_ENUM" class="plaintext">
+<pre title="Example: ACC_ENUM" class="plaintext">
 constant_pool_count='002A' (42)
 constant_pool
     |001| CONSTANT_Fieldref {Value='sample/HelloWorld.$VALUES:[Lsample/HelloWorld;', HexCode='0900040020'}
@@ -340,7 +340,7 @@ class_info='4030000400070000'
     super_class='0007' (#7) // 注意：这里指向了java.lang.Enum类
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <p>
     特别注意：它的父类不是<code>java.lang.Object</code>类，而是<code>java.lang.Enum</code>类。
@@ -368,13 +368,13 @@ class_info='4030000400070000'
     An annotation type must have its <code>ACC_ANNOTATION</code> flag set. If the <code>ACC_ANNOTATION</code> flag is set, the <code>ACC_INTERFACE</code> flag must also be set.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @interface HelloWorld {
 
 }
-</div>
+</pre>
 
-<div title="Example: ACC_ANNOTATION" class="plaintext">
+<pre title="Example: ACC_ANNOTATION" class="plaintext">
 constant_pool
     |001| CONSTANT_Class {Value='sample/HelloWorld', HexCode='070006'}
     |002| CONSTANT_Class {Value='java/lang/Object', HexCode='070007'}
@@ -386,7 +386,7 @@ class_info='26000001000200010003'
     super_class='0002' (#2)
     interfaces_count='0001' (1)
     interfaces='0003' ([#3])  // 注意：这里自动实现了java.lang.annotation.Annotation接口
-</div>
+</pre>
 
 <p>
     特别注意：它实现了<code>java.lang.annotation.Annotation</code>接口。
@@ -394,13 +394,13 @@ class_info='26000001000200010003'
 
 <h3>ACC_PUBLIC</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
 
 }
-</div>
+</pre>
 
-<div title="Example: ACC_PUBLIC" class="plaintext">
+<pre title="Example: ACC_PUBLIC" class="plaintext">
 constant_pool_count='0010' (16)
 constant_pool
     |001| CONSTANT_Methodref {Value='java/lang/Object.&lt;init&gt;:()V', HexCode='0A0003000D'}
@@ -413,7 +413,7 @@ class_info='0021000200030000'
     super_class='0003' (#3)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <h3>ACC_SYNTHETIC</h3>
 
@@ -425,14 +425,14 @@ class_info='0021000200030000'
     示例代码源自于<a class="external" href="https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html" target="_blank">这里</a>
 </p>
 
-<div title="Day.java" class="javacode">
+<pre title="Day.java" class="javacode">
 public enum Day {
     SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
     THURSDAY, FRIDAY, SATURDAY
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void tellItLikeItIs(Day day) {
         switch (day) {
@@ -455,13 +455,13 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
 <p>
     经过编译之后，此时的关注重点，不再是<code>HelloWorld</code>类，而是新生成的<code>HelloWorld$1</code>类。
 </p>
 
-<div title="Example: ACC_SYNTHETIC" class="plaintext">
+<pre title="Example: ACC_SYNTHETIC" class="plaintext">
 constant_pool_count='002F' (47)
 constant_pool
     ...
@@ -474,21 +474,21 @@ class_info='10200009000A0000'
     super_class='000A' (10)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <p>
     另外，与之对比的一个示例是这样的：
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     class InnerClass {
 
     }
 }
-</div>
+</pre>
 
-<div title="并没有带有ACC_SYNTHETIC标识" class="plaintext">
+<pre title="并没有带有ACC_SYNTHETIC标识" class="plaintext">
 constant_pool_count='001A' (26)
 constant_pool
     ...
@@ -501,7 +501,7 @@ class_info='0020000300040000'
     super_class='0004' (4)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <h2>super_class</h2>
 
@@ -511,15 +511,15 @@ class_info='0020000300040000'
     读取JDK当中的<code>java.lang.Object</code>的字节内容：
 </p>
 
-<div title="示例代码" class="javacode">
+<pre title="示例代码" class="javacode">
 byte[] bytes = ReadUtils.readByClassLoader(Object.class);
-</div>
+</pre>
 
 <p>
     这里关注的重点：看一看<code>java.lang.Object</code>类的父类指向哪里？
 </p>
 
-<div title="java.lang.Object类的信息" class="plaintext">
+<pre title="java.lang.Object类的信息" class="plaintext">
 constant_pool_count='004E' (78)
 constant_pool
     ... ...
@@ -531,7 +531,7 @@ class_info='0021001100000000'
     super_class='0000' (#0)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <p>
     同时，这也说明一件事情：对于<code>constant_pool</code>来说，<code>0</code>是一个有效的索引值。
@@ -547,18 +547,18 @@ class_info='0021001100000000'
     The direct superclass of an enum type <code>E</code> is <code>Enum&lt;E&gt;</code>. (源自于《The Java<sup>&reg;</sup> Language Specification Java SE 8 Edition》的8.9. Enum Types部分。)
 </p>
 
-<div title="Day.java" class="javacode">
+<pre title="Day.java" class="javacode">
 public enum Day {
     SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
     THURSDAY, FRIDAY, SATURDAY
 }
-</div>
+</pre>
 
 <p>
     单纯的从代码层面，我们无法知道<code>Day</code>（enum type）的父类是<code>Enum&lt;E&gt;</code>。但是，我们可以从bytecode层面中，来验证这一部分的知识。
 </p>
 
-<div title="Day.class super_class" class="plaintext">
+<pre title="Day.class super_class" class="plaintext">
 constant_pool_count='0047' (71)
 constant_pool
     ... ...
@@ -570,46 +570,46 @@ class_info='4031000400160000'
     super_class='0016' (#22)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
-<div title="Day.java 换种写法，会报错" class="javacode">
+<pre title="Day.java 换种写法，会报错" class="javacode">
 // error: Classes cannot directly extend 'java.lang.Enum'
 public enum Day extends Enum&lt;Day&gt; { // 注意，这里多了extends Enum&lt;Day&gt;
     SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
     THURSDAY, FRIDAY, SATURDAY
 }
-</div>
+</pre>
 
 <h2>interfaces</h2>
 
 <h3>No Interfaces</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
 
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class interfaces_count" class="plaintext">
+<pre title="HelloWorld.class interfaces_count" class="plaintext">
 class_info='0021000200030000'
     access_flags='0021' ([ACC_PUBLIC,ACC_SUPER])
     this_class='0002' (#2)
     super_class='0003' (#3)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <h3>Interfaces</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.io.Serializable;
 
 public class HelloWorld implements Cloneable, Serializable {
 
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class interfaces" class="plaintext">
+<pre title="HelloWorld.class interfaces" class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -624,7 +624,7 @@ class_info='002100020003000200040005'
     super_class='0003' (#3)
     interfaces_count='0002' (2)
     interfaces='00040005' ([#4,#5])
-</div>
+</pre>
 
 <h3>annotation type</h3>
 
@@ -636,13 +636,13 @@ class_info='002100020003000200040005'
     The direct superinterface of every annotation type is <code>java.lang.annotation.Annotation</code>.（源自于《The Java<sup>&reg;</sup> Language Specification Java SE 8 Edition》的9.6. Annotation Types部分。）
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public @interface HelloWorld {
 
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class interfaces" class="plaintext">
+<pre title="HelloWorld.class interfaces" class="plaintext">
 constant_pool_count='0009' (9)
 constant_pool
     |001| CONSTANT_Class {Value='sample/HelloWorld', HexCode='070006'}
@@ -655,7 +655,7 @@ class_info='26010001000200010003'
     super_class='0002' (#2)
     interfaces_count='0001' (1)
     interfaces='0003' ([#3])
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

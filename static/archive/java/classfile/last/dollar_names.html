@@ -13,7 +13,7 @@
     <li><code>Bar$Foo.class</code></li>
 </ul>
 
-<div title="Bar.java" class="javacode">
+<pre title="Bar.java" class="javacode">
 public class Bar {
     public class Foo {
         private int value;
@@ -24,18 +24,18 @@ public class Bar {
         instance.value = 100;
     }
 }
-</div>
+</pre>
 
 <p>
     <code>Bar$Foo.class</code>类中有一个<code>access$002</code>方法：
 </p>
 
-<div title="Bar$Foo.class-methods-access$002" class="plaintext">
+<pre title="Bar$Foo.class-methods-access$002" class="plaintext">
 methods_count='0002' (2)
 methods
     MethodInfo {Value='&lt;init&gt;:(Lsample/Bar;)V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code, MethodParameters]'}
     MethodInfo {Value='access$002:(Lsample/Bar$Foo;I)I', AccessFlags='[ACC_STATIC,ACC_SYNTHETIC]', Attrs='[Code]'}
-</div>
+</pre>
 
 <h2>anonymous class</h2>
 
@@ -43,7 +43,7 @@ methods
     <li><code>Bar$1.class</code></li>
 </ul>
 
-<div title="Bar.java" class="javacode">
+<pre title="Bar.java" class="javacode">
 public class Bar {
     private Runnable r = new Runnable() {
         @Override
@@ -52,7 +52,7 @@ public class Bar {
         }
     };
 }
-</div>
+</pre>
 
 <h2>local class</h2>
 
@@ -61,7 +61,7 @@ public class Bar {
     <li><code>Bar$2Foo.class</code></li>
 </ul>
 
-<div title="Bar.java" class="javacode">
+<pre title="Bar.java" class="javacode">
 public class Bar {
     public void test1() {
         class Foo {
@@ -75,7 +75,7 @@ public class Bar {
         }
     }
 }
-</div>
+</pre>
 
 <h2>enum type</h2>
 
@@ -87,14 +87,14 @@ public class Bar {
     </li>
 </ul>
 
-<div title="Day.java" class="javacode">
+<pre title="Day.java" class="javacode">
 public enum Day {
     SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
     THURSDAY, FRIDAY, SATURDAY
 }
-</div>
+</pre>
 
-<div title="Day.class-fields-$VALUES" class="plaintext">
+<pre title="Day.class-fields-$VALUES" class="plaintext">
 fields_count='0008' (8)
 fields
     FieldInfo {Value='SUNDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
@@ -105,11 +105,11 @@ fields
     FieldInfo {Value='FRIDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
     FieldInfo {Value='SATURDAY:Lsample/Day;', AccessFlags='[ACC_PUBLIC,ACC_STATIC,ACC_FINAL,ACC_ENUM]', Attrs='[]'}
     FieldInfo {Value='$VALUES:[Lsample/Day;', AccessFlags='[ACC_PRIVATE,ACC_STATIC,ACC_FINAL,ACC_SYNTHETIC]', Attrs='[]'}
-</div>
+</pre>
 
 <h3>switch enum</h3>
 
-<div title="Bar.java" class="javacode">
+<pre title="Bar.java" class="javacode">
 public class Bar {
     public void tellItLikeItIs(Day day) {
         switch (day) {
@@ -132,17 +132,17 @@ public class Bar {
         }
     }
 }
-</div>
+</pre>
 
 <p>
     生成<code>Bar$1.class</code>，包含字段<code>$SwitchMap$sample$Day</code>:
 </p>
 
-<div title="Bar$1.class-fields-$SwitchMap$sample$Day" class="plaintext">
+<pre title="Bar$1.class-fields-$SwitchMap$sample$Day" class="plaintext">
 fields_count='0001' (1)
 fields
     FieldInfo {Value='$SwitchMap$sample$Day:[I', AccessFlags='[ACC_STATIC,ACC_FINAL,ACC_SYNTHETIC]', Attrs='[]'}
-</div>
+</pre>
 
 <h2>Lambda</h2>
 
@@ -185,7 +185,7 @@ fields
     <li><code>lambda$test$1</code></li>
 </ul>
 
-<div title="Bar.java" class="javacode">
+<pre title="Bar.java" class="javacode">
 import java.util.function.Function;
 
 public class Bar {
@@ -194,7 +194,7 @@ public class Bar {
         Function&lt;String, String&gt; func2 = name -> "Hello, " + name;
     }
 }
-</div>
+</pre>
 
 <h3>lambda based class</h3>
 
@@ -209,7 +209,7 @@ public class Bar {
     <li><code>Bar$$Lambda$1.class</code></li>
 </ul>
 
-<div title="Bar.java" class="javacode">
+<pre title="Bar.java" class="javacode">
 import java.util.function.Consumer;
 
 public class Bar {
@@ -219,7 +219,7 @@ public class Bar {
         c.accept("Hello");
     }
 }
-</div>
+</pre>
 
 <h2>References</h2>
 

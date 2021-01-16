@@ -67,9 +67,9 @@
     A lambda expression is a short block of code which takes in parameters and returns a value. Lambda expressions are similar to methods, but they do not need a name and they can be implemented right in the body of a method.
 </p>
 
-<div title="Syntax for Lambda Expression" class="plaintext">
+<pre title="Syntax for Lambda Expression" class="plaintext">
 ([comma seperated argument-list]) -&gt; {body}
-</div>
+</pre>
 
 <h3>Method References</h3>
 
@@ -77,9 +77,9 @@
     <b>Lambda expression</b> is an anonymous method (method without a name) that has used to provide the inline implementation of a method defined by the functional interface while a <b>method reference</b> is similar to a lambda expression that refers a method without executing it.
 </p>
 
-<div title="Syntax for Method Reference" class="plaintext">
+<pre title="Syntax for Method Reference" class="plaintext">
 &lt;classname&gt; :: &lt;methodname&gt;
-</div>
+</pre>
 
 <h3>functional interface and SAM</h3>
 
@@ -107,7 +107,7 @@
     A call site is where zero or more arguments are passed to the function, and zero or more return values are received.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     // this is a function "definition"
     public int sqrt(int x) {
@@ -120,4 +120,4 @@ public class HelloWorld {
         int c = sqrt(b);
     }
 }
-</div>
+</pre>

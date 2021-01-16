@@ -17,11 +17,11 @@
     在下面的代码中，<code>SuppressWarnings</code>就是Annotation的示例：
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @SuppressWarnings("Duplicates")
 public class HelloWorld {
 }
-</div>
+</pre>
 
 <h3>What is Annotation?</h3>
 
@@ -75,11 +75,11 @@ public class HelloWorld {
     Let us take a look at the simplest annotation declaration possible:
 </p>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
 
 }
-</div>
+</pre>
 
 <p>
     The <code>@interface</code> keyword introduces new annotation type.
@@ -139,7 +139,7 @@ public @interface MyTag {
     Retention policy has a crucial effect on when the annotation will be available for processing. The retention policy could be set using <code>@Retention</code> annotation. For example:
 </p>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -147,7 +147,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MyTag {
 
 }
-</div>
+</pre>
 
 <p class="indented">
     Setting annotation retention policy to <code>RUNTIME</code> will guarantee its presence in the compilation process and in the running application.
@@ -211,7 +211,7 @@ public @interface MyTag {
     In contrast to the <b>retention policy</b>, an annotation may declare multiple element types it can be associated with, using the <code>@Target</code> annotation. For example:
 </p>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
@@ -219,7 +219,7 @@ import java.lang.annotation.Target;
 public @interface MyTag {
 
 }
-</div>
+</pre>
 
 <h4>Summing Up</h4>
 
@@ -254,39 +254,39 @@ public @interface MyTag {
     Annotations may declare the <b>attributes</b> with or without <b>default values</b>, for example:
 </p>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
     String name();
     int age() default 10;
 }
-</div>
+</pre>
 
 <p class="indented">
     If an annotation declares an attribute without a default value, it should be provided in all places the annotation is being applied. For example:
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @MyTag(name="Tom")
 public class HelloWorld {
 }
-</div>
+</pre>
 
 <p class="indented">
     By convention, if the annotation has an attribute with the name <code>value</code> and it is <b>the only one which is required to be specified</b>, the name of the attribute could be omitted, for example:
 </p>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
     String value();
     int age() default 10;
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @MyTag("Tom")
 public class HelloWorld {
 }
-</div>
+</pre>
 
 <h3>Limitations</h3>
 

@@ -50,43 +50,43 @@
     </p>
 </div>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     private static int add(int a, int b) {
         int sum = a + b;
         return sum;
     }
 }
-</div>
+</pre>
 
-<div title="javac" class="plaintext">
+<pre title="javac" class="plaintext">
 javac -g HelloWorld.java
-</div>
+</pre>
 
 <h3>no option</h3>
 
-<div title="javap" hidden class="plaintext">
+<pre title="javap" hidden class="plaintext">
 $ javap HelloWorld.class
 Compiled from "HelloWorld.java"
 public class sample.HelloWorld {
   public sample.HelloWorld();
 }
-</div>
+</pre>
 
 <h3>javap -p</h3>
 
-<div title="javap -p" hidden class="plaintext">
+<pre title="javap -p" hidden class="plaintext">
 $ javap -p HelloWorld.class
 Compiled from "HelloWorld.java"
 public class HelloWorld {
   public HelloWorld();
   private static int add(int, int);
 }
-</div>
+</pre>
 
 <h3>javap -c</h3>
 
-<div title="javap -p -c" hidden class="plaintext">
+<pre title="javap -p -c" hidden class="plaintext">
 $ javap -p -c HelloWorld.class
 Compiled from "HelloWorld.java"
 public class HelloWorld {
@@ -105,11 +105,11 @@ public class HelloWorld {
        4: iload_2
        5: ireturn
 }
-</div>
+</pre>
 
 <h3>javap -l</h3>
 
-<div title="javap -p -l" hidden class="plaintext">
+<pre title="javap -p -l" hidden class="plaintext">
 $ javap -p -l HelloWorld.class
 Compiled from "HelloWorld.java"
 public class HelloWorld {
@@ -130,11 +130,11 @@ public class HelloWorld {
           0       6     1     b   I
           4       2     2   sum   I
 }
-</div>
+</pre>
 
 <h3>javap -s</h3>
 
-<div title="javap -p -s" hidden class="plaintext">
+<pre title="javap -p -s" hidden class="plaintext">
 $ javap -p -s HelloWorld.class
 Compiled from "HelloWorld.java"
 public class HelloWorld {
@@ -144,11 +144,11 @@ public class HelloWorld {
   private static int add(int, int);
     descriptor: (II)I
 }
-</div>
+</pre>
 
 <h3>javap -v</h3>
 
-<div title="javap -p -v" hidden class="plaintext">
+<pre title="javap -p -v" hidden class="plaintext">
 $ javap -p -v HelloWorld.class
 Classfile /D:/git-repo/java8-classfile-tutorial/target/test/HelloWorld.class
   Last modified 2020-10-5; size 373 bytes
@@ -216,7 +216,7 @@ Constant pool:
             4       2     2   sum   I
 }
 SourceFile: "HelloWorld.java"
-</div>
+</pre>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>

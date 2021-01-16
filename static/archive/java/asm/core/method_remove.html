@@ -17,7 +17,7 @@
     because a class can contain several methods of the same name but with different parameters):
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int add(int a, int b) {
         return a + b;
@@ -33,7 +33,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="RemoveMethodAdapter.java" class="javacode">
+<pre title="RemoveMethodAdapter.java" class="javacode">
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 
@@ -60,7 +60,7 @@ public class RemoveMethodAdapter extends ClassVisitor {
 
 
 
-<div title="App.java" class="javacode">
+<pre title="App.java" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;

@@ -19,15 +19,15 @@
 
 <h2>constructor invocation</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         HelloWorld instance = new HelloWorld();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0013' (19)
 constant_pool
     ... ...
@@ -50,13 +50,13 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       9  this:Lsample/HelloWorld;
     1         8       1  instance:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h2>non-static method invocation</h2>
 
 <h3>public method</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void targetMethod() {
         //
@@ -66,9 +66,9 @@ public class HelloWorld {
         targetMethod();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -82,11 +82,11 @@ code = 2AB60002B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>protected method</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     protected void targetMethod() {
         //
@@ -96,9 +96,9 @@ public class HelloWorld {
         targetMethod();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -112,11 +112,11 @@ code = 2AB60002B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>private method</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     private void targetMethod() {
         //
@@ -126,9 +126,9 @@ public class HelloWorld {
         targetMethod();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -142,11 +142,11 @@ code = 2AB70002B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>package method</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     void targetMethod() {
         //
@@ -156,9 +156,9 @@ public class HelloWorld {
         targetMethod();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -172,7 +172,7 @@ code = 2AB60002B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>use "this" only when necessary</h3>
 
@@ -184,7 +184,7 @@ index  start_pc  length  name_and_type
 
 <h3>static public method</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static void targetMethod() {
         //
@@ -194,9 +194,9 @@ public class HelloWorld {
         targetMethod();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 0
 max_locals = 1
@@ -209,11 +209,11 @@ code = B80002B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       4  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>static protected method</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     protected static void targetMethod() {
         //
@@ -223,9 +223,9 @@ public class HelloWorld {
         targetMethod();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 0
 max_locals = 1
@@ -238,11 +238,11 @@ code = B80002B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       4  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>static private method</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     private static void targetMethod() {
         //
@@ -252,9 +252,9 @@ public class HelloWorld {
         targetMethod();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 0
 max_locals = 1
@@ -267,11 +267,11 @@ code = B80002B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       4  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>static package method</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     static void targetMethod() {
         //
@@ -281,9 +281,9 @@ public class HelloWorld {
         targetMethod();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 0
 max_locals = 1
@@ -296,13 +296,13 @@ code = B80002B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       4  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h2>Interface Method</h2>
 
 <h3>interface non-static method</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
 import java.util.List;
 
@@ -312,9 +312,9 @@ public class HelloWorld {
         list.add("Good");
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 2
@@ -339,11 +339,11 @@ index  start_pc  length  name_and_type
 LocalVariableTypeTable:
 index  start_pc  length  name_and_type
     1         8      10  list:Ljava/util/List&lt;Ljava/lang/String;&gt;;
-</div>
+</pre>
 
 <h3>interface default method</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         MyInterface instance = null;
@@ -356,9 +356,9 @@ interface MyInterface {
         //
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -375,11 +375,11 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       9  this:Lsample/HelloWorld;
     1         2       7  instance:Lsample/MyInterface;
-</div>
+</pre>
 
 <h3>interface static method</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         MyInterface.targetMethod();
@@ -391,9 +391,9 @@ interface MyInterface {
         //
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 0
 max_locals = 1
@@ -406,11 +406,11 @@ code = B80002B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       4  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h2>Invokedynamic</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.IntFunction;
 
 public class HelloWorld {
@@ -419,9 +419,9 @@ public class HelloWorld {
         func.apply(10);
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='003B' (59)
 constant_pool
     ... ...
@@ -450,21 +450,21 @@ index  start_pc  length  name_and_type
 LocalVariableTypeTable:
 index  start_pc  length  name_and_type
     1         6      10  func:Ljava/util/function/IntFunction&lt;Ljava/lang/Integer;&gt;;
-</div>
+</pre>
 
 <h2>Other Scene</h2>
 
 <h3>parent method</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         String str = toString();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -480,21 +480,21 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       6  this:Lsample/HelloWorld;
     1         5       1  str:Ljava/lang/String;
-</div>
+</pre>
 
 <p>
     仅做一点小小的改变，添加<code>super</code>限定，就会使用<code>invokespecial</code>。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         String str = super.toString();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -510,7 +510,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       6  this:Lsample/HelloWorld;
     1         5       1  str:Ljava/lang/String;
-</div>
+</pre>
 
 <h3>native method</h3>
 
@@ -519,15 +519,15 @@ index  start_pc  length  name_and_type
     但是，在自己的代码中调用<code>System.nanoTime()</code>，则是调用Java代码。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         System.nanoTime();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 1
@@ -541,7 +541,7 @@ code = B8000258B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 
@@ -558,7 +558,7 @@ index  start_pc  length  name_and_type
     <li>第三，对于<code>invokespecial</code>有三种情况</li>
 </ul>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public HelloWorld() {
         super(); // 第一种情况，invokespecial for superclass
@@ -579,7 +579,7 @@ public class HelloWorld {
         toString(); // invokevirtual
     }
 }
-</div>
+</pre>
 
 <p class="indented">
     <b>Invokespecial</b> is used in three situations in which an instance method must be invoked based on the type of the reference, not on the class of the object. The three situations are:

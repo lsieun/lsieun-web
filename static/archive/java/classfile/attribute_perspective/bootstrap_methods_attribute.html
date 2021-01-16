@@ -13,7 +13,7 @@
     <code>BootstrapMethods</code>，我个人理解，主要是在lambda出现的时候，才会在ClassFile层面存在的一个属性。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Consumer;
 
 public class HelloWorld {
@@ -22,7 +22,7 @@ public class HelloWorld {
         c.accept("Hi Lambda");
     }
 }
-</div>
+</pre>
 
 <h2>Structure</h2>
 
@@ -51,7 +51,7 @@ public class HelloWorld {
     The <code>BootstrapMethods</code> attribute has the following format:
 </p>
 
-<div title="BootstrapMethods_attribute" class="plaintext">
+<pre title="BootstrapMethods_attribute" class="plaintext">
 BootstrapMethods_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -61,7 +61,7 @@ BootstrapMethods_attribute {
         u2 bootstrap_arguments[num_bootstrap_arguments];
     } bootstrap_methods[num_bootstrap_methods];
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>BootstrapMethods_attribute</code> structure are as follows:
@@ -115,7 +115,7 @@ BootstrapMethods_attribute {
     </ul>
 </div>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Function;
 
 public class HelloWorld {
@@ -123,11 +123,11 @@ public class HelloWorld {
         Function&lt;Integer, Integer&gt; func = item -&gt; item + 5;
     }
 }
-</div>
+</pre>
 
 <h3>Code: invokedynamic</h3>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -144,17 +144,17 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       7  this:Lsample/HelloWorld;
     1         6       1  func:Ljava/util/function/Function;
-</div>
+</pre>
 
 <h3>Constant Pool: CONSTANT_InvokeDynamic</h3>
 
-<div title="CONSTANT_InvokeDynamic" hidden class="plaintext">
+<pre title="CONSTANT_InvokeDynamic" hidden class="plaintext">
 |002| CONSTANT_InvokeDynamic {Value='#0:apply:()Ljava/util/function/Function;', HexCode='1200000020'}
-</div>
+</pre>
 
 <h3>Attribute: BootstrapMethods</h3>
 
-<div title="BootstrapMethods" hidden class="plaintext">
+<pre title="BootstrapMethods" hidden class="plaintext">
 constant_pool_count='003C' (60)
 constant_pool
     ... ...
@@ -199,6 +199,6 @@ bootstrap_methods[0] {
     num_bootstrap_arguments='0003' (3)
     bootstrap_arguments='001D001E001F' ([#29,#30,#31])
 }
-</div>
+</pre>
 
 

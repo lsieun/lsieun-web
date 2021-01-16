@@ -22,7 +22,7 @@
 
 <h2>Method Overload Resolution</h2>
 
-<div title="StaticDispatch.java" class="javacode">
+<pre title="StaticDispatch.java" class="javacode">
 public class StaticDispatch {
     static abstract class Human {
     }
@@ -53,18 +53,18 @@ public class StaticDispatch {
         sr.sayHello(woman); // 关注点：这里输出什么呢？
     }
 }
-</div>
+</pre>
 
-<div title="Run output" hidden class="plaintext">
+<pre title="Run output" hidden class="plaintext">
 hello,guy!
 hello,guy!
-</div>
+</pre>
 
 <p class="indented">
     其实，对于究竟调用哪个方法，在opcode层面进行观察，能够帮助我们更好的理解其中的原因。
 </p>
 
-<div title="main:([Ljava/lang/String;)V" class="plaintext">
+<pre title="main:([Ljava/lang/String;)V" class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -99,21 +99,21 @@ index  start_pc  length  name_and_type
     1         8      27  man:Lsample/StaticDispatch$Human;
     2        16      19  woman:Lsample/StaticDispatch$Human;
     3        24      11  sr:Lsample/StaticDispatch;
-</div>
+</pre>
 
 <p>
     对于上述main中的代码，可以修改成以下这种方式，则更能说明问题：
 </p>
 
-<div title="修改main方法" class="javacode">
+<pre title="修改main方法" class="javacode">
 import java.util.Random;
 
 Human human = (new Random()).nextBoolean() ? new Man() : new Woman();
 StaticDispatch sr = new StaticDispatch();
 sr.sayHello(human);
-</div>
+</pre>
 
-<div title="Method main:([Ljava/lang/String;)V" class="plaintext">
+<pre title="Method main:([Ljava/lang/String;)V" class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -149,11 +149,11 @@ index  start_pc  length  name_and_type
     0         0      45  args:[Ljava/lang/String;
     1        31      14  human:Lsample/StaticDispatch$Human;
     2        39       6  sr:Lsample/StaticDispatch;
-</div>
+</pre>
 
 <h2>Method Overload Priority</h2>
 
-<div title="Overload.java" class="javacode">
+<pre title="Overload.java" class="javacode">
 import java.io.Serializable;
 
 public class Overload {
@@ -189,13 +189,13 @@ public class Overload {
         sayHello('a');
     }
 }
-</div>
+</pre>
 
-<div title="Run output" hidden class="plaintext">
+<pre title="Run output" hidden class="plaintext">
 hello char
-</div>
+</pre>
 
-<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="main:([Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -211,13 +211,13 @@ code = 1061B8000BB1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       6  args:[Ljava/lang/String;
-</div>
+</pre>
 
 <p>
     接下来，注释掉<code>sayHello(char arg)</code>方法，就会调用<code>sayHello(int arg)</code>方法：
 </p>
 
-<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="main:([Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -233,13 +233,13 @@ code = 1061B8000AB1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       6  args:[Ljava/lang/String;
-</div>
+</pre>
 
 <p>
     接下来，再注释掉<code>sayHello(int arg)</code>方法，就会调用<code>sayHello(long arg)</code>方法：
 </p>
 
-<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="main:([Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -255,13 +255,13 @@ code = 140009B8000BB1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       7  args:[Ljava/lang/String;
-</div>
+</pre>
 
 <p>
     接下来，再注释掉<code>sayHello(long arg)</code>方法，就会调用<code>sayHello(Character arg)</code>方法：
 </p>
 
-<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="main:([Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -278,13 +278,13 @@ code = 1061B80008B80009B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       9  args:[Ljava/lang/String;
-</div>
+</pre>
 
 <p>
     接下来，再注释掉<code>sayHello(Character arg)</code>方法，就会调用<code>sayHello(Serializable arg)</code>方法：
 </p>
 
-<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="main:([Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -301,13 +301,13 @@ code = 1061B80007B80008B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       9  args:[Ljava/lang/String;
-</div>
+</pre>
 
 <p>
     接下来，再注释掉<code>sayHello(Serializable arg)</code>方法，就会调用<code>sayHello(Object arg)</code>方法：
 </p>
 
-<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="main:([Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -324,13 +324,13 @@ code = 1061B80006B80007B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       9  args:[Ljava/lang/String;
-</div>
+</pre>
 
 <p>
     接下来，再注释掉<code>sayHello(Object arg)</code>方法，就会调用<code>sayHello(char... arg)</code>方法：
 </p>
 
-<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="main:([Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -351,11 +351,11 @@ code = 04BC055903106155B80005B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      12  args:[Ljava/lang/String;
-</div>
+</pre>
 
 <h2>Method Override</h2>
 
-<div title="DynamicDispatch.java" class="javacode">
+<pre title="DynamicDispatch.java" class="javacode">
 public class DynamicDispatch {
     static abstract class Human {
         protected abstract void sayHello();
@@ -383,14 +383,14 @@ public class DynamicDispatch {
         woman.sayHello();
     }
 }
-</div>
+</pre>
 
-<div title="Run output" hidden class="plaintext">
+<pre title="Run output" hidden class="plaintext">
 man say hello
 woman say hello
-</div>
+</pre>
 
-<div title="main:([Ljava/lang/String;)V" hidden class="plaintext">
+<pre title="main:([Ljava/lang/String;)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -418,4 +418,4 @@ index  start_pc  length  name_and_type
     0         0      25  args:[Ljava/lang/String;
     1         8      17  man:Lsample/DynamicDispatch$Human;
     2        20       5  woman:Lsample/DynamicDispatch$Human;
-</div>
+</pre>

@@ -18,7 +18,7 @@
     预期目标：移除<code>HelloWorld</code>类当中的<code>int add(int a, int b)</code>方法。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int add(int a, int b) {
         return a + b;
@@ -43,7 +43,7 @@ public class HelloWorld {
 
 <h3>ClassTransformer.java</h3>
 
-<div title="ClassTransformer.java" class="javacode">
+<pre title="ClassTransformer.java" class="javacode">
 import org.objectweb.asm.tree.ClassNode;
 
 public class ClassTransformer {
@@ -63,7 +63,7 @@ public class ClassTransformer {
 
 <h3>MethodRemoveTransformer.java</h3>
 
-<div title="MethodRemoveTransformer.java" class="javacode">
+<pre title="MethodRemoveTransformer.java" class="javacode">
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -95,7 +95,7 @@ public class MethodRemoveTransformer extends ClassTransformer{
 
 <h3>TreeApp.java</h3>
 
-<div title="TreeApp.java" class="javacode">
+<pre title="TreeApp.java" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;
@@ -133,7 +133,7 @@ public class TreeApp {
 
 <h2>验证结果</h2>
 
-<div title="check 1: before" class="plaintext">
+<pre title="check 1: before" class="plaintext">
 $ javap sample.HelloWorld
 public class sample.HelloWorld {
   public sample.HelloWorld();
@@ -143,7 +143,7 @@ public class sample.HelloWorld {
 }
 </div>
 
-<div title="check 2: after" class="plaintext">
+<pre title="check 2: after" class="plaintext">
 $ javap sample.HelloWorld
 public class sample.HelloWorld {
   public sample.HelloWorld();

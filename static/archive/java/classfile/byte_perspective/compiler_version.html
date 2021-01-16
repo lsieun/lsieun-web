@@ -13,7 +13,7 @@
     A class file consists of a single <code>ClassFile</code> structure:
 </p>
 
-<div title="ClassFile" class="plaintext">
+<pre title="ClassFile" class="plaintext">
 ClassFile {
     u4             magic;
     ------------------------------------------------------------------------
@@ -34,7 +34,7 @@ ClassFile {
     u2             attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 <p class="indented">
     The values of the <code>minor_version</code> and <code>major_version</code> items are the minor and major version numbers of this class file.
@@ -152,7 +152,7 @@ ClassFile {
 
 <h2>Change Compiler Version</h2>
 
-<div title="Change Compiler Version" class="javacode">
+<pre title="Change Compiler Version" class="javacode">
 public class D_Change_CompilerVersion {
     public static void main(String[] args) {
         // 第一步，输入参数
@@ -169,16 +169,16 @@ public class D_Change_CompilerVersion {
         FileUtils.writeBytes(filepath, bytes);
     }
 }
-</div>
+</pre>
 
-<div title="Run Output" class="plaintext">
+<pre title="Run Output" class="plaintext">
 $ java HelloWorld
 Error: A JNI error has occurred, please check your installation and try again
 Exception in thread "main" java.lang.UnsupportedClassVersionError: HelloWorld has been compiled by
     a more recent version of the Java Runtime (class file version 53.0), this version of the Java
     Runtime only recognizes class file versions up to 52.0
         at java.lang.ClassLoader.defineClass1(Native Method)
-</div>
+</pre>
 
 <p class="indented">
     When you get an <code>UnsupportedClassVersionError</code>, you know the version of the class you want to use and your runtime version do not match.
@@ -231,100 +231,100 @@ Exception in thread "main" java.lang.UnsupportedClassVersionError: HelloWorld ha
     </p>
 </div>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static void main(String[] args) {
         System.out.println("Hello World");
     }
 }
-</div>
+</pre>
 
 <h3>Java 8</h3>
 
-<div title="Target Version: Java 5" class="plaintext">
+<pre title="Target Version: Java 5" class="plaintext">
 $ javac -source 1.5 -target 1.5 HelloWorld.java
 warning: [options] bootstrap class path not set in conjunction with -source 1.5
 warning: [options] source value 1.5 is obsolete and will be removed in a future release
 warning: [options] target value 1.5 is obsolete and will be removed in a future release
 warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
 4 warnings
-</div>
+</pre>
 
-<div title="Target Version: Java 6" class="plaintext">
+<pre title="Target Version: Java 6" class="plaintext">
 $ javac -source 6 -target 6 HelloWorld.java
 warning: [options] bootstrap class path not set in conjunction with -source 1.6
 1 warning
-</div>
+</pre>
 
-<div title="Target Version: Java 7" class="plaintext">
+<pre title="Target Version: Java 7" class="plaintext">
 $ javac -source 7 -target 7 HelloWorld.java
 warning: [options] bootstrap class path not set in conjunction with -source 1.7
 1 warning
-</div>
+</pre>
 
-<div title="Target Version: Java 8" class="plaintext">
+<pre title="Target Version: Java 8" class="plaintext">
 $ javac -source 8 -target 8 HelloWorld.java
-</div>
+</pre>
 
-<div title="Target Version: Java 1.2" class="plaintext">
+<pre title="Target Version: Java 1.2" class="plaintext">
 $ javac -source 1.2 -target 1.2 HelloWorld.java
 warning: [options] bootstrap class path not set in conjunction with -source 1.2
 warning: [options] source value 1.2 is obsolete and will be removed in a future release
 warning: [options] target value 1.2 is obsolete and will be removed in a future release
 warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
 4 warnings
-</div>
+</pre>
 
-<div title="Target Version: Java 9" class="plaintext">
+<pre title="Target Version: Java 9" class="plaintext">
 $ javac -source 9 -target 9 HelloWorld.java
 javac: invalid source release: 9
-</div>
+</pre>
 
 <h3>Java 11</h3>
 
-<div title="Target Version: Java 11" class="plaintext">
+<pre title="Target Version: Java 11" class="plaintext">
 $ javac -source 11 -target 11 HelloWorld.java
-</div>
+</pre>
 
-<div title="Target Version: Java 10" class="plaintext">
+<pre title="Target Version: Java 10" class="plaintext">
 $ javac -source 10 -target 10 HelloWorld.java
 warning: [options] bootstrap class path not set in conjunction with -source 10
 1 warning
-</div>
+</pre>
 
-<div title="Target Version: Java 9" class="plaintext">
+<pre title="Target Version: Java 9" class="plaintext">
 $ javac -source 9 -target 9 HelloWorld.java
 warning: [options] bootstrap class path not set in conjunction with -source 9
 1 warning
-</div>
+</pre>
 
-<div title="Target Version: Java 8" class="plaintext">
+<pre title="Target Version: Java 8" class="plaintext">
 $ javac -source 8 -target 8 HelloWorld.java
 warning: [options] bootstrap class path not set in conjunction with -source 8
 1 warning
-</div>
+</pre>
 
-<div title="Target Version: Java 7" class="plaintext">
+<pre title="Target Version: Java 7" class="plaintext">
 $ javac -source 7 -target 7 HelloWorld.java
 warning: [options] bootstrap class path not set in conjunction with -source 7
 1 warning
-</div>
+</pre>
 
-<div title="Target Version: Java 6" class="plaintext">
+<pre title="Target Version: Java 6" class="plaintext">
 $ javac -source 6 -target 6 HelloWorld.java
 warning: [options] bootstrap class path not set in conjunction with -source 6
 warning: [options] source value 6 is obsolete and will be removed in a future release
 warning: [options] target value 1.6 is obsolete and will be removed in a future release
 warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
 4 warnings
-</div>
+</pre>
 
-<div title="Target Version: Java 5" class="plaintext">
+<pre title="Target Version: Java 5" class="plaintext">
 $ javac -source 1.5 -target 1.5 HelloWorld.java
 warning: [options] bootstrap class path not set in conjunction with -source 5
 error: Source option 5 is no longer supported. Use 6 or later.
 error: Target option 1.5 is no longer supported. Use 1.6 or later.
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

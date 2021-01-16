@@ -23,7 +23,7 @@
     在项目代码中，<code>Instruction</code>类是所有opcode类（例如，<code>ASTORE</code>、<code>IADD</code>等）的父类。<code>Instruction</code>类的定义如下：
 </p>
 
-<div title="Instruction.java" class="javacode">
+<pre title="Instruction.java" class="javacode">
 public abstract class Instruction {
     // basic
     public int opcode = -1; // Opcode number
@@ -40,7 +40,7 @@ public abstract class Instruction {
     }
 
 }
-</div>
+</pre>
 
 <h2>InstructionChain.java</h2>
 
@@ -48,7 +48,7 @@ public abstract class Instruction {
     <code>InstructionChain</code>是一个链表结构，其目的是将代码当中包含的所有<code>Instruction</code>串联起来。
 </p>
 
-<div title="InstructionChain.java" class="javacode">
+<pre title="InstructionChain.java" class="javacode">
 public class InstructionChain {
     public int count;
     public Instruction start;
@@ -74,7 +74,7 @@ public class InstructionChain {
     }
 
 }
-</div>
+</pre>
 
 <h2>parse InstructionChain</h2>
 
@@ -82,8 +82,8 @@ public class InstructionChain {
     为了将代码的内容转换成<code>InstructionChain</code>，可以借助于<code>OpcodeReadVisitor</code>来完成：
 </p>
 
-<div title="将代码内容转换成InstructionChain" class="javacode">
+<pre title="将代码内容转换成InstructionChain" class="javacode">
 byte[] code_bytes = code_attr.code;                        // 第一步，获取代码的内容
 OpcodeReadVisitor rv = new OpcodeReadVisitor(code_bytes);  // 第二步，创建OpcodeReadVisitor对象
 InstructionChain chain = rv.getInstructionChain();         // 第三步，调用getInstructionChain()方法
-</div>
+</pre>

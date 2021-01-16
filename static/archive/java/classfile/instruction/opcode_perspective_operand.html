@@ -19,15 +19,15 @@
 
 <h2>No Operand</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int intValue = 1;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" class="plaintext">
+<pre title="test:()V" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -42,19 +42,19 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       3  this:Lsample/HelloWorld;
     1         2       1  intValue:I
-</div>
+</pre>
 
 <h2>One Operand</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int intValue = 6;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" class="plaintext">
+<pre title="test:()V" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -69,20 +69,20 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       4  this:Lsample/HelloWorld;
     1         3       1  intValue:I
-</div>
+</pre>
 
 <h2>Two Operands</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int i = 0;
         i++;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" class="plaintext">
+<pre title="test:()V" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -98,20 +98,20 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       6  this:Lsample/HelloWorld;
     1         2       4  i:I
-</div>
+</pre>
 
 <h2>Three Operands</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Runnable r = null;
         r.run();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" class="plaintext">
+<pre title="test:()V" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -128,4 +128,4 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       9  this:Lsample/HelloWorld;
     1         2       7  r:Ljava/lang/Runnable;
-</div>
+</pre>

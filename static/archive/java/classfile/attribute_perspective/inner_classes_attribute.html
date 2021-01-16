@@ -29,7 +29,7 @@
     The <code>InnerClasses</code> attribute has the following format:
 </p>
 
-<div title="InnerClasses_attribute" class="plaintext">
+<pre title="InnerClasses_attribute" class="plaintext">
 InnerClasses_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -40,7 +40,7 @@ InnerClasses_attribute {
         u2 inner_class_access_flags;
     } classes[number_of_classes];
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>InnerClasses_attribute</code> structure are as follows:
@@ -88,7 +88,7 @@ InnerClasses_attribute {
 
 <h2>Examples</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public final class AAA {
         //
@@ -98,9 +98,9 @@ public class HelloWorld {
         //
     }
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Attribute" hidden class="plaintext">
+<pre title="HelloWorld.class Attribute" hidden class="plaintext">
 constant_pool_count='0017' (23)
 constant_pool
     ... ...
@@ -139,9 +139,9 @@ classes[1] {
     inner_name_index='0008' (#8)
     inner_class_access_flags='0011' ([ACC_PUBLIC,ACC_FINAL])
 }
-</div>
+</pre>
 
-<div title="HelloWorld$AAA.class Attribute" hidden class="plaintext">
+<pre title="HelloWorld$AAA.class Attribute" hidden class="plaintext">
 constant_pool_count='001A' (26)
 constant_pool
     ... ...
@@ -173,6 +173,6 @@ classes[0] {
     inner_name_index='000D' (#13)
     inner_class_access_flags='0011' ([ACC_PUBLIC,ACC_FINAL])
 }
-</div>
+</pre>
 
 

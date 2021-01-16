@@ -40,7 +40,7 @@
     The <code>LocalVariableTypeTable</code> attribute has the following format:
 </p>
 
-<div title="LocalVariableTypeTable_attribute" class="plaintext">
+<pre title="LocalVariableTypeTable_attribute" class="plaintext">
 LocalVariableTypeTable_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -52,7 +52,7 @@ LocalVariableTypeTable_attribute {
         u2 index;
     } local_variable_type_table[local_variable_type_table_length];
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>LocalVariableTypeTable_attribute</code> structure are as follows:
@@ -102,7 +102,7 @@ LocalVariableTypeTable_attribute {
 
 <h2>Examples</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,9 +111,9 @@ public class HelloWorld {
         List&lt;String&gt; list = new ArrayList&lt;&gt;();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0018' (24)
 constant_pool
     ... ...
@@ -177,4 +177,4 @@ local_variable_type_table[0] {
     signature_index='0011' (#17)
     index='0001' (1)
 }
-</div>
+</pre>

@@ -39,13 +39,13 @@
     Ignoring exceptions, the inner loop of a Java Virtual Machine interpreter is effectively
 </p>
 
-<div title="Java Virtual Machine interpreter" class="plaintext">
+<pre title="Java Virtual Machine interpreter" class="plaintext">
 do {
     atomically calculate pc and fetch opcode at pc;
     if (operands) fetch operands;
     execute the action for the opcode;
 } while (there is more to do);
-</div>
+</pre>
 
 <p class="indented">
     The number and size of the <b>operands</b> are determined by the <b>opcode</b>.

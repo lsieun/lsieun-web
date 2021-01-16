@@ -49,7 +49,7 @@
     These methods are typically used as <b>bootstrap methods</b> for <code>invokedynamic</code> call sites, to support the <b>lambda expression</b> and <b>method reference expression</b> features of the Java Programming Language.
 </p>
 
-<div title="LambdaMetafactory.java" class="javacode">
+<pre title="LambdaMetafactory.java" class="javacode">
 public static CallSite metafactory(MethodHandles.Lookup caller,
                                    String invokedName,
                                    MethodType invokedType,
@@ -59,7 +59,7 @@ public static CallSite metafactory(MethodHandles.Lookup caller,
         throws LambdaConversionException {
     //... ...
 }
-</div>
+</pre>
 
 <h3>CallSite</h3>
 
@@ -68,11 +68,11 @@ public static CallSite metafactory(MethodHandles.Lookup caller,
     An <code>invokedynamic</code> instruction linked to a <code>CallSite</code> delegates all calls to the site's current target.
 </p>
 
-<div title="CallSite.java" class="javacode">
+<pre title="CallSite.java" class="javacode">
 public abstract class CallSite {
     MethodHandle target;
 }
-</div>
+</pre>
 
 <h3>MethodHandle</h3>
 

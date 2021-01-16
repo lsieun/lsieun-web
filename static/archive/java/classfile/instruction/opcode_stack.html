@@ -9,7 +9,7 @@
 
 <h2>dup</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int a;
@@ -17,9 +17,9 @@ public class HelloWorld {
         b = a = 2;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 3
@@ -37,11 +37,11 @@ index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
     1         3       2  a:I
     2         4       1  b:I
-</div>
+</pre>
 
 <h2>dup2</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         long a;
@@ -49,9 +49,9 @@ public class HelloWorld {
         b = a = 2;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -71,19 +71,19 @@ index  start_pc  length  name_and_type
     0         0       7  this:Lsample/HelloWorld;
     1         5       2  a:J
     3         6       1  b:J
-</div>
+</pre>
 
 <h2>pop</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Math.max(3, 4);
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 1
@@ -99,19 +99,19 @@ code = 0607B8000257B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       7  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h2>pop2</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Math.max(3L, 4L);
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -129,19 +129,19 @@ code = 140002140004B8000658B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      11  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h2>dup_x2</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static int test(int[] array, int i, int value) {
         return array[i] = value;
     }
 }
-</div>
+</pre>
 
-<div title="test:([III)I" hidden class="plaintext">
+<pre title="test:([III)I" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:([III)I
 === === ===  === === ===  === === ===
@@ -162,19 +162,19 @@ index  start_pc  length  name_and_type
     0         0       6  array:[I
     1         0       6  i:I
     2         0       6  value:I
-</div>
+</pre>
 
 <h2>dup2_x2</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static long test(long[] array, int i, long value) {
         return array[i] = value;
     }
 }
-</div>
+</pre>
 
-<div title="test:([JIJ)J" hidden class="plaintext">
+<pre title="test:([JIJ)J" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:([JIJ)J
 === === ===  === === ===  === === ===
@@ -195,7 +195,7 @@ index  start_pc  length  name_and_type
     0         0       6  array:[J
     1         0       6  i:I
     2         0       6  value:J
-</div>
+</pre>
 
 <h2>swap</h2>
 
@@ -203,16 +203,16 @@ index  start_pc  length  name_and_type
     对于<code>swap</code>，我并没有找到一段代码能够直接生成<code>swap</code>指令。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static int test() {
         long timestamp = System.currentTimeMillis();
         return (int) (timestamp % 24);
     }
 }
-</div>
+</pre>
 
-<div title="App.java" class="javacode">
+<pre title="App.java" class="javacode">
 public class App {
     public static void main(String[] args) {
         int value = HelloWorld.test();
@@ -227,14 +227,14 @@ public class App {
         }
     }
 }
-</div>
+</pre>
 
-<div title="ASM" class="plaintext">
+<pre title="ASM" class="plaintext">
 mv.visitInsn(DUP);
 mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
 mv.visitInsn(SWAP);
 mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

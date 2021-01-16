@@ -18,7 +18,7 @@
     预期目标：在<code>HelloWorld</code>类当中，添加一个<code>Object objValue;</code>字段。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int intValue;
     public String strValue;
@@ -38,7 +38,7 @@ public class HelloWorld {
     in order to be able to compose class transformers easily:
 </p>
 
-<div title="ClassTransformer.java" class="javacode">
+<pre title="ClassTransformer.java" class="javacode">
 import org.objectweb.asm.tree.ClassNode;
 
 public class ClassTransformer {
@@ -58,7 +58,7 @@ public class ClassTransformer {
 
 <h3>FieldAddTransformer.java</h3>
 
-<div title="FieldAddTransformer.java" class="javacode">
+<pre title="FieldAddTransformer.java" class="javacode">
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 
@@ -93,7 +93,7 @@ public class FieldAddTransformer extends ClassTransformer {
 
 <h3>TreeApp.java</h3>
 
-<div title="TreeApp.java" class="javacode">
+<pre title="TreeApp.java" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;
@@ -131,7 +131,7 @@ public class TreeApp {
 
 <h2>验证结果</h2>
 
-<div title="check 1: before" class="plaintext">
+<pre title="check 1: before" class="plaintext">
 $ javap sample.HelloWorld
 public class sample.HelloWorld {
   public int intValue;
@@ -141,7 +141,7 @@ public class sample.HelloWorld {
 }
 </div>
 
-<div title="check 2: after" class="plaintext">
+<pre title="check 2: after" class="plaintext">
 $ javap sample.HelloWorld
 public class sample.HelloWorld {
   public int intValue;

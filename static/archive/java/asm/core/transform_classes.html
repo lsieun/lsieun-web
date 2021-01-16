@@ -18,7 +18,7 @@
     The result is that the class parsed by the class reader is reconstructed by the class writer:
 </p>
 
-<div title="The first step" class="javacode">
+<pre title="The first step" class="javacode">
 byte[] b1 = ...;
 ClassWriter cw = new ClassWriter(0);
 ClassReader cr = new ClassReader(b1);
@@ -32,7 +32,7 @@ byte[] b2 = cw.toByteArray(); // b2 represents the same class as b1
     <span class="text-key-point">the class reader</span> and <span class="text-key-point">the class writer</span>:
 </p>
 
-<div title="The next step" class="javacode">
+<pre title="The next step" class="javacode">
 byte[] b1 = ...;
 ClassWriter cw = new ClassWriter(0);
 // cv forwards all events to cw
@@ -48,7 +48,7 @@ byte[] b2 = cw.toByteArray(); // b2 represents the same class as b1
     For example, consider the following <code>ClassVisitor</code> subclass:
 </p>
 
-<div title="ChangeVersionClassAdapter.java" class="javacode">
+<pre title="ChangeVersionClassAdapter.java" class="javacode">
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -64,7 +64,7 @@ public class ChangeVersionClassAdapter extends ClassVisitor {
 }
 </div>
 
-<div title="App.java" class="javacode">
+<pre title="App.java" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;

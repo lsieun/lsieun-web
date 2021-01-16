@@ -11,16 +11,16 @@
 
 <h3>int to long</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int intValue = 0;
         long longValue = intValue;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 4
@@ -39,20 +39,20 @@ index  start_pc  length  name_and_type
     0         0       6  this:Lsample/HelloWorld;
     1         2       4  intValue:I
     2         5       1  longValue:J
-</div>
+</pre>
 
 <h3>long to int</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         long longValue = 0;
         int intValue = (int) longValue;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 4
@@ -71,22 +71,22 @@ index  start_pc  length  name_and_type
     0         0       6  this:Lsample/HelloWorld;
     1         2       4  longValue:J
     3         5       1  intValue:I
-</div>
+</pre>
 
 <h2>non-primitive type</h2>
 
 <h3>checkcast</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Object obj = null;
         String str = (String) obj;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 3
@@ -105,20 +105,20 @@ index  start_pc  length  name_and_type
     0         0       8  this:Lsample/HelloWorld;
     1         2       6  obj:Ljava/lang/Object;
     2         7       1  str:Ljava/lang/String;
-</div>
+</pre>
 
 <h3>instanceof</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         String str = null;
         boolean flag = str instanceof Object;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 3
@@ -137,7 +137,7 @@ index  start_pc  length  name_and_type
     0         0       8  this:Lsample/HelloWorld;
     1         2       6  str:Ljava/lang/String;
     2         7       1  flag:Z
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

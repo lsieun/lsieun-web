@@ -76,15 +76,15 @@
 
 <h4>byte array</h4>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         byte[] byteArray = new byte[5];
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -100,19 +100,19 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
     1         4       1  byteArray:[B
-</div>
+</pre>
 
 <h4>int array</h4>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int[] intArray = new int[5];
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 2
@@ -128,7 +128,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
     1         4       1  intArray:[I
-</div>
+</pre>
 
 
 <h3>anewarray: Object type</h3>
@@ -139,15 +139,15 @@ index  start_pc  length  name_and_type
     </p>
 </div>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Object[] objArray = new Object[5];
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0013' (19)
 constant_pool
     ... ...
@@ -168,7 +168,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       6  this:Lsample/HelloWorld;
     1         5       1  objArray:[Ljava/lang/Object;
-</div>
+</pre>
 
 <h3>multianewarray</h3>
 
@@ -180,15 +180,15 @@ index  start_pc  length  name_and_type
 
 <h4>primitive type multi-array</h4>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int[][] array = new int[3][4];
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -212,19 +212,19 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       8  this:Lsample/HelloWorld;
     1         7       1  array:[[I
-</div>
+</pre>
 
 <h4>Object type multi-array</h4>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Object[][] array = new Object[3][4];
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -246,13 +246,13 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       8  this:Lsample/HelloWorld;
     1         7       1  array:[[Ljava/lang/Object;
-</div>
+</pre>
 
 <h2>Get and Set Array Element</h2>
 
 <h3>int Array Get And Set</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int[] intArray = new int[5];
@@ -260,9 +260,9 @@ public class HelloWorld {
         int i = intArray[0];
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 3
 max_locals = 3
@@ -287,11 +287,11 @@ index  start_pc  length  name_and_type
     0         0      14  this:Lsample/HelloWorld;
     1         4      10  intArray:[I
     2        13       1  i:I
-</div>
+</pre>
 
 <h3>Object Array Get And Set</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Object[] objArray = new Object[2];
@@ -299,9 +299,9 @@ public class HelloWorld {
         Object obj = objArray[0];
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 3
 max_locals = 3
@@ -326,7 +326,7 @@ index  start_pc  length  name_and_type
     0         0      14  this:Lsample/HelloWorld;
     1         5       9  objArray:[Ljava/lang/Object;
     2        13       1  obj:Ljava/lang/Object;
-</div>
+</pre>
 
 <h3>boolean array</h3>
 
@@ -338,16 +338,16 @@ index  start_pc  length  name_and_type
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         boolean bool_true = true;
         boolean bool_false = false;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 3
@@ -365,7 +365,7 @@ index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
     1         2       3  bool_true:Z
     2         4       1  bool_false:Z
-</div>
+</pre>
 
 <p class="indented">
     The Java Virtual Machine does directly support <b><code>boolean</code> arrays</b>.
@@ -384,7 +384,7 @@ index  start_pc  length  name_and_type
     Where Java programming language <code>boolean</code> values are mapped by compilers to values of Java Virtual Machine type <code>int</code>, the compilers must use the same encoding.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         boolean[] boolArray = new boolean[5];
@@ -392,9 +392,9 @@ public class HelloWorld {
         boolean flag = boolArray[1];
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 3
 max_locals = 3
@@ -419,22 +419,22 @@ index  start_pc  length  name_and_type
     0         0      13  this:Lsample/HelloWorld;
     1         4       9  boolArray:[Z
     2        12       1  flag:Z
-</div>
+</pre>
 
 <h2>Array Length</h2>
 
 <h3>int Array Length</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int[] intArray = new int[1];
         int length = intArray.length;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 3
@@ -454,20 +454,20 @@ index  start_pc  length  name_and_type
     0         0       8  this:Lsample/HelloWorld;
     1         4       4  intArray:[I
     2         7       1  length:I
-</div>
+</pre>
 
 <h3>Object Array Length</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Object[] objArray = new Object[2];
         int length = objArray.length;
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 3
@@ -487,7 +487,7 @@ index  start_pc  length  name_and_type
     0         0       9  this:Lsample/HelloWorld;
     1         5       4  objArray:[Ljava/lang/Object;
     2         8       1  length:I
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

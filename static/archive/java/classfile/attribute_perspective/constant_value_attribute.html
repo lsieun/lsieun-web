@@ -33,13 +33,13 @@
     The <code>ConstantValue</code> attribute has the following format:
 </p>
 
-<div title="ConstantValue_attribute" class="plaintext">
+<pre title="ConstantValue_attribute" class="plaintext">
 ConstantValue_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
     u2 constantvalue_index;
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>ConstantValue_attribute</code> structure are as follows:
@@ -93,13 +93,13 @@ ConstantValue_attribute {
 
 <h3>int</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public final int intValue = 1024;
 }
-</div>
+</pre>
 
-<div title="intValue ConstantValue" hidden class="plaintext">
+<pre title="intValue ConstantValue" hidden class="plaintext">
 constant_pool_count='0016' (22)
 constant_pool
     ... ...
@@ -113,17 +113,17 @@ HexCode: 0007000000020008
 attribute_name_index='0007' (#7)
 attribute_length='00000002' (2)
 constantvalue_index='0008' (#8)
-</div>
+</pre>
 
 <h3>String</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static final String strValue = "Good";
 }
-</div>
+</pre>
 
-<div title="strValue ConstantValue" hidden class="plaintext">
+<pre title="strValue ConstantValue" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -137,7 +137,7 @@ HexCode: 0006000000020007
 attribute_name_index='0006' (#6)
 attribute_length='00000002' (2)
 constantvalue_index='0007' (#7)
-</div>
+</pre>
 
 <h2>Compile-Time Resolution of Constants</h2>
 
@@ -148,7 +148,7 @@ constantvalue_index='0007' (#7)
     This is true for constants of <b>all the primitive types</b> and of type <code>java.lang.String</code>.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
 
     private static final int intValue = 10;
@@ -158,9 +158,9 @@ public class HelloWorld {
     }
 
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -177,7 +177,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       4  this:Lsample/HelloWorld;
     1         3       1  i:I
-</div>
+</pre>
 
 <h3>switch case</h3>
 
@@ -189,7 +189,7 @@ index  start_pc  length  name_and_type
     These instructions do not support run-time resolution of <code>case</code> values.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
 
     private static final int intValue = 10;
@@ -208,9 +208,9 @@ public class HelloWorld {
     }
 
 }
-</div>
+</pre>
 
-<div title="test:(I)V" hidden class="plaintext">
+<pre title="test:(I)V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 0000: iload_1              // 1B
 0001: lookupswitch    49   // AB00000000003100000002000000010000001B0000000A00000026
@@ -236,7 +236,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      59  this:Lsample/HelloWorld;
     1         0      59  val:I
-</div>
+</pre>
 
 <h3>conditional compilation</h3>
 
@@ -246,7 +246,7 @@ index  start_pc  length  name_and_type
     Here is an example:
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
 
     private static final boolean debug = true;
@@ -270,9 +270,9 @@ public class HelloWorld {
     }
 
 }
-</div>
+</pre>
 
-<div title="main:([Ljava/lang/String;)V" class="plaintext">
+<pre title="main:([Ljava/lang/String;)V" class="plaintext">
 === === ===  === === ===  === === ===
 Method main:([Ljava/lang/String;)V
 === === ===  === === ===  === === ===
@@ -293,5 +293,5 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      13  args:[Ljava/lang/String;
     1         8       5  instance:Lsample/HelloWorld;
-</div>
+</pre>
 

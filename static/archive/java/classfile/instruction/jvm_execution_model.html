@@ -9,7 +9,7 @@
 
 <h2>Sample Code</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int a = 1;
@@ -17,13 +17,13 @@ public class HelloWorld {
         int c = a + b;
     }
 }
-</div>
+</pre>
 
 <p>
     上述的<code>test()</code>方法，经过javac编译之后，会生成下面的opcode的内容。那么，应该如何解析这些opcode内容呢？
 </p>
 
-<div title="test:()V" class="plaintext">
+<pre title="test:()V" class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -48,7 +48,7 @@ index  start_pc  length  name_and_type
     1         2       7  a:I
     2         4       5  b:I
     3         8       1  c:I
-</div>
+</pre>
 
 <p>
     解析这些opcode内容，需要借助于JVM Execution Model。
@@ -91,7 +91,7 @@ index  start_pc  length  name_and_type
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="Code_attribute" class="plaintext">
+<pre title="Code_attribute" class="plaintext">
 Code_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -108,7 +108,7 @@ Code_attribute {
     u2 attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 
 

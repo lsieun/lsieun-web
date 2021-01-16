@@ -25,12 +25,12 @@
     The Deprecated attribute has the following format:
 </p>
 
-<div title="Deprecated_attribute" class="plaintext">
+<pre title="Deprecated_attribute" class="plaintext">
 Deprecated_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>Deprecated_attribute</code> structure are as follows:
@@ -47,13 +47,13 @@ Deprecated_attribute {
 
 <h2>Examples</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @Deprecated
 public class HelloWorld {
 }
-</div>
+</pre>
 
-<div title="Example: Deprecated" class="plaintext">
+<pre title="Example: Deprecated" class="plaintext">
 constant_pool_count='0013' (19)
 constant_pool
     ... ...
@@ -81,4 +81,4 @@ attribute_length='00000006' (6)
 num_annotations='0001' (1)
 type_index='000F' (15)
 num_element_value_pairs='0000' (0)
-</div>
+</pre>

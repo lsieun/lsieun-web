@@ -27,7 +27,7 @@
     for instance a <code>ClassWriter</code>:
 </p>
 
-<div title="" class="javacode">
+<pre title="" class="javacode">
 ClassWriter cw = new ClassWriter(0);
 TraceClassVisitor cv = new TraceClassVisitor(cw, printWriter);
 cv.visit(...);
@@ -41,7 +41,7 @@ byte b[] = cw.toByteArray();
     and that prints a textual representation of these calls to <code>printWriter</code>.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static void main(String[] args) {
         System.out.println("Hello World");
@@ -49,7 +49,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="App.java" class="javacode">
+<pre title="App.java" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;
@@ -89,7 +89,7 @@ public class App {
 }
 </div>
 
-<div title="Run output" class="plaintext">
+<pre title="Run output" class="plaintext">
 // class version 51.0 (51)
 // access flags 0x21
 public class sample/HelloWorld {

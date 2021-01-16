@@ -19,7 +19,7 @@
 
 <h3>compare int with zero</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int value = 0;
@@ -31,9 +31,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 3  // 注意，这里是3个local variables，下面只显示了2个。
@@ -55,7 +55,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      14  this:Lsample/HelloWorld;
     1         2      12  value:I
-</div>
+</pre>
 
 <ul>
     <li><code>ifle</code>: <code>if(value &gt; 0)</code></li>
@@ -67,7 +67,7 @@ index  start_pc  length  name_and_type
 
 <h3>compare int with non-zero</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int value = 0;
@@ -79,9 +79,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 3
@@ -104,7 +104,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      15  this:Lsample/HelloWorld;
     1         2      13  value:I
-</div>
+</pre>
 
 <ul>
     <li><code>if_icmple</code>: <code>if(value &gt; 1)</code></li>
@@ -116,7 +116,7 @@ index  start_pc  length  name_and_type
 
 <h3>compare long</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         long longA = 0;
@@ -129,9 +129,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 4
 max_locals = 6
@@ -158,11 +158,11 @@ index  start_pc  length  name_and_type
     0         0      20  this:Lsample/HelloWorld;
     1         2      18  longA:J
     3         4      16  longB:J
-</div>
+</pre>
 
 <h3>compare obj with null</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Object obj = null;
@@ -174,9 +174,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 3
@@ -198,7 +198,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      14  this:Lsample/HelloWorld;
     1         2      12  obj:Ljava/lang/Object;
-</div>
+</pre>
 
 <ul>
     <li><code>ifnull</code>: <code>if(obj != null)</code></li>
@@ -206,7 +206,7 @@ index  start_pc  length  name_and_type
 
 <h3>compare obj with obj</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Object objA = null;
@@ -219,9 +219,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 4
@@ -247,7 +247,7 @@ index  start_pc  length  name_and_type
     0         0      17  this:Lsample/HelloWorld;
     1         2      15  objA:Ljava/lang/Object;
     2         4      13  objB:Ljava/lang/Object;
-</div>
+</pre>
 
 <ul>
     <li><code>if_acmpeq</code>: <code>if(objA != objB)</code></li>
@@ -261,7 +261,7 @@ index  start_pc  length  name_and_type
     <li>比较两个<code>double</code>值，是使用<code>dcmpl</code>/<code>dcmpg</code>和<code>ifxx</code>组合来完成的。（对于<code>dcmpl</code>和<code>dcmpg</code>的区别，大家可以参考一下JVM文档）</li>
 </ul>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         long a = 3;
@@ -269,9 +269,9 @@ public class HelloWorld {
         boolean c = (a>b);
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 4
 max_locals = 6
@@ -298,7 +298,7 @@ index  start_pc  length  name_and_type
     1         4      18  a:J
     3         8      14  b:J
     5        21       1  c:Z
-</div>
+</pre>
 
 <h3>if multiple condition</h3>
 
@@ -306,7 +306,7 @@ index  start_pc  length  name_and_type
     多个<code>||</code>会生成怎样的opcode：
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int test(int a, int b, int c) {
         int result = 0;
@@ -319,9 +319,9 @@ public class HelloWorld {
         return result;
     }
 }
-</div>
+</pre>
 
-<div title="test:(III)I" hidden class="plaintext">
+<pre title="test:(III)I" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 5
@@ -354,13 +354,13 @@ index  start_pc  length  name_and_type
     2         0      30  b:I
     3         0      30  c:I
     4         3      27  result:I
-</div>
+</pre>
 
 <p>
     多个<code>&&</code>会生成怎样的opcode：
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int test(int a, int b, int c) {
         int result = 0;
@@ -373,9 +373,9 @@ public class HelloWorld {
         return result;
     }
 }
-</div>
+</pre>
 
-<div title="test:(III)I" hidden class="plaintext">
+<pre title="test:(III)I" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 5
@@ -408,13 +408,13 @@ index  start_pc  length  name_and_type
     2         0      30  b:I
     3         0      30  c:I
     4         3      27  result:I
-</div>
+</pre>
 
 <h2>switch</h2>
 
 <h3>tableswitch</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int value = 1;
@@ -435,9 +435,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 3
@@ -474,11 +474,11 @@ index  start_pc  length  name_and_type
     0         0      50  this:Lsample/HelloWorld;
     1         2      48  value:I
     2         4      46  result:I
-</div>
+</pre>
 
 <h3>lookupswitch</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int value = 1;
@@ -499,9 +499,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 3
@@ -538,13 +538,13 @@ index  start_pc  length  name_and_type
     0         0      58  this:Lsample/HelloWorld;
     1         2      56  value:I
     2         4      54  result:I
-</div>
+</pre>
 
 <p>
     如果去掉一个<code>break</code>，是什么情况呢？
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int value = 1;
@@ -564,9 +564,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 3
@@ -602,13 +602,13 @@ index  start_pc  length  name_and_type
     0         0      55  this:Lsample/HelloWorld;
     1         2      53  value:I
     2         4      51  result:I
-</div>
+</pre>
 
 <p>
     另一种变形：
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int value = 1;
@@ -627,9 +627,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 3
@@ -663,11 +663,11 @@ index  start_pc  length  name_and_type
     0         0      53  this:Lsample/HelloWorld;
     1         2      51  value:I
     2         4      49  result:I
-</div>
+</pre>
 
 <h3>lookupswitch with String</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         String str = "Hello";
@@ -686,9 +686,9 @@ public class HelloWorld {
         System.out.println(result);
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 5
@@ -756,11 +756,11 @@ index  start_pc  length  name_and_type
     0         0     119  this:Lsample/HelloWorld;
     1         3     116  str:Ljava/lang/String;
     2         6     113  result:Ljava/lang/String;
-</div>
+</pre>
 
 <h3>switch with long</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         long value = 1000;
@@ -779,17 +779,17 @@ public class HelloWorld {
         System.out.println(result);
     }
 }
-</div>
+</pre>
 
-<div title="Error Message" class="plaintext">
+<pre title="Error Message" class="plaintext">
 Incompatible types. Found: 'long', required: 'char, byte, short, int, Character, Byte, Short, Integer, String, or an enum'
-</div>
+</pre>
 
 <h2>for</h2>
 
 <h3>simple for</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int value = 0;
@@ -798,9 +798,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 3
@@ -825,11 +825,11 @@ index  start_pc  length  name_and_type
     0         0      18  this:Lsample/HelloWorld;
     1         2      16  value:I
     2         4      13  i:I
-</div>
+</pre>
 
 <h3>break for</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int value = 0;
@@ -839,9 +839,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 3
@@ -870,11 +870,11 @@ index  start_pc  length  name_and_type
     0         0      26  this:Lsample/HelloWorld;
     1         2      24  value:I
     2         4      21  i:I
-</div>
+</pre>
 
 <h3>continue for</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int value = 0;
@@ -884,9 +884,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 3
@@ -915,11 +915,11 @@ index  start_pc  length  name_and_type
     0         0      26  this:Lsample/HelloWorld;
     1         2      24  value:I
     2         4      21  i:I
-</div>
+</pre>
 
 <h3>list.size()</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
 import java.util.List;
 
@@ -932,9 +932,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 3
 max_locals = 2
@@ -962,9 +962,9 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      38  this:Lsample/HelloWorld;
     1         2      35  i:I
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
 import java.util.List;
 
@@ -978,9 +978,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 3
 max_locals = 3
@@ -1011,11 +1011,11 @@ index  start_pc  length  name_and_type
     0         0      40  this:Lsample/HelloWorld;
     1        10      30  size:I
     2        12      27  i:I
-</div>
+</pre>
 
 <h3>array.length</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     private int[] array = new int[10];
 
@@ -1025,9 +1025,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 3
 max_locals = 2
@@ -1055,9 +1055,9 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      30  this:Lsample/HelloWorld;
     1         2      27  i:I
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     private int[] array = new int[10];
 
@@ -1068,9 +1068,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 3
 max_locals = 3
@@ -1101,13 +1101,13 @@ index  start_pc  length  name_and_type
     0         0      32  this:Lsample/HelloWorld;
     1         6      26  length:I
     2         8      23  i:I
-</div>
+</pre>
 
 <h2>while</h2>
 
 <h3>simple while</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int value = 0;
@@ -1118,9 +1118,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 3
@@ -1145,11 +1145,11 @@ index  start_pc  length  name_and_type
     0         0      19  this:Lsample/HelloWorld;
     1         2      17  value:I
     2         4      15  i:I
-</div>
+</pre>
 
 <h3>break while</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int value = 0;
@@ -1161,9 +1161,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 3
@@ -1192,11 +1192,11 @@ index  start_pc  length  name_and_type
     0         0      27  this:Lsample/HelloWorld;
     1         2      25  value:I
     2         4      23  i:I
-</div>
+</pre>
 
 <h3>continue while</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         int value = 0;
@@ -1211,9 +1211,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 3
@@ -1243,7 +1243,7 @@ index  start_pc  length  name_and_type
     0         0      30  this:Lsample/HelloWorld;
     1         2      28  value:I
     2         4      26  i:I
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

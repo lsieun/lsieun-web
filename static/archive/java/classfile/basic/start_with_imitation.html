@@ -33,20 +33,20 @@
 
 <h3>From User to user_info</h3>
 
-<div title="User.java" class="javacode">
+<pre title="User.java" class="javacode">
 public class User {
     public int id;
     public String name;
 }
-</div>
+</pre>
 
-<div title="user_info" class="plaintext">
+<pre title="user_info" class="plaintext">
 user_info {
     u2 id;
     u2 length;
     u1 name_bytes[length];
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">user_info example</p>
@@ -57,7 +57,7 @@ user_info {
     </div>
 </div>
 
-<div title="Z_A_Write_User.java" class="javacode">
+<pre title="Z_A_Write_User.java" class="javacode">
 import lsieun.utils.FileUtils;
 
 public class Z_A_Write_User {
@@ -72,9 +72,9 @@ public class Z_A_Write_User {
         System.out.println("file://" + filepath);
     }
 }
-</div>
+</pre>
 
-<div title="Z_B_Read_User.java" class="javacode">
+<pre title="Z_B_Read_User.java" class="javacode">
 import lsieun.utils.ByteDashboard;
 import lsieun.utils.FileUtils;
 
@@ -89,23 +89,23 @@ public class Z_B_Read_User {
         System.out.println(user);
     }
 }
-</div>
+</pre>
 
 <h3>From Company to company_info</h3>
 
-<div title="Company.java" class="javacode">
+<pre title="Company.java" class="javacode">
 public class Company {
     public int count;
     public User[] users;
 }
-</div>
+</pre>
 
-<div title="company_info" class="plaintext">
+<pre title="company_info" class="plaintext">
 company_info {
     u2 count;
     user_info users[count];
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-card w3-light-grey">
     <p onclick="$(this).next().toggle()">company_info example</p>
@@ -123,7 +123,7 @@ company_info {
     </div>
 </div>
 
-<div title="Z_C_Write_Company.java" class="javacode">
+<pre title="Z_C_Write_Company.java" class="javacode">
 import lsieun.utils.FileUtils;
 
 public class Z_C_Write_Company {
@@ -142,9 +142,9 @@ public class Z_C_Write_Company {
         System.out.println("file://" + filepath);
     }
 }
-</div>
+</pre>
 
-<div title="Z_D_Read_Company.java" class="javacode">
+<pre title="Z_D_Read_Company.java" class="javacode">
 import lsieun.utils.ByteDashboard;
 import lsieun.utils.FileUtils;
 
@@ -159,11 +159,11 @@ public class Z_D_Read_Company {
         System.out.println(company);
     }
 }
-</div>
+</pre>
 
 <h3>FunUtils.java</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import lsieun.utils.ByteDashboard;
 import lsieun.utils.ByteUtils;
 
@@ -233,4 +233,4 @@ public class FunUtils {
         return new Company(count, users);
     }
 }
-</div>
+</pre>

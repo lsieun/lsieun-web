@@ -19,15 +19,15 @@
 
 <h2>throw exception</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         throw new RuntimeException();
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" class="plaintext">
+<pre title="test:()V" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 1
@@ -42,11 +42,11 @@ code = BB000259B70003BF
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       8  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h2>catch exception</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         try {
@@ -56,9 +56,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -82,7 +82,7 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      15  this:Lsample/HelloWorld;
     1        10       4  e:Ljava/lang/InterruptedException;
-</div>
+</pre>
 
 <p class="indented">
     This means that if such <b>an exception</b> is thrown anywhere between <code>try</code> and <code>catch</code> the operand stack is cleared, the exception is pushed on this empty stack, and execution continues at <code>catch</code>.
@@ -90,7 +90,7 @@ index  start_pc  length  name_and_type
 
 <h2>finally</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         try {
@@ -103,9 +103,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -144,4 +144,4 @@ LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0      45  this:Lsample/HelloWorld;
     1        18       4  e:Ljava/lang/InterruptedException;
-</div>
+</pre>

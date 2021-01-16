@@ -13,7 +13,7 @@
     A class file consists of a single <code>ClassFile</code> structure:
 </p>
 
-<div title="ClassFile" class="plaintext">
+<pre title="ClassFile" class="plaintext">
 ClassFile {
     ------------------------------------------------------------------------
     u4             magic;                                  本节内容关注点
@@ -34,7 +34,7 @@ ClassFile {
     u2             attributes_count;
     attribute_info attributes[attributes_count];
 }
-</div>
+</pre>
 
 <p class="indented">
     The <b>magic</b> item supplies the magic number identifying the class file format; it has the value <code>0xCAFEBABE</code>.
@@ -164,7 +164,7 @@ ClassFile {
     至此，我们知道，在<code>.class</code>文件当中，Magic Number的值是<code>0xCAFEBABE</code>。如果我们修改一下Magic Number的值，会出现什么情况呢？
 </p>
 
-<div title="Change Magic Number" class="javacode">
+<pre title="Change Magic Number" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.HexUtils;
 import lsieun.utils.ReadUtils;
@@ -184,14 +184,14 @@ public class C_Change_MagicNumber {
         FileUtils.writeBytes(filepath, bytes);
     }
 }
-</div>
+</pre>
 
-<div title="Run Output" class="plaintext">
+<pre title="Run Output" class="plaintext">
 $ java HelloWorld
 Error: A JNI error has occurred, please check your installation and try again
 Exception in thread "main" java.lang.ClassFormatError: Incompatible magic value 3405691583 in class file HelloWorld
         at java.lang.ClassLoader.defineClass1(Native Method)
-</div>
+</pre>
 
 <h2>More About Magic Number</h2>
 
@@ -215,7 +215,7 @@ Exception in thread "main" java.lang.ClassFormatError: Incompatible magic value 
     除了<code>0xCAFEBABE</code>，我们也可以将十六进制数组合成其他容易记忆的单词，来用作Magic Number。
 </p>
 
-<div title="More Examples" class="plaintext">
+<pre title="More Examples" class="plaintext">
 000FF1CE (office)
 5CA1AB1E (scalable)
 7E1ECAS7 (telecast)
@@ -232,7 +232,7 @@ DEADC0DE (dead code)
 F007BA11 (football)
 FACEB00C (facebook)
 FEEDBABE (feed babe)
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

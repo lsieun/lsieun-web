@@ -1,0 +1,202 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Replace Field Access</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>预期目标</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private static int staticValue = 1000;
+    private int intValue = 100;
+
+    public void test() {
+        int val1 = staticValue;
+        System.out.println("val1 = " + val1);
+        int val2 = this.intValue;
+        System.out.println("val2 = " + val2);
+    }
+
+    public int getHour() {
+        return 10;
+    }
+
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+        instance.test();
+    }
+}
+</pre>
+
+<pre title="GoodChild.java" class="javacode">
+public class GoodChild {
+    public static int getAge() {
+        return 12;
+    }
+}
+</pre>
+
+<h2>编码实现</h2>
+
+<h3>Info.java</h3>
+
+<pre title="Info.java" class="javacode">
+public class Info {
+    public final int srcOpcode;
+    public final String srcOwner;
+    public final String srcName;
+    public final String srcDesc;
+
+    public final int targetOpcode;
+    public final String targetOwner;
+    public final String targetName;
+    public final String targetDesc;
+
+    public Info(
+            int srcOpcode, String srcOwner, String srcName, String srcDesc,
+            int targetOpcode, String targetOwner, String targetName, String targetDesc) {
+        this.srcOpcode = srcOpcode;
+        this.srcOwner = srcOwner;
+        this.srcName = srcName;
+        this.srcDesc = srcDesc;
+        this.targetOpcode = targetOpcode;
+        this.targetOwner = targetOwner;
+        this.targetName = targetName;
+        this.targetDesc = targetDesc;
+    }
+}
+</pre>
+
+<h3>FieldAccessAdapter.java</h3>
+
+<pre title="FieldAccessAdapter.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+import java.util.List;
+
+public class FieldAccessAdapter extends ClassVisitor {
+    private final List&lt;Info&gt; list;
+
+    public FieldAccessAdapter(int api, ClassVisitor cv, List&lt;Info&gt; list) {
+        super(api, cv);
+        this.list = list;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        if (mv != null) {
+            mv = new FieldAccessConverter(api, mv, list);
+        }
+        return mv;
+    }
+}
+</pre>
+
+<h3>FieldAccessConverter.java</h3>
+
+<pre title="FieldAccessConverter.java" class="javacode">
+import org.objectweb.asm.MethodVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class FieldAccessConverter extends MethodVisitor {
+    private final List&lt;Info&gt; list;
+
+    public FieldAccessConverter(int api, MethodVisitor mv, List&lt;Info&gt; list) {
+        super(api, mv);
+        if (list == null) {
+            this.list = new ArrayList&lt;&gt;();
+        }
+        else {
+            this.list = list;
+        }
+    }
+
+    @Override
+    public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+        Info info = matchingInfo(opcode, owner, name, descriptor);
+        if (info != null) {
+            super.visitMethodInsn(info.targetOpcode, info.targetOwner, info.targetName, info.targetDesc, false);
+            return;
+        }
+        super.visitFieldInsn(opcode, owner, name, descriptor);
+    }
+
+    private Info matchingInfo(int opcode, String owner, String name, String descriptor) {
+        for (Info info : list) {
+            if (opcode == info.srcOpcode &&
+                    owner.equals(info.srcOwner) &&
+                    name.equals(info.srcName) &&
+                    descriptor.equals(info.srcDesc)) {
+                return info;
+            }
+        }
+        return null;
+    }
+}
+</pre>
+
+<h3>FieldAccessAdapterRun.java</h3>
+
+<pre title="FieldAccessAdapterRun.java" class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.utils.ReadUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class FieldAccessAdapterRun {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = ReadUtils.readByPath(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        Info info1 = new Info(Opcodes.GETFIELD, "sample/HelloWorld", "intValue", "I",
+                Opcodes.INVOKEVIRTUAL, "sample/HelloWorld", "getHour", "()I");
+        Info info2 = new Info(Opcodes.GETSTATIC, "sample/HelloWorld", "staticValue", "I",
+                Opcodes.INVOKESTATIC, "sample/GoodChild", "getAge", "()I");
+        List&lt;Info&gt; list = new ArrayList&lt;&gt;();
+        list.add(info1);
+        list.add(info2);
+        ClassVisitor cv = new FieldAccessAdapter(Opcodes.ASM9, cw, list);
+
+        //（4）两者进行结合
+        cr.accept(cv, ClassReader.SKIP_FRAMES);
+
+        //（5）重新生成Class
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<h2>验证结果</h2>
+
+<pre title="Run output 1" class="plaintext">
+val1 = 1000
+val2 = 100
+</pre>
+
+<pre title="Run output 2" class="plaintext">
+val1 = 12
+val2 = 10
+</pre>

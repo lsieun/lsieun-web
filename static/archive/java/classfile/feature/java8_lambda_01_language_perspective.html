@@ -56,11 +56,11 @@
     A <b>lambda expression</b> is composed of <b>parameters, an arrow, and a body</b>.
 </p>
 
-<div title="lambda expression = parameters + arrow + body" class="plaintext">
+<pre title="lambda expression = parameters + arrow + body" class="plaintext">
 (Apple a1, Apple a2)  ->         a1.getWeight().compareTo(a2.getWeight())
 -----------------------------------------------------------------------
 parameters            arrow       lambda body
-</div>
+</pre>
 
 <ul>
     <li>
@@ -78,10 +78,10 @@ parameters            arrow       lambda body
     The basic syntax of a lambda is:
 </p>
 
-<div title="basic syntax of a lambda" class="plaintext">
+<pre title="basic syntax of a lambda" class="plaintext">
 (parameters) -> expression
 (parameters) -> { statements; }
-</div>
+</pre>
 
 <p>
     注意：下面两个lambda expression是错误的
@@ -121,15 +121,15 @@ parameters            arrow       lambda body
     For example, an error message could be “Multiple non-overriding abstract methods found in interface Foo” to indicate that more than one abstract method is available.
 </p>
 
-<div title="Foo.java" class="javacode">
+<pre title="Foo.java" class="javacode">
 @FunctionalInterface
 public interface Foo {
     void firstMethod();
     void secondMethod();
 }
-</div>
+</pre>
 
-<div title="error: multiple non-overriding abstract methods" hidden class="plaintext">
+<pre title="error: multiple non-overriding abstract methods" hidden class="plaintext">
 $ javac Foo.java
 Foo.java:1: error: Unexpected @FunctionalInterface annotation
 @FunctionalInterface
@@ -137,7 +137,7 @@ Foo.java:1: error: Unexpected @FunctionalInterface annotation
   Foo is not a functional interface
     multiple non-overriding abstract methods found in interface Foo
 1 error
-</div>
+</pre>
 
 <h2>Method references</h2>
 
@@ -210,7 +210,7 @@ Foo.java:1: error: Unexpected @FunctionalInterface annotation
     It works similarly to a reference to a static method. For example, suppose there’s a zero-argument constructor.
 </p>
 
-<div title="examples" class="javacode">
+<pre title="examples" class="javacode">
 // 第一种：lambda expression
 Supplier&lt;Apple&gt; c1 = () -> new Apple();
 
@@ -218,7 +218,7 @@ Supplier&lt;Apple&gt; c1 = () -> new Apple();
 Supplier&lt;Apple&gt; c1 = Apple::new;
 
 Apple a1 = c1.get();
-</div>
+</pre>
 
 <h4>one-argument constructor</h4>
 
@@ -226,7 +226,7 @@ Apple a1 = c1.get();
     If you have a constructor with signature <code>Apple(Integer weight)</code>, it fits the signature of the <code>Function</code> interface, so you can do this,
 </p>
 
-<div title="examples" class="javacode">
+<pre title="examples" class="javacode">
 // 第一种：lambda expression
 Function&lt;Integer, Apple&gt; c1 = (weight) -&gt; new Apple(weight);
 
@@ -234,7 +234,7 @@ Function&lt;Integer, Apple&gt; c1 = (weight) -&gt; new Apple(weight);
 Function&lt;Integer, Apple&gt; c2 = Apple::new;
 
 Apple a2 = c2.apply(110);
-</div>
+</pre>
 
 <h4>two-argument constructor</h4>
 
@@ -242,14 +242,14 @@ Apple a2 = c2.apply(110);
     If you have a two-argument constructor, <code>Apple(String color, Integer weight)</code>, it fits the signature of the <code>BiFunction</code> interface, so you can do this:
 </p>
 
-<div title="examples" class="javacode">
+<pre title="examples" class="javacode">
 // 第一种：lambda expression
 BiFunction&lt;String, Integer, Apple&gt; c3 = (color, weight) -> new Apple(color, weight);
 
 // 第二种：Constructor references
 BiFunction&lt;String, Integer, Apple&gt; c3 = Apple::new;
 Apple a3 = c3.apply("green", 110);
-</div>
+</pre>
 
 <h3>create arrays</h3>
 
@@ -257,7 +257,7 @@ Apple a3 = c3.apply("green", 110);
     It’s also possible to create arrays using this method. Here is how you would create a String array: <code>String[]::new</code>.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.Arrays;
 import java.util.function.Function;
 
@@ -268,7 +268,7 @@ public class Demo {
         System.out.println(Arrays.toString(array));
     }
 }
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 
@@ -285,18 +285,18 @@ public class Demo {
     Lambda和Method Reference都是属于Behavior Parameterization的范围。
 </p>
 
-<div title="examples" class="javacode">
+<pre title="examples" class="javacode">
 int i = 100;
-</div>
+</pre>
 
 <p>
     其中，<code>int</code>是Type，是装数据的“容器”，而100是Value，是真正的“数据”。这就表达了Type与Value之间的关系：Type是“容器”，Value是“数据”。
 </p>
 
-<div title="Type是“容器”，Value是“数据”" class="plaintext">
+<pre title="Type是“容器”，Value是“数据”" class="plaintext">
 将Value装载到Type这个容器当中：
 Type &lt;-- Value
-</div>
+</pre>
 
 <p>
     那么，把Type和Value的概念应用到Behavior Parameterization上来说，Lambda和Method Reference表示的只是Value，而Functional Interface表示的是Type。
@@ -310,10 +310,10 @@ Type &lt;-- Value
 
 <h3>Lambda Vs Method Reference</h3>
 
-<div title="" class="plaintext">
+<pre title="" class="plaintext">
 Lambda = anonymous functions
 Method Reference = named functions
-</div>
+</pre>
 
 <h2>References</h2>
 

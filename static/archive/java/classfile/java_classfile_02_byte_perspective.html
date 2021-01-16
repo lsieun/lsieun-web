@@ -19,7 +19,7 @@
     第3章《Byte Perspective》是按照ClassFile Structure来进行讲解的。它对应于《The Java Virtual Machine Specification, Java SE 8 Edition》的“Chapter 4. The class File Format”中的从“4.1. The ClassFile Structure”到“4.6. Methods”的内容。
 </p>
 
-<div title="ClassFile Structure" hidden class="plaintext">
+<pre title="ClassFile Structure" hidden class="plaintext">
 ClassFile {
     ------------------------------------------------------------------------
     u4             magic;                                 // Magic Number部分
@@ -46,7 +46,7 @@ ClassFile {
     attribute_info attributes[attributes_count];         // attributes部分
     ------------------------------------------------------------------------
 }
-</div>
+</pre>
 
 <p class="indented">
     这里的标题“Byte Perspective”，就是表明我们在研究Java ClassFile的过程当中，是以1个byte（<code>u1</code>），或2个byte（<code>u2</code>），或4个byte（<code>u4</code>），或8个byte（<code>u8</code>）来进行处理的。

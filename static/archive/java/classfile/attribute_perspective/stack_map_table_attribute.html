@@ -36,14 +36,14 @@
     The <code>StackMapTable</code> attribute has the following format:
 </p>
 
-<div title="StackMapTable_attribute" class="plaintext">
+<pre title="StackMapTable_attribute" class="plaintext">
 StackMapTable_attribute {
     u2              attribute_name_index;
     u4              attribute_length;
     u2              number_of_entries;
     stack_map_frame entries[number_of_entries];
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>StackMapTable_attribute</code> structure are as follows:
@@ -139,7 +139,7 @@ StackMapTable_attribute {
 
 <h2>verification_type_info</h2>
 
-<div title="verification_type_info" class="plaintext">
+<pre title="verification_type_info" class="plaintext">
 union verification_type_info {
     Top_variable_info;
     Integer_variable_info;
@@ -151,7 +151,7 @@ union verification_type_info {
     Object_variable_info;
     Uninitialized_variable_info;
 }
-</div>
+</pre>
 
 <p>
     A verification type that specifies one location in <b>the local variable array</b> or in <b>the operand stack</b> is represented by the following items of the <code>verification_type_info</code> union.
@@ -163,11 +163,11 @@ union verification_type_info {
     The <code>Top_variable_info</code> item indicates that the local variable has the verification type <code>top</code>.
 </p>
 
-<div title="Top_variable_info" class="plaintext">
+<pre title="Top_variable_info" class="plaintext">
 Top_variable_info {
     u1 tag = ITEM_Top; /* 0 */
 }
-</div>
+</pre>
 
 <h3>Integer_variable_info</h3>
 
@@ -175,11 +175,11 @@ Top_variable_info {
     The <code>Integer_variable_info</code> item indicates that the location has the verification type <code>int</code>.
 </p>
 
-<div title="Integer_variable_info" class="plaintext">
+<pre title="Integer_variable_info" class="plaintext">
 Integer_variable_info {
     u1 tag = ITEM_Integer; /* 1 */
 }
-</div>
+</pre>
 
 <h3>Float_variable_info</h3>
 
@@ -187,11 +187,11 @@ Integer_variable_info {
     The <code>Float_variable_info</code> item indicates that the location has the verification type <code>float</code>.
 </p>
 
-<div title="Float_variable_info" class="plaintext">
+<pre title="Float_variable_info" class="plaintext">
 Float_variable_info {
     u1 tag = ITEM_Float; /* 2 */
 }
-</div>
+</pre>
 
 <h3>Double_variable_info</h3>
 
@@ -199,11 +199,11 @@ Float_variable_info {
     The <code>Double_variable_info</code> item indicates that the first of two locations has the verification type <code>double</code>.
 </p>
 
-<div title="Double_variable_info" class="plaintext">
+<pre title="Double_variable_info" class="plaintext">
 Double_variable_info {
     u1 tag = ITEM_Double; /* 3 */
 }
-</div>
+</pre>
 
 <h3>Long_variable_info</h3>
 
@@ -211,11 +211,11 @@ Double_variable_info {
     The <code>Long_variable_info</code> item indicates that the first of two locations has the verification type <code>long</code>.
 </p>
 
-<div title="Long_variable_info" class="plaintext">
+<pre title="Long_variable_info" class="plaintext">
 Long_variable_info {
     u1 tag = ITEM_Long; /* 4 */
 }
-</div>
+</pre>
 
 <h3>Null_variable_info</h3>
 
@@ -223,11 +223,11 @@ Long_variable_info {
     The <code>Null_variable_info</code> type indicates that the location has the verification type <code>null</code>.
 </p>
 
-<div title="Null_variable_info" class="plaintext">
+<pre title="Null_variable_info" class="plaintext">
 Null_variable_info {
     u1 tag = ITEM_Null; /* 5 */
 }
-</div>
+</pre>
 
 <h3>UninitializedThis_variable_info</h3>
 
@@ -235,11 +235,11 @@ Null_variable_info {
     The <code>UninitializedThis_variable_info</code> item indicates that the location has the verification type <code>uninitializedThis</code>.
 </p>
 
-<div title="UninitializedThis_variable_info" class="plaintext">
+<pre title="UninitializedThis_variable_info" class="plaintext">
 UninitializedThis_variable_info {
     u1 tag = ITEM_UninitializedThis; /* 6 */
 }
-</div>
+</pre>
 
 <h3>Object_variable_info</h3>
 
@@ -247,12 +247,12 @@ UninitializedThis_variable_info {
     The <code>Object_variable_info</code> item indicates that the location has the verification type which is the class represented by the <code>CONSTANT_Class_info structure</code> found in the <code>constant_pool</code> table at the index given by <code>cpool_index</code>.
 </p>
 
-<div title="Object_variable_info" class="plaintext">
+<pre title="Object_variable_info" class="plaintext">
 Object_variable_info {
     u1 tag = ITEM_Object; /* 7 */
     u2 cpool_index;
 }
-</div>
+</pre>
 
 <h3>Uninitialized_variable_info</h3>
 
@@ -260,12 +260,12 @@ Object_variable_info {
     The <code>Uninitialized_variable_info</code> item indicates that the location has the verification type <code>uninitialized</code>(<code>Offset</code>). The <code>Offset</code> item indicates the offset, in the <code>code</code> array of the <code>Code</code> attribute that contains this <code>StackMapTable</code> attribute, of the <code>new</code> instruction that created the object being stored in the location.
 </p>
 
-<div title="Uninitialized_variable_info" class="plaintext">
+<pre title="Uninitialized_variable_info" class="plaintext">
 Uninitialized_variable_info {
     u1 tag = ITEM_Uninitialized; /* 8 */
     u2 offset;
 }
-</div>
+</pre>
 
 <h2>stack_map_frame</h2>
 
@@ -273,7 +273,7 @@ Uninitialized_variable_info {
     A <b>stack map frame</b> is represented by a discriminated union, <code>stack_map_frame</code>, which consists of a one-byte <code>tag</code>, indicating which item of the union is in use, followed by zero or more bytes, giving more information about the <code>tag</code>.
 </p>
 
-<div title="stack_map_frame" class="plaintext">
+<pre title="stack_map_frame" class="plaintext">
 union stack_map_frame {
     same_frame;
     same_locals_1_stack_item_frame;
@@ -283,7 +283,7 @@ union stack_map_frame {
     append_frame;
     full_frame;
 }
-</div>
+</pre>
 
 <h3>same_frame</h3>
 
@@ -293,11 +293,11 @@ union stack_map_frame {
     The <code>offset_delta</code> value for the frame is the value of the tag item, <code>frame_type</code>.
 </p>
 
-<div title="same_frame" class="plaintext">
+<pre title="same_frame" class="plaintext">
 same_frame {
     u1 frame_type = SAME; /* 0-63 */
 }
-</div>
+</pre>
 
 <h3>same_locals_1_stack_item_frame</h3>
 
@@ -308,12 +308,12 @@ same_frame {
     The verification type of the one stack entry appears after the frame type.
 </p>
 
-<div title="same_locals_1_stack_item_frame" class="plaintext">
+<pre title="same_locals_1_stack_item_frame" class="plaintext">
 same_locals_1_stack_item_frame {
     u1 frame_type = SAME_LOCALS_1_STACK_ITEM; /* 64-127 */
     verification_type_info stack[1];
 }
-</div>
+</pre>
 
 <h3>reserved</h3>
 
@@ -330,13 +330,13 @@ same_locals_1_stack_item_frame {
     The verification type of the one stack entry appears after <code>offset_delta</code>.
 </p>
 
-<div title="same_locals_1_stack_item_frame_extended" class="plaintext">
+<pre title="same_locals_1_stack_item_frame_extended" class="plaintext">
 same_locals_1_stack_item_frame_extended {
     u1 frame_type = SAME_LOCALS_1_STACK_ITEM_EXTENDED; /* 247 */
     u2 offset_delta;
     verification_type_info stack[1];
 }
-</div>
+</pre>
 
 <h3>chop_frame</h3>
 
@@ -347,12 +347,12 @@ same_locals_1_stack_item_frame_extended {
     The <code>offset_delta</code> value for the frame is given explicitly.
 </p>
 
-<div title="chop_frame" class="plaintext">
+<pre title="chop_frame" class="plaintext">
 chop_frame {
     u1 frame_type = CHOP; /* 248-250 */
     u2 offset_delta;
 }
-</div>
+</pre>
 
 <h3>same_frame_extended</h3>
 
@@ -362,12 +362,12 @@ chop_frame {
     The <code>offset_delta</code> value for the frame is given explicitly, unlike in the frame type <code>same_frame</code>.
 </p>
 
-<div title="same_frame_extended" class="plaintext">
+<pre title="same_frame_extended" class="plaintext">
 same_frame_extended {
     u1 frame_type = SAME_FRAME_EXTENDED; /* 251 */
     u2 offset_delta;
 }
-</div>
+</pre>
 
 <h3>append_frame</h3>
 
@@ -378,13 +378,13 @@ same_frame_extended {
     The <code>offset_delta</code> value for the frame is given explicitly.
 </p>
 
-<div title="append_frame" class="plaintext">
+<pre title="append_frame" class="plaintext">
 append_frame {
     u1 frame_type = APPEND; /* 252-254 */
     u2 offset_delta;
     verification_type_info locals[frame_type - 251];
 }
-</div>
+</pre>
 
 <h3>full_frame</h3>
 
@@ -393,7 +393,7 @@ append_frame {
     The <code>offset_delta</code> value for the frame is given explicitly.
 </p>
 
-<div title="full_frame" class="plaintext">
+<pre title="full_frame" class="plaintext">
 full_frame {
     u1 frame_type = FULL_FRAME; /* 255 */
     u2 offset_delta;
@@ -402,7 +402,7 @@ full_frame {
     u2 number_of_stack_items;
     verification_type_info stack[number_of_stack_items];
 }
-</div>
+</pre>
 
 
 

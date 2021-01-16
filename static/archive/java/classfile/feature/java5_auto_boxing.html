@@ -13,14 +13,14 @@
     Prior to JDK 5, you need to explicitly wrap a primitive value into an object and unwrap the primitive value from the wrapper object, for example,
 </p>
 
-<div title="Pre-JDK 5" class="javacode">
+<pre title="Pre-JDK 5" class="javacode">
 // Pre-JDK 5
 Integer intObj = new Integer(5566);    // wrap an int to Integer by constructing an instance of Integer
 int i = intObj.intValue();             // unwrap Integer to int
 
 Double doubleObj = new Double(55.66);  // wrap double to Double
 double d = doubleObj.doubleValue();    // unwrap Double to double
-</div>
+</pre>
 
 <p class="indented">
     The pre-JDK 5 approach involves quite a bit of codes to do the wrapping and unwrapping.
@@ -28,18 +28,18 @@ double d = doubleObj.doubleValue();    // unwrap Double to double
     For example,
 </p>
 
-<div title="JDK 5" class="javacode">
+<pre title="JDK 5" class="javacode">
 // JDK 5
 Integer intObj = 5566;    // auto-box from int to Integer by the compiler
 int i = intObj;           // auto-unbox from Integer to int by the compiler
 
 Double doubleObj = 55.66; // auto-box from double to Double
 double d = doubleObj;     // auto-unbox from Double to double
-</div>
+</pre>
 
 <h2>Examples</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test() {
         Integer intObj = 5566;
@@ -49,9 +49,9 @@ public class HelloWorld {
         double d = doubleObj;
     }
 }
-</div>
+</pre>
 
-<div title="test()V" hidden class="plaintext">
+<pre title="test()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -81,4 +81,4 @@ index  start_pc  length  name_and_type
     2        12      14  i:I
     3        19       7  doubleObj:Ljava/lang/Double;
     4        25       1  d:D
-</div>
+</pre>

@@ -21,7 +21,7 @@
     which return an <code>AnnotationVisitor</code>, a <code>FieldVisitor</code> and a <code>MethodVisitor</code> respectively.
 </p>
 
-<div title="ClassVisitor" class="javacode">
+<pre title="ClassVisitor" class="javacode">
 public abstract class ClassVisitor {
     public ClassVisitor(final int api);
     public ClassVisitor(final int api, final ClassVisitor classVisitor);
@@ -73,7 +73,7 @@ public abstract class ClassVisitor {
     specified in the Javadoc of this class:
 </p>
 
-<div title="The methods of ClassVisitor must be called in the following order" class="plaintext">
+<pre title="The methods of ClassVisitor must be called in the following order" class="plaintext">
 visit
 [visitSource] [visitModule] [visitNestHost][ visitPermittedSubclass] [visitOuterClass]
 (visitAnnotation | visitTypeAnnotation | visitAttribute)*

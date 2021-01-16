@@ -100,7 +100,7 @@
     下面的代码中，在一个循环中重复生成调用lambda表达式，只会生成同一个lambda对象， 因为只有同一个invokedynamic指令。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Consumer;
 
 public class HelloWorld {
@@ -111,9 +111,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="Run output" class="plaintext">
+<pre title="Run output" class="plaintext">
 class sample.HelloWorld$$Lambda$1/990368553
 class sample.HelloWorld$$Lambda$1/990368553
 class sample.HelloWorld$$Lambda$1/990368553
@@ -124,13 +124,13 @@ class sample.HelloWorld$$Lambda$1/990368553
 class sample.HelloWorld$$Lambda$1/990368553
 class sample.HelloWorld$$Lambda$1/990368553
 class sample.HelloWorld$$Lambda$1/990368553
-</div>
+</pre>
 
 <p class="indented">
     但是下面的代码会生成两个lambda对象, 因为它会生成两个invokedynamic指令。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Consumer;
 
 public class HelloWorld {
@@ -141,12 +141,12 @@ public class HelloWorld {
         System.out.println(c2.getClass());
     }
 }
-</div>
+</pre>
 
-<div title="Run output" class="plaintext">
+<pre title="Run output" class="plaintext">
 class sample.HelloWorld$$Lambda$1/990368553
 class sample.HelloWorld$$Lambda$2/1078694789
-</div>
+</pre>
 
 <h2>Anonymous class loading</h2>
 

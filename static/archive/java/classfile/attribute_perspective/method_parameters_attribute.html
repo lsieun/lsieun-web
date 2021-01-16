@@ -30,7 +30,7 @@
     The <code>MethodParameters</code> attribute has the following format:
 </p>
 
-<div title="MethodParameters_attribute" class="plaintext">
+<pre title="MethodParameters_attribute" class="plaintext">
 MethodParameters_attribute {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -39,7 +39,7 @@ MethodParameters_attribute {
         u2 access_flags;
     } parameters[parameters_count];
 }
-</div>
+</pre>
 
 <p>
     The items of the <code>MethodParameters_attribute</code> structure are as follows:
@@ -96,21 +96,21 @@ MethodParameters_attribute {
     </li>
 </ul>
 
-<div title="javac example" class="plaintext">
+<pre title="javac example" class="plaintext">
 javac -parameters Main.java
-</div>
+</pre>
 
 <h2>Examples</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public void test(String name, final int age) {
         //
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 constant_pool_count='0017' (23)
 constant_pool
     ... ...
@@ -140,4 +140,4 @@ parameters[1] {
     name_index='000F' (#15:age)
     access_flags='0010' (ACC_FINAL)
 }
-</div>
+</pre>

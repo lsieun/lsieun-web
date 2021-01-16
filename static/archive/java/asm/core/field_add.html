@@ -9,7 +9,7 @@
 
 <h2>HelloWorld.java</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int intValue;
     public String strValue;
@@ -28,7 +28,7 @@ public class HelloWorld {
 
 <h2>AddFieldAdapter.java</h2>
 
-<div title="AddFieldAdapter.java" class="javacode">
+<pre title="AddFieldAdapter.java" class="javacode">
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 
@@ -77,7 +77,7 @@ public class AddFieldAdapter extends ClassVisitor {
 
 <h2>App.java</h2>
 
-<div title="App.java" class="javacode">
+<pre title="App.java" class="javacode">
 import lsieun.utils.FileUtils;
 import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;
@@ -114,7 +114,7 @@ public class App {
 
 <h2>Check</h2>
 
-<div title="javap -p HelloWorld" class="plaintext">
+<pre title="javap -p HelloWorld" class="plaintext">
 $ javap -p HelloWorld.class
 Compiled from "HelloWorld.java"
 public class sample.HelloWorld {

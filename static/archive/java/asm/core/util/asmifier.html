@@ -30,7 +30,7 @@
     You will get the ASM code to generate this compiled class!
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static void main(String[] args) {
         System.out.println("Hello World");
@@ -38,7 +38,7 @@ public class HelloWorld {
 }
 </div>
 
-<div title="javac" class="plaintext">
+<pre title="javac" class="plaintext">
 $ javac HelloWorld.java
 </div>
 
@@ -46,21 +46,21 @@ $ javac HelloWorld.java
     The <code>ASMifier</code> class can be used from the command line. For example using:
 </p>
 
-<div title="Linux分隔符是“:”" class="plaintext">
+<pre title="Linux分隔符是“:”" class="plaintext">
 $ java -classpath asm.jar:asm-util.jar org.objectweb.asm.util.ASMifier java.lang.Runnable
 </div>
 
-<div title="Windows分隔符是“;”" class="plaintext">
+<pre title="Windows分隔符是“;”" class="plaintext">
 $gt; java -classpath asm.jar;asm-util.jar org.objectweb.asm.util.ASMifier java.lang.Runnable
 </div>
 
-<div title="Cygwin分隔符是“\;”" class="plaintext">
+<pre title="Cygwin分隔符是“\;”" class="plaintext">
 $ java -classpath asm.jar\;asm-util.jar org.objectweb.asm.util.ASMifier java.lang.Runnable
 </div>
 
 <h2>Usage from Java Program</h2>
 
-<div title="ASMifierTest.java" class="javacode">
+<pre title="ASMifierTest.java" class="javacode">
 import org.objectweb.asm.util.ASMifier;
 
 import java.io.IOException;
@@ -75,7 +75,7 @@ public class ASMifierTest {
 }
 </div>
 
-<div title="ASMifierTest.java" class="javacode">
+<pre title="ASMifierTest.java" class="javacode">
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.util.ASMifier;
 import org.objectweb.asm.util.Printer;

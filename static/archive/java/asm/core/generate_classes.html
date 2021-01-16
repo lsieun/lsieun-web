@@ -16,12 +16,12 @@
     Consider the following interface:
 </p>
 
-<div title="Measurable.java" class="javacode">
+<pre title="Measurable.java" class="javacode">
 public interface Measurable {
 }
 </div>
 
-<div title="Comparable.java" class="javacode">
+<pre title="Comparable.java" class="javacode">
 public interface Comparable extends Measurable {
     int LESS = -1;
     int EQUAL = 0;
@@ -30,7 +30,7 @@ public interface Comparable extends Measurable {
 }
 </div>
 
-<div title="ComparableDumpCore.java" class="javacode">
+<pre title="ComparableDumpCore.java" class="javacode">
 import lsieun.utils.FileUtils;
 import org.objectweb.asm.ClassWriter;
 
@@ -63,7 +63,7 @@ public class ComparableDumpCore {
 }
 </div>
 
-<div title="MyClassLoader.java" class="javacode">
+<pre title="MyClassLoader.java" class="javacode">
 public class MyClassLoader extends ClassLoader {
     public Class&lt;?&gt; defineClass(String name, byte[] bytes) {
         return defineClass(name, bytes, 0, bytes.length);

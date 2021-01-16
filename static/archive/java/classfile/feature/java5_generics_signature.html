@@ -11,7 +11,7 @@
 
 <h3>Code Example</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class HelloWorld&lt;E&gt; { // HelloWorld&lt;E&gt;是Generic Type，其�
         List&lt;Number&gt; list = new ArrayList&lt;&gt;(); // List&lt;Number&gt;是Parameterized Type，而其中的Number是Type Argument
     }
 }
-</div>
+</pre>
 
 <h3>Signature Syntax</h3>
 
@@ -46,14 +46,14 @@ public class HelloWorld&lt;E&gt; { // HelloWorld&lt;E&gt;是Generic Type，其�
     A <b>Java type signature</b> represents either <b>a reference type</b> or <b>a primitive type</b> of the Java programming language.
 </p>
 
-<div title="JavaTypeSignature" class="plaintext">
+<pre title="JavaTypeSignature" class="plaintext">
 JavaTypeSignature:
     ReferenceTypeSignature
     BaseType
 
 BaseType:
     (one of) B C D F I J S Z
-</div>
+</pre>
 
 <p>
     A <b>reference type signature</b> represents <b>a reference type</b> of the Java programming language, that is, a class or interface type, a type variable, or an array type.
@@ -66,12 +66,12 @@ BaseType:
     <li>An <b>array type signature</b> represents one dimension of an array type.</li>
 </ul>
 
-<div title="ReferenceTypeSignature" class="plaintext">
+<pre title="ReferenceTypeSignature" class="plaintext">
 ReferenceTypeSignature:
     ClassTypeSignature
     TypeVariableSignature
     ArrayTypeSignature
-</div>
+</pre>
 
 
 <h2>Generic Type: Type Parameter</h2>
@@ -90,7 +90,7 @@ ReferenceTypeSignature:
     </p>
 </div>
 
-<div title="ClassSignature" class="plaintext">
+<pre title="ClassSignature" class="plaintext">
 ClassSignature:
     [TypeParameters] SuperclassSignature {SuperinterfaceSignature}
 
@@ -111,16 +111,16 @@ SuperclassSignature:
 
 SuperinterfaceSignature:
     ClassTypeSignature
-</div>
+</pre>
 
 <h3>&lt;E&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld&lt;E&gt; {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+<pre title="HelloWorld.class Signature Attribute" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -135,19 +135,19 @@ attribute_name_index='000D' (#13)
 attribute_length='00000002' (2)
 signature_index='000E' (#14)
 ... ...
-</div>
+</pre>
 
-<div title="ParentClass.java" class="javacode">
+<pre title="ParentClass.java" class="javacode">
 public class ParentClass {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld&lt;E&gt; extends ParentClass {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+<pre title="HelloWorld.class Signature Attribute" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -162,7 +162,7 @@ attribute_name_index='000D' (#13)
 attribute_length='00000002' (2)
 signature_index='000E' (#14)
 ... ...
-</div>
+</pre>
 
 <h3>&lt;E extends Number&gt;</h3>
 
@@ -170,12 +170,12 @@ signature_index='000E' (#14)
     注意：extends之后是“类名”
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld&lt;E extends Number&gt; {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+<pre title="HelloWorld.class Signature Attribute" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -190,7 +190,7 @@ attribute_name_index='000D' (#13)
 attribute_length='00000002' (2)
 signature_index='000E' (#14)
 ... ...
-</div>
+</pre>
 
 <h3>&lt;E extends Runnable&gt;</h3>
 
@@ -198,12 +198,12 @@ signature_index='000E' (#14)
     注意：extends之后是“接口名”
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld&lt;E extends Runnable&gt; {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+<pre title="HelloWorld.class Signature Attribute" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -218,7 +218,7 @@ attribute_name_index='000D' (#13)
 attribute_length='00000002' (2)
 signature_index='000E' (#14)
 ... ...
-</div>
+</pre>
 
 <p>
     注意：这里使用了<code>E::</code>，是因为<code>E:类名:接口名</code>，而“类名”省略了，因此多了一个<code>:</code>。
@@ -234,19 +234,19 @@ signature_index='000E' (#14)
     尽管我很愿意写这样一个示例，但实际上却不能通过编译。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld &lt;E super Number&gt; {
 }
-</div>
+</pre>
 
 <h3>&lt;E extends superclass & interface&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld&lt;E extends Number & Runnable&gt; {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+<pre title="HelloWorld.class Signature Attribute" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -261,18 +261,18 @@ attribute_name_index='000D' (#13)
 attribute_length='00000002' (2)
 signature_index='000E' (#14)
 ... ...
-</div>
+</pre>
 
 <h3>&lt;E extends interface2&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.io.Serializable;
 
 public class HelloWorld&lt;E extends Serializable & Runnable&gt; {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+<pre title="HelloWorld.class Signature Attribute" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -288,18 +288,18 @@ attribute_name_index='000D' (#13)
 attribute_length='00000002' (2)
 signature_index='000E' (#14)
 ... ...
-</div>
+</pre>
 
 <h3>&lt;E extends superclass & interface2&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.io.Serializable;
 
 public class HelloWorld&lt;E extends Number & Serializable & Runnable&gt; {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+<pre title="HelloWorld.class Signature Attribute" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -315,19 +315,19 @@ attribute_name_index='000D' (#13)
 attribute_length='00000002' (2)
 signature_index='000E' (#14)
 ... ...
-</div>
+</pre>
 
 <h3>S and U</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.io.Serializable;
 
 public class HelloWorld&lt;S extends Number, U extends Runnable&gt; extends ParentClass implements Serializable {
     // no code
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Signature Attribute" hidden class="plaintext">
+<pre title="HelloWorld.class Signature Attribute" hidden class="plaintext">
 constant_pool_count='0016' (22)
 constant_pool
     ... ...
@@ -343,17 +343,17 @@ attribute_name_index='000E' (#14)
 attribute_length='00000002' (2)
 signature_index='000F' (#15)
 ... ...
-</div>
+</pre>
 
 <h2>Generic Type: Type Variable</h2>
 
-<div title="TypeVariableSignature" class="plaintext">
+<pre title="TypeVariableSignature" class="plaintext">
 TypeVariableSignature:
     T Identifier ;
 
 ArrayTypeSignature:
     [ JavaTypeSignature
-</div>
+</pre>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>type variable = T + Identifier + ;</p>
@@ -361,19 +361,19 @@ ArrayTypeSignature:
 
 <h3>E item</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld&lt;E&gt; {
     public E item;
 }
-</div>
+</pre>
 
-<div title="fields" class="plaintext">
+<pre title="fields" class="plaintext">
 fields_count='0001' (1)
 fields
     FieldInfo {Value='item:Ljava/lang/Object;', AccessFlags='[ACC_PUBLIC]', Attrs='[Signature]'}
-</div>
+</pre>
 
-<div title="item:Ljava/lang/Object; Signature Attribute" hidden class="plaintext">
+<pre title="item:Ljava/lang/Object; Signature Attribute" hidden class="plaintext">
 constant_pool_count='0017' (23)
 constant_pool
     ... ...
@@ -387,23 +387,23 @@ HexCode: 0006000000020007
 attribute_name_index='0006' (#6)
 attribute_length='00000002' (2)
 signature_index='0007' (#7)
-</div>
+</pre>
 
 <h3>E[] item</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld&lt;E&gt; {
     public E[] item;
 }
-</div>
+</pre>
 
-<div title="fields" class="plaintext">
+<pre title="fields" class="plaintext">
 fields_count='0001' (1)
 fields
     FieldInfo {Value='item:[Ljava/lang/Object;', AccessFlags='[ACC_PUBLIC]', Attrs='[Signature]'}
-</div>
+</pre>
 
-<div title="item:[Ljava/lang/Object; Signature Attribute" hidden class="plaintext">
+<pre title="item:[Ljava/lang/Object; Signature Attribute" hidden class="plaintext">
 constant_pool_count='0017' (23)
 constant_pool
     ... ...
@@ -417,12 +417,12 @@ HexCode: 0006000000020007
 attribute_name_index='0006' (#6)
 attribute_length='00000002' (2)
 signature_index='0007' (#7)
-</div>
+</pre>
 
 
 <h2>Parameterized Type: Type Argument</h2>
 
-<div title="ClassTypeSignature" class="plaintext">
+<pre title="ClassTypeSignature" class="plaintext">
 ClassTypeSignature:
     L [PackageSpecifier] SimpleClassTypeSignature {ClassTypeSignatureSuffix} ;
 
@@ -445,7 +445,7 @@ WildcardIndicator:
 
 ClassTypeSignatureSuffix:
     . SimpleClassTypeSignature
-</div>
+</pre>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>type argument = [WildcardIndicator] + ReferenceTypeSignature</p>
@@ -454,7 +454,7 @@ ClassTypeSignatureSuffix:
 
 <h3>List&lt;Number&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
 import java.util.List;
 
@@ -463,9 +463,9 @@ public class HelloWorld {
         List&lt;Number&gt; list = new ArrayList&lt;&gt;();
     }
 }
-</div>
+</pre>
 
-<div title="test()V Code Signature Attribute" hidden class="plaintext">
+<pre title="test()V Code Signature Attribute" hidden class="plaintext">
 constant_pool_count='0018' (24)
 constant_pool
     ... ...
@@ -490,11 +490,11 @@ local_variable_type_table[0] {
     signature_index='0011' (#17)
     index='0001' (1)
 }
-</div>
+</pre>
 
 <h3>List&lt;?&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
 import java.util.List;
 
@@ -503,9 +503,9 @@ public class HelloWorld {
         List&lt;?&gt; list = new ArrayList<>();
     }
 }
-</div>
+</pre>
 
-<div title="test()V Code Signature Attribute" hidden class="plaintext">
+<pre title="test()V Code Signature Attribute" hidden class="plaintext">
 constant_pool_count='0018' (24)
 constant_pool
     ... ...
@@ -530,11 +530,11 @@ local_variable_type_table[0] {
     signature_index='0011' (#17)
     index='0001' (1)
 }
-</div>
+</pre>
 
 <h3>List&lt;? extends Number&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
 import java.util.List;
 
@@ -543,9 +543,9 @@ public class HelloWorld {
         List&lt;? extends Number&gt; list = new ArrayList&lt;&gt;();
     }
 }
-</div>
+</pre>
 
-<div title="test()V Code Signature Attribute" hidden class="plaintext">
+<pre title="test()V Code Signature Attribute" hidden class="plaintext">
 constant_pool_count='0018' (24)
 constant_pool
     ... ...
@@ -570,11 +570,11 @@ local_variable_type_table[0] {
     signature_index='0011' (#17)
     index='0001' (1)
 }
-</div>
+</pre>
 
 <h3>List&lt;? super Number&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
 import java.util.List;
 
@@ -583,9 +583,9 @@ public class HelloWorld {
         List&lt;? super Number&gt; list = new ArrayList&lt;&gt;();
     }
 }
-</div>
+</pre>
 
-<div title="test()V Code Signature Attribute" hidden class="plaintext">
+<pre title="test()V Code Signature Attribute" hidden class="plaintext">
 constant_pool_count='0018' (24)
 constant_pool
     ... ...
@@ -610,11 +610,11 @@ local_variable_type_table[0] {
     signature_index='0011' (#17)
     index='0001' (1)
 }
-</div>
+</pre>
 
 <h2>MethodSignature</h2>
 
-<div title="MethodSignature" class="plaintext">
+<pre title="MethodSignature" class="plaintext">
 MethodSignature:
     [TypeParameters] ( {JavaTypeSignature} ) Result {ThrowsSignature}
 
@@ -628,17 +628,17 @@ ThrowsSignature:
 
 VoidDescriptor:
     V
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static &lt;E extends Exception&gt; void test(E item, int val) throws E {
         System.out.println(val);
     }
 }
-</div>
+</pre>
 
-<div title="test:(Ljava/lang/Exception;I)V Method Signature Attribute" hidden class="plaintext">
+<pre title="test:(Ljava/lang/Exception;I)V Method Signature Attribute" hidden class="plaintext">
 constant_pool_count='002A' (42)
 constant_pool
     ... ...
@@ -653,5 +653,5 @@ HexCode: 0018000000020019
 attribute_name_index='0018' (#24)
 attribute_length='00000002' (2)
 signature_index='0019' (#25)
-</div>
+</pre>
 

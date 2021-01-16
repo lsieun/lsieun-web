@@ -18,7 +18,7 @@
     预期目标：生成一个<code>Comparable</code>接口，同时该接口继承自<code>Measurable</code>接口。
 </p>
 
-<div title="Comparable.java （目标原型）" class="javacode">
+<pre title="Comparable.java （目标原型）" class="javacode">
 public interface Comparable extends Measurable {
     int LESS = -1;
     int EQUAL = 0;
@@ -27,14 +27,14 @@ public interface Comparable extends Measurable {
 }
 </div>
 
-<div title="Measurable.java （已经存在）" class="javacode">
+<pre title="Measurable.java （已经存在）" class="javacode">
 public interface Measurable {
 }
 </div>
 
 <h2>编码实现</h2>
 
-<div title="ComparableDumpTree.java" class="javacode">
+<pre title="ComparableDumpTree.java" class="javacode">
 import lsieun.utils.FileUtils;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
@@ -69,7 +69,7 @@ public class ComparableDumpTree {
 
 <h2>验证结果</h2>
 
-<div title="check" class="plaintext">
+<pre title="check" class="plaintext">
 $ javap sample.Comparable
 public interface sample.Comparable extends sample.Measurable {
   public static final int LESS;

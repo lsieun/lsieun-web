@@ -63,7 +63,7 @@
     A method's bytecode stream is <b>a sequence of instructions</b> for the Java Virtual Machine.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static void test() {
         try {
@@ -73,9 +73,9 @@ public class HelloWorld {
         }
     }
 }
-</div>
+</pre>
 
-<div title="test:()V" hidden class="plaintext">
+<pre title="test:()V" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -98,7 +98,7 @@ from    to  target  type
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0        10       4  e:Ljava/lang/InterruptedException;
-</div>
+</pre>
 
 <div class="w3-display-container w3-center">
     <img class="w3-image w3-center" src="/images/java/classfile/output_sample.png" alt="output sample"/>
@@ -123,16 +123,16 @@ index  start_pc  length  name_and_type
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public int add(int a, int b) { // non-static method
         int c = a + b;
         return c;
     }
 }
-</div>
+</pre>
 
-<div title="add:(II)I" hidden class="plaintext">
+<pre title="add:(II)I" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 4
@@ -152,18 +152,18 @@ index  start_pc  length  name_and_type
     1         0       6  a:I
     2         0       6  b:I
     3         4       2  c:I
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static int add(int a, int b) { // static method
         int c = a + b;
         return c;
     }
 }
-</div>
+</pre>
 
-<div title="add:(II)I" hidden class="plaintext">
+<pre title="add:(II)I" hidden class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 2
 max_locals = 3
@@ -182,20 +182,20 @@ index  start_pc  length  name_and_type
     0         0       6  a:I
     1         0       6  b:I
     2         4       2  c:I
-</div>
+</pre>
 
 <h4>local variables and operand stack</h4>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static int add(int a, int b) { // static method
         int c = a + b;
         return c;
     }
 }
-</div>
+</pre>
 
-<div title="add:(II)I" hidden class="plaintext">
+<pre title="add:(II)I" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method add:(II)I
 === === ===  === === ===  === === ===
@@ -218,7 +218,7 @@ code = 1A1B603D1CAC
 0005: ireturn              // AC
                            ||[int, int, int] []
 === === ===  === === ===  === === ===
-</div>
+</pre>
 
 <div class="w3-display-container w3-center">
     <img class="w3-image w3-center" src="/images/java/classfile/opcode_frame_sample.png" alt=""/>

@@ -11,52 +11,52 @@
 
 <h3>&lt;E&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld&lt;E&gt; {
     public E item;
 }
-</div>
+</pre>
 
 <p>
     在上述代码中，<code>item</code>字段的类型是<code>E</code>，经过Type Erasure之后，其类型变成了<code>java.lang.Object</code>类型，如下所示：
 </p>
 
-<div title="fields" hidden class="plaintext">
+<pre title="fields" hidden class="plaintext">
 fields_count='0001' (1)
 fields
     FieldInfo {Value='item:Ljava/lang/Object;', AccessFlags='[ACC_PUBLIC]', Attrs='[Signature]'}
-</div>
+</pre>
 
 <h3>&lt;E extends Number&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld&lt;E extends Number&gt; {
     public E item;
 }
-</div>
+</pre>
 
 <p>
     在上述代码中，<code>item</code>字段的类型是<code>E</code>，经过Type Erasure之后，其类型变成了<code>java.lang.Number</code>类型，如下所示：
 </p>
 
-<div title="fields" hidden class="plaintext">
+<pre title="fields" hidden class="plaintext">
 fields_count='0001' (1)
 fields
     FieldInfo {Value='item:Ljava/lang/Number;', AccessFlags='[ACC_PUBLIC]', Attrs='[Signature]'}
-</div>
+</pre>
 
 <h3>&lt;E extends Number & Runnable&gt;</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public &lt;E extends Number & Runnable&gt; void test(E item) {
         int val = item.intValue();
         item.run();
     }
 }
-</div>
+</pre>
 
-<div title="test:(Ljava/lang/Number;)V Code Attribute" hidden class="plaintext">
+<pre title="test:(Ljava/lang/Number;)V Code Attribute" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:(Ljava/lang/Number;)V
 === === ===  === === ===  === === ===
@@ -82,11 +82,11 @@ index  start_pc  length  name_and_type
 LocalVariableTypeTable:
 index  start_pc  length  name_and_type
     1         0      15  item:TE;
-</div>
+</pre>
 
 <h2>Type Erasure: Parameterized Type</h2>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,9 +99,9 @@ public class HelloWorld {
         String str = list.get(0);
     }
 }
-</div>
+</pre>
 
-<div title="test()V Code Signature Attribute" hidden class="plaintext">
+<pre title="test()V Code Signature Attribute" hidden class="plaintext">
 === === ===  === === ===  === === ===
 Method test:()V
 === === ===  === === ===  === === ===
@@ -138,7 +138,7 @@ index  start_pc  length  name_and_type
 LocalVariableTypeTable:
 index  start_pc  length  name_and_type
     1         8      30  list:Ljava/util/List&lt;Ljava/lang/String;&gt;;
-</div>
+</pre>
 
 <h2>Type Erasure: Bridge Method</h2>
 
@@ -149,39 +149,39 @@ index  start_pc  length  name_and_type
     <b>type erasure</b> changes the signature of the superclass's methods.
 </p>
 
-<div title="java.lang.Comparable" class="javacode">
+<pre title="java.lang.Comparable" class="javacode">
 public interface Comparable&lt;T&gt; {
     public int compareTo(T o);
 }
-</div>
+</pre>
 
-<div title="methods" class="plaintext">
+<pre title="methods" class="plaintext">
 === === ===  === === ===  === === ===
 methods_count='0001' (1)
 methods
     MethodInfo {Value='compareTo:(Ljava/lang/Object;)I', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[Signature]'}
 === === ===  === === ===  === === ===
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld implements Comparable&lt;HelloWorld&gt; {
     @Override
     public int compareTo(HelloWorld o) {
         return 0;
     }
 }
-</div>
+</pre>
 
-<div title="methods" class="plaintext">
+<pre title="methods" class="plaintext">
 === === ===  === === ===  === === ===
 methods_count='0003' (3)
 methods
     MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
     MethodInfo {Value='compareTo:(Lsample/HelloWorld;)I', AccessFlags='[ACC_PUBLIC]', Attrs='[Code, MethodParameters]'}
     MethodInfo {Value='compareTo:(Ljava/lang/Object;)I', AccessFlags='[ACC_PUBLIC,ACC_BRIDGE,ACC_SYNTHETIC]'}
-</div>
+</pre>
 
-<div title="compareTo:(Ljava/lang/Object;)I" class="plaintext">
+<pre title="compareTo:(Ljava/lang/Object;)I" class="plaintext">
 === === ===  === === ===  === === ===
 Method compareTo:(Ljava/lang/Object;)I
 === === ===  === === ===  === === ===
@@ -199,7 +199,7 @@ code = 2A2BC00002B60003AC
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       9  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>No bridge method</h3>
 
@@ -207,56 +207,56 @@ index  start_pc  length  name_and_type
     No bridge method is needed when type erasure does not change the signature of any of the methods of the parameterized supertype.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld implements Comparable&lt;Object&gt; {
     @Override
     public int compareTo(Object o) {
         return 0;
     }
 }
-</div>
+</pre>
 
-<div title="methods" class="plaintext">
+<pre title="methods" class="plaintext">
 === === ===  === === ===  === === ===
 methods_count='0002' (2)
 methods
     MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
     MethodInfo {Value='compareTo:(Ljava/lang/Object;)I', AccessFlags='[ACC_PUBLIC]', Attrs='[Code, MethodParameters]'}
 === === ===  === === ===  === === ===
-</div>
+</pre>
 
 <p class="indented">
     Also, no bridge method is needed if the signatures of methods in the subtype and supertype change in the same way. This can occur when the subtype is generic itself.
 </p>
 
-<div title="Callable.java" class="javacode">
+<pre title="Callable.java" class="javacode">
 public interface Callable &lt;V&gt; {
     public V call();
 }
-</div>
+</pre>
 
-<div title="methods" class="plaintext">
+<pre title="methods" class="plaintext">
 === === ===  === === ===  === === ===
 methods_count='0001' (1)
 methods
     MethodInfo {Value='call:()Ljava/lang/Object;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[Signature]'}
 === === ===  === === ===  === === ===
-</div>
+</pre>
 
-<div title="Task.java" class="javacode">
+<pre title="Task.java" class="javacode">
 public class Task&lt;T&gt; implements Callable&lt;T&gt; {
     public T call() {
         return null;
     }
 }
-</div>
+</pre>
 
-<div title="methods" class="plaintext">
+<pre title="methods" class="plaintext">
 === === ===  === === ===  === === ===
 methods_count='0002' (2)
 methods
     MethodInfo {Value='&lt;init&gt;:()V', AccessFlags='[ACC_PUBLIC]', Attrs='[Code]'}
     MethodInfo {Value='call:()Ljava/lang/Object;', AccessFlags='[ACC_PUBLIC]', Attrs='[Code, Signature]'}
 === === ===  === === ===  === === ===
-</div>
+</pre>
 

@@ -13,30 +13,30 @@
     Annotation is a special type of interface.
 </p>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public interface MyTag {
 }
-</div>
+</pre>
 
-<div title="class_info: Interface" class="plaintext">
+<pre title="class_info: Interface" class="plaintext">
 class_info='0601000100020000'
     access_flags='0601' ([ACC_PUBLIC,ACC_INTERFACE,ACC_ABSTRACT])
     this_class='0001' (1)
     super_class='0002' (2)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <p class="indented">
     对于<code>MyTag.java</code>，我们进行一个小小的改动：在<code>interface</code>前加一个<code>@</code>符号。这个小小的改动，就意味着<code>MyTag.java</code>从Interface转换成了Annotation。
 </p>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag { // 注意，这里是@interface，是Annotation的写法
 }
-</div>
+</pre>
 
-<div title="class_info: Annotation" hidden class="plaintext">
+<pre title="class_info: Annotation" hidden class="plaintext">
 constant_pool_count='0009' (9)
 constant_pool
     |001| CONSTANT_Class {Value='sample/MyTag', HexCode='070006'}
@@ -49,7 +49,7 @@ class_info='26010001000200010003'
     super_class='0002' (2)
     interfaces_count='0001' (1)
     interfaces='0003' ([3])
-</div>
+</pre>
 
 <p>
     这里需要注意的地方有两点：
@@ -64,18 +64,18 @@ class_info='26010001000200010003'
 
 <h3>No RetentionPolicy</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @MyTag
 public class HelloWorld {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Attributes" hidden class="plaintext">
+<pre title="HelloWorld.class Attributes" hidden class="plaintext">
 constant_pool_count='0012' (18)
 constant_pool
     ... ...
@@ -100,20 +100,20 @@ annotation[0] {
     type_index='000E' (#14)
     num_element_value_pairs='0000' (0)
 }
-</div>
+</pre>
 
 <h3>RetentionPolicy.SOURCE</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.SOURCE)
 public @interface MyTag {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Attributes" hidden class="plaintext">
+<pre title="HelloWorld.class Attributes" hidden class="plaintext">
 attributes_count='0001' (1)
 attributes
 --->|001| SourceFile:
@@ -121,20 +121,20 @@ HexCode: 000B00000002000C
 attribute_name_index='000B' (#11)
 attribute_length='00000002' (2)
 sourcefile_index='000C' (#12)
-</div>
+</pre>
 
 <h3>RetentionPolicy.CLASS</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.CLASS)
 public @interface MyTag {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Attributes" hidden class="plaintext">
+<pre title="HelloWorld.class Attributes" hidden class="plaintext">
 attributes_count='0002' (2)
 attributes
 --->|001| SourceFile:
@@ -151,20 +151,20 @@ annotation[0] {
     type_index='000E' (#14)
     num_element_value_pairs='0000' (0)
 }
-</div>
+</pre>
 
 <h3>RetentionPolicy.RUNTIME</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MyTag {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class Attributes" hidden class="plaintext">
+<pre title="HelloWorld.class Attributes" hidden class="plaintext">
 attributes_count='0002' (2)
 attributes
 --->|001| SourceFile:
@@ -181,7 +181,7 @@ annotation[0] {
     type_index='000E' (#14)
     num_element_value_pairs='0000' (0)
 }
-</div>
+</pre>
 
 <h3>Summing Up</h3>
 
@@ -214,7 +214,7 @@ annotation[0] {
 
 <h3>primitive type: int</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -222,15 +222,15 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MyTag {
     int age();
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @MyTag(age=18)
 public class HelloWorld {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
+<pre title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -264,7 +264,7 @@ annotation[0] {
         }
     }
 }
-</div>
+</pre>
 
 <h3>default value</h3>
 
@@ -272,7 +272,7 @@ annotation[0] {
     这个示例是想看一下default value是存储在哪里的。
 </p>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -280,15 +280,15 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MyTag {
     int age() default 18;
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @MyTag
 public class HelloWorld {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
+<pre title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0012' (18)
 constant_pool
     ... ...
@@ -313,9 +313,9 @@ annotation[0] {
     type_index='000E' (#14)
     num_element_value_pairs='0000' (0)
 }
-</div>
+</pre>
 
-<div title="MyTag.class age() AnnotationDefault" hidden class="plaintext">
+<pre title="MyTag.class age() AnnotationDefault" hidden class="plaintext">
 constant_pool_count='0012' (18)
 constant_pool
     ... ...
@@ -332,12 +332,12 @@ element_value {
     tag='49' (I)
     const_value_index='0007' (#7: 18)
 }
-</div>
+</pre>
 
 
 <h3>String</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -345,15 +345,15 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MyTag {
     String name();
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @MyTag(name="tomcat")
 public class HelloWorld {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
+<pre title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -387,11 +387,11 @@ annotation[0] {
         }
     }
 }
-</div>
+</pre>
 
 <h3>int + String</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -400,15 +400,15 @@ public @interface MyTag {
     String name();
     int age();
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @MyTag(name= "tomcat", age=10)
 public class HelloWorld {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
+<pre title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0016' (22)
 constant_pool
     ... ...
@@ -452,11 +452,11 @@ annotation[0] {
         }
     }
 }
-</div>
+</pre>
 
 <h3>Class&lt;?&gt;</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -464,15 +464,15 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MyTag {
     Class&lt;?&gt; type();
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @MyTag(type=String.class)
 public class HelloWorld {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
+<pre title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -506,30 +506,30 @@ annotation[0] {
         }
     }
 }
-</div>
+</pre>
 
 <h3>annotation</h3>
 
-<div title="UserInfo.java" class="javacode">
+<pre title="UserInfo.java" class="javacode">
 public @interface UserInfo {
     String name();
     int age();
 }
-</div>
+</pre>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 public @interface MyTag {
     UserInfo user() default @UserInfo(name = "tomcat", age=12);
 }
-</div>
+</pre>
 
-<div title="methods" hidden class="plaintext">
+<pre title="methods" hidden class="plaintext">
 methods_count='0001' (1)
 methods
     MethodInfo {Value='user:()Lsample/UserInfo;', AccessFlags='[ACC_PUBLIC,ACC_ABSTRACT]', Attrs='[AnnotationDefault]'}
-</div>
+</pre>
 
-<div title="user:()Lsample/UserInfo; AnnotationDefault" hidden class="plaintext">
+<pre title="user:()Lsample/UserInfo; AnnotationDefault" hidden class="plaintext">
 constant_pool_count='0011' (17)
 constant_pool
     ... ...
@@ -565,11 +565,11 @@ element_value {
         }
     }
 }
-</div>
+</pre>
 
 <h3>Enum</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
@@ -578,17 +578,17 @@ import java.util.concurrent.TimeUnit;
 public @interface MyTag {
     TimeUnit unit();
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.concurrent.TimeUnit;
 
 @MyTag(unit= TimeUnit.HOURS)
 public class HelloWorld {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
+<pre title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -624,11 +624,11 @@ annotation[0] {
         }
     }
 }
-</div>
+</pre>
 
 <h3>Array</h3>
 
-<div title="MyTag.java" class="javacode">
+<pre title="MyTag.java" class="javacode">
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -636,15 +636,15 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MyTag {
     String[] names();
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 @MyTag(names= {"tom", "jerry"})
 public class HelloWorld {
 }
-</div>
+</pre>
 
-<div title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
+<pre title="HelloWorld.class RuntimeVisibleAnnotations" hidden class="plaintext">
 constant_pool_count='0015' (21)
 constant_pool
     ... ...
@@ -687,7 +687,7 @@ annotation[0] {
         }
     }
 }
-</div>
+</pre>
 
 <h2>Summing Up</h2>
 

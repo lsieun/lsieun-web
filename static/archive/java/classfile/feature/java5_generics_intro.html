@@ -25,7 +25,7 @@
     The JLS says, "<a class="external" href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html#jls-4.4" target="_blank">A <b>type variable</b> is an unqualified identifier used as <b>a type</b> in class, interface, method, and constructor bodies. A <b>type variable</b> is introduced by the declaration of a <b>type parameter</b> of a generic class, interface, method, or constructor.</a>"
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld&lt;T extends Number&gt; { /* The TypeParameter that "introduces" T comes first */
     private T item; /* now T is a TypeVariable in this context */
 
@@ -34,7 +34,7 @@ public class HelloWorld&lt;T extends Number&gt; { /* The TypeParameter that "int
         HelloWorld&lt;Integer&gt; instance = new HelloWorld&lt;&gt;();
     }
 }
-</div>
+</pre>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
@@ -114,25 +114,25 @@ public class HelloWorld&lt;T extends Number&gt; { /* The TypeParameter that "int
     </li>
 </ul>
 
-<div title="Generic Class" class="javacode">
+<pre title="Generic Class" class="javacode">
 public class HelloWorld&lt;T&gt; {
 }
-</div>
+</pre>
 
-<div title="Generic Interface" class="javacode">
+<pre title="Generic Interface" class="javacode">
 public interface HelloWorld&lt;T&gt; {
 }
-</div>
+</pre>
 
 <h3>Generic Methods</h3>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static &lt;E&gt; void test(E val) {
         System.out.println(val);
     }
 }
-</div>
+</pre>
 
 <h2>Formal Type Parameter Naming Convention</h2>
 

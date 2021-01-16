@@ -120,19 +120,19 @@
     对于Class来说，它并不支持<code>ACC_PRIVATE</code>、<code>ACC_PROTECTED</code>和<code>ACC_STATIC</code>标识。
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
     public static class InnerClass {
         //
     }
 }
-</div>
+</pre>
 
 <p>
     对于上面的代码，<code>InnerClass</code>会带有<code>ACC_STATIC</code>标识吗？
 </p>
 
-<div title="HelloWorld$InnerClass" hidden class="plaintext">
+<pre title="HelloWorld$InnerClass" hidden class="plaintext">
 constant_pool_count='0014' (20)
 constant_pool
     ... ...
@@ -145,7 +145,7 @@ class_info='0021000200030000'
     super_class='0003' (#3)
     interfaces_count='0000' (0)
     interfaces='' ([])
-</div>
+</pre>
 
 <h3>0x0020</h3>
 
@@ -215,7 +215,7 @@ class_info='0021000200030000'
     in a class file whose version number is 52.0 or above, each method of an interface must have exactly one of its <code>ACC_PUBLIC</code> and <code>ACC_PRIVATE</code> flags set.
 </p>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 import java.util.function.Function;
 
 public interface HelloWorld {
@@ -223,7 +223,7 @@ public interface HelloWorld {
         Function&lt;Integer, Integer&gt; func = (i) -> i + 5;
     }
 }
-</div>
+</pre>
 
 <p class="indented">
     If a method of a class or interface has its <code>ACC_ABSTRACT</code> flag set, it must not have any of its <code>ACC_PRIVATE</code>, <code>ACC_STATIC</code>, <code>ACC_FINAL</code>, <code>ACC_SYNCHRONIZED</code>, <code>ACC_NATIVE</code>, or <code>ACC_STRICT</code> flags set.

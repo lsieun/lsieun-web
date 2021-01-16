@@ -349,19 +349,19 @@
     For example, consider this code:
 </p>
 
-<div title="ParentClass.java" class="javacode">
+<pre title="ParentClass.java" class="javacode">
 public class ParentClass {
     // nothing
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld extends ParentClass {
     public static void main(String[] args) {
         HelloWorld instance = new HelloWorld();
     }
 }
-</div>
+</pre>
 
 <p class="indented">
     When you invoke <code>main()</code>, the virtual machine will allocate space for a new <code>HelloWorld</code> object, then invoke <code>HelloWorld</code>'s default no-arg <code>&lt;init&gt;</code> method to initialize that space. That method will invoke <code>ParentClass</code>'s <code>&lt;init&gt;</code> method, which will invoke <code>Object</code>'s <code>&lt;init&gt;</code> method.
@@ -378,7 +378,7 @@ public class HelloWorld extends ParentClass {
     With <code>invokespecial</code>, however, <code>ParentClass</code>'s <code>&lt;init&gt;</code> method can be invoked from <code>HelloWorld</code>'s <code>&lt;init&gt;</code> method, because the type of the reference placed in the class file is <code>ParentClass</code>.
 </p>
 
-<div title="HelloWorld.class init:()V" class="plaintext">
+<pre title="HelloWorld.class init:()V" class="plaintext">
 === === ===  === === ===  === === ===
 max_stack = 1
 max_locals = 1
@@ -392,7 +392,7 @@ code = 2AB70001B1
 LocalVariableTable:
 index  start_pc  length  name_and_type
     0         0       5  this:Lsample/HelloWorld;
-</div>
+</pre>
 
 <h3>invokespecial and private methods</h3>
 
@@ -401,7 +401,7 @@ index  start_pc  length  name_and_type
     For example, consider the following code in which <code>interestingMethod()</code> is declared as <code>private</code> in a superclass and with <code>package</code> access in a subclass:
 </p>
 
-<div title="ParentClass.java" class="javacode">
+<pre title="ParentClass.java" class="javacode">
 public class ParentClass {
     private void interestingMethod() {
         System.out.println("Superclass's interesting method.");
@@ -411,9 +411,9 @@ public class ParentClass {
         interestingMethod();
     }
 }
-</div>
+</pre>
 
-<div title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java" class="javacode">
 public class HelloWorld extends ParentClass {
     void interestingMethod() {
         System.out.println("Subclass's interesting method.");
@@ -424,11 +424,11 @@ public class HelloWorld extends ParentClass {
         instance.exampleMethod();
     }
 }
-</div>
+</pre>
 
-<div title="Run Output" class="plaintext">
+<pre title="Run Output" class="plaintext">
 Superclass's interesting method.
-</div>
+</pre>
 
 <p class="indented">
     When you invoke <code>main()</code> in <code>HelloWorld</code> as defined above, it must print "Superclass's interesting method."
