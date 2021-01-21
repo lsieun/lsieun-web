@@ -34,7 +34,7 @@ cv.visit(...);
 ...
 cv.visitEnd();
 byte b[] = cw.toByteArray();
-</div>
+</pre>
 
 <p class="indented">
     This code creates a <code>TraceClassVisitor</code> that delegates all the calls it receives to <code>cw</code>,
@@ -47,7 +47,7 @@ public class HelloWorld {
         System.out.println("Hello World");
     }
 }
-</div>
+</pre>
 
 <pre title="App.java" class="javacode">
 import lsieun.utils.FileUtils;
@@ -87,7 +87,7 @@ public class App {
         FileUtils.writeBytes(filepath, bytes2);
     }
 }
-</div>
+</pre>
 
 <pre title="Run output" class="plaintext">
 // class version 51.0 (51)
@@ -124,5 +124,5 @@ public class sample/HelloWorld {
     MAXSTACK = 2
     MAXLOCALS = 1
 }
-</div>
+</pre>
 

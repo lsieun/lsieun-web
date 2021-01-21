@@ -23,7 +23,7 @@ Compiled from "Runnable.java"
 public interface java.lang.Runnable {
   public abstract void run();
 }
-</div>
+</pre>
 
 <p class="indented">
     <span class="text-example">The first step</span> is to write a subclass of the <code>ClassVisitor</code> class
@@ -92,7 +92,7 @@ public class ClassPrinter extends ClassVisitor {
         System.out.println("}");
     }
 }
-</div>
+</pre>
 
 <p class="indented">
     <span class="text-example">The second step</span> is to combine this <code>ClassPrinter</code> with a <code>ClassReader</code> component,
@@ -109,13 +109,13 @@ public class App {
         cr.accept(cp, 0);
     }
 }
-</div>
+</pre>
 
 <pre title="Run output" class="plaintext">
 java/lang/Runnable extends java/lang/Object {
     run ()V
 }
-</div>
+</pre>
 
 <h2>ClassReader</h2>
 
@@ -177,7 +177,7 @@ public class ClassReader {
         }
     }
 }
-</div>
+</pre>
 
 <h3>accept方法</h3>
 
@@ -269,7 +269,7 @@ public class ClassReader {
     }
 
 }
-</div>
+</pre>
 
 <p class="indented">
     <span class="text-example">The methods</span> of the <code>ClassVisitor</code> class must be called in the following order,
@@ -282,4 +282,4 @@ visit
 (visitAnnotation | visitTypeAnnotation | visitAttribute)*
 (visitNestMember | visitInnerClass | visitRecordComponent | visitField | visitMethod)*
 visitEnd.
-</div>
+</pre>

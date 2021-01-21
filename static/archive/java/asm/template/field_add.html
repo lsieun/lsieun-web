@@ -14,7 +14,7 @@ public class HelloWorld {
     public String name;
     public int age;
 }
-</div>
+</pre>
 
 <h2>编码实现</h2>
 
@@ -54,7 +54,7 @@ public class FieldAdder extends ClassVisitor {
         super.visitEnd();
     }
 }
-</div>
+</pre>
 
 <pre title="FieldAdderRun.java" class="javacode">
 import lsieun.utils.FileUtils;
@@ -88,7 +88,7 @@ public class FieldAdderRun {
         FileUtils.writeBytes(filepath, bytes2);
     }
 }
-</div>
+</pre>
 
 <h2>验证结果</h2>
 
@@ -99,7 +99,7 @@ public class sample.HelloWorld {
   public int age;
   public sample.HelloWorld();
 }
-</div>
+</pre>
 
 <pre title="check 2 (after)" class="plaintext">
 $ javap sample.HelloWorld
@@ -109,7 +109,7 @@ public class sample.HelloWorld {
   public java.lang.Object objValue;
   public sample.HelloWorld();
 }
-</div>
+</pre>
 
 <table class="lamp">
     <tbody>

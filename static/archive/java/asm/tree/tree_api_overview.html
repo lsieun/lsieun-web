@@ -1,0 +1,88 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Tree API Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    关键类：ClassNode/FieldNode/MethodNode/InsnList
+</p>
+
+
+<h2>Tree API VS Core API</h2>
+
+<p class="indented">
+    Using <span class="text-compare-green">the tree API</span> to <span class="text-compare-grey">generate a class</span>
+    <span class="text-key-point">takes about 30% more time and consumes more memory</span>
+    than using <span class="text-compare-green">the core API</span>.
+    But it makes it possible to generate the class elements in any order, which can be convenient in some cases.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        class generation是从“无”到“有”生成一个.class文件。
+    </p>
+    <p>
+        class transformation是对已有的一个.class文件进行变换。
+    </p>
+</div>
+
+<p class="indented">
+    <span class="text-compare-grey">Adding and removing class members</span> simply consists in adding or removing
+    elements in the <code>fields</code> or <code>methods</code> lists of a <code>ClassNode</code> object.
+    <sub class="my_note" style="color:blue">笔记：对class members进行add和remove操作，就是transform class。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p class="indented">
+    Like for <span class="text-compare-grey">class generation</span>,
+    using <span class="text-compare-green">the tree API</span> to <span class="text-compare-grey">transform classes</span>
+    <span class="text-key-point">takes more time and consumes more memory</span>
+    than using <span class="text-compare-green">the core API</span>.
+    But it makes it possible to implement some transformations more easily.
+    This is the case, for example, of <span class="text-example">a transformation that adds to a class an annotation containing a digital signature of its content</span>.
+    With <span class="text-compare-green">the core API</span> the digital signature can be computed only when all the class has been visited,
+    but then it is too late to add an annotation containing it,
+    because annotations must be visited before class members.
+    With <span class="text-compare-green">the tree API</span> this problem disappears because there is no such constraint in this case.
+</p>
+
+<p class="indented">
+    In fact it is possible to implement the <code>AddDigitalSignature</code> example with <span class="text-compare-green">the core API</span>,
+    but then the class must be transformed in two passes.
+    During <span class="text-compare-grey">the first pass</span> the class is visited with a <code>ClassReader</code> (and no <code>ClassWriter</code>),
+    in order to compute the digital signature based on the class content.
+    During <span class="text-compare-grey">the second pass</span> the same <code>ClassReader</code> is reused to do a second visit of the class,
+    this time with an <code>AddAnnotationAdapter</code> chained to a <code>ClassWriter</code>.
+    By generalizing this argument we see that, in fact,
+    <span class="text-key-point">any transformation can be implemented with the core API alone, by using several passes if necessary.</span>
+    But this increases the transformation code complexity,
+    this requires to store state between passes (which can be as complex as a full tree representation!),
+    and parsing the class several times has a cost,
+    which must be compared to the cost of constructing the corresponding <code>ClassNode</code>.
+</p>
+
+<p class="indented">
+    The conclusion is that <span class="text-emphasize"><span class="text-compare-green">the tree API</span> is generally
+    used for transformations that cannot be implemented in one pass with <span class="text-compare-green">the core API</span></span>.
+    But there are of course exceptions.
+    For example <span class="text-example">an obfuscator cannot be implemented in one pass</span>,
+    because you cannot transform classes before the mapping from original to obfuscated names is fully constructed,
+    which requires to parse all classes.
+    But <span class="text-compare-green">the tree API</span> is not a good solution either,
+    because it would require keeping in memory the object representation of all the classes to obfuscate.
+    In this case it is better to use <span class="text-compare-green">the core API</span> with two passes:
+    <span class="text-compare-grey">one to compute the mapping between original and obfuscated names</span>
+    (a simple hash table that requires much less memory than a full object representation of all the classes),
+    and <span class="text-compare-grey">one to transform the classes based on this mapping</span>.
+</p>
+
+
+
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>

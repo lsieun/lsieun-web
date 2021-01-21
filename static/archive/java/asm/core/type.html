@@ -1,5 +1,5 @@
 <!-- 标题 -->
-<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Tools</span></h1>
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Type</span></h1>
 <!-- 内容 -->
 
 <div style="text-align: right">
@@ -29,7 +29,7 @@
     </ul>
 </div>
 
-<h2>utility class: Type</h2>
+<h2>Create Type Object</h2>
 
 <p class="indented">
     A <code>Type</code>(<code>org.objectweb.asm.Type</code> in <code>asm.jar</code>) object represents a Java type,
@@ -40,22 +40,41 @@
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
+<pre title="Type.java" class="javacode">
+public final class Type {
+    // 因为构造函数用private修饰，因此我们不能使用new关键字创建Type对象
+    private Type(final int sort, final String valueBuffer, final int valueBegin, final int valueEnd) {
+        this.sort = sort;
+        this.valueBuffer = valueBuffer;
+        this.valueBegin = valueBegin;
+        this.valueEnd = valueEnd;
+    }
+}
+</pre>
+
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
         <code>org.objectweb.asm.Type</code>是属于core API，位于<code>asm.jar</code>。<code>Type</code>类有一个private的构造函数，因此<code>Type</code>对象实例不能通过<code>new</code>关键字来创建。但是，<code>Type</code>类提供了static method和static field，一共有三种方式：
     </p>
     <ul>
         <li>
-            第一种方式，<code>Type t = Type.getType("Ljava/lang/String;");</code>
+            第一种方式，<code>Type t = Type.getType("Ljava/lang/String;");</code>, descriptor --&gt; Type
         </li>
         <li>
-            第二种方式，<code>Type t = Type.getType(String.class);</code>
+            第二种方式，<code>Type t = Type.getObjectType("java/lang/String");</code>, internal name --&gt; Type
         </li>
         <li>
-            第三种方式，<code>Type t = Type.INT_TYPE;</code>
+            第三种方式，<code>Type t = Type.getType(String.class);</code>, Class --&gt; Type
+        </li>
+        <li>
+            第四种方式，<code>Type t = Type.INT_TYPE;</code>, Type static field --&gt; Type
         </li>
     </ul>
 </div>
+
+<h2>Type Methods</h2>
+
+<h3>Type --&gt; internal name</h3>
 
 <p class="indented">
     <span class="text-key-point">The <code>getInternalName</code> method returns the internal name of a <code>Type</code></span>.
@@ -65,6 +84,8 @@
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
+<h3>Type --&gt; descriptor</h3>
+
 <p class="indented">
     <span class="text-key-point">The <code>getDescriptor</code> method returns the descriptor of a <code>Type</code></span>.
     So, for example, instead of using <code>"Ljava/lang/String;"</code> in your code
@@ -72,17 +93,70 @@
     Or, instead of using <code>I</code>, you could use <code>Type.INT_TYPE.getDescriptor()</code>.
 </p>
 
+<h3>getOpcode</h3>
+
+<p class="indented">
+    Many bytecode instructions, such as <code>xLOAD</code>, <code>xADD</code> or <code>xRETURN</code>,
+    depend on the type to which they are applied.
+    The <code>Type</code> class provides a <code>getOpcode</code> method that can be used to get,
+    for these instructions, the opcode corresponding to a given type.
+    This method takes as parameter an opcode for the <code>int</code> type,
+    and returns the opcode for the type on which it is called.
+    For instance <code>t.getOpcode(IMUL)</code> returns <code>FMUL</code> if <code>t</code> is equal to <code>Type.FLOAT_TYPE</code>.
+</p>
+
+<h2>Method Type</h2>
+
 <p class="indented">
     <span class="text-key-point">A <code>Type</code> object can also represent a method type</span>.
-    Such objects can be constructed either from <span class="text-example">a method descriptor</span> or from <span class="text-example">a <code>Method</code> object</span>.
+    Such objects can be constructed either from <span class="text-example">a method descriptor</span>
+    or from <span class="text-example">a <code>Method</code> object</span>.
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int i) {
+        System.out.println("i = " + i);
+    }
+}
+</pre>
+
+<pre title="从method descriptor来创建Type对象" class="javacode">
+import org.objectweb.asm.Type;
+
+Type t = Type.getType("(I)V");
+System.out.println(t);
+</pre>
+
+<pre title="从Method对象来创建Type对象" class="javacode">
+import org.objectweb.asm.Type;
+import java.lang.reflect.Method;
+
+Class&lt;HelloWorld&gt; clazz = HelloWorld.class;
+Method m = clazz.getDeclaredMethod("test", int.class);
+Type t = Type.getType(m);
+System.out.println(t);
+</pre>
+
+<p class="indented">
     The <code>getDescriptor</code> method then returns the method descriptor corresponding to this type.
+</p>
+
+<p class="indented">
     In addition, the <code>getArgumentTypes</code> and <code>getReturnType</code> methods
     can be used to get the <code>Type</code> objects corresponding to the argument types and return types of a method.
     For instance <code>Type.getArgumentTypes("(I)V")</code> returns an array containing the single element <code>Type.INT_TYPE</code>.
     Similarly, a call to <code>Type.getReturnType("(I)V")</code> returns the <code>Type.VOID_TYPE</code> object.
 </p>
 
+<h2>Methods</h2>
 
+<h3>getArgumentsAndReturnSizes</h3>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
 
 
 

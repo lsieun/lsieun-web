@@ -31,7 +31,7 @@ cv.visit(...);
 ...
 cv.visitEnd();
 byte b[] = cw.toByteArray();
-</div>
+</pre>
 
 <p class="indented">
     Note that <span class="text-key-point">if you chain these class visitors in a different order</span>,
@@ -43,7 +43,7 @@ byte b[] = cw.toByteArray();
 ClassWriter cw = new ClassWriter(0);
 CheckClassAdapter cca = new CheckClassAdapter(cw);
 TraceClassVisitor cv = new TraceClassVisitor(cca, printWriter);
-</div>
+</pre>
 
 <pre title="App.java" class="javacode">
 import lsieun.utils.FileUtils;
@@ -85,7 +85,7 @@ public class App {
         FileUtils.writeBytes(filepath, bytes2);
     }
 }
-</div>
+</pre>
 
 <p>
     TODO:

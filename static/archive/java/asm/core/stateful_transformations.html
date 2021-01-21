@@ -167,7 +167,7 @@ public abstract class PatternMethodAdapter extends MethodVisitor {
 
     protected abstract void visitInsn();
 }
-</div>
+</pre>
 
 <p class="indented">
     Then the above transformation can be implemented like this:
@@ -210,7 +210,7 @@ public class RemoveAddZeroMethodAdapter extends PatternMethodAdapter {
         state = SEEN_NOTHING;
     }
 }
-</div>
+</pre>
 
 <p class="indented">
     The <code>visitInsn(int)</code> method first tests <span class="text-example">if the sequence has been detected</span>.
@@ -241,7 +241,7 @@ public class RemoveAddZeroClassAdapter extends ClassVisitor {
         return mv;
     }
 }
-</div>
+</pre>
 
 <pre title="sample.HelloWorld before" class="plaintext">
   // access flags 0x1
@@ -259,7 +259,7 @@ public class RemoveAddZeroClassAdapter extends ClassVisitor {
     RETURN
     MAXSTACK = 3
     MAXLOCALS = 1
-</div>
+</pre>
 
 <pre title="App.java" hidden class="javacode">
 import lsieun.utils.FileUtils;
@@ -294,7 +294,7 @@ public class App {
         FileUtils.writeBytes(filepath, b2);
     }
 }
-</div>
+</pre>
 
 <pre title="sample.HelloWorld after" class="plaintext">
   // access flags 0x1
@@ -310,7 +310,7 @@ public class App {
     RETURN
     MAXSTACK = 3
     MAXLOCALS = 1
-</div>
+</pre>
 
 <h2>Labels and frames</h2>
 
@@ -326,7 +326,7 @@ public class HelloWorld {
         System.out.println(i > 0 ? a + 10 : a + 0);
     }
 }
-</div>
+</pre>
 
 <pre title="Labels and frames are visited just before their associated instruction" hidden class="plaintext">
   // access flags 0x1
@@ -351,7 +351,7 @@ public class HelloWorld {
     RETURN
     MAXSTACK = 3
     MAXLOCALS = 3
-</div>
+</pre>
 
 <p class="indented">
     This has an impact on transformations that detect instruction sequences,
@@ -435,7 +435,7 @@ public class HelloWorldDump implements Opcodes {
         return cw.toByteArray();
     }
 }
-</div>
+</pre>
 
 <pre title="If some instruction may jump to the ICONST_0" class="plaintext">
   // access flags 0x1
@@ -461,7 +461,7 @@ public class HelloWorldDump implements Opcodes {
     RETURN
     MAXSTACK = 2
     MAXLOCALS = 3
-</div>
+</pre>
 
 <pre title="App.java" hidden class="javacode">
 import lsieun.utils.FileUtils;
@@ -496,7 +496,7 @@ public class App {
         FileUtils.writeBytes(filepath, b2);
     }
 }
-</div>
+</pre>
 
 <pre title="After the removal of the two instructions" class="plaintext">
   // access flags 0x1
@@ -520,7 +520,7 @@ public class App {
     RETURN
     MAXSTACK = 2
     MAXLOCALS = 3
-</div>
+</pre>
 
 <p class="indented">
     <span class="text-example">But if some instruction may jump to the <code>IADD</code></span>,
@@ -537,7 +537,7 @@ public class HelloWorld {
         System.out.println(b);
     }
 }
-</div>
+</pre>
 
 <pre title="But if some instruction may jump to the IADD" class="plaintext">
   // access flags 0x1
@@ -562,7 +562,7 @@ public class HelloWorld {
     RETURN
     MAXSTACK = 2
     MAXLOCALS = 4
-</div>
+</pre>
 
 <p class="indented">
     The reasoning is the same for stack map frames:
@@ -597,7 +597,7 @@ public abstract class PatternMethodAdapter extends MethodVisitor {
 
     protected abstract void visitInsn();
 }
-</div>
+</pre>
 
 <p class="indented">
     A compiled method may contain information about <span class="text-example">source file line numbers</span>,
@@ -726,7 +726,7 @@ public class RemoveGetFieldPutFieldMethodAdapter extends PatternMethodAdapter {
         state = SEEN_NOTHING;
     }
 }
-</div>
+</pre>
 
 <pre title="RemoveGetFieldPutFieldClassAdapter.java" hidden class="javacode">
 import org.objectweb.asm.ClassVisitor;
@@ -746,7 +746,7 @@ public class RemoveGetFieldPutFieldClassAdapter extends ClassVisitor {
         return mv;
     }
 }
-</div>
+</pre>
 
 <pre title="App.java" hidden class="javacode">
 import lsieun.utils.FileUtils;
@@ -783,7 +783,7 @@ public class App {
         FileUtils.writeBytes(filepath, b2);
     }
 }
-</div>
+</pre>
 
 <pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
@@ -793,7 +793,7 @@ public class HelloWorld {
         System.out.println(this.val);
     }
 }
-</div>
+</pre>
 
 <pre title="HelloWorld.class before" class="plaintext">
   // access flags 0x1
@@ -811,7 +811,7 @@ public class HelloWorld {
     RETURN
     MAXSTACK = 3
     MAXLOCALS = 1
-</div>
+</pre>
 
 <pre title="HelloWorld.class after" class="plaintext">
   // access flags 0x1
@@ -823,7 +823,7 @@ public class HelloWorld {
     RETURN
     MAXSTACK = 2
     MAXLOCALS = 1
-</div>
+</pre>
 
 <p class="indented"></p>
 <p class="indented"></p>

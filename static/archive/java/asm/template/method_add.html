@@ -12,7 +12,7 @@
 <pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
 }
-</div>
+</pre>
 
 <pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
@@ -23,7 +23,7 @@ public class HelloWorld {
     }
 
 }
-</div>
+</pre>
 
 <h2>编码实现</h2>
 
@@ -90,7 +90,7 @@ public class MethodAdder extends ClassVisitor implements Opcodes {
         mv.visitEnd();
     }
 }
-</div>
+</pre>
 
 <pre title="MethodAdderRun.java" class="javacode">
 import lsieun.utils.FileUtils;
@@ -124,7 +124,7 @@ public class MethodAdderRun {
         FileUtils.writeBytes(filepath, bytes2);
     }
 }
-</div>
+</pre>
 
 <h2>验证结果</h2>
 
@@ -140,8 +140,8 @@ public class HelloWorldRun {
         method.invoke(instance, "Tomcat");
     }
 }
-</div>
+</pre>
 
 <pre title="Run output" class="plaintext">
 Hello, Tomcat
-</div>
+</pre>

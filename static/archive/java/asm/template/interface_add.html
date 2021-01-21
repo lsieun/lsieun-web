@@ -33,7 +33,7 @@ public class HelloWorld {
         System.out.println("Hello World");
     }
 }
-</div>
+</pre>
 
 <pre title="HelloWorldRun.java" class="javacode">
 import java.io.*;
@@ -80,7 +80,7 @@ public class HelloWorldRun {
         return null;
     }
 }
-</div>
+</pre>
 
 <h2>编码实现</h2>
 
@@ -111,7 +111,7 @@ public class InterfaceAdder extends ClassVisitor {
         super.visit(version, access, name, signature, superName, set.toArray(new String[0]));
     }
 }
-</div>
+</pre>
 
 <pre title="InterfaceAdderRun.java" class="javacode">
 import lsieun.utils.FileUtils;
@@ -149,7 +149,7 @@ public class InterfaceAdderRun {
         FileUtils.writeBytes(filepath, bytes2);
     }
 }
-</div>
+</pre>
 
 <h2>验证结果</h2>
 
@@ -163,7 +163,7 @@ public class sample.HelloWorld {
   public java.lang.String toString();
   public static void main(java.lang.String[]);
 }
-</div>
+</pre>
 
 <pre title="check 2 (after)" class="plaintext">
 javap sample.HelloWorld
@@ -175,4 +175,4 @@ public class sample.HelloWorld implements java.io.Serializable,java.lang.Cloneab
   public java.lang.String toString();
   public static void main(java.lang.String[]);
 }
-</div>
+</pre>

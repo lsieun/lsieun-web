@@ -22,7 +22,7 @@ public class HelloWorld {
         Thread.sleep(100);
     }
 }
-</div>
+</pre>
 
 <p>
     into this:
@@ -38,7 +38,7 @@ public class HelloWorld {
         timer += System.currentTimeMillis();
     }
 }
-</div>
+</pre>
 
 <p class="indented">
     In order to have an idea of how this can be implemented in ASM,
@@ -67,7 +67,7 @@ public class ASMifierTest {
         new ClassReader(className).accept(traceClassVisitor, parsingOptions);
     }
 }
-</div>
+</pre>
 
 <pre title="HelloWorld.class before" class="plaintext">
 // access flags 0x1
@@ -77,7 +77,7 @@ public test()V throws java/lang/Exception
     RETURN
     MAXSTACK = 2
     MAXLOCALS = 1
-</div>
+</pre>
 
 <pre title="HelloWorld.class after" class="plaintext">
 // access flags 0x1
@@ -99,7 +99,7 @@ public test()V throws java/lang/Exception
     RETURN
     MAXSTACK = 4
     MAXLOCALS = 1
-</div>
+</pre>
 
 <p class="indented">
     We see that we must <span class="text-example">add four instructions at the beginning of the method</span>,
@@ -122,7 +122,7 @@ public void visitCode() {
     mv.visitInsn(LSUB);
     mv.visitFieldInsn(PUTSTATIC, owner, "timer", "J");
 }
-</div>
+</pre>
 
 <p>
     where <code>owner</code> must be set to the name of the class that is being transformed.
@@ -147,7 +147,7 @@ public void visitInsn(int opcode) {
     }
     mv.visitInsn(opcode);
 }
-</div>
+</pre>
 
 <p class="indented">
     Finally we must <span class="text-example">update the maximum operand stack size</span>.
@@ -175,7 +175,7 @@ public void visitInsn(int opcode) {
 public void visitMaxs(int maxStack, int maxLocals) {
     mv.visitMaxs(maxStack + 4, maxLocals);
 }
-</div>
+</pre>
 
 <p class="indented">
     Of course it is possible to not bother about the maximum stack size and rely on the <code>COMPUTE_MAXS</code> option that,
@@ -221,7 +221,7 @@ public class AddTimerMethodAdapter extends MethodVisitor {
         mv.visitMaxs(maxStack + 4, maxLocals);
     }
 }
-</div>
+</pre>
 
 <pre title="AddTimerClassAdapter.java" class="javacode">
 import static org.objectweb.asm.Opcodes.*;
@@ -267,7 +267,7 @@ public class AddTimerClassAdapter extends ClassVisitor {
     }
 
 }
-</div>
+</pre>
 
 <pre title="App.java" class="javacode">
 import lsieun.utils.FileUtils;
@@ -302,7 +302,7 @@ public class App {
         FileUtils.writeBytes(filepath, bytes2);
     }
 }
-</div>
+</pre>
 
 <h2>方案验证</h2>
 
@@ -322,4 +322,4 @@ public class HelloWorldRun {
         System.out.println(value);
     }
 }
-</div>
+</pre>

@@ -24,7 +24,7 @@ ClassWriter cw = new ClassWriter(0);
 ClassReader cr = new ClassReader(b1);
 cr.accept(cw, 0);
 byte[] b2 = cw.toByteArray(); // b2 represents the same class as b1
-</div>
+</pre>
 
 <p class="indented">
     This is not really interesting in itself (there are easier ways to copy a byte array!), but wait.
@@ -40,7 +40,7 @@ ClassVisitor cv = new ClassVisitor(ASM4, cw) { };
 ClassReader cr = new ClassReader(b1);
 cr.accept(cv, 0);
 byte[] b2 = cw.toByteArray(); // b2 represents the same class as b1
-</div>
+</pre>
 
 <p class="indented">
     The result does not change, however, because the <code>ClassVisitor</code> event filter does not filter anything.
@@ -62,7 +62,7 @@ public class ChangeVersionClassAdapter extends ClassVisitor {
         super.visit(Opcodes.V1_7, access, name, signature, superName, interfaces);
     }
 }
-</div>
+</pre>
 
 <pre title="App.java" class="javacode">
 import lsieun.utils.FileUtils;
@@ -97,7 +97,7 @@ public class App {
         FileUtils.writeBytes(filepath, bytes2);
     }
 }
-</div>
+</pre>
 
 <table class="lamp">
     <tbody>

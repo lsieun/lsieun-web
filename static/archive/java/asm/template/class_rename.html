@@ -23,7 +23,7 @@ public class HelloWorld {
         System.out.println("value = " + this.intValue);
     }
 }
-</div>
+</pre>
 
 <pre title="GoodChild.java" class="javacode">
 public class GoodChild {
@@ -39,7 +39,7 @@ public class GoodChild {
         System.out.println("value = " + this.intValue);
     }
 }
-</div>
+</pre>
 
 <p>
     从<span class="text-compare-green">本质</span>上来说，是做在一件事情：就是将<code>HelloWorld</code>类重新命名成<code>GoodChild</code>类。
@@ -162,7 +162,7 @@ public class ClassRenameAdapter extends ClassVisitor {
         return String.format("L%s;", internalName);
     }
 }
-</div>
+</pre>
 
 <pre title="RefRenameAdapter.java" class="javacode">
 import org.objectweb.asm.MethodVisitor;
@@ -214,7 +214,7 @@ public class RefRenameAdapter extends MethodVisitor {
         }
     }
 }
-</div>
+</pre>
 
 <pre title="ClassRenameAdapterRun.java" class="javacode">
 import lsieun.utils.FileUtils;
@@ -255,7 +255,7 @@ public class ClassRenameAdapterRun {
         return FileUtils.getFilePath(relative_path);
     }
 }
-</div>
+</pre>
 
 <h2>验证结果</h2>
 
@@ -271,7 +271,7 @@ public class HelloWorldRun {
         method.invoke(obj);
     }
 }
-</div>
+</pre>
 
 <h3>Class Name</h3>
 
@@ -282,7 +282,7 @@ public class HelloWorld {
         System.out.println(clazz);
     }
 }
-</div>
+</pre>
 
 <h3>Field Descriptor</h3>
 
@@ -296,7 +296,7 @@ public class HelloWorld {
         System.out.println(clazz);
     }
 }
-</div>
+</pre>
 
 <h3>Method Descriptor</h3>
 
@@ -311,7 +311,7 @@ public class HelloWorld {
         System.out.println(clazz);
     }
 }
-</div>
+</pre>
 
 <h3>Method Opcode</h3>
 
@@ -324,7 +324,7 @@ public class HelloWorld {
         System.out.println(clazz);
     }
 }
-</div>
+</pre>
 
 <h4>visitFieldInsn</h4>
 
@@ -338,7 +338,7 @@ public class HelloWorld {
         System.out.println("val = " + val);
     }
 }
-</div>
+</pre>
 
 <h4>visitMethodInsn</h4>
 
@@ -355,4 +355,4 @@ public class HelloWorld {
         System.out.println("val = " + sum);
     }
 }
-</div>
+</pre>

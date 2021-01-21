@@ -7,6 +7,17 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<p class="indented">
+    <span class="text-compare-green">The ASM tree API</span> for
+    <span class="text-compare-grey">generating</span> and
+    <span class="text-compare-grey">transforming</span>
+    <span class="text-emphasize">methods</span> is based on the <code>MethodNode</code> class.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_can_do.png" alt=""/>
+</div>
+
 <pre title="MethodNode.java" class="javacode">
 public class MethodNode extends MethodVisitor {
     public int access;
@@ -33,4 +44,4 @@ public class MethodNode extends MethodVisitor {
         this.instructions = new InsnList();
     }
 }
-</div>
+</pre>

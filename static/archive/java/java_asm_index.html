@@ -6,6 +6,8 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<h2>Intro</h2>
+
 <p>
     无论操作字节码（ByteCode）的类库（ASM、Javassist、BCEL）如何千变万化，它的本质都是在理解Java ClassFile的结构。
 </p>
@@ -14,9 +16,7 @@
     要有思维导图，要有破解软件
 </p>
 
-<p>
-    Class层一级叫Visitor，而Field/Method/Annotation一级叫Adapter。
-</p>
+
 
 <p>
     有人讲到Spring-core用到ASM，我要调查一下。
@@ -27,163 +27,31 @@
 </p>
 
 <p>
-    首先，讲ClassReader -&gt; ClassVisitor --&gt; ClassWriter放到一起。
-    ClassReader和ClassVisitor一起讲；ClassVisitor和ClassWriter一起讲。
-    地下水渗透模型。
+    TODO: 要有obfuscator的示例。
 </p>
 
-<p>
-    visitEnd()要特别讲一下：所谓靠谱的人，就是凡事有交代，件件有着落，事事有回音！说是三件事，其实是一件事，就是你要在协作中完成闭环。所谓闭环，就是一件事有开头，就必有结尾。但是一般人做到这一条并不容易。
-</p>
+
 
 <ul>
     <li>
         第一部分，先提供一些实践，让人可以有一些了解；第二部分，再讲一些理论的东西。
     </li>
-    <li></li>
+    <li>
+
+    </li>
 </ul>
 
-<h2>Intro</h2>
-
-<p class="indented">
-    ASM is an all purpose Java bytecode manipulation and analysis framework.
-    It can be used to modify existing classes or to dynamically generate classes, directly in binary form.
-</p>
-
-<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
-    <p>
-        ASM framework = dynamically generate classes + modify existing classes
-    </p>
-    <p>
-        第一点，从整体上来说，ASM是一个操作bytecode的framework。
-    </p>
-    <p>
-        第二点，从用途的角度来说，ASM有两个方向，一个方向是dynamically generate classes，这是一个“从无到有”的过程，是一个从0到1的过程；另一个方向是modify existing classes，是对已经存在的东西进行修改，使之成为一个新的事物。
-    </p>
-</div>
-
-<p class="indented">
-    ASM offers similar functionality as other Java bytecode frameworks, but is focused on performance.
-    Because it was designed and implemented to be as small and as fast as possible, it is well suited for use in dynamic systems (but can of course be used in a static way too, e.g. in compilers).
-    <sub class="my_note" style="color:blue">笔记：从功能的角度来说，与其他Java bytecode frameworks相比，ASM提供的功能上是类似的；但是，ASM更注重performance，也就是ASM的执行速度更快。</sub>
-    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
-</p>
-
-<h2>Main Content</h2>
-
 <p>
-    有三个基本操作：analyse、generate和transform，其中transform是最重要的操作。
-    transform的目标有ClassInfo、Field和Method，其中对于Method的变换是最重要的。
+    Execution Model是一个要记住的东西。
 </p>
 
 <p>
-    理论
+    分为参考性的内容（比如，Type类型，它主要是API的讲解）和学习性的内容
 </p>
 
-<ul>
-    <li>
-        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">Intro</a>
-        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
-        <ul>
-            <li>
-                <a href="/archive/java/asm/asm_intro.html">ASM Intro</a>
-            </li>
-            <li>
-                <a href="/archive/java/asm/asm_model.html">ASM Model</a>
-            </li>
-            <li>
-                <a href="/archive/java/asm/asm_architecture.html">ASM Architecture</a>
-            </li>
-            <li>
-                <a href="/archive/java/asm/asm_organization.html">ASM Organization</a>
-            </li>
-            <li>
-                <a href="/archive/java/asm/asm_maven.html">ASM Maven</a>
-            </li>
-        </ul>
-    </li>
-    <li>
-        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">Core API</a>
-        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
-        <ul style="display: none;">
-            <li><a href="/archive/java/asm/core/class_visitor.html">ClassVisitor</a></li>
-            <li><a href="/archive/java/asm/core/parse_classes.html">ClassReader: Parsing classes</a></li>
-            <li><a href="/archive/java/asm/core/generate_classes.html">ClassWriter: Generating classes</a></li>
-            <li><a href="/archive/java/asm/core/transform_classes.html">ClassReader and ClassWriter: Transforming classes</a></li>
-            <li><a href="/archive/java/asm/core/remove_class_members.html">Removing class members</a></li>
-            <li><a href="/archive/java/asm/core/attribute_remove.html">Removing Attribute</a></li>
-            <li><a href="/archive/java/asm/core/method_remove.html">Removing Method</a></li>
-            <li><a href="/archive/java/asm/core/field_remove.html">Removing Field</a></li>
-            <li><a href="/archive/java/asm/core/add_class_members.html">Adding class members</a></li>
-            <li><a href="/archive/java/asm/core/field_add.html">Adding Field</a></li>
-            <li><a href="/archive/java/asm/core/method_add.html">Adding Method</a></li>
-            <li><a href="/archive/java/asm/core/tools.html">Tools</a></li>
-            <li><a href="/archive/java/asm/core/util/trace_class_visitor.html">Tools: TraceClassVisitor</a></li>
-            <li><a href="/archive/java/asm/core/util/check_class_adapter.html">Tools: CheckClassAdapter</a></li>
-            <li><a href="/archive/java/asm/core/util/asmifier.html">Tools: ASMifier</a></li>
-            <li><a href="/archive/java/asm/core/method_visitor.html">MethodVisitor</a></li>
-            <li><a href="/archive/java/asm/core/generate_methods.html">Generating methods</a></li>
-            <li><a href="/archive/java/asm/core/transform_methods.html">Transforming methods</a></li>
-            <li><a href="/archive/java/asm/core/stateless_transformations.html">Stateless transformations</a></li>
-            <li><a href="/archive/java/asm/core/stateful_transformations.html">Stateful transformations</a></li>
-            <li><a href="/archive/java/asm/core/commons/analyzer_adapter.html">AnalyzerAdapter</a></li>
-            <li><a href="/archive/java/asm/core/commons/local_variables_sorter.html">LocalVariablesSorter</a></li>
-            <li><a href="/archive/java/asm/core/try_catch.html">Try Catch</a></li>
-        </ul>
-    </li>
-    <li>
-        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">Tree API Part</a>
-        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
-        <ul>
-            <li>
-                API
-                <ul>
-                    <li><a href="/archive/java/asm/tree/class_node.html">ClassNode</a></li>
-                    <li><a href="/archive/java/asm/tree/field_node.html">FieldNode</a></li>
-                    <li><a href="/archive/java/asm/tree/method_node.html">MethodNode</a></li>
-                </ul>
-            </li>
-            <li>
-                Examples
-                <ul>
-                    <li><a href="/archive/java/asm/tree/class_generate.html">ClassNode: Generating classes</a></li>
-                    <li><a href="/archive/java/asm/tree/field_add.html">Field: Adding Field</a></li>
-                    <li><a href="/archive/java/asm/tree/method_remove.html">Method: Removing Method</a></li>
-                </ul>
-            </li>
-
-
-        </ul>
-    </li>
-    <li>
-        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">Template</a>
-        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
-        <ul>
-            <li>
-                Class Transformations
-                <ul>
-                    <li><a href="/archive/java/asm/template/interface_add.html">Introducing Interface</a></li>
-                    <li><a href="/archive/java/asm/template/field_add.html">Adding a New Field</a></li>
-                    <li><a href="/archive/java/asm/template/method_add.html">Adding a New Method</a></li>
-                    <li><a href="/archive/java/asm/template/method_replace.html">Replace Method Body</a></li>
-                    <li><a href="/archive/java/asm/template/class_rename.html">Renaming a Class</a></li>
-                    <li><a href="/archive/java/asm/template/class_merge.html">Merging Two Classes into One</a></li>
-                </ul>
-            </li>
-            <li>
-                Method Transformations
-                <ul>
-                    <li><a href="/archive/java/asm/template/code_inserted_before_execution.html">Insert Code before Method, Constructor or Static Initializer Execution</a></li>
-                    <li><a href="/archive/java/asm/template/code_inserted_before_exit.html">Insert Code before Method Exit</a></li>
-                    <li><a href="/archive/java/asm/template/field_access_replace.html">Replace Field Access</a></li>
-                    <li><a href="/archive/java/asm/template/method_call_replace.html">Replace Method Call</a></li>
-                </ul>
-            </li>
-
-
-        </ul>
-    </li>
-</ul>
+<p>
+    所有jar包里的内容，是不是都要涉及到呢？
+</p>
 
 <p>
     TODO:
@@ -227,7 +95,130 @@
         <input type="checkbox"/>
         visitLocalVariable
     </li>
+    <li>
+        工具的有限性，我们知道工具的有限性，ASM它是一个工具。有限性怎么理解呢？第一方面，并不是所有的功能都要通过ASM来进行实现，如果能通过写Java源代码实现，就不需要用ASM，这里主要是讲“用或者不用ASM”；第二方面，就是ASM的功能的有限性，有些功能ASM并没有提供给我们，我们需要自己来进行实现。
+    </li>
 </ul>
+
+<h2>Main Content</h2>
+
+<p>
+    有三个基本操作：analyse、generate和transform，其中transform是最重要的操作。
+    transform的目标有ClassInfo、Field和Method，其中对于Method的变换是最重要的。
+</p>
+
+<p>
+    理论
+</p>
+
+<ul>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Intro</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul style="display: none;">
+            <li>
+                <a href="/archive/java/asm/asm_intro.html">ASM Intro</a>
+            </li>
+            <li>
+                <a href="/archive/java/asm/asm_overview.html">ASM Overview</a>
+            </li>
+            <li>
+                <a href="/archive/java/asm/asm_architecture.html">ASM Architecture</a>
+            </li>
+            <li>
+                <a href="/archive/java/asm/asm_course.html">课程内容规划</a>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Core API</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul style="display: none;">
+            <li><a href="/archive/java/asm/core/core_api_intro.html">Core API介绍</a></li>
+            <li><a href="/archive/java/asm/core/class_visitor.html">ClassVisitor</a></li>
+            <li><a href="/archive/java/asm/core/classwriter_options.html">ClassWriter Options</a></li>
+            <li><a href="/archive/java/asm/core/parse_classes.html">ClassReader: Parsing classes</a></li>
+            <li><a href="/archive/java/asm/core/generate_classes.html">ClassWriter: Generating classes</a></li>
+            <li><a href="/archive/java/asm/core/transform_classes.html">ClassReader and ClassWriter: Transforming classes</a></li>
+            <li><a href="/archive/java/asm/core/remove_class_members.html">Removing class members</a></li>
+            <li><a href="/archive/java/asm/core/attribute_remove.html">Removing Attribute</a></li>
+            <li><a href="/archive/java/asm/core/method_remove.html">Removing Method</a></li>
+            <li><a href="/archive/java/asm/core/field_remove.html">Removing Field</a></li>
+            <li><a href="/archive/java/asm/core/add_class_members.html">Adding class members</a></li>
+            <li><a href="/archive/java/asm/core/field_add.html">Adding Field</a></li>
+            <li><a href="/archive/java/asm/core/method_add.html">Adding Method</a></li>
+            <li><a href="/archive/java/asm/core/type.html">Type</a></li>
+            <li><a href="/archive/java/asm/core/util/trace_class_visitor.html">Tools: TraceClassVisitor</a></li>
+            <li><a href="/archive/java/asm/core/util/check_class_adapter.html">Tools: CheckClassAdapter</a></li>
+            <li><a href="/archive/java/asm/core/util/asmifier.html">Tools: ASMifier</a></li>
+            <li><a href="/archive/java/asm/core/method_visitor.html">MethodVisitor</a></li>
+            <li><a href="/archive/java/asm/core/generate_methods.html">Generating methods</a></li>
+            <li><a href="/archive/java/asm/core/transform_methods.html">Transforming methods</a></li>
+            <li><a href="/archive/java/asm/core/stateless_transformations.html">Stateless transformations</a></li>
+            <li><a href="/archive/java/asm/core/stateful_transformations.html">Stateful transformations</a></li>
+            <li><a href="/archive/java/asm/core/commons/analyzer_adapter.html">AnalyzerAdapter</a></li>
+            <li><a href="/archive/java/asm/core/commons/local_variables_sorter.html">LocalVariablesSorter</a></li>
+            <li><a href="/archive/java/asm/core/try_catch.html">Try Catch</a></li>
+        </ul>
+    </li>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Tree API</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul style="display: none;">
+            <li><a href="/archive/java/asm/tree/tree_api_overview.html">Tree API Overview</a></li>
+            <li><a href="/archive/java/asm/tree/class_node_intro.html">ClassNode Intro</a></li>
+            <li><a href="/archive/java/asm/tree/class_node_examples.html">ClassNode Examples</a></li>
+            <li><a href="/archive/java/asm/tree/field_node.html">FieldNode</a></li>
+            <li><a href="/archive/java/asm/tree/method_node.html">MethodNode</a></li>
+            <li><a href="/archive/java/asm/tree/pattern.html">Core And Tree Pattern</a></li>
+        </ul>
+    </li>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Common Transformations</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul style="display: none;">
+            <li>
+                Class Transformations
+                <ul>
+                    <li><a href="/archive/java/asm/template/interface_add.html">Introducing Interface</a></li>
+                    <li><a href="/archive/java/asm/template/field_add.html">Adding a New Field</a></li>
+                    <li><a href="/archive/java/asm/template/method_add.html">Adding a New Method</a></li>
+                    <li><a href="/archive/java/asm/template/method_replace.html">Replace Method Body</a></li>
+                    <li><a href="/archive/java/asm/template/class_rename.html">Renaming a Class</a></li>
+                    <li><a href="/archive/java/asm/template/class_merge.html">Merging Two Classes into One</a></li>
+                </ul>
+            </li>
+            <li>
+                Method Transformations
+                <ul>
+                    <li><a href="/archive/java/asm/template/code_inserted_before_execution.html">Insert Code before Method, Constructor or Static Initializer Execution</a></li>
+                    <li><a href="/archive/java/asm/template/code_inserted_before_exit.html">Insert Code before Method Exit</a></li>
+                    <li><a href="/archive/java/asm/template/field_access_replace.html">Replace Field Access</a></li>
+                    <li><a href="/archive/java/asm/template/method_call_replace.html">Replace Method Call</a></li>
+                </ul>
+            </li>
+
+
+        </ul>
+    </li>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Metadata</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul style="display: none;">
+            <li>
+                <a href="/archive/java/asm/metadata/debug_info.html">Debug Info</a>
+            </li>
+            <li>
+                <a href="/archive/java/asm/metadata/annotations.html">Annotations</a>
+            </li>
+            <li>
+                <a href="/archive/java/asm/metadata/generics.html">Generics</a>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+
 
 <p>
     知识的组织形式 和 知识的教学形式 是不一样的。
@@ -277,6 +268,19 @@
     </li>
 </ul>
 
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <ul>
+        <li>
+            <code>org.objectweb.asm</code>(<code>asm.jar</code>): <code>ClassVisitor</code>, <code>ClassReader</code>, <code>ClassWriter</code>, <code>Type</code>.
+        </li>
+        <li>
+            <code>org.objectweb.asm.commons</code>(<code>asm-commons.jar</code>): <code>AnalyzerAdapter</code>, <code>LocalVariablesSorter</code>, <code>AdviceAdapter</code>.
+        </li>
+        <li>
+            <code>org.objectweb.asm.util</code>(<code>asm-util.jar</code>): <code>TraceClassVisitor</code>, <code>CheckClassAdapter</code>.
+        </li>
+    </ul>
+</div>
 
 <h2>Resources</h2>
 
@@ -290,4 +294,9 @@
     <li><a class="external" href="https://github.com/cglib/cglib" target="_blank">Github: cglib</a>: Byte Code Generation Library is high level API to generate and transform JAVA byte code.</li>
     <li><a class="external" href="https://github.com/cobertura/cobertura" target="_blank">Github: COBERTURA</a>: Cobertura is a free Java code coverage reporting tool.</li>
     <li><a class="external" href="https://www.eclemma.org/jacoco/" target="_blank">EclEmma: JaCoCo</a>: Java Code Coverage Library. JaCoCo is a free code coverage library for Java, which has been created by the EclEmma team based on the lessons learned from using and integration existing libraries for many years.</li>
+    <li>
+        The Java Virtual Machine Specification, Java SE 8 Edition:
+        <a class="external" href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html" target="_blank">Oracle</a>
+        <a href="/doc/javase/jvms/se8/index.html" target="_blank">Local</a>
+    </li>
 </ul>

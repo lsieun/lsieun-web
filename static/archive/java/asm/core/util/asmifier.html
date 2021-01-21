@@ -36,11 +36,11 @@ public class HelloWorld {
         System.out.println("Hello World");
     }
 }
-</div>
+</pre>
 
 <pre title="javac" class="plaintext">
 $ javac HelloWorld.java
-</div>
+</pre>
 
 <p>
     The <code>ASMifier</code> class can be used from the command line. For example using:
@@ -48,15 +48,15 @@ $ javac HelloWorld.java
 
 <pre title="Linux分隔符是“:”" class="plaintext">
 $ java -classpath asm.jar:asm-util.jar org.objectweb.asm.util.ASMifier java.lang.Runnable
-</div>
+</pre>
 
 <pre title="Windows分隔符是“;”" class="plaintext">
 $gt; java -classpath asm.jar;asm-util.jar org.objectweb.asm.util.ASMifier java.lang.Runnable
-</div>
+</pre>
 
 <pre title="Cygwin分隔符是“\;”" class="plaintext">
 $ java -classpath asm.jar\;asm-util.jar org.objectweb.asm.util.ASMifier java.lang.Runnable
-</div>
+</pre>
 
 <h2>Usage from Java Program</h2>
 
@@ -73,7 +73,7 @@ public class ASMifierTest {
         ASMifier.main(array);
     }
 }
-</div>
+</pre>
 
 <pre title="ASMifierTest.java" class="javacode">
 import org.objectweb.asm.ClassReader;
@@ -96,4 +96,4 @@ public class ASMifierTest {
         new ClassReader(className).accept(traceClassVisitor, parsingOptions);
     }
 }
-</div>
+</pre>

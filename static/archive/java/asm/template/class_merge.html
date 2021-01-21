@@ -15,7 +15,7 @@ public class HelloWorld {
         System.out.println("test method");
     }
 }
-</div>
+</pre>
 
 <pre title="GoodChild.java" class="javacode">
 public class GoodChild implements Cloneable, Runnable {
@@ -29,7 +29,7 @@ public class GoodChild implements Cloneable, Runnable {
         System.out.println("run method");
     }
 }
-</div>
+</pre>
 
 <pre title="HelloWorld.java (预期)" class="javacode">
 public class HelloWorld implements Cloneable, Runnable {
@@ -47,7 +47,7 @@ public class HelloWorld implements Cloneable, Runnable {
         System.out.println("run method");
     }
 }
-</div>
+</pre>
 
 <h2>编码实现</h2>
 
@@ -84,7 +84,7 @@ public class ClassMergeAdapter extends ClassVisitor {
         super.visitEnd();
     }
 }
-</div>
+</pre>
 
 <pre title="ClassMergeAdapterRun.java" class="javacode">
 import lsieun.utils.FileUtils;
@@ -164,7 +164,7 @@ public class ClassMergeAdapterRun {
         return FileUtils.getFilePath(relative_path);
     }
 }
-</div>
+</pre>
 
 <h2>验证结果</h2>
 
@@ -183,8 +183,8 @@ public class HelloWorldRun {
         r.run();
     }
 }
-</div>
+</pre>
 
 <pre title="Run output" class="plaintext">
 run method
-</div>
+</pre>

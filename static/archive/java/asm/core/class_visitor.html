@@ -64,7 +64,7 @@ public abstract class ClassVisitor {
         final String[] exceptions);
     public void visitEnd();
 }
-</div>
+</pre>
 
 <h2>Method Invocation Order</h2>
 
@@ -79,7 +79,7 @@ visit
 (visitAnnotation | visitTypeAnnotation | visitAttribute)*
 (visitNestMember | visitInnerClass | visitRecordComponent | visitField | visitMethod)*
 visitEnd.
-</div>
+</pre>
 
 <p class="indented">
     This means that <code>visit</code> must be called first,

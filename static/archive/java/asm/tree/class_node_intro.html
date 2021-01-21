@@ -1,0 +1,293 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassNode</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    <span class="text-compare-green">The ASM tree API</span> for
+    <span class="text-compare-grey">generating</span> and
+    <span class="text-compare-grey">transforming</span>
+    <span class="text-emphasize">compiled Java classes</span> is
+    based on the <code>ClassNode</code> class.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_can_do.png" alt=""/>
+</div>
+
+<h2>ClassNode</h2>
+
+<h3>SuperClass</h3>
+
+<p class="indented">
+    第一个要注意的地方，就是<code>ClassNode</code>的父类。
+</p>
+
+<p class="indented">
+    <code>ClassNode</code>的父类是<code>ClassVisitor</code>类，因此<code>ClassNode</code>类具有<code>visit</code>、<code>visitField</code>和<code>visitMethod</code>等方法。这些<code>visitXXX</code>方法，是将Core API转换成Tree API的关键。
+</p>
+
+<pre title="ClassNode.java" hidden class="javacode">
+public class ClassNode extends ClassVisitor {
+    @Override
+    public void visit(final int version, final int access, final String name, final String signature,
+                      final String superName, final String[] interfaces) {
+        this.version = version;
+        this.access = access;
+        this.name = name;
+        this.signature = signature;
+        this.superName = superName;
+        this.interfaces = Util.asArrayList(interfaces);
+    }
+
+    @Override
+    public FieldVisitor visitField(final int access, final String name, final String descriptor,
+                                   final String signature, final Object value) {
+        FieldNode field = new FieldNode(access, name, descriptor, signature, value);
+        fields.add(field);
+        return field;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(final int access, final String name, final String descriptor,
+                                     final String signature, final String[] exceptions) {
+        MethodNode method = new MethodNode(access, name, descriptor, signature, exceptions);
+        methods.add(method);
+        return method;
+    }
+}
+</pre>
+
+<h3>fields</h3>
+
+<p class="indented">
+    第二个要注意的地方，就是<code>ClassNode</code>定义的字段有哪些。
+</p>
+
+<p class="indented">
+    <code>ClassNode</code>定义的字段与<code>.class</code>文件遵循的<code>ClassFile</code>结构密切相关。
+</p>
+
+<pre title="ClassFile" hidden class="plaintext">
+ClassFile {
+    u4             magic;
+    u2             minor_version;
+    u2             major_version;
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];
+    u2             access_flags;
+    u2             this_class;
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    u2             fields_count;
+    field_info     fields[fields_count];
+    u2             methods_count;
+    method_info    methods[methods_count];
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</pre>
+
+<pre title="ClassNode.java" class="javacode">
+public class ClassNode extends ClassVisitor {
+    public int version;
+    public int access;
+    public String name;
+    public String superName;
+    public List&lt;String&gt; interfaces;
+
+    // ......
+    public List&lt;Attribute&gt; attrs;
+    // ......
+
+    public List&lt;FieldNode&gt; fields;
+    public List&lt;MethodNode&gt; methods;
+}
+</pre>
+
+<h3>Constructor</h3>
+
+<p class="indented">
+    第三个要注意的地方，就是<code>ClassNode</code>定义的构造函数。
+</p>
+
+<p class="indented">
+    <code>ClassNode</code>定义的构造函数有两个，一个是无参构造函数，另一个是接收<code>int</code>类型参数的构造函数。
+</p>
+
+<pre title="ClassNode.java" class="javacode">
+public class ClassNode extends ClassVisitor {
+    public ClassNode() {
+        this(Opcodes.ASM9);
+    }
+
+    public ClassNode(final int api) {
+        super(api);
+        this.interfaces = new ArrayList&lt;&gt;();
+        this.innerClasses = new ArrayList&lt;&gt;();
+        this.fields = new ArrayList&lt;&gt;();
+        this.methods = new ArrayList&lt;&gt;();
+    }
+}
+</pre>
+
+<h3>accept Method</h3>
+
+<p class="indented">
+    第四个要注意的地方，就是<code>ClassNode</code>提供了一个<code>accept</code>方法。
+</p>
+
+<p class="indented">
+    <code>ClassNode</code>提供的<code>accept</code>方法，是将Tree API转换成Core API的关键。
+</p>
+
+<p class="indented">
+    The <code>ClassNode</code> class provides an <code>accept</code> method that takes a <code>ClassVisitor</code> as parameter.
+    The <code>accept</code> method generates events based on the <code>ClassNode</code> field values,
+    while the <code>ClassVisitor</code> methods perform the inverse operation, i.e. set the <code>ClassNode</code> fields based on the received events:
+</p>
+
+<pre title="ClassNode.java" class="javacode">
+public class ClassNode extends ClassVisitor {
+    public void accept(final ClassVisitor classVisitor) {
+        // Visit the header.
+        String[] interfacesArray = new String[this.interfaces.size()];
+        this.interfaces.toArray(interfacesArray);
+        classVisitor.visit(version, access, name, signature, superName, interfacesArray);
+
+        // Visit the source.
+        if (sourceFile != null || sourceDebug != null) {
+            classVisitor.visitSource(sourceFile, sourceDebug);
+        }
+
+        // ......
+
+        // Visit the fields.
+        for (int i = 0, n = fields.size(); i < n; ++i) {
+            fields.get(i).accept(classVisitor);
+        }
+
+        // Visit the methods.
+        for (int i = 0, n = methods.size(); i < n; ++i) {
+            methods.get(i).accept(classVisitor);
+        }
+        classVisitor.visitEnd();
+    }
+}
+</pre>
+
+<h2>Bytes and ClassNode</h2>
+
+<h3>From Bytes To ClassNode</h3>
+
+<p class="indented">
+    <span class="text-emphasize">Constructing a <code>ClassNode</code> from a byte array</span>
+    can therefore be done by composing it with a <code>ClassReader</code>,
+    so that the events generated by the <code>ClassReader</code> are consumed by the <code>ClassNode</code> component,
+    resulting in the initialization of its fields:
+</p>
+
+<pre title="from bytes to ClassNode" class="javacode">
+ClassNode cn = new ClassNode();
+ClassReader cr = new ClassReader(...);
+cr.accept(cn, 0);
+</pre>
+
+<h3>From ClassNode To Bytes</h3>
+
+<p class="indented">
+    Symmetrically <span class="text-emphasize">a <code>ClassNode</code> can be converted to its byte array representation</span>
+    by composing it with a <code>ClassWriter</code>,
+    so that the events generated by the <code>ClassNode</code>'s <code>accept</code> method are consumed by the <code>ClassWriter</code>:
+</p>
+
+<pre title="from ClassNode to bytes" class="javacode">
+ClassWriter cw = new ClassWriter(0);
+cn.accept(cw);
+byte[] b = cw.toByteArray();
+</pre>
+
+<h3>Put Together</h3>
+
+<p class="indented">
+    Transforming a class with <span class="text-compare-green">the tree API</span> can be done by putting these elements together:
+</p>
+
+<pre title="Transforming a class with the tree API" class="javacode">
+// (1) 构建ClassReader
+ClassReader cr = new ClassReader(...);
+
+// (2) 构建ClassNode
+ClassNode cn = new ClassNode(ASM9);
+cr.accept(cn, 0);
+
+// (3) 进行transform
+... // here transform cn as you want
+
+// (4) 构建ClassWriter
+ClassWriter cw = new ClassWriter(0);
+cn.accept(cw);
+
+// (5) 生成byte[]内容输出
+byte[] bytes = cw.toByteArray();
+</pre>
+
+<p class="indented">
+    下面举个简单的例子，就是修改<code>.class</code>文件的版本信息。虽然代码比较简单，但它展示了处理问题的思路。具体代码如下：
+</p>
+
+<pre title="HelloWorldTransform.java" class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
+
+public class HelloWorldTransform {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        // (1)构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        // (2) 构建ClassNode
+        ClassNode cn = new ClassNode(Opcodes.ASM9); // 注意，这里是构造函数
+        cr.accept(cn, ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+
+        // (3) 进行transform
+        cn.version = Opcodes.V1_5;
+
+        // (4) 构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cn.accept(cw); // 注意，这里是accept方法
+
+        // (5) 生成byte[]内容输出
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+        System.out.println("file://" + filepath);
+    }
+}
+</pre>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>
+        第一，了解<code>ClassNode</code>类的重要成员。
+    </li>
+    <li>
+        第二，学习使用<code>ClassNode</code>类的处理逻辑。
+    </li>
+</ul>

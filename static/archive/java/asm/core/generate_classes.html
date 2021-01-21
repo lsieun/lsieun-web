@@ -19,7 +19,7 @@
 <pre title="Measurable.java" class="javacode">
 public interface Measurable {
 }
-</div>
+</pre>
 
 <pre title="Comparable.java" class="javacode">
 public interface Comparable extends Measurable {
@@ -28,7 +28,7 @@ public interface Comparable extends Measurable {
     int GREATER = 1;
     int compareTo(Object o);
 }
-</div>
+</pre>
 
 <pre title="ComparableDumpCore.java" class="javacode">
 import lsieun.utils.FileUtils;
@@ -61,7 +61,7 @@ public class ComparableDumpCore {
         FileUtils.writeBytes(filepath, bytes);
     }
 }
-</div>
+</pre>
 
 <pre title="MyClassLoader.java" class="javacode">
 public class MyClassLoader extends ClassLoader {
@@ -69,4 +69,4 @@ public class MyClassLoader extends ClassLoader {
         return defineClass(name, bytes, 0, bytes.length);
     }
 }
-</div>
+</pre>

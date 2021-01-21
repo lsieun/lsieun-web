@@ -31,7 +31,7 @@ public class HelloWorld {
         System.out.println("Hello World");
     }
 }
-</div>
+</pre>
 
 <pre title="RemoveMethodAdapter.java" class="javacode">
 import org.objectweb.asm.ClassVisitor;
@@ -56,7 +56,7 @@ public class RemoveMethodAdapter extends ClassVisitor {
         return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
 }
-</div>
+</pre>
 
 
 
@@ -93,4 +93,4 @@ public class App {
         FileUtils.writeBytes(filepath, bytes2);
     }
 }
-</div>
+</pre>

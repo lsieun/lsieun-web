@@ -1,6 +1,12 @@
 // type: noun,n./verb,v./adjective,adj./quantifier/adverb,adv./preposition(介词)/conjunction,conj.(连词)
 let words = [
     {
+        "id": "biceps",
+        "type": "n.",
+        "ch": "二头肌（上臂前侧的主要肌肉）",
+        "en": "the main muscle at the front of the top part of the arm"
+    },
+    {
         "id": "clutter",
         "type": "n.",
         "ch": "杂乱的东西（尤指不需要的或无用的）；杂乱",
@@ -13,6 +19,13 @@ let words = [
         "en": "relating to geology, or to the features of the Earth’s surface"
     },
     {
+        "id": "groove",
+        "type": "n.",
+        "ch": "沟；槽；辙；纹",
+        "en": "a long narrow cut in the surface of sth hard",
+        "related": "grooves"
+    },
+    {
         "id": "hallmark",
         "type": "n.",
         "ch": "特征；特点",
@@ -23,6 +36,18 @@ let words = [
         "type": "n.",
         "ch": "困难；麻烦",
         "en": "a situation that is annoying because it involves doing sth difficult or complicated that needs a lot of effort"
+    },
+    {
+        "id": "manicure",
+        "type": "n.",
+        "ch": "修剪指甲；指甲护理",
+        "en": "the care and treatment of a person's hands and nails"
+    },
+    {
+        "id": "slumber",
+        "type": "n.",
+        "ch": "睡眠",
+        "en": "sleep; a time when sb is asleep"
     },
     {
         "id": "tectonic",

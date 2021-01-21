@@ -13,7 +13,7 @@ package org.objectweb.asm.commons;
 public class LocalVariablesSorter extends MethodVisitor {
     // ......
 }
-</div>
+</pre>
 
 <p class="indented">
     This method adapter <span class="text-example">renumbers the local variables</span>
@@ -47,7 +47,7 @@ public class HelloWorld {
         Thread.sleep(d);
     }
 }
-</div>
+</pre>
 
 <pre title="HelloWorld.java after" class="javacode">
 public class HelloWorld {
@@ -61,7 +61,7 @@ public class HelloWorld {
         timer += System.currentTimeMillis() - t;
     }
 }
-</div>
+</pre>
 
 <p class="indented">
     This can be done easily by extending <code>LocalVariablesSorter</code>,
@@ -110,7 +110,7 @@ public class AddTimerMethodAdapter4 extends LocalVariablesSorter {
         super.visitMaxs(maxStack + 4, maxLocals);
     }
 }
-</div>
+</pre>
 
 <pre title="AddTimerClassAdapter4.java" class="javacode">
 import org.objectweb.asm.ClassVisitor;
@@ -154,7 +154,7 @@ public class AddTimerClassAdapter4  extends ClassVisitor {
         cv.visitEnd();
     }
 }
-</div>
+</pre>
 
 <pre title="App.java" class="javacode">
 import lsieun.utils.FileUtils;
@@ -189,7 +189,7 @@ public class App {
         FileUtils.writeBytes(filepath, b2);
     }
 }
-</div>
+</pre>
 
 <pre title="HelloWorld.class test(II)V" class="plaintext">
   // access flags 0x1
@@ -216,7 +216,7 @@ public class App {
     RETURN
     MAXSTACK = 4
     MAXLOCALS = 7
-</div>
+</pre>
 
 <pre title="HelloWorldRun.java" class="javacode">
 import java.lang.reflect.Field;
@@ -232,7 +232,7 @@ public class HelloWorldRun {
         System.out.println(value);
     }
 }
-</div>
+</pre>
 
 <p class="indented"></p>
 <p class="indented"></p>
