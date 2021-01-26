@@ -1,4 +1,8 @@
 2021-01-20 13:00#Diary Beta#Life##/archive/diary/diary_index.html#事件记录。
+2021-01-24 11:50#Science Beta#Life##/archive/life/science_index.html#科学。
+2021-01-24 11:50#Education Beta#Life##/archive/life/education_index.html#教育。
+2021-01-24 11:50#Religion Beta#Life##/archive/life/religion_index.html#宗教。
+2021-01-24 11:50#Society Beta#Life##/archive/life/society_index.html#社会。
 2021-01-04 04:00#Become The Wind Beta#Life##/archive/life/become_the_wind.html#成为风。
 2021-01-04 04:00#Be A Man Beta#Life##/archive/be_a_man/man.html#Be A Man。
 2020-11-30 04:00#51cto#Job##/archive/life/51cto.html#51cto。

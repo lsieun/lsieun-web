@@ -1,0 +1,94 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Core API Overview</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Three Core Components</h2>
+
+<p>
+    ASM provides <span class="text-emphasize">three core components</span> based on the <code>ClassVisitor</code> API to generate and transform classes:
+</p>
+
+<ul>
+    <li>
+        The <code>ClassReader</code> class parses a compiled class given as a byte array,
+        and calls the corresponding <code>visitXxx</code> methods on the <code>ClassVisitor</code> instance passed as argument to its <code>accept</code> method.
+        <span class="text-key-point">It can be seen as an event producer</span>.
+    </li>
+    <li>
+        The <code>ClassWriter</code> class is a subclass of the <code>ClassVisitor</code> abstract class that builds compiled classes directly in binary form.
+        It produces as output a byte array containing the compiled class, which can be retrieved with the <code>toByteArray</code> method.
+        <span class="text-key-point">It can be seen as an event consumer</span>.
+    </li>
+    <li>
+        The <code>ClassVisitor</code> class delegates all the method calls it receives to another <code>ClassVisitor</code> instance.
+        <span class="text-key-point">It can be seen as an event filter</span>.
+    </li>
+</ul>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/groundwater.jpg" alt=""/><br/>
+    <span>地下水渗透模型</span>
+</div>
+
+<p>
+    现在这个阶段不讲Annotation属性、SourceFile属性、LineNumberTable属性等。
+</p>
+
+<p>
+    搞清楚两层关系：
+</p>
+
+<ul>
+    <li>
+        ClassReader -&gt; ClassVisitor --&gt; ClassWriter
+    </li>
+    <li>
+        ClassVisitor -&gt; FieldVisitor --&gt; MethodVisitor
+    </li>
+    <li>
+        ClassWriter -&gt; FieldWriter --&gt; MethodWriter
+    </li>
+</ul>
+
+<h3>ClassReader</h3>
+
+<p>
+    首先，讲ClassReader -&gt; ClassVisitor --&gt; ClassWriter放到一起。
+    ClassReader和ClassVisitor一起讲；ClassVisitor和ClassWriter一起讲。
+    地下水渗透模型。
+</p>
+
+<h3>ClassVisitor</h3>
+
+<h3>ClassWriter</h3>
+
+<h2>Type</h2>
+
+<h2>visitEnd()</h2>
+
+<p>
+
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        注意：在对<code>visitXxx</code>方法调用过程中，最后一定要调用<code>visitEnd()</code>方法。
+    </p>
+    <p>
+        联想一下：什么样的人是靠谱的人？所谓靠谱的人，就是凡事有交代，件件有着落，事事有回音！说是三件事，其实是一件事，就是一个人要在协作中完成闭环。所谓闭环，就是一件事有开头，就必有结尾。但是一般人做到这一条并不容易。
+    </p>
+    <p>
+        对于<code>visitEnd()</code>方法的调用，就是明确的声明“这件事情，我做完了”。
+    </p>
+</div>
+
+<h2>编码规则</h2>
+
+<p>
+    Class层一级叫Visitor，而Field/Method/Annotation一级叫Adapter。
+</p>

@@ -13,6 +13,12 @@ let words = [
         "en": "a lot of things in an untidy state, especially things that are not necessary or are not being used; a state of confusion"
     },
     {
+        "id": "dart",
+        "type": "v.",
+        "ch": "猛冲；突进；飞奔",
+        "en": "to move suddenly and quickly in a particular direction"
+    },
+    {
         "id": "geological",
         "type": "adj.",
         "ch": "地质的",
@@ -44,6 +50,18 @@ let words = [
         "en": "the care and treatment of a person's hands and nails"
     },
     {
+        "id": "paradox",
+        "type": "n.",
+        "ch": "矛盾的人（或事物、情况）",
+        "en": "a statement, proposition, or situation that seems to be absurd or contradictory, but in fact is or may be true"
+    },
+    {
+        "id": "rudder",
+        "type": "n.",
+        "ch": "（船的）舵",
+        "en": "a piece of wood or metal at the back of a boat or an aircraft that is used for controlling its direction"
+    },
+    {
         "id": "slumber",
         "type": "n.",
         "ch": "睡眠",
@@ -54,6 +72,12 @@ let words = [
         "type": "adj.",
         "ch": "地壳构造的",
         "en": "connected with the structure of the earth's surface"
+    },
+    {
+        "id": "unanimous",
+        "type": "adj.",
+        "ch": "（决定或意见）一致的",
+        "en": "if a decision or an opinion is unanimous, it is agreed or shared by everyone in a group"
     },
     {
         "id": "",

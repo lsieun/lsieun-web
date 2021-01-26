@@ -18,6 +18,16 @@
     <img class="w3-image w3-center" src="/images/java/asm/asm_can_do.png" alt=""/>
 </div>
 
+<pre title="method_info" class="plaintext">
+method_info {
+    u2             access_flags;
+    u2             name_index;
+    u2             descriptor_index;
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</pre>
+
 <pre title="MethodNode.java" class="javacode">
 public class MethodNode extends MethodVisitor {
     public int access;

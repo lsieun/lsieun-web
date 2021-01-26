@@ -89,7 +89,7 @@ public abstract class MethodVisitor {
     public void visitMaxs(final int maxStack, final int maxLocals);
     public void visitEnd();
 }
-</div>
+</pre>
 
 <p class="indented">
     <span class="text-key-point">These methods must be called in the following order</span>
@@ -117,7 +117,7 @@ public abstract class MethodVisitor {
     visitMaxs
 ]
 visitEnd.
-</div>
+</pre>
 
 <p class="indented">
     This means that <span class="text-key-point">annotations and attributes</span>, if any, <span class="text-key-point">must be visited first</span>,
@@ -153,7 +153,7 @@ mv2.visitInsn(...);
 mv2.visitMaxs(...);
 mv2.visitEnd();
 cv.visitEnd();
-</div>
+</pre>
 
 <h2>Three core Components</h2>
 
