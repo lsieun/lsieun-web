@@ -251,12 +251,12 @@ public class ClassWriter extends ClassVisitor {
     <li>调用ClassWriter对象的toByteArray方法</li>
 </ol>
 
-<pre title="HelloWorldGenerate.java" class="javacode">
+<pre title="HelloWorldGenerateCore.java" class="javacode">
 import org.objectweb.asm.ClassWriter;
 
 import static org.objectweb.asm.Opcodes.*;
 
-public class HelloWorldGenerate {
+public class HelloWorldGenerateCore {
     public static byte[] dump () throws Exception {
         // (1) 创建ClassWriter对象
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);

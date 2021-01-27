@@ -19,6 +19,12 @@ let words = [
         "en": "to move suddenly and quickly in a particular direction"
     },
     {
+        "id": "dichotomy",
+        "type": "n.",
+        "ch": "一分为二；二分法",
+        "en": "the separation that exists between two groups or things that are completely opposite to and different from each other"
+    },
+    {
         "id": "geological",
         "type": "adj.",
         "ch": "地质的",
@@ -50,10 +56,22 @@ let words = [
         "en": "the care and treatment of a person's hands and nails"
     },
     {
+        "id": "neurological",
+        "type": "adj.",
+        "ch": "神经系统的；神经（病）学的",
+        "en": "relating to nerves or to the science of neurology"
+    },
+    {
         "id": "paradox",
         "type": "n.",
         "ch": "矛盾的人（或事物、情况）",
         "en": "a statement, proposition, or situation that seems to be absurd or contradictory, but in fact is or may be true"
+    },
+    {
+        "id": "pigeonhole",
+        "type": "vt.",
+        "ch": "将（某人）轻率分类",
+        "en": "to decide that sb belongs to a particular group or type without thinking deeply enough about it and considering what other qualities they might have"
     },
     {
         "id": "rudder",
