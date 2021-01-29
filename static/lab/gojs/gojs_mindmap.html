@@ -1,0 +1,36 @@
+<!DOCTYPE html>  <!-- HTML5 document type -->
+<html>
+<head>
+    <title>GOJS</title>
+    <!-- use go-debug.js when developing and go.js when deploying -->
+    <script src="/js/jquery-3.4.1.js"></script>
+    <script src="/js/gojs/go-debug.js"></script>
+    <script src="/js/gojs/mindmap.js"></script>
+    <script type="application/javascript">
+        $(document).ready(function () {
+            initMindMap("myDiagramDiv");
+        });
+    </script>
+</head>
+
+<body>
+<!-- The DIV for a Diagram needs an explicit size or else we will not see anything.
+     In this case we also add a background color so we can see that area. -->
+<div id="myDiagramDiv" style="width:100%; height:700px; background-color: #DAE4E4;"></div>
+<button id="SaveButton" onclick="save()">Save</button>
+<button onclick="load()">Load</button>
+<button onclick="layoutAll()">Layout</button>
+Diagram Model saved in JSON format:
+<br/>
+<textarea id="mySavedModel" style="width:100%;height:200px">
+{ "class": "TreeModel",
+  "nodeDataArray": [
+{"key":0, "text":"Mind Map", "loc":"-75 -4"},
+{"key":1, "parent":0, "text":"Getting more time", "brush":"skyblue", "dir":"right", "loc":"2 -26"},
+{"key":2, "parent":0, "text":"More effective use", "brush":"darkseagreen", "dir":"right", "loc":"2 39"},
+{"key":3, "parent":0, "text":"Time wasting", "brush":"palevioletred", "dir":"left", "loc":"-133 -29.75"},
+{"key":4, "parent":0, "text":"Key issues", "brush":"coral", "dir":"left", "loc":"-132 42.75"}
+ ]}
+</textarea>
+</body>
+</html>

@@ -23,6 +23,12 @@
 <h3>示例一：删除方法</h3>
 
 <p class="indented">
+    Instead of <span class="text-compare-grey">forwarding a method call with modified arguments</span>,
+    you can <span class="text-compare-grey">choose to not forward this call at all</span>.
+    <span class="text-emphasize">The effect is that the corresponding class element is removed</span>.
+</p>
+
+<p class="indented">
     <span class="text-key-point">In order to remove a field or method, you must not forward the method call, and return <code>null</code> to the caller</span>.
     For example the following class adapter removes <span class="text-example">a single method</span>,
     specified by its <code>name</code> and by its <code>descriptor</code>

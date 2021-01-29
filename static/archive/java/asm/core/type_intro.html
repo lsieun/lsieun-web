@@ -1,0 +1,422 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Type Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    In addition to the <code>ClassVisitor</code> class and to the related <code>ClassReader</code> and <code>ClassWriter</code> components,
+    <span class="text-emphasize">ASM also provides a utility class</span> <code>Type</code> for manipulating
+    <span class="text-example">internal names</span>,
+    <span class="text-example">type descriptors</span> and
+    <span class="text-example">method descriptors</span> at runtime.
+</p>
+
+<h2>Type</h2>
+
+<h3>fields</h3>
+
+<pre title="ASM: Type.java" class="javacode">
+public final class Type {
+    private final int sort;
+    private final String valueBuffer;
+    private final int valueBegin;
+    private final int valueEnd;
+}
+</pre>
+
+<h3>Constructor</h3>
+
+<pre title="ASM: Type.java" class="javacode">
+public final class Type {
+    private Type(final int sort, final String valueBuffer, final int valueBegin, final int valueEnd) {
+        this.sort = sort;
+        this.valueBuffer = valueBuffer;
+        this.valueBegin = valueBegin;
+        this.valueEnd = valueEnd;
+    }
+}
+</pre>
+
+<h3>methods</h3>
+
+<pre title="ASM: Type.java" class="javacode">
+public final class Type {
+    public int getSort() {
+        return sort == INTERNAL ? OBJECT : sort;
+    }
+
+    public String getClassName() {
+        switch (sort) {
+            case VOID:
+                return "void";
+            case BOOLEAN:
+                return "boolean";
+            case CHAR:
+                return "char";
+            case BYTE:
+                return "byte";
+            case SHORT:
+                return "short";
+            case INT:
+                return "int";
+            case FLOAT:
+                return "float";
+            case LONG:
+                return "long";
+            case DOUBLE:
+                return "double";
+            case ARRAY:
+                StringBuilder stringBuilder = new StringBuilder(getElementType().getClassName());
+                for (int i = getDimensions(); i > 0; --i) {
+                    stringBuilder.append("[]");
+                }
+                return stringBuilder.toString();
+            case OBJECT:
+            case INTERNAL:
+                return valueBuffer.substring(valueBegin, valueEnd).replace('/', '.');
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    public String getInternalName() {
+        return valueBuffer.substring(valueBegin, valueEnd);
+    }
+
+    public String getDescriptor() {
+        if (sort == OBJECT) {
+            return valueBuffer.substring(valueBegin - 1, valueEnd + 1);
+        } else if (sort == INTERNAL) {
+            return 'L' + valueBuffer.substring(valueBegin, valueEnd) + ';';
+        } else {
+            return valueBuffer.substring(valueBegin, valueEnd);
+        }
+    }
+
+    public int getSize() {
+        switch (sort) {
+            case VOID:
+                return 0;
+            case BOOLEAN:
+            case CHAR:
+            case BYTE:
+            case SHORT:
+            case INT:
+            case FLOAT:
+            case ARRAY:
+            case OBJECT:
+            case INTERNAL:
+                return 1;
+            case LONG:
+            case DOUBLE:
+                return 2;
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    public int getDimensions() {
+        int numDimensions = 1;
+        while (valueBuffer.charAt(valueBegin + numDimensions) == '[') {
+            numDimensions++;
+        }
+        return numDimensions;
+    }
+
+    public Type getElementType() {
+        final int numDimensions = getDimensions();
+        return getTypeInternal(valueBuffer, valueBegin + numDimensions, valueEnd);
+    }
+
+    public Type[] getArgumentTypes() {
+        return getArgumentTypes(getDescriptor());
+    }
+
+    public Type getReturnType() {
+        return getReturnType(getDescriptor());
+    }
+
+    public int getArgumentsAndReturnSizes() {
+        return getArgumentsAndReturnSizes(getDescriptor());
+    }
+
+    public int getOpcode(final int opcode) {
+        if (opcode == Opcodes.IALOAD || opcode == Opcodes.IASTORE) {
+            switch (sort) {
+                case BOOLEAN:
+                case BYTE:
+                    return opcode + (Opcodes.BALOAD - Opcodes.IALOAD);
+                case CHAR:
+                    return opcode + (Opcodes.CALOAD - Opcodes.IALOAD);
+                case SHORT:
+                    return opcode + (Opcodes.SALOAD - Opcodes.IALOAD);
+                case INT:
+                    return opcode;
+                case FLOAT:
+                    return opcode + (Opcodes.FALOAD - Opcodes.IALOAD);
+                case LONG:
+                    return opcode + (Opcodes.LALOAD - Opcodes.IALOAD);
+                case DOUBLE:
+                    return opcode + (Opcodes.DALOAD - Opcodes.IALOAD);
+                case ARRAY:
+                case OBJECT:
+                case INTERNAL:
+                    return opcode + (Opcodes.AALOAD - Opcodes.IALOAD);
+                case METHOD:
+                case VOID:
+                    throw new UnsupportedOperationException();
+                default:
+                    throw new AssertionError();
+            }
+        } else {
+            switch (sort) {
+                case VOID:
+                    if (opcode != Opcodes.IRETURN) {
+                        throw new UnsupportedOperationException();
+                    }
+                    return Opcodes.RETURN;
+                case BOOLEAN:
+                case BYTE:
+                case CHAR:
+                case SHORT:
+                case INT:
+                    return opcode;
+                case FLOAT:
+                    return opcode + (Opcodes.FRETURN - Opcodes.IRETURN);
+                case LONG:
+                    return opcode + (Opcodes.LRETURN - Opcodes.IRETURN);
+                case DOUBLE:
+                    return opcode + (Opcodes.DRETURN - Opcodes.IRETURN);
+                case ARRAY:
+                case OBJECT:
+                case INTERNAL:
+                    if (opcode != Opcodes.ILOAD && opcode != Opcodes.ISTORE && opcode != Opcodes.IRETURN) {
+                        throw new UnsupportedOperationException();
+                    }
+                    return opcode + (Opcodes.ARETURN - Opcodes.IRETURN);
+                case METHOD:
+                    throw new UnsupportedOperationException();
+                default:
+                    throw new AssertionError();
+            }
+        }
+    }
+}
+</pre>
+
+<h2>static Members</h2>
+
+<h3>static fields</h3>
+
+<pre title="ASM: Type.java" class="javacode">
+public final class Type {
+    public static final int VOID = 0;
+    public static final int BOOLEAN = 1;
+    public static final int CHAR = 2;
+    public static final int BYTE = 3;
+    public static final int SHORT = 4;
+    public static final int INT = 5;
+    public static final int FLOAT = 6;
+    public static final int LONG = 7;
+    public static final int DOUBLE = 8;
+    public static final int ARRAY = 9;
+    public static final int OBJECT = 10;
+    public static final int METHOD = 11;
+    private static final int INTERNAL = 12;
+
+    private static final String PRIMITIVE_DESCRIPTORS = "VZCBSIFJD";
+
+    public static final Type VOID_TYPE = new Type(VOID, PRIMITIVE_DESCRIPTORS, VOID, VOID + 1);
+    public static final Type BOOLEAN_TYPE = new Type(BOOLEAN, PRIMITIVE_DESCRIPTORS, BOOLEAN, BOOLEAN + 1);
+    public static final Type CHAR_TYPE = new Type(CHAR, PRIMITIVE_DESCRIPTORS, CHAR, CHAR + 1);
+    public static final Type BYTE_TYPE = new Type(BYTE, PRIMITIVE_DESCRIPTORS, BYTE, BYTE + 1);
+    public static final Type SHORT_TYPE = new Type(SHORT, PRIMITIVE_DESCRIPTORS, SHORT, SHORT + 1);
+    public static final Type INT_TYPE = new Type(INT, PRIMITIVE_DESCRIPTORS, INT, INT + 1);
+    public static final Type FLOAT_TYPE = new Type(FLOAT, PRIMITIVE_DESCRIPTORS, FLOAT, FLOAT + 1);
+    public static final Type LONG_TYPE = new Type(LONG, PRIMITIVE_DESCRIPTORS, LONG, LONG + 1);
+    public static final Type DOUBLE_TYPE = new Type(DOUBLE, PRIMITIVE_DESCRIPTORS, DOUBLE, DOUBLE + 1);
+}
+</pre>
+
+<h3>static methods</h3>
+
+<pre title="ASM: Type.java" class="javacode">
+public final class Type {
+    public static Type getType(final String typeDescriptor) {
+        return getTypeInternal(typeDescriptor, 0, typeDescriptor.length());
+    }
+
+    public static Type getType(final Class<?> clazz) {
+        if (clazz.isPrimitive()) {
+            if (clazz == Integer.TYPE) {
+                return INT_TYPE;
+            } else if (clazz == Void.TYPE) {
+                return VOID_TYPE;
+            } else if (clazz == Boolean.TYPE) {
+                return BOOLEAN_TYPE;
+            } else if (clazz == Byte.TYPE) {
+                return BYTE_TYPE;
+            } else if (clazz == Character.TYPE) {
+                return CHAR_TYPE;
+            } else if (clazz == Short.TYPE) {
+                return SHORT_TYPE;
+            } else if (clazz == Double.TYPE) {
+                return DOUBLE_TYPE;
+            } else if (clazz == Float.TYPE) {
+                return FLOAT_TYPE;
+            } else if (clazz == Long.TYPE) {
+                return LONG_TYPE;
+            } else {
+                throw new AssertionError();
+            }
+        } else {
+            return getType(getDescriptor(clazz));
+        }
+    }
+
+    public static Type getObjectType(final String internalName) {
+        return new Type(internalName.charAt(0) == '[' ? ARRAY : INTERNAL, internalName, 0, internalName.length());
+    }
+
+    public static Type getMethodType(final String methodDescriptor) {
+        return new Type(METHOD, methodDescriptor, 0, methodDescriptor.length());
+    }
+}
+</pre>
+
+<h2>Create Type Object</h2>
+
+<p class="indented">
+    A <code>Type</code>(<code>org.objectweb.asm.Type</code> in <code>asm.jar</code>) object represents a Java type,
+    and can be constructed either from <span class="text-example">a type descriptor</span> or from <span class="text-example">a <code>Class</code> object</span>.
+    The <code>Type</code> class also contains <span class="text-example">static variables</span> representing the primitive types.
+    For example <code>Type.INT_TYPE</code> is the <code>Type</code> object representing the <code>int</code> type.
+    <sub class="my_note" style="color:blue">笔记：这里主要讲如何得到一个Type对象实例。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<pre title="Type.java" class="javacode">
+public final class Type {
+    // 因为构造函数用private修饰，因此我们不能使用new关键字创建Type对象
+    private Type(final int sort, final String valueBuffer, final int valueBegin, final int valueEnd) {
+        this.sort = sort;
+        this.valueBuffer = valueBuffer;
+        this.valueBegin = valueBegin;
+        this.valueEnd = valueEnd;
+    }
+}
+</pre>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        <code>org.objectweb.asm.Type</code>是属于core API，位于<code>asm.jar</code>。<code>Type</code>类有一个private的构造函数，因此<code>Type</code>对象实例不能通过<code>new</code>关键字来创建。但是，<code>Type</code>类提供了static method和static field，一共有三种方式：
+    </p>
+    <ul>
+        <li>
+            第一种方式，<code>Type t = Type.getType("Ljava/lang/String;");</code>, descriptor --&gt; Type
+        </li>
+        <li>
+            第二种方式，<code>Type t = Type.getObjectType("java/lang/String");</code>, internal name --&gt; Type
+        </li>
+        <li>
+            第三种方式，<code>Type t = Type.getType(String.class);</code>, Class --&gt; Type
+        </li>
+        <li>
+            第四种方式，<code>Type t = Type.INT_TYPE;</code>, Type static field --&gt; Type
+        </li>
+    </ul>
+</div>
+
+<h2>Type Methods</h2>
+
+<h3>Type --&gt; internal name</h3>
+
+<p class="indented">
+    <span class="text-key-point">The <code>getInternalName</code> method returns the internal name of a <code>Type</code></span>.
+    For example <code>Type.getType(String.class).getInternalName()</code> gives the internal name of the <code>String</code> class, i.e. <code>"java/lang/String"</code>.
+    This method must be used only for class or interface types.
+    <sub class="my_note" style="color:blue">笔记：这里主要讲Type类的getInternalName方法。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h3>Type --&gt; descriptor</h3>
+
+<p class="indented">
+    <span class="text-key-point">The <code>getDescriptor</code> method returns the descriptor of a <code>Type</code></span>.
+    So, for example, instead of using <code>"Ljava/lang/String;"</code> in your code
+    you could use <code>Type.getType(String.class).getDescriptor()</code>.
+    Or, instead of using <code>I</code>, you could use <code>Type.INT_TYPE.getDescriptor()</code>.
+</p>
+
+<h3>getOpcode</h3>
+
+<p class="indented">
+    Many bytecode instructions, such as <code>xLOAD</code>, <code>xADD</code> or <code>xRETURN</code>,
+    depend on the type to which they are applied.
+    The <code>Type</code> class provides a <code>getOpcode</code> method that can be used to get,
+    for these instructions, the opcode corresponding to a given type.
+    This method takes as parameter an opcode for the <code>int</code> type,
+    and returns the opcode for the type on which it is called.
+    For instance <code>t.getOpcode(IMUL)</code> returns <code>FMUL</code> if <code>t</code> is equal to <code>Type.FLOAT_TYPE</code>.
+</p>
+
+<h2>Method Type</h2>
+
+<p class="indented">
+    <span class="text-key-point">A <code>Type</code> object can also represent a method type</span>.
+    Such objects can be constructed either from <span class="text-example">a method descriptor</span>
+    or from <span class="text-example">a <code>Method</code> object</span>.
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int i) {
+        System.out.println("i = " + i);
+    }
+}
+</pre>
+
+<pre title="从method descriptor来创建Type对象" class="javacode">
+import org.objectweb.asm.Type;
+
+Type t = Type.getType("(I)V");
+System.out.println(t);
+</pre>
+
+<pre title="从Method对象来创建Type对象" class="javacode">
+import org.objectweb.asm.Type;
+import java.lang.reflect.Method;
+
+Class&lt;HelloWorld&gt; clazz = HelloWorld.class;
+Method m = clazz.getDeclaredMethod("test", int.class);
+Type t = Type.getType(m);
+System.out.println(t);
+</pre>
+
+<p class="indented">
+    The <code>getDescriptor</code> method then returns the method descriptor corresponding to this type.
+</p>
+
+<p class="indented">
+    In addition, the <code>getArgumentTypes</code> and <code>getReturnType</code> methods
+    can be used to get the <code>Type</code> objects corresponding to the argument types and return types of a method.
+    For instance <code>Type.getArgumentTypes("(I)V")</code> returns an array containing the single element <code>Type.INT_TYPE</code>.
+    Similarly, a call to <code>Type.getReturnType("(I)V")</code> returns the <code>Type.VOID_TYPE</code> object.
+</p>
+
+<h2>Methods</h2>
+
+<h3>getArgumentsAndReturnSizes</h3>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+
+
+

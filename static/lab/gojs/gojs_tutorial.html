@@ -1,0 +1,330 @@
+<!DOCTYPE html>  <!-- HTML5 document type -->
+<html>
+<head>
+    <title>GOJS</title>
+    <!-- use go-debug.js when developing and go.js when deploying -->
+    <script src="/js/gojs/go-debug.js"></script>
+</head>
+
+<body>
+    <!-- The DIV for a Diagram needs an explicit size or else we will not see anything.
+         In this case we also add a background color so we can see that area. -->
+    <div id="myDiagramDiv" style="width:800px; height:600px; background-color: #DAE4E4;"></div>
+    <button id="SaveButton" onclick="save()">Save</button>
+    <button onclick="load()">Load</button>
+    <button onclick="layoutAll()">Layout</button>
+    Diagram Model saved in JSON format:
+    <br />
+    <textarea id="mySavedModel" style="width:100%;height:400px">
+{ "class": "go.TreeModel",
+  "nodeDataArray": [
+            {"key":0, "text":"Mind Map", "loc":"0 0"},
+            {"key":1, "parent":0, "text":"Getting more time", "brush":"skyblue", "dir":"right", "loc":"77 -22"},
+            {"key":11, "parent":1, "text":"Wake up early", "brush":"skyblue", "dir":"right", "loc":"200 -48"},
+            {"key":12, "parent":1, "text":"Delegate", "brush":"skyblue", "dir":"right", "loc":"200 -22"},
+            {"key":13, "parent":1, "text":"Simplify", "brush":"skyblue", "dir":"right", "loc":"200 4"},
+            {"key":2, "parent":0, "text":"More effective use", "brush":"darkseagreen", "dir":"right", "loc":"77 43"},
+            {"key":21, "parent":2, "text":"Planning", "brush":"darkseagreen", "dir":"right", "loc":"203 30"},
+            {"key":211, "parent":21, "text":"Priorities", "brush":"darkseagreen", "dir":"right", "loc":"274 17"},
+            {"key":212, "parent":21, "text":"Ways to focus", "brush":"darkseagreen", "dir":"right", "loc":"274 43"},
+            {"key":22, "parent":2, "text":"Goals", "brush":"darkseagreen", "dir":"right", "loc":"203 56"},
+            {"key":3, "parent":0, "text":"Time wasting", "brush":"palevioletred", "dir":"left", "loc":"-120 -31.75"},
+            {"key":31, "parent":3, "text":"Too many meetings", "brush":"palevioletred", "dir":"left", "loc":"-254 -68.25"},
+            {"key":32, "parent":3, "text":"Too much time spent on details", "brush":"palevioletred", "dir":"left", "loc":"-320 -31.25"},
+            {"key":33, "parent":3, "text":"Message fatigue", "brush":"palevioletred", "dir":"left", "loc":"-246 -3.25"},
+            {"key":331, "parent":31, "text":"Check messages less", "brush":"palevioletred", "dir":"left", "loc":"-391 -97.25"},
+            {"key":332, "parent":31, "text":"Message filters", "brush":"palevioletred", "dir":"left", "loc":"-363 -57.25"},
+            {"key":4, "parent":0, "text":"Key issues", "brush":"coral", "dir":"left", "loc":"-115 56.75"},
+            {"key":41, "parent":4, "text":"Methods", "brush":"coral", "dir":"left", "loc":"-198 30.75"},
+            {"key":42, "parent":4, "text":"Deadlines", "brush":"coral", "dir":"left", "loc":"-198 56.75"},
+            {"key":43, "parent":4, "text":"Checkpoints", "brush":"coral", "dir":"left", "loc":"-198 82.75"}
+        ]
+}
+  </textarea>
+</body>
+
+<script type="application/javascript">
+    let MAKE = go.GraphObject.make;
+    // let myDiagram = MAKE(go.Diagram, "myDiagramDiv",
+    //         { // enable Ctrl-Z to undo and Ctrl-Y to redo
+    //             "undoManager.isEnabled": true
+    //         });
+    // let myDiagram =
+    //     MAKE(go.Diagram, "myDiagramDiv",
+    //         {
+    //             "undoManager.isEnabled": true,
+    //             layout: MAKE(go.TreeLayout, // specify a Diagram.layout that arranges trees
+    //                 { angle: 90, layerSpacing: 35 })
+    //         });
+    let myDiagram =
+        MAKE(go.Diagram, "myDiagramDiv",
+            {
+                // when the user drags a node, also move/copy/delete the whole subtree starting with that node
+                "commandHandler.copiesTree": true,
+                "commandHandler.copiesParentKey": true,
+                "commandHandler.deletesTree": true,
+                "draggingTool.dragsTree": true,
+                "undoManager.isEnabled": true
+            });
+
+    // myDiagram.nodeTemplate =
+    //     MAKE(go.Node, "Vertical", // second argument of a Node (or any Panel) can be a Panel type
+    //         /* set Node properties here */
+    //         { // the Node.location point will be at the center of each node
+    //             locationSpot: go.Spot.Center
+    //         },
+    //
+    //         /* add Bindings here */
+    //         // example Node binding sets Node.location to the value of Node.data.loc
+    //         new go.Binding("location", "loc"),
+    //
+    //         /* add GraphObjects contained within the Node */
+    //         // this Shape will be vertically above the TextBlock
+    //         MAKE(go.Shape,
+    //             "RoundedRectangle", // string argument can name a predefined figure
+    //             { /* set Shape properties here */ },
+    //             // example Shape binding sets Shape.figure to the value of Node.data.fig
+    //             new go.Binding("figure", "fig")),
+    //
+    //         MAKE(go.TextBlock,
+    //             "default text",  // string argument can be initial text string
+    //             { /* set TextBlock properties here */ },
+    //             // example TextBlock binding sets TextBlock.text to the value of Node.data.text
+    //             new go.Binding("text"))
+    //     );
+    // define a simple Node template
+    // myDiagram.nodeTemplate =
+    //     MAKE(go.Node, "Horizontal",
+    //         // the entire node will have a light-blue background
+    //         { background: "#44CCFF" },
+    //         MAKE(go.Picture,
+    //             // Pictures should normally have an explicit width and height.
+    //             // This picture has a red background, only visible when there is no source set
+    //             // or when the image is partially transparent.
+    //             { margin: 10, width: 50, height: 50, background: "red" },
+    //             // Picture.source is data bound to the "source" attribute of the model data
+    //             new go.Binding("source")),
+    //         MAKE(go.TextBlock,
+    //             "Default Text",  // the initial value for TextBlock.text
+    //             // some room around the text, a larger font, and a white stroke:
+    //             { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
+    //             // TextBlock.text is data bound to the "name" property of the model data
+    //             new go.Binding("text", "name"))
+    //     );
+    // the template we defined earlier
+    // myDiagram.nodeTemplate =
+    //     MAKE(go.Node, "Horizontal",
+    //         { background: "#44CCFF" },
+    //         MAKE(go.Picture,
+    //             { margin: 10, width: 50, height: 50, background: "red" },
+    //             new go.Binding("source")),
+    //         MAKE(go.TextBlock, "Default Text",
+    //             { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
+    //             new go.Binding("text", "name"))
+    //     );
+    // // define a Link template that routes orthogonally, with no arrowhead
+    // myDiagram.linkTemplate =
+    //     MAKE(go.Link,
+    //         // default routing is go.Link.Normal
+    //         // default corner is 0
+    //         { routing: go.Link.Orthogonal, corner: 5 },
+    //         // the link path, a Shape
+    //         MAKE(go.Shape, { strokeWidth: 3, stroke: "#555" })
+    //
+    //         // if we wanted an arrowhead we would also add another Shape with toArrow defined:
+    //         // $(go.Shape, { toArrow: "Standard", stroke: null }
+    //     );
+    // define a TreeLayout that flows from top to bottom
+    // myDiagram.layout =
+    //     MAKE(go.TreeLayout,
+    //         { angle: 90, layerSpacing: 35 });
+    // a node consists of some text with a line shape underneath
+    myDiagram.nodeTemplate =
+        MAKE(go.Node, "Vertical",
+            { selectionObjectName: "TEXT" },
+            MAKE(go.TextBlock,
+                {
+                    name: "TEXT",
+                    minSize: new go.Size(30, 15),
+                    editable: true
+                },
+                // remember not only the text string but the scale and the font in the node data
+                new go.Binding("text", "text").makeTwoWay(),
+                new go.Binding("scale", "scale").makeTwoWay(),
+                new go.Binding("font", "font").makeTwoWay()),
+            MAKE(go.Shape, "LineH",
+                {
+                    stretch: go.GraphObject.Horizontal,
+                    strokeWidth: 3, height: 3,
+                    // this line shape is the port -- what links connect with
+                    portId: "", fromSpot: go.Spot.LeftRightSides, toSpot: go.Spot.LeftRightSides
+                },
+                new go.Binding("stroke", "brush"),
+                // make sure links come in from the proper direction and go out appropriately
+                new go.Binding("fromSpot", "dir", function(d) { return spotConverter(d, true); }),
+                new go.Binding("toSpot", "dir", function(d) { return spotConverter(d, false); })),
+            // remember the locations of each node in the node data
+            new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            // make sure text "grows" in the desired direction
+            new go.Binding("locationSpot", "dir", function(d) { return spotConverter(d, false); })
+        );
+
+    // selected nodes show a button for adding children
+    // myDiagram.nodeTemplate.selectionAdornmentTemplate =
+    //     MAKE(go.Adornment, "Spot",
+    //         MAKE(go.Panel, "Auto",
+    //             // this Adornment has a rectangular blue Shape around the selected node
+    //             MAKE(go.Shape, { fill: null, stroke: "dodgerblue", strokeWidth: 3 }),
+    //             MAKE(go.Placeholder, { margin: new go.Margin(4, 4, 0, 4) })
+    //         ),
+    //         // and this Adornment has a Button to the right of the selected node
+    //         MAKE("Button",
+    //             {
+    //                 alignment: go.Spot.Right,
+    //                 alignmentFocus: go.Spot.Left,
+    //             },
+    //             MAKE(go.TextBlock, "+",  // the Button content
+    //                 { font: "bold 8pt sans-serif" })
+    //         )
+    //     );
+
+    // the context menu allows users to change the font size and weight,
+    // and to perform a limited tree layout starting at that node
+    // myDiagram.nodeTemplate.contextMenu =
+    //     MAKE("ContextMenu",
+    //         MAKE("ContextMenuButton",
+    //             MAKE(go.TextBlock, "Bigger"),
+    //             { click: function(e, obj) { changeTextSize(obj, 1.1); } }),
+    //         MAKE("ContextMenuButton",
+    //             MAKE(go.TextBlock, "Smaller"),
+    //             { click: function(e, obj) { changeTextSize(obj, 1 / 1.1); } }),
+    //         MAKE("ContextMenuButton",
+    //             MAKE(go.TextBlock, "Bold/Normal"),
+    //             { click: function(e, obj) { toggleTextWeight(obj); } }),
+    //         MAKE("ContextMenuButton",
+    //             MAKE(go.TextBlock, "Copy"),
+    //             { click: function(e, obj) { e.diagram.commandHandler.copySelection(); } }),
+    //         MAKE("ContextMenuButton",
+    //             MAKE(go.TextBlock, "Delete"),
+    //             { click: function(e, obj) { e.diagram.commandHandler.deleteSelection(); } }),
+    //         MAKE("ContextMenuButton",
+    //             MAKE(go.TextBlock, "Undo"),
+    //             { click: function(e, obj) { e.diagram.commandHandler.undo(); } }),
+    //         MAKE("ContextMenuButton",
+    //             MAKE(go.TextBlock, "Redo"),
+    //             { click: function(e, obj) { e.diagram.commandHandler.redo(); } }),
+    //         MAKE("ContextMenuButton",
+    //             MAKE(go.TextBlock, "Layout"),
+    //             {
+    //                 click: function(e, obj) {
+    //                     var adorn = obj.part;
+    //                     adorn.diagram.startTransaction("Subtree Layout");
+    //                     layoutTree(adorn.adornedPart);
+    //                     adorn.diagram.commitTransaction("Subtree Layout");
+    //                 }
+    //             }
+    //         )
+    //     );
+
+    // a link is just a Bezier-curved line of the same color as the node to which it is connected
+    myDiagram.linkTemplate =
+        MAKE(go.Link,
+            {
+                curve: go.Link.Bezier,
+                fromShortLength: -2,
+                toShortLength: -2,
+                selectable: false
+            },
+            MAKE(go.Shape,
+                { strokeWidth: 3 },
+                new go.Binding("stroke", "toNode", function(n) {
+                    if (n.data.brush) return n.data.brush;
+                    return "black";
+                }).ofObject())
+        );
+
+    // let myModel = MAKE(go.Model);
+    // for each object in this Array, the Diagram creates a Node to represent it
+    // myModel.nodeDataArray = [
+    //     { key: "Alpha" },
+    //     { key: "Beta" },
+    //     { key: "Gamma" }
+    // ];
+    // myModel.nodeDataArray =
+    //     [ // note that each node data object holds whatever properties it needs;
+    //       // for this app we add the "name" and "source" properties
+    //         { name: "Don Meow", source: "/images/popular-post.jpg" },
+    //         { name: "Copricat", source: "/images/popular-post.jpg" },
+    //         { name: "Demeter",  source: "/images/popular-post.jpg" },
+    //         { /* Empty node data */  }
+    //     ];
+
+
+    // myDiagram.model = myModel;
+    // var model = MAKE(go.GraphLinksModel);
+    // model.nodeDataArray =
+    //     [
+    //         { key: "A" },
+    //         { key: "B" },
+    //         { key: "C" }
+    //     ];
+    // model.linkDataArray =
+    //     [
+    //         { from: "A", to: "B" },
+    //         { from: "B", to: "C" }
+    //     ];
+    // var model = MAKE(go.TreeModel);
+    // model.nodeDataArray =
+    //     [
+    //         { key: "A" },
+    //         { key: "B", parent: "A" },
+    //         { key: "C", parent: "B" }
+    //     ];
+    var model = MAKE(go.TreeModel);
+    // model.nodeDataArray =
+    //     [ // the "key" and "parent" property names are required,
+    //       // but you can add whatever data properties you need for your app
+    //         { key: "1",              name: "Don Meow",   source: "/images/popular-post.jpg" },
+    //         { key: "2", parent: "1", name: "Demeter",    source: "/images/popular-post.jpg" },
+    //         { key: "3", parent: "1", name: "Copricat",   source: "/images/popular-post.jpg" },
+    //         { key: "4", parent: "3", name: "Jellylorum", source: "/images/popular-post.jpg" },
+    //         { key: "5", parent: "3", name: "Alonzo",     source: "/images/popular-post.jpg" },
+    //         { key: "6", parent: "2", name: "Munkustrap", source: "/images/popular-post.jpg" }
+    //     ];
+    model.nodeDataArray =
+        [
+            {"key":0, "text":"Mind Map", "loc":"0 0"},
+            {"key":1, "parent":0, "text":"Getting more time", "brush":"skyblue", "dir":"right", "loc":"77 -22"},
+            {"key":11, "parent":1, "text":"Wake up early", "brush":"skyblue", "dir":"right", "loc":"200 -48"},
+            {"key":12, "parent":1, "text":"Delegate", "brush":"skyblue", "dir":"right", "loc":"200 -22"},
+            {"key":13, "parent":1, "text":"Simplify", "brush":"skyblue", "dir":"right", "loc":"200 4"},
+            {"key":2, "parent":0, "text":"More effective use", "brush":"darkseagreen", "dir":"right", "loc":"77 43"},
+            {"key":21, "parent":2, "text":"Planning", "brush":"darkseagreen", "dir":"right", "loc":"203 30"},
+            {"key":211, "parent":21, "text":"Priorities", "brush":"darkseagreen", "dir":"right", "loc":"274 17"},
+            {"key":212, "parent":21, "text":"Ways to focus", "brush":"darkseagreen", "dir":"right", "loc":"274 43"},
+            {"key":22, "parent":2, "text":"Goals", "brush":"darkseagreen", "dir":"right", "loc":"203 56"},
+            {"key":3, "parent":0, "text":"Time wasting", "brush":"palevioletred", "dir":"left", "loc":"-120 -31.75"},
+            {"key":31, "parent":3, "text":"Too many meetings", "brush":"palevioletred", "dir":"left", "loc":"-254 -68.25"},
+            {"key":32, "parent":3, "text":"Too much time spent on details", "brush":"palevioletred", "dir":"left", "loc":"-320 -31.25"},
+            {"key":33, "parent":3, "text":"Message fatigue", "brush":"palevioletred", "dir":"left", "loc":"-246 -3.25"},
+            {"key":331, "parent":31, "text":"Check messages less", "brush":"palevioletred", "dir":"left", "loc":"-391 -97.25"},
+            {"key":332, "parent":31, "text":"Message filters", "brush":"palevioletred", "dir":"left", "loc":"-363 -57.25"},
+            {"key":4, "parent":0, "text":"Key issues", "brush":"coral", "dir":"left", "loc":"-115 56.75"},
+            {"key":41, "parent":4, "text":"Methods", "brush":"coral", "dir":"left", "loc":"-198 30.75"},
+            {"key":42, "parent":4, "text":"Deadlines", "brush":"coral", "dir":"left", "loc":"-198 56.75"},
+            {"key":43, "parent":4, "text":"Checkpoints", "brush":"coral", "dir":"left", "loc":"-198 82.75"}
+        ];
+
+    myDiagram.model = model;
+
+    // Show the diagram's model in JSON format
+    function save() {
+        document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+        myDiagram.isModified = false;
+    }
+    function load() {
+        myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+    }
+</script>
+
+</html>

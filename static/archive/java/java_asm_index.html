@@ -163,19 +163,22 @@
                 <a href="/archive/java/asm/core/class_reader_examples_03.html">Examples-03</a>
                 <a href="/archive/java/asm/core/class_reader_options.html">Options</a>
             </li>
-            <li><a href="/archive/java/asm/core/remove_class_members.html">Removing class members</a></li>
-            <li><a href="/archive/java/asm/core/add_class_members.html">Adding class members</a></li>
-            <li><a href="/archive/java/asm/core/type.html">Type</a></li>
-            <li><a href="/archive/java/asm/core/util/trace_class_visitor.html">Tools: TraceClassVisitor</a></li>
-            <li><a href="/archive/java/asm/core/util/check_class_adapter.html">Tools: CheckClassAdapter</a></li>
-            <li><a href="/archive/java/asm/core/util/asmifier.html">Tools: ASMifier</a></li>
+            <li>
+                Type:
+                <a href="/archive/java/asm/core/type_intro.html">Intro</a>
+                <a href="/archive/java/asm/core/type_examples.html">Examples</a>
+            </li>
+            <li><a href="/archive/java/asm/core/commons/advice_adapter.html">asm-commons: AdviceAdapter</a></li>
+            <li><a href="/archive/java/asm/core/commons/analyzer_adapter.html">asm-commons: AnalyzerAdapter</a></li>
+            <li><a href="/archive/java/asm/core/commons/local_variables_sorter.html">asm-commons: LocalVariablesSorter</a></li>
+            <li><a href="/archive/java/asm/core/util/trace_class_visitor.html">asm-util: TraceClassVisitor</a></li>
+            <li><a href="/archive/java/asm/core/util/check_class_adapter.html">asm-util: CheckClassAdapter</a></li>
+            <li><a href="/archive/java/asm/core/util/asmifier.html">asm-util: ASMifier</a></li>
             <li><a href="/archive/java/asm/core/method_visitor.html">MethodVisitor</a></li>
-            <li><a href="/archive/java/asm/core/generate_methods.html">Generating methods</a></li>
             <li><a href="/archive/java/asm/core/transform_methods.html">Transforming methods</a></li>
             <li><a href="/archive/java/asm/core/stateless_transformations.html">Stateless transformations</a></li>
             <li><a href="/archive/java/asm/core/stateful_transformations.html">Stateful transformations</a></li>
-            <li><a href="/archive/java/asm/core/commons/analyzer_adapter.html">AnalyzerAdapter</a></li>
-            <li><a href="/archive/java/asm/core/commons/local_variables_sorter.html">LocalVariablesSorter</a></li>
+
             <li><a href="/archive/java/asm/core/try_catch.html">Try Catch</a></li>
         </ul>
     </li>
@@ -198,12 +201,12 @@
             <li>
                 Class Transformations
                 <ul>
-                    <li><a href="/archive/java/asm/template/interface_add.html">Introducing Interface</a></li>
-                    <li><a href="/archive/java/asm/template/field_add.html">Adding a New Field</a></li>
-                    <li><a href="/archive/java/asm/template/method_add.html">Adding a New Method</a></li>
+                    <li><a href="/archive/java/asm/template/interface_add.html">Add Interfaces</a></li>
+                    <li><a href="/archive/java/asm/template/field_add.html">Add a New Field</a></li>
+                    <li><a href="/archive/java/asm/template/method_add.html">Add a New Method</a></li>
                     <li><a href="/archive/java/asm/template/method_replace.html">Replace Method Body</a></li>
-                    <li><a href="/archive/java/asm/template/class_rename.html">Renaming a Class</a></li>
-                    <li><a href="/archive/java/asm/template/class_merge.html">Merging Two Classes into One</a></li>
+                    <li><a href="/archive/java/asm/template/class_rename.html">Rename a Class</a></li>
+                    <li><a href="/archive/java/asm/template/class_merge.html">Merge Two Classes into One</a></li>
                 </ul>
             </li>
             <li>
@@ -215,8 +218,6 @@
                     <li><a href="/archive/java/asm/template/method_call_replace.html">Replace Method Call</a></li>
                 </ul>
             </li>
-
-
         </ul>
     </li>
     <li>
@@ -236,7 +237,37 @@
     </li>
 </ul>
 
-
+<div id="myDiagramDiv" style="width:100%; height:500px; background-color: #FFFFFF;"></div>
+<button id="SaveButton" onclick="save()">Save</button>
+<button onclick="load()">Load</button>
+<button onclick="layoutAll()">Layout</button>
+Diagram Model saved in JSON format:
+<br/>
+<textarea id="mySavedModel" style="width:100%;height:200px">
+{ "class": "TreeModel",
+  "nodeDataArray": [
+{"key":0, "text":"ASM", "loc":"-775 -50"},
+{"key":1, "parent":0, "text":"asm.jar", "brush":"skyblue", "dir":"right", "loc":"-725 -159.71254882812502"},
+{"key":2, "parent":0, "text":"asm-commons.jar", "brush":"darkseagreen", "dir":"right", "loc":"-725 -64.32250976562503"},
+{"text":"asm-util.jar", "brush":"palevioletred", "parent":0, "key":3, "loc":"-725 3.1774902343749716"},
+{"text":"asm-tree.jar", "brush":"coral", "parent":0, "key":4, "loc":"-725 44.212548828124994"},
+{"text":"asm-analysis.jar", "parent":0, "key":5, "loc":"-725 70.212548828125"},
+{"text":"ClassReader", "brush":"skyblue", "dir":"right", "parent":1, "key":6, "loc":"-662.3818359375 -216.10258789062502"},
+{"text":"ClassVisitor", "brush":"skyblue", "dir":"right", "parent":1, "key":7, "loc":"-662.3818359375 -181.322509765625"},
+{"text":"ClassWriter", "brush":"skyblue", "dir":"right", "parent":1, "key":8, "loc":"-662.3818359375 -129.322509765625"},
+{"text":"Type", "brush":"skyblue", "dir":"right", "parent":1, "key":9, "loc":"-662.3818359375 -103.32250976562501"},
+{"text":"FieldVisitor", "brush":"skyblue", "dir":"right", "parent":7, "key":-11, "loc":"-573.9921875 -194.322509765625"},
+{"text":"MethodVisitor", "brush":"skyblue", "dir":"right", "parent":7, "key":-12, "loc":"-573.9921875 -168.322509765625"},
+{"text":"FieldWriter", "brush":"skyblue", "dir":"right", "parent":8, "key":-13, "loc":"-575.4521484375 -142.322509765625"},
+{"text":"MethodWriter", "brush":"skyblue", "dir":"right", "parent":8, "key":-14, "loc":"-575.4521484375 -116.322509765625"},
+{"text":"AdviceAdapter", "brush":"darkseagreen", "dir":"right", "parent":2, "key":-15, "loc":"-601.70458984375 -90.32250976562503"},
+{"text":"GeneratorAdapter", "brush":"darkseagreen", "dir":"right", "parent":2, "key":-16, "loc":"-601.70458984375 -64.32250976562503"},
+{"text":"LocalVariablesSorter", "brush":"darkseagreen", "dir":"right", "parent":2, "key":-17, "loc":"-601.70458984375 -38.32250976562503"},
+{"text":"ASMifier", "brush":"palevioletred", "parent":3, "key":-18, "loc":"-641.4345703125 -22.82250976562503"},
+{"text":"CheckClassAdapter", "brush":"palevioletred", "parent":3, "key":-19, "loc":"-641.4345703125 3.1774902343749716"},
+{"text":"TraceClassVisitor", "brush":"palevioletred", "parent":3, "key":-20, "loc":"-641.4345703125 29.17749023437497"}
+ ]}
+</textarea>
 
 <p>
     知识的组织形式 和 知识的教学形式 是不一样的。
@@ -318,3 +349,9 @@
         <a href="/doc/javase/jvms/se8/index.html" target="_blank">Local</a>
     </li>
 </ul>
+
+<script type="application/javascript">
+    $(document).ready(function () {
+        initMindMap("myDiagramDiv");
+    });
+</script>

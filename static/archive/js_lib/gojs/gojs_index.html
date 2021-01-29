@@ -1,0 +1,36 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">GOJS</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Watermark removal in GOJS</h2>
+
+<p>
+    Find <code>go.js</code> and <code>go-debug.js</code> and search in js file <code>7eba17a4ca3b1a8346</code>
+    will have the following code:
+</p>
+
+<pre title="修改前" class="plaintext">
+a.cr=b.W[Za("7eba17a4ca3b1a8346")][Za("78a118b7")](b.W,Ak,4,4);
+</pre>
+
+<p>
+    Replaced with
+</p>
+
+<pre title="修改后" class="plaintext">
+a.cr=function(){return true;};
+</pre>
+
+<p>
+    Run again to see that the watermark has been removed.
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://programmersought.com/article/25921364763/" target="_blank">Watermark removal in gojs</a></li>
+</ul>
