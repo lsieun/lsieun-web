@@ -1,5 +1,5 @@
 <!-- 标题 -->
-<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassNode</span></h1>
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassNode Intro</span></h1>
 <!-- 内容 -->
 
 <div style="text-align: right">
@@ -21,7 +21,7 @@
 
 <h2>ClassNode</h2>
 
-<h3>SuperClass</h3>
+<h3>Class Info</h3>
 
 <p class="indented">
     第一个要注意的地方，就是<code>ClassNode</code>的父类。
@@ -180,8 +180,8 @@ public class ClassNode extends ClassVisitor {
     }
 }
 </pre>
-
-<h2>Bytes and ClassNode</h2>
+avoid_sexual_temptation.html
+<h2>How to Use</h2>
 
 <h3>From Bytes To ClassNode</h3>
 
@@ -241,14 +241,14 @@ byte[] bytes = cw.toByteArray();
     下面举个简单的例子，就是修改<code>.class</code>文件的版本信息。虽然代码比较简单，但它展示了处理问题的思路。具体代码如下：
 </p>
 
-<pre title="HelloWorldTransform.java" class="javacode">
+<pre title="HelloWorldTransformTree.java" class="javacode">
 import lsieun.utils.FileUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
-public class HelloWorldTransform {
+public class HelloWorldTransformTree {
     public static void main(String[] args) {
         String relative_path = "sample/HelloWorld.class";
         String filepath = FileUtils.getFilePath(relative_path);
@@ -258,7 +258,8 @@ public class HelloWorldTransform {
         ClassReader cr = new ClassReader(bytes1);
 
         // (2) 构建ClassNode
-        ClassNode cn = new ClassNode(Opcodes.ASM9); // 注意，这里是构造函数
+        int api = Opcodes.ASM9;
+        ClassNode cn = new ClassNode(api);
         cr.accept(cn, ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
 
         // (3) 进行transform
@@ -266,13 +267,12 @@ public class HelloWorldTransform {
 
         // (4) 构建ClassWriter
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        cn.accept(cw); // 注意，这里是accept方法
+        cn.accept(cw);
 
         // (5) 生成byte[]内容输出
         byte[] bytes2 = cw.toByteArray();
 
         FileUtils.writeBytes(filepath, bytes2);
-        System.out.println("file://" + filepath);
     }
 }
 </pre>

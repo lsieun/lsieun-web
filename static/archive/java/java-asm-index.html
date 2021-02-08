@@ -98,7 +98,13 @@
     <li>
         工具的有限性，我们知道工具的有限性，ASM它是一个工具。有限性怎么理解呢？第一方面，并不是所有的功能都要通过ASM来进行实现，如果能通过写Java源代码实现，就不需要用ASM，这里主要是讲“用或者不用ASM”；第二方面，就是ASM的功能的有限性，有些功能ASM并没有提供给我们，我们需要自己来进行实现。
     </li>
+    <li>
+        lsieun-utils-asm也纳入到我的课程当中来
+    </li>
 </ul>
+
+
+
 
 <h2>Main Content</h2>
 
@@ -133,8 +139,12 @@
     <li>
         <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Core API</a>
         <img src="/images/list.png" onclick="$(this).next().toggle()"/>
-        <ul>
+        <ul style="display: none;">
             <li><a href="/archive/java/asm/core/core_api_overview.html">Core API Overview</a></li>
+            <li>
+                How to Write Code:
+                <a href="/archive/java/asm/core/asm_print.html">ASMPrint</a>
+            </li>
             <li>
                 ClassVisitor:
                 <a href="/archive/java/asm/core/class_visitor_intro.html">Intro</a>
@@ -146,14 +156,26 @@
                 <a href="/archive/java/asm/core/class_writer_options.html">Options</a>
             </li>
             <li>
-                FieldVisitor and FieldWriter:
-                <a href="/archive/java/asm/core/field_visitor_and_field_writer_intro.html">Intro</a>
-                <a href="/archive/java/asm/core/field_visitor_and_field_writer_examples.html">Examples</a>
+                FieldVisitor:
+                <a href="/archive/java/asm/core/field_visitor_intro.html">Intro</a>
+                <a href="/archive/java/asm/core/field_visitor_examples.html">Examples</a>
             </li>
             <li>
-                MethodVisitor and MethodWriter:
-                <a href="/archive/java/asm/core/method_visitor_and_method_writer_intro.html">Intro</a>
-                <a href="/archive/java/asm/core/method_visitor_and_method_writer_examples.html">Examples</a>
+                MethodVisitor:
+                <a href="/archive/java/asm/core/method_visitor_intro.html">Intro</a>
+                <a href="/archive/java/asm/core/method_visitor_examples.html">Examples</a>
+            </li>
+            <li>
+                Label:
+                <a href="/archive/java/asm/core/label_intro.html">Intro</a>
+                <a href="/archive/java/asm/core/label_examples_if_else.html">if-else</a>
+                <a href="/archive/java/asm/core/label_examples_switch_case.html">switch-case</a>
+                <a href="/archive/java/asm/core/label_examples_for_loop.html">for/while</a>
+                <a href="/archive/java/asm/core/label_examples_try_catch.html">try-catch</a>
+            </li>
+            <li>
+                Opcodes:
+                <a href="/archive/java/asm/core/opcodes.html">Intro</a>
             </li>
             <li>
                 ClassReader:
@@ -166,58 +188,48 @@
             <li>
                 Type:
                 <a href="/archive/java/asm/core/type_intro.html">Intro</a>
-                <a href="/archive/java/asm/core/type_examples.html">Examples</a>
+                <a href="/archive/java/asm/core/type_examples_01.html">Examples-01</a>
+                <a href="/archive/java/asm/core/type_examples_02.html">Examples-02</a>
+                <a href="/archive/java/asm/core/type_examples_03.html">Examples-03</a>
             </li>
-            <li><a href="/archive/java/asm/core/commons/advice_adapter.html">asm-commons: AdviceAdapter</a></li>
-            <li><a href="/archive/java/asm/core/commons/analyzer_adapter.html">asm-commons: AnalyzerAdapter</a></li>
-            <li><a href="/archive/java/asm/core/commons/local_variables_sorter.html">asm-commons: LocalVariablesSorter</a></li>
-            <li><a href="/archive/java/asm/core/util/trace_class_visitor.html">asm-util: TraceClassVisitor</a></li>
-            <li><a href="/archive/java/asm/core/util/check_class_adapter.html">asm-util: CheckClassAdapter</a></li>
-            <li><a href="/archive/java/asm/core/util/asmifier.html">asm-util: ASMifier</a></li>
-            <li><a href="/archive/java/asm/core/method_visitor.html">MethodVisitor</a></li>
-            <li><a href="/archive/java/asm/core/transform_methods.html">Transforming methods</a></li>
-            <li><a href="/archive/java/asm/core/stateless_transformations.html">Stateless transformations</a></li>
-            <li><a href="/archive/java/asm/core/stateful_transformations.html">Stateful transformations</a></li>
-
-            <li><a href="/archive/java/asm/core/try_catch.html">Try Catch</a></li>
+            <li>
+                Stateless Method Transformations:
+                <a href="/archive/java/asm/core/stateless_method_transform_remove_nop.html">Remove Nop</a>
+                <a href="/archive/java/asm/core/stateless_method_transform_timer.html">Timer</a>
+                <a href="/archive/java/asm/core/stateless_method_transform_counter.html">Counter</a>
+            </li>
+            <li>
+                Stateful&nbsp; Method Transformations:
+                <a href="/archive/java/asm/core/stateful_method_transform_remove_add_zero.html">Remove Add Zero</a>
+            </li>
+            <li>
+                asm-util:
+                <a href="/archive/java/asm/util/asmifier.html">ASMifier</a>
+                <a href="/archive/java/asm/util/trace_class_visitor.html">TraceClassVisitor</a>
+                <a href="/archive/java/asm/util/check_class_adapter.html">CheckClassAdapter</a>
+            </li>
+            <li>
+                asm-commons:
+                <a href="/archive/java/asm/commons/advice_adapter.html">AdviceAdapter</a>
+                <a href="/archive/java/asm/commons/generator_adapter.html">GeneratorAdapter</a>
+                <a href="/archive/java/asm/commons/local_variables_sorter.html">LocalVariablesSorter</a>
+                <a href="/archive/java/asm/commons/analyzer_adapter.html">AnalyzerAdapter</a>
+            </li>
         </ul>
     </li>
     <li>
         <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Tree API</a>
         <img src="/images/list.png" onclick="$(this).next().toggle()"/>
-        <ul style="display: none;">
+        <ul>
             <li><a href="/archive/java/asm/tree/tree_api_overview.html">Tree API Overview</a></li>
-            <li><a href="/archive/java/asm/tree/class_node_intro.html">ClassNode Intro</a></li>
-            <li><a href="/archive/java/asm/tree/class_node_examples.html">ClassNode Examples</a></li>
+            <li>
+                ClassNode:
+                <a href="/archive/java/asm/tree/class_node_intro.html">Intro</a>
+                <a href="/archive/java/asm/tree/class_node_examples.html">Examples</a>
+            </li>
             <li><a href="/archive/java/asm/tree/field_node.html">FieldNode</a></li>
             <li><a href="/archive/java/asm/tree/method_node.html">MethodNode</a></li>
             <li><a href="/archive/java/asm/tree/pattern.html">Core And Tree Pattern</a></li>
-        </ul>
-    </li>
-    <li>
-        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Common Transformations</a>
-        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
-        <ul style="display: none;">
-            <li>
-                Class Transformations
-                <ul>
-                    <li><a href="/archive/java/asm/template/interface_add.html">Add Interfaces</a></li>
-                    <li><a href="/archive/java/asm/template/field_add.html">Add a New Field</a></li>
-                    <li><a href="/archive/java/asm/template/method_add.html">Add a New Method</a></li>
-                    <li><a href="/archive/java/asm/template/method_replace.html">Replace Method Body</a></li>
-                    <li><a href="/archive/java/asm/template/class_rename.html">Rename a Class</a></li>
-                    <li><a href="/archive/java/asm/template/class_merge.html">Merge Two Classes into One</a></li>
-                </ul>
-            </li>
-            <li>
-                Method Transformations
-                <ul>
-                    <li><a href="/archive/java/asm/template/code_inserted_before_execution.html">Insert Code before Method, Constructor or Static Initializer Execution</a></li>
-                    <li><a href="/archive/java/asm/template/code_inserted_before_exit.html">Insert Code before Method Exit</a></li>
-                    <li><a href="/archive/java/asm/template/field_access_replace.html">Replace Field Access</a></li>
-                    <li><a href="/archive/java/asm/template/method_call_replace.html">Replace Method Call</a></li>
-                </ul>
-            </li>
         </ul>
     </li>
     <li>
@@ -235,6 +247,33 @@
             </li>
         </ul>
     </li>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Common Transformations</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul style="display: none;">
+            <li>
+                Class Transformations
+                <ul>
+                    <li><a href="/archive/java/asm/template/interface_add.html">Add Interface</a></li>
+                    <li><a href="/archive/java/asm/template/field_add.html">Add Field</a></li>
+                    <li><a href="/archive/java/asm/template/method_add.html">Add Method</a></li>
+                    <li><a href="/archive/java/asm/template/method_body_replace.html">Replace Method Body</a></li>
+                    <li><a href="/archive/java/asm/template/class_rename.html">Rename a Class</a></li>
+                    <li><a href="/archive/java/asm/template/class_merge.html">Merge Two Classes into One</a></li>
+                </ul>
+            </li>
+            <li>
+                Method Transformations
+                <ul>
+                    <li><a href="/archive/java/asm/template/code_inserted_before_execution.html">Insert Code before Method, Constructor or Static Initializer Execution</a></li>
+                    <li><a href="/archive/java/asm/template/code_inserted_before_exit.html">Insert Code before Method Exit</a></li>
+                    <li><a href="/archive/java/asm/template/field_access_replace.html">Replace Field Access</a></li>
+                    <li><a href="/archive/java/asm/template/method_call_replace.html">Replace Method Call</a></li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+
 </ul>
 
 <div id="myDiagramDiv" style="width:100%; height:500px; background-color: #FFFFFF;"></div>

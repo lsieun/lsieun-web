@@ -1,0 +1,116 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">for/while</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>for clause</h2>
+
+<p>
+    预期结果：
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        for (int i = 0; i < 10; i++) {
+            System.out.println(i);
+        }
+    }
+}
+</pre>
+
+<p>
+    实现代码：
+</p>
+
+<pre title="HelloWorldGenerateCore.java" hidden class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldGenerateCore {
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // (1) 生成byte[]内容
+        byte[] bytes = dump();
+
+        // (2) 保存byte[]到文件
+        FileUtils.writeBytes(filepath, bytes);
+    }
+
+    public static byte[] dump() throws Exception {
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "sample/HelloWorld",
+                null, "java/lang/Object", null);
+
+        {
+            MethodVisitor mv1 = cw.visitMethod(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
+            mv1.visitCode();
+            mv1.visitVarInsn(ALOAD, 0);
+            mv1.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false);
+            mv1.visitInsn(RETURN);
+            mv1.visitMaxs(0, 0);
+            mv1.visitEnd();
+        }
+
+        {
+            MethodVisitor methodVisitor = cw.visitMethod(ACC_PUBLIC, "test", "()V", null, null);
+            Label conditionLabel = new Label();
+            Label returnLabel = new Label();
+
+            // 第一段
+            methodVisitor.visitCode();
+            methodVisitor.visitInsn(ICONST_0);
+            methodVisitor.visitVarInsn(ISTORE, 1);
+
+            // 第二段
+            methodVisitor.visitLabel(conditionLabel);
+            methodVisitor.visitVarInsn(ILOAD, 1);
+            methodVisitor.visitIntInsn(BIPUSH, 10);
+            methodVisitor.visitJumpInsn(IF_ICMPGE, returnLabel);
+            methodVisitor.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            methodVisitor.visitVarInsn(ILOAD, 1);
+            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+            methodVisitor.visitIincInsn(1, 1);
+            methodVisitor.visitJumpInsn(GOTO, conditionLabel);
+
+            // 第三段
+            methodVisitor.visitLabel(returnLabel);
+            methodVisitor.visitInsn(RETURN);
+            methodVisitor.visitMaxs(0, 0);
+            methodVisitor.visitEnd();
+        }
+
+        cw.visitEnd();
+
+        return cw.toByteArray();
+    }
+}
+</pre>
+
+<p>
+    验证结果：
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+import java.lang.reflect.Method;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Class&lt;?&gt; clazz = Class.forName("sample.HelloWorld");
+        Object obj = clazz.newInstance();
+
+        Method method = clazz.getDeclaredMethod("test");
+        method.invoke(obj);
+    }
+}
+</pre>

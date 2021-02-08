@@ -1,0 +1,297 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">TraceClassVisitor</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>TraceClassVisitor</h2>
+
+<p class="indented">
+    This <code>TraceClassVisitor</code> class, as its name implies, extends the <code>ClassVisitor</code> class,
+    and builds a textual representation of the visited class.
+</p>
+
+<h3>Class Info</h3>
+
+<p class="indented">
+    <code>TraceClassVisitor</code>类的父类是<code>ClassVisitor</code>类。
+</p>
+
+<pre title="ASM: TraceClassVisitor.java" class="javacode">
+public final class TraceClassVisitor extends ClassVisitor {
+}
+</pre>
+
+<h3>fields</h3>
+
+<pre title="ASM: TraceClassVisitor.java" class="javacode">
+public final class TraceClassVisitor extends ClassVisitor {
+    private final PrintWriter printWriter; // 真正打印输出的类
+    public final Printer p; // 信息采集器
+}
+</pre>
+
+<h3>Constructor</h3>
+
+<pre title="ASM: TraceClassVisitor.java" class="javacode">
+public final class TraceClassVisitor extends ClassVisitor {
+    public TraceClassVisitor(final PrintWriter printWriter) {
+        this(null, printWriter);
+    }
+
+    public TraceClassVisitor(final ClassVisitor classVisitor, final PrintWriter printWriter) {
+        this(classVisitor, new Textifier(), printWriter);
+    }
+
+    public TraceClassVisitor(final ClassVisitor classVisitor, final Printer printer, final PrintWriter printWriter) {
+        super(Opcodes.ASM10_EXPERIMENTAL, classVisitor);
+        this.printWriter = printWriter;
+        this.p = printer;
+    }
+}
+</pre>
+
+<h3>methods</h3>
+
+<pre title="ASM: TraceClassVisitor.java" class="javacode">
+public final class TraceClassVisitor extends ClassVisitor {
+    @Override
+    public void visit(final int version, final int access, final String name, final String signature,
+                      final String superName, final String[] interfaces) {
+        p.visit(version, access, name, signature, superName, interfaces);
+        super.visit(version, access, name, signature, superName, interfaces);
+    }
+
+    @Override
+    public FieldVisitor visitField(final int access, final String name, final String descriptor,
+                                   final String signature, final Object value) {
+        Printer fieldPrinter = p.visitField(access, name, descriptor, signature, value);
+        return new TraceFieldVisitor(super.visitField(access, name, descriptor, signature, value), fieldPrinter);
+    }
+
+    @Override
+    public MethodVisitor visitMethod(final int access, final String name, final String descriptor,
+                                     final String signature, final String[] exceptions) {
+        Printer methodPrinter = p.visitMethod(access, name, descriptor, signature, exceptions);
+        return new TraceMethodVisitor(super.visitMethod(access, name, descriptor, signature, exceptions), methodPrinter);
+    }
+
+    @Override
+    public void visitEnd() {
+        p.visitClassEnd();
+        if (printWriter != null) {
+            p.print(printWriter); // Printer和PrintWriter进行结合
+            printWriter.flush();
+        }
+        super.visitEnd();
+    }
+}
+</pre>
+
+<h2>Textifier</h2>
+
+<h3>Class Info</h3>
+
+<p class="indented">
+    <code>Textifier</code>类的父类是<code>Printer</code>类。
+</p>
+
+<pre title="ASM: Textifier.java" class="javacode">
+public class Textifier extends Printer {
+}
+</pre>
+
+<h3>Constructor</h3>
+
+<pre title="ASM: Textifier.java" class="javacode">
+public class Textifier extends Printer {
+    public Textifier() {
+        this(Opcodes.ASM9);
+        if (getClass() != Textifier.class) {
+            throw new IllegalStateException();
+        }
+    }
+
+    protected Textifier(final int api) {
+        super(api);
+    }
+}
+</pre>
+
+<h3>main methods</h3>
+
+<pre title="ASM: Textifier.java" class="javacode">
+public class Textifier extends Printer {
+  private static final String USAGE = "Prints a disassembled view of the given class.\n"
+          + "Usage: Textifier [-debug] &lt;fully qualified class name or class file name&gt;";
+
+    public static void main(final String[] args) throws IOException {
+        main(args, new PrintWriter(System.out, true), new PrintWriter(System.err, true));
+    }
+
+    static void main(final String[] args, final PrintWriter output, final PrintWriter logger) throws IOException {
+        main(args, USAGE, new Textifier(), output, logger);
+    }
+}
+</pre>
+
+<h2>How to Use</h2>
+
+<p class="indented">
+    In order to check that a generated or transformed class is conforming to what you expect,
+    the byte array returned by a <code>ClassWriter</code> is not really helpful
+    because it is unreadable by humans.
+    <span class="text-key-point">A textual representation would be much easier to use</span>.
+    This is what the <code>TraceClassVisitor</code> class provides.
+</p>
+
+<p class="indented">
+    So, instead of using a <code>ClassWriter</code> to generate your classes,
+    you can use a <code>TraceClassVisitor</code>,
+    in order to get a readable trace of what is actually generated.
+</p>
+
+<p class="indented">
+    Or, even better, you can use both at the same time.
+    Indeed the <code>TraceClassVisitor</code> can,
+    in addition to its default behavior,
+    delegate all calls to its methods to another visitor,
+    for instance a <code>ClassWriter</code>.
+</p>
+
+<h3>TraceClassVisitor</h3>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.util.TraceClassVisitor;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws IOException {
+        PrintWriter printWriter = new PrintWriter(System.out);
+        TraceClassVisitor cv = new TraceClassVisitor(null, printWriter);
+
+        cv.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "sample/HelloWorld",
+                null, "java/lang/Object", null);
+
+        {
+            MethodVisitor mv1 = cv.visitMethod(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
+            mv1.visitCode();
+            mv1.visitVarInsn(ALOAD, 0);
+            mv1.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false);
+            mv1.visitInsn(RETURN);
+            mv1.visitMaxs(1, 1);
+            mv1.visitEnd();
+        }
+
+        {
+            MethodVisitor mv2 = cv.visitMethod(ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
+            mv2.visitCode();
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("Hello ASM");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitInsn(RETURN);
+            mv2.visitMaxs(2, 1);
+            mv2.visitEnd();
+        }
+
+        cv.visitEnd();
+    }
+}
+</pre>
+
+<h3>TraceClassVisitor + ClassWriter</h3>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.util.TraceClassVisitor;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws IOException {
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        PrintWriter printWriter = new PrintWriter(System.out);
+        TraceClassVisitor cv = new TraceClassVisitor(cw, printWriter);
+
+        cv.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "sample/HelloWorld",
+                null, "java/lang/Object", null);
+
+        {
+            MethodVisitor mv1 = cv.visitMethod(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
+            mv1.visitCode();
+            mv1.visitVarInsn(ALOAD, 0);
+            mv1.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false);
+            mv1.visitInsn(RETURN);
+            mv1.visitMaxs(1, 1);
+            mv1.visitEnd();
+        }
+
+        {
+            MethodVisitor mv2 = cv.visitMethod(ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
+            mv2.visitCode();
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("Hello ASM");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitInsn(RETURN);
+            mv2.visitMaxs(2, 1);
+            mv2.visitEnd();
+        }
+
+        cv.visitEnd();
+
+        byte[] bytes = cw.toByteArray();
+    }
+}
+</pre>
+
+<h3>ClassReader + TraceClassVisitor</h3>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import lsieun.core.ClassChangeVersionVisitor;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.util.TraceClassVisitor;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws IOException {
+        ClassReader cr = new ClassReader("sample.HelloWorld");
+
+        PrintWriter printWriter = new PrintWriter(System.out);
+        TraceClassVisitor tcv = new TraceClassVisitor(null, printWriter);
+        ClassVisitor cv = new ClassChangeVersionVisitor(Opcodes.ASM9, tcv);
+
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
+    }
+}
+</pre>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一，了解<code>TraceClassVisitor</code>是如何使用的。</li>
+    <li>第二，理解<code>TraceClassVisitor</code>的代码逻辑。</li>
+    <li>
+        第三，<code>TraceClassVisitor</code>类是“表象”，而实际做工作的是<code>Printer</code>类。ASM提供了两个具体的<code>Printer</code>类，即<code>ASMifier</code>和<code>Textifier</code>。在默认情况下，<code>TraceClassVisitor</code>类使用了<code>Textifier</code>。
+    </li>
+</ul>

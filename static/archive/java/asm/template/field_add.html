@@ -1,5 +1,5 @@
 <!-- 标题 -->
-<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Add a New Field</span></h1>
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">添加字段</span></h1>
 <!-- 内容 -->
 
 <div style="text-align: right">
@@ -8,6 +8,14 @@
 </div>
 
 <h2>预期目标</h2>
+
+<p>
+    预期目标：
+</p>
+
+<ul>
+    <li>给<code>HelloWorld</code>类添加一个<code>public Object objValue</code>字段。</li>
+</ul>
 
 <pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
@@ -18,17 +26,26 @@ public class HelloWorld {
 
 <h2>编码实现</h2>
 
-<pre title="FieldAdder.java" class="javacode">
+<p>
+    实现思路：
+</p>
+
+<ul>
+    <li>在<code>ClassVisitor.visitField()</code>方法内判断字段是否已经存在</li>
+    <li>如果不存在，则在<code>ClassVisitor.visitEnd()</code>方法内添加新字段</li>
+</ul>
+
+<pre title="ClassAddFieldVisitor.java" class="javacode">
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 
-public class FieldAdder extends ClassVisitor {
+public class ClassAddFieldVisitor extends ClassVisitor {
     private final int fieldAccess;
     private final String fieldName;
     private final String fieldDesc;
     private boolean isFieldPresent;
 
-    public FieldAdder(int api, ClassVisitor classVisitor, int fieldAccess, String fieldName, String fieldDesc) {
+    public ClassAddFieldVisitor(int api, ClassVisitor classVisitor, int fieldAccess, String fieldName, String fieldDesc) {
         super(api, classVisitor);
         this.fieldAccess = fieldAccess;
         this.fieldName = fieldName;
@@ -56,33 +73,35 @@ public class FieldAdder extends ClassVisitor {
 }
 </pre>
 
-<pre title="FieldAdderRun.java" class="javacode">
+<pre title="HelloWorldTransformCore.java" hidden class="javacode">
+import lsieun.template.ClassAddFieldVisitor;
 import lsieun.utils.FileUtils;
-import lsieun.utils.ReadUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 
-public class FieldAdderRun {
+public class HelloWorldTransformCore {
     public static void main(String[] args) {
         String relative_path = "sample/HelloWorld.class";
         String filepath = FileUtils.getFilePath(relative_path);
-        byte[] bytes1 = ReadUtils.readByPath(filepath);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
 
         //（1）构建ClassReader
         ClassReader cr = new ClassReader(bytes1);
 
         //（2）构建ClassWriter
-        ClassWriter cw = new ClassWriter(0);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         //（3）串连ClassVisitor
-        ClassVisitor cv = new FieldAdder(Opcodes.ASM9, cw, Opcodes.ACC_PUBLIC, "objValue", "Ljava/lang/Object;");
+        int api = Opcodes.ASM9;
+        ClassVisitor cv = new ClassAddFieldVisitor(api, cw, Opcodes.ACC_PUBLIC, "objValue", "Ljava/lang/Object;");
 
-        //（4）两者进行结合
-        cr.accept(cv, 0);
+        //（4）结合ClassReader和ClassVisitor
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
 
-        //（5）重新生成Class
+        //（5）生成byte[]
         byte[] bytes2 = cw.toByteArray();
 
         FileUtils.writeBytes(filepath, bytes2);
@@ -92,36 +111,24 @@ public class FieldAdderRun {
 
 <h2>验证结果</h2>
 
-<pre title="check 1 (before)" class="plaintext">
-$ javap sample.HelloWorld
-public class sample.HelloWorld {
-  public java.lang.String name;
-  public int age;
-  public sample.HelloWorld();
+<pre title="HelloWorldRun" class="javacode">
+import java.lang.reflect.Field;
+
+public class HelloWorldRun {
+    public static void main(String[] args) {
+        Class&lt;HelloWorld&gt; clazz = HelloWorld.class;
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field f : fields) {
+            String name = f.getName();
+            Class&lt;?&gt; type = f.getType();
+            System.out.println(name + ": " + type);
+        }
+    }
 }
 </pre>
 
-<pre title="check 2 (after)" class="plaintext">
-$ javap sample.HelloWorld
-public class sample.HelloWorld {
-  public java.lang.String name;
-  public int age;
-  public java.lang.Object objValue;
-  public sample.HelloWorld();
-}
+<pre title="Run output" class="plaintext">
+name: class java.lang.String
+age: int
+objValue: class java.lang.Object
 </pre>
-
-<table class="lamp">
-    <tbody>
-    <tr>
-        <th style="width:34px">
-            <img src="/images/lamp.jpg" alt="Note" style="height:32px;width:32px">
-        </th>
-        <td>
-            <b>Note:</b> 在使用javap的过程中，如果要查看<code>private</code>类型的成员，需要添加<code>-p</code>参数。
-        </td>
-
-    </tr>
-    </tbody>
-</table>
-<hr>

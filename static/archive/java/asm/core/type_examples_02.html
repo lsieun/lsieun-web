@@ -1,0 +1,179 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Type Examples 02</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>预期目标</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(String name, int age, long idCard, Object obj) {
+        int hashCode = 0;
+        hashCode += name.hashCode();
+        hashCode += age;
+        hashCode += (int) (idCard % Integer.MAX_VALUE);
+        hashCode += obj.hashCode();
+        System.out.println("Hash Code is " + hashCode);
+    }
+}
+</pre>
+
+<h2>编码实现</h2>
+
+<pre title="ClassParameterVisitor.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+public class ClassParameterVisitor extends ClassVisitor {
+    public ClassParameterVisitor(int api, ClassVisitor cv) {
+        super(api, cv);
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        if (mv != null && !name.equals("&lt;init&gt;")) {
+            mv = new MethodParameterAdapter(api, mv, access, name, descriptor);
+        }
+        return mv;
+    }
+}
+</pre>
+
+<pre title="MethodParameterAdapter.java" class="javacode">
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class MethodParameterAdapter extends MethodVisitor {
+    private final int methodAccess;
+    private final String methodName;
+    private final String methodDesc;
+    private final boolean isStatic;
+
+    public MethodParameterAdapter(int api, MethodVisitor mv, int methodAccess, String methodName, String methodDesc) {
+        super(api, mv);
+        this.methodAccess = methodAccess;
+        this.methodName = methodName;
+        this.methodDesc = methodDesc;
+        this.isStatic = ((methodAccess & Opcodes.ACC_STATIC) != 0);
+    }
+
+    @Override
+    public void visitCode() {
+        int slotIndex = isStatic ? 0 : 1;
+
+        printMessage("Method Name: " + methodName);
+
+        Type methodType = Type.getMethodType(methodDesc);
+        Type[] argumentTypes = methodType.getArgumentTypes();
+        for (Type t : argumentTypes) {
+            int sort = t.getSort();
+            int size = t.getSize();
+            String descriptor = t.getDescriptor();
+            if (sort == Type.INT) {
+                printInt(slotIndex);
+            }
+            else if (sort == Type.LONG) {
+                printLong(slotIndex);
+            }
+            else if (sort == Type.OBJECT && "Ljava/lang/String;".equals(descriptor)) {
+                printString(slotIndex);
+            }
+            else {
+                printMessage("No Support");
+            }
+            slotIndex += size;
+        }
+        super.visitCode();
+    }
+
+    private void printInt(int slotIndex) {
+        super.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        super.visitVarInsn(ILOAD, slotIndex);
+        super.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+    }
+
+    private void printLong(int slotIndex) {
+        super.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        super.visitVarInsn(LLOAD, slotIndex);
+        super.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(J)V", false);
+    }
+
+    private void printString(int slotIndex) {
+        super.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        super.visitVarInsn(ALOAD, slotIndex);
+        super.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+    }
+
+    private void printMessage(String str) {
+        super.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        super.visitLdcInsn(str);
+        super.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformCore.java" class="javacode">
+import lsieun.core.param.ClassParameterVisitor;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class HelloWorldTransformCore {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        int api = Opcodes.ASM9;
+        ClassVisitor cv = new ClassParameterVisitor(api, cw);
+
+        //（4）结合ClassReader和ClassVisitor
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
+
+        //（5）生成byte[]
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<h2>验证结果</h2>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import java.util.Date;
+
+public class HelloWorldRun {
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+        instance.test("tomcat", 10, 441622197605122816L, new Date());
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+Method Name: test
+tomcat
+10
+441622197605122816
+No Support
+Hash Code is 925883645
+</pre>

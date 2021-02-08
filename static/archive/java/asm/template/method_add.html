@@ -1,5 +1,5 @@
 <!-- 标题 -->
-<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Add a New Method</span></h1>
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">添加方法</span></h1>
 <!-- 内容 -->
 
 <div style="text-align: right">
@@ -9,30 +9,45 @@
 
 <h2>预期目标</h2>
 
-<pre title="HelloWorld.java" class="javacode">
+<p>
+    预期目标：
+</p>
+
+<ul>
+    <li>给<code>HelloWorld</code>类添加一个<code>test</code>方法。</li>
+</ul>
+
+<pre title="HelloWorld.java（修改前）" class="javacode">
 public class HelloWorld {
 }
 </pre>
 
-<pre title="HelloWorld.java" class="javacode">
+<pre title="HelloWorld.java（修改后）" class="javacode">
 public class HelloWorld {
-
     public void test(String name) {
         String line = String.format("Hello, %s", name);
         System.out.println(line);
     }
-
 }
 </pre>
 
 <h2>编码实现</h2>
 
-<pre title="MethodAdder.java" class="javacode">
+<p>
+    实现思路：
+</p>
+
+<ul>
+    <li>在<code>ClassVisitor.visitMethod()</code>方法内判断方法是否已经存在</li>
+    <li>如果不存在，则在<code>ClassVisitor.visitEnd()</code>方法内添加新方法</li>
+    <li>子类可以重写父类的<code>generateMethodBody</code>方法</li>
+</ul>
+
+<pre title="ClassAddMethodVisitor.java" class="javacode">
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 
-public class MethodAdder extends ClassVisitor implements Opcodes {
+public abstract class ClassAddMethodVisitor extends ClassVisitor {
     private final int methodAccess;
     private final String methodName;
     private final String methodDesc;
@@ -40,7 +55,8 @@ public class MethodAdder extends ClassVisitor implements Opcodes {
     private final String[] methodExceptions;
     private boolean isMethodPresent;
 
-    public MethodAdder(int api, ClassVisitor cv, int methodAccess, String methodName, String methodDesc, String signature, String[] exceptions) {
+    public ClassAddMethodVisitor(int api, ClassVisitor cv, int methodAccess, String methodName, String methodDesc,
+                                 String signature, String[] exceptions) {
         super(api, cv);
         this.methodAccess = methodAccess;
         this.methodName = methodName;
@@ -71,40 +87,22 @@ public class MethodAdder extends ClassVisitor implements Opcodes {
         super.visitEnd();
     }
 
-    protected void generateMethodBody(MethodVisitor mv) {
-        mv.visitCode();
-        mv.visitLdcInsn("Hello, %s");
-        mv.visitInsn(ICONST_1);
-        mv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
-        mv.visitInsn(DUP);
-        mv.visitInsn(ICONST_0);
-        mv.visitVarInsn(ALOAD, 1);
-        mv.visitInsn(AASTORE);
-        mv.visitMethodInsn(INVOKESTATIC, "java/lang/String", "format", "(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;", false);
-        mv.visitVarInsn(ASTORE, 2);
-        mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-        mv.visitVarInsn(ALOAD, 2);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-        mv.visitInsn(RETURN);
-        mv.visitMaxs(5, 3);
-        mv.visitEnd();
-    }
+    protected abstract void generateMethodBody(MethodVisitor mv);
 }
 </pre>
 
-<pre title="MethodAdderRun.java" class="javacode">
+<pre title="HelloWorldTransformCore.java" class="javacode">
+import lsieun.template.ClassAddMethodVisitor;
 import lsieun.utils.FileUtils;
-import lsieun.utils.ReadUtils;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 
-public class MethodAdderRun {
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldTransformCore {
     public static void main(String[] args) {
         String relative_path = "sample/HelloWorld.class";
         String filepath = FileUtils.getFilePath(relative_path);
-        byte[] bytes1 = ReadUtils.readByPath(filepath);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
 
         //（1）构建ClassReader
         ClassReader cr = new ClassReader(bytes1);
@@ -113,12 +111,36 @@ public class MethodAdderRun {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         //（3）串连ClassVisitor
-        ClassVisitor cv = new MethodAdder(Opcodes.ASM9, cw, Opcodes.ACC_PUBLIC, "test", "(Ljava/lang/String;)V", null, null);
+        int api = Opcodes.ASM9;
+        ClassVisitor cv = new ClassAddMethodVisitor(api, cw, Opcodes.ACC_PUBLIC, "test", "(Ljava/lang/String;)V", null, null){
+            @Override
+            protected void generateMethodBody(MethodVisitor mv) {
+                if (mv != null) {
+                    mv.visitCode();
+                    mv.visitLdcInsn("Hello, %s");
+                    mv.visitInsn(ICONST_1);
+                    mv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+                    mv.visitInsn(DUP);
+                    mv.visitInsn(ICONST_0);
+                    mv.visitVarInsn(ALOAD, 1);
+                    mv.visitInsn(AASTORE);
+                    mv.visitMethodInsn(INVOKESTATIC, "java/lang/String", "format", "(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;", false);
+                    mv.visitVarInsn(ASTORE, 2);
+                    mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+                    mv.visitVarInsn(ALOAD, 2);
+                    mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+                    mv.visitInsn(RETURN);
+                    mv.visitMaxs(5, 3);
+                    mv.visitEnd();
+                }
+            }
+        };
 
-        //（4）两者进行结合
-        cr.accept(cv, 0);
+        //（4）结合ClassReader和ClassVisitor
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
 
-        //（5）重新生成Class
+        //（5）生成byte[]
         byte[] bytes2 = cw.toByteArray();
 
         FileUtils.writeBytes(filepath, bytes2);

@@ -1,0 +1,291 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">AdviceAdapter</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>AdviceAdapter</h2>
+
+<h3>Class Info</h3>
+
+<p class="indented">
+    概括地来说，<code>AdviceAdapter</code>类是一个抽象的（<code>abstract</code>）、特殊的<code>MethodVisitor</code>类。具体来说，<code>AdviceAdapter</code>类继承自<code>GeneratorAdapter</code>类，而<code>GeneratorAdapter</code>类继承自<code>LocalVariablesSorter</code>类，<code>LocalVariablesSorter</code>类继承自<code>MethodVisitor</code>类。
+</p>
+
+<ul>
+    <li><code>org.objectweb.asm.MethodVisitor</code></li>
+    <li>---<code>org.objectweb.asm.commons.LocalVariablesSorter</code></li>
+    <li>------<code>org.objectweb.asm.commons.GeneratorAdapter</code></li>
+    <li>---------<code>org.objectweb.asm.commons.AdviceAdapter</code></li>
+</ul>
+
+<pre title="AdviceAdapter.java" class="javacode">
+public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes {
+}
+</pre>
+
+<h3>fields</h3>
+
+<pre title="AdviceAdapter.java" class="javacode">
+public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes {
+    protected int methodAccess;
+    protected String methodDesc;
+
+    private final boolean isConstructor;
+}
+</pre>
+
+<h3>Constructor</h3>
+
+<p>
+    注意，<code>AdviceAdapter</code>的构造函数是用<code>protected</code>修饰，因此在外界不能用<code>new</code>关键字来创建对象。
+</p>
+
+<pre title="AdviceAdapter.java" class="javacode">
+public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes {
+    protected AdviceAdapter(final int api, final MethodVisitor methodVisitor,
+                            final int access, final String name, final String descriptor) {
+        super(api, methodVisitor, access, name, descriptor);
+        methodAccess = access;
+        methodDesc = descriptor;
+        isConstructor = "&lt;init&gt;".equals(name);
+    }
+}
+</pre>
+
+<h3>methods</h3>
+
+<pre title="AdviceAdapter.java" class="javacode">
+public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes {
+    // Generates the "before" advice for the visited method.
+    // The default implementation of this method does nothing.
+    // Subclasses can use or change all the local variables, but should not change state of the stack.
+    // This method is called at the beginning of the method or
+    // after super class constructor has been called (in constructors).
+    protected void onMethodEnter() {}
+
+    // Generates the "after" advice for the visited method.
+    // The default implementation of this method does nothing.
+    // Subclasses can use or change all the local variables, but should not change state of the stack.
+    // This method is called at the end of the method, just before return and athrow instructions.
+    // The top element on the stack contains the return value or the exception instance.
+    protected void onMethodExit(final int opcode) {}
+}
+</pre>
+
+<h2>示例: 打印方法参数</h2>
+
+<h3>预期结果</h3>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private String name;
+    private int age;
+
+    public HelloWorld(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public void test(long idCard, Object obj) {
+        int hashCode = 0;
+        hashCode += name.hashCode();
+        hashCode += age;
+        hashCode += (int) (idCard % Integer.MAX_VALUE);
+        hashCode += obj.hashCode();
+        System.out.println("Hash Code is " + hashCode);
+        if (hashCode % 2 == 1) {
+            throw new RuntimeException("illegal");
+        }
+    }
+}
+</pre>
+
+<h3>编码实现</h3>
+
+<pre title="ParameterUtils.java" class="javacode">
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+
+public class ParameterUtils {
+    private static final DateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    public static void printValueOnStack(Object value) {
+        if (value == null) {
+            System.out.println("    " + value);
+        }
+        else if (value instanceof String) {
+            System.out.println("    " + value);
+        }
+        else if (value instanceof Date) {
+            System.out.println("    " + fm.format(value));
+        }
+        else if (value instanceof char[]) {
+            System.out.println("    " + Arrays.toString((char[])value));
+        }
+        else {
+            System.out.println("    " + value.getClass() + ": " + value.toString());
+        }
+    }
+
+    public static void printText(String str) {
+        System.out.println(str);
+    }
+}
+</pre>
+
+<pre title="ClassPrintParameterVisitor.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.AdviceAdapter;
+
+public class ClassPrintParameterVisitor extends ClassVisitor {
+    public ClassPrintParameterVisitor(int api, ClassVisitor cv) {
+        super(api, cv);
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        if (mv != null) {
+            mv = new MethodPrintParameterAdapter(api, mv, access, name, descriptor);
+        }
+        return mv;
+    }
+
+    public static class MethodPrintParameterAdapter extends AdviceAdapter {
+        public MethodPrintParameterAdapter(int api, MethodVisitor mv, int access, String name, String descriptor) {
+            super(api, mv, access, name, descriptor);
+        }
+
+        @Override
+        protected void onMethodEnter() {
+            int slotIndex = (methodAccess & ACC_STATIC) != 0 ? 0 : 1;
+
+            printMessage("Method Name: " + getName() + methodDesc);
+
+            Type methodType = Type.getMethodType(methodDesc);
+            Type[] argumentTypes = methodType.getArgumentTypes();
+            for (Type t : argumentTypes) {
+                int size = t.getSize();
+                int opcode = t.getOpcode(ILOAD);
+                super.visitVarInsn(opcode, slotIndex);
+                box(t);
+                printValueOnStack("(Ljava/lang/Object;)V");
+
+                slotIndex += size;
+            }
+        }
+
+        @Override
+        protected void onMethodExit(int opcode) {
+            if (opcode == ATHROW) {
+                super.visitLdcInsn("abnormal return");
+            }
+            else if (opcode == RETURN) {
+                super.visitLdcInsn("return void");
+            }
+            else if (opcode == ARETURN) {
+                dup();
+            }
+            else {
+                if (opcode == LRETURN || opcode == DRETURN) {
+                    dup2();
+                }
+                else {
+                    dup();
+                }
+                box(Type.getReturnType(this.methodDesc));
+            }
+            printValueOnStack("(Ljava/lang/Object;)V");
+        }
+
+        private void printMessage(String str) {
+            super.visitLdcInsn(str);
+            super.visitMethodInsn(INVOKESTATIC, "sample/ParameterUtils", "printText", "(Ljava/lang/String;)V", false);
+        }
+
+        private void printValueOnStack(String descriptor) {
+            super.visitMethodInsn(INVOKESTATIC, "sample/ParameterUtils", "printValueOnStack", descriptor, false);
+        }
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformCore.java" class="javacode">
+import lsieun.template.ClassPrintParameterVisitor;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class HelloWorldTransformCore {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        int api = Opcodes.ASM9;
+        ClassVisitor cv = new ClassPrintParameterVisitor(api, cw);
+
+        //（4）结合ClassReader和ClassVisitor
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
+
+        //（5）生成byte[]
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<h3>验证结果</h3>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import java.util.Date;
+
+public class HelloWorldRun {
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld("tomcat", 10);
+        instance.test(441622197605122816L, new Date());
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+Method Name: &lt;init&gt;(Ljava/lang/String;I)V
+    tomcat
+    class java.lang.Integer: 10
+    return void
+Method Name: test(JLjava/lang/Object;)V
+    class java.lang.Long: 441622197605122816
+    2021-02-03 05:35:59
+Hash Code is 1113458134
+    return void
+</pre>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一，<code>AdviceAdapter</code>类有两个关键的方法，即<code>onMethodEnter()</code>和<code>onMethodExit()</code>方法。</li>
+    <li>第二，Subclasses can use or change all the local variables, but should not change state of the stack.</li>
+</ul>

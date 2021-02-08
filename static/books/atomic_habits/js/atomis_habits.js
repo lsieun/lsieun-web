@@ -1,6 +1,12 @@
 // type: noun,n./verb,v./adjective,adj./quantifier/adverb,adv./preposition(介词)/conjunction,conj.(连词)
 let words = [
     {
+        "id": "artery",
+        "type": "n.",
+        "ch": "动脉",
+        "en": "any of the tubes that carry blood from the heart to other parts of the body"
+    },
+    {
         "id": "biceps",
         "type": "n.",
         "ch": "二头肌（上臂前侧的主要肌肉）",
@@ -11,6 +17,13 @@ let words = [
         "type": "n.",
         "ch": "杂乱的东西（尤指不需要的或无用的）；杂乱",
         "en": "a lot of things in an untidy state, especially things that are not necessary or are not being used; a state of confusion"
+    },
+    {
+        "id": "curator",
+        "type": "n.",
+        "ch": "（博物馆或美术馆等的）馆长，负责人",
+        "en": "a person whose job is to be in charge of the objects or works of art in a museum or art gallery , etc.",
+        "related": "curators"
     },
     {
         "id": "dart",
@@ -25,6 +38,12 @@ let words = [
         "en": "the separation that exists between two groups or things that are completely opposite to and different from each other"
     },
     {
+        "id": "exhaustive",
+        "type": "adj.",
+        "ch": "详尽的；彻底的；全面的",
+        "en": "including everything possible; very thorough or complete"
+    },
+    {
         "id": "geological",
         "type": "adj.",
         "ch": "地质的",
@@ -36,6 +55,13 @@ let words = [
         "ch": "沟；槽；辙；纹",
         "en": "a long narrow cut in the surface of sth hard",
         "related": "grooves"
+    },
+    {
+        "id": "hairdresser",
+        "type": "n.",
+        "ch": "理发师；美发师；发型师",
+        "en": "a person whose job is to cut, wash and shape hair",
+        "related": "hairdressers"
     },
     {
         "id": "hallmark",
@@ -66,6 +92,12 @@ let words = [
         "type": "n.",
         "ch": "矛盾的人（或事物、情况）",
         "en": "a statement, proposition, or situation that seems to be absurd or contradictory, but in fact is or may be true"
+    },
+    {
+        "id": "paramedic",
+        "type": "n.",
+        "ch": "急救医士；护理人员；医务辅助人员",
+        "en": "a person whose job is to help people who are sick or injured, but who is not a doctor or a nurse"
     },
     {
         "id": "pigeonhole",

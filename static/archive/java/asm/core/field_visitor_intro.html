@@ -1,0 +1,88 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">FieldVisitor and FieldWriter<br/>Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>FieldVisitor</h2>
+
+<p>
+    在学习<code>FieldVisitor</code>的时候，可以与<code>ClassVisitor</code>进行类比，这两个类之间有很大的相似性。
+</p>
+
+<ul>
+    <li>
+        第一，两者都是abstract类。
+    </li>
+    <li>
+        第二，定义了哪些字段。
+    </li>
+    <li>
+        第三，定义了哪些构造函数。
+    </li>
+    <li>
+        第四，定义了哪些具体的<code>visitXxx</code>方法。
+    </li>
+</ul>
+
+<pre title="ASM: FieldVisitor.java" class="javacode">
+public abstract class FieldVisitor {
+    protected final int api;
+    protected FieldVisitor fv;
+
+    public FieldVisitor(final int api) {
+        this(api, null);
+    }
+
+    public FieldVisitor(final int api, final FieldVisitor fieldVisitor) {
+        this.api = api;
+        this.fv = fieldVisitor;
+    }
+
+    // ......
+
+    public void visitAttribute(final Attribute attribute) {
+        if (fv != null) {
+            fv.visitAttribute(attribute);
+        }
+    }
+
+    public void visitEnd() {
+        if (fv != null) {
+            fv.visitEnd();
+        }
+    }
+}
+</pre>
+
+<p>
+    另外，<code>FieldVisitor</code>内定义的<code>visitXxx</code>方法也要遵循一定的调用顺序：
+</p>
+
+<pre title="The methods of FieldVisitor class must be called in the following order" class="plaintext">
+(visitAnnotation | visitTypeAnnotation | visitAttribute )* visitEnd
+</pre>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        注意：在对<code>visitXxx</code>方法调用过程中，最后一定要调用<code>visitEnd()</code>方法。
+    </p>
+    <p>
+        联想一下：什么样的人是靠谱的人？所谓靠谱的人，就是凡事有交代，件件有着落，事事有回音！说是三件事，其实是一件事，就是一个人要在协作中完成闭环。所谓闭环，就是一件事有开头，就必有结尾。但是一般人做到这一条并不容易。
+    </p>
+    <p>
+        对于<code>visitEnd()</code>方法的调用，就是明确的声明“这件事情，我做完了”。
+    </p>
+</div>
+
+
+
+<h2>Summing Up</h2>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_study_three_level.png" alt=""/>
+</div>
+

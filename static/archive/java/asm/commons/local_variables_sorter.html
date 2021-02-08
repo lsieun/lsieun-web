@@ -1,0 +1,456 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">LocalVariablesSorter</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>LocalVariablesSorter</h2>
+
+<h3>Class Info</h3>
+
+<p>
+    <code>LocalVariablesSorter</code>类继承自<code>MethodVisitor</code>类。
+</p>
+
+<ul>
+    <li><code>org.objectweb.asm.MethodVisitor</code></li>
+    <li>---<code>org.objectweb.asm.commons.LocalVariablesSorter</code></li>
+    <li>------<code>org.objectweb.asm.commons.GeneratorAdapter</code></li>
+    <li>---------<code>org.objectweb.asm.commons.AdviceAdapter</code></li>
+</ul>
+
+<pre title="ASM: LocalVariablesSorter.java" class="javacode">
+public class LocalVariablesSorter extends MethodVisitor {
+}
+</pre>
+
+<h3>fields</h3>
+
+<pre title="ASM: LocalVariablesSorter.java" class="javacode">
+public class LocalVariablesSorter extends MethodVisitor {
+    // The mapping from old to new local variable indices.
+    // A local variable at index i of size 1 is remapped to 'mapping[2*i]',
+    // while a local variable at index i of size 2 is remapped to 'mapping[2*i+1]'.
+    private int[] remappedVariableIndices = new int[40];
+
+    // The local variable types after remapping.
+    private Object[] remappedLocalTypes = new Object[20];
+
+    protected final int firstLocal;
+    protected int nextLocal;
+}
+</pre>
+
+<h3>Constructor</h3>
+
+<pre title="ASM: LocalVariablesSorter.java" class="javacode">
+public class LocalVariablesSorter extends MethodVisitor {
+    public LocalVariablesSorter(final int access, final String descriptor, final MethodVisitor methodVisitor) {
+        this(Opcodes.ASM9, access, descriptor, methodVisitor);
+    }
+
+    protected LocalVariablesSorter(final int api, final int access, final String descriptor,
+                                   final MethodVisitor methodVisitor) {
+        super(api, methodVisitor);
+        nextLocal = (Opcodes.ACC_STATIC & access) == 0 ? 1 : 0;
+        for (Type argumentType : Type.getArgumentTypes(descriptor)) {
+            nextLocal += argumentType.getSize();
+        }
+        firstLocal = nextLocal;
+    }
+}
+</pre>
+
+<h3>newLocal method</h3>
+
+<p>
+    <code>LocalVariablesSorter</code>类要处理好“新添加的变量”与“原有变量”之间的关系。
+</p>
+
+<pre title="ASM: LocalVariablesSorter.java" class="javacode">
+public class LocalVariablesSorter extends MethodVisitor {
+    public int newLocal(final Type type) {
+        Object localType;
+        switch (type.getSort()) {
+            case Type.BOOLEAN:
+            case Type.CHAR:
+            case Type.BYTE:
+            case Type.SHORT:
+            case Type.INT:
+                localType = Opcodes.INTEGER;
+                break;
+            case Type.FLOAT:
+                localType = Opcodes.FLOAT;
+                break;
+            case Type.LONG:
+                localType = Opcodes.LONG;
+                break;
+            case Type.DOUBLE:
+                localType = Opcodes.DOUBLE;
+                break;
+            case Type.ARRAY:
+                localType = type.getDescriptor();
+                break;
+            case Type.OBJECT:
+                localType = type.getInternalName();
+                break;
+            default:
+                throw new AssertionError();
+        }
+        int local = newLocalMapping(type);
+        setLocalType(local, type);
+        setFrameLocal(local, localType);
+        return local;
+    }
+
+    protected int newLocalMapping(final Type type) {
+        int local = nextLocal;
+        nextLocal += type.getSize();
+        return local;
+    }
+
+    protected void setLocalType(final int local, final Type type) {
+        // The default implementation does nothing.
+    }
+
+    private void setFrameLocal(final int local, final Object type) {
+        int numLocals = remappedLocalTypes.length;
+        if (local >= numLocals) { // 这里是处理分配空间不足的情况
+            Object[] newRemappedLocalTypes = new Object[Math.max(2 * numLocals, local + 1)];
+            System.arraycopy(remappedLocalTypes, 0, newRemappedLocalTypes, 0, numLocals);
+            remappedLocalTypes = newRemappedLocalTypes;
+        }
+        remappedLocalTypes[local] = type; // 真正的处理逻辑只有这一句代码
+    }
+}
+</pre>
+
+<h3>local variables method</h3>
+
+<pre title="ASM: LocalVariablesSorter.java" class="javacode">
+public class LocalVariablesSorter extends MethodVisitor {
+    @Override
+    public void visitVarInsn(final int opcode, final int var) {
+        Type varType;
+        switch (opcode) {
+            case Opcodes.LLOAD:
+            case Opcodes.LSTORE:
+                varType = Type.LONG_TYPE;
+                break;
+            case Opcodes.DLOAD:
+            case Opcodes.DSTORE:
+                varType = Type.DOUBLE_TYPE;
+                break;
+            case Opcodes.FLOAD:
+            case Opcodes.FSTORE:
+                varType = Type.FLOAT_TYPE;
+                break;
+            case Opcodes.ILOAD:
+            case Opcodes.ISTORE:
+                varType = Type.INT_TYPE;
+                break;
+            case Opcodes.ALOAD:
+            case Opcodes.ASTORE:
+            case Opcodes.RET:
+                varType = OBJECT_TYPE;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid opcode " + opcode);
+        }
+        super.visitVarInsn(opcode, remap(var, varType));
+    }
+
+    @Override
+    public void visitIincInsn(final int var, final int increment) {
+        super.visitIincInsn(remap(var, Type.INT_TYPE), increment);
+    }
+
+    private int remap(final int var, final Type type) {
+        // 第一部分，处理方法的输入参数
+        if (var + type.getSize() <= firstLocal) {
+            return var;
+        }
+
+        // 第二部分，处理方法体内定义的局部变量
+        int key = 2 * var + type.getSize() - 1;
+        int size = remappedVariableIndices.length;
+        if (key >= size) { // 这段代码，主要是处理分配空间不足的情况。我们可以假设分配的空间一直是足够的，那么可以忽略此段代码
+            int[] newRemappedVariableIndices = new int[Math.max(2 * size, key + 1)];
+            System.arraycopy(remappedVariableIndices, 0, newRemappedVariableIndices, 0, size);
+            remappedVariableIndices = newRemappedVariableIndices;
+        }
+        int value = remappedVariableIndices[key];
+        if (value == 0) { // 如果是0，则表示还没有记录下来
+            value = newLocalMapping(type);
+            setLocalType(value, type);
+            remappedVariableIndices[key] = value + 1;
+        } else { // 如果不是0，则表示有具体的值
+            value--;
+        }
+        return value;
+    }
+
+    protected int newLocalMapping(final Type type) {
+        int local = nextLocal;
+        nextLocal += type.getSize();
+        return local;
+    }
+}
+</pre>
+
+<h2>How to Use</h2>
+
+<p class="indented">
+    This method adapter <span class="text-example">renumbers the local variables</span>
+    used in a method in the order they appear in this method.
+</p>
+
+<p class="indented">
+    <span class="text-example">For instance</span> in a method with two parameters,
+    the first local variable read or written whose index is greater than or equal to 3 –
+    the first three local variables correspond to this and to the two method parameters,
+    and can therefore not be changed – is assigned index 3,
+    the second one is assigned index 4, and so on.
+</p>
+
+<p class="indented">
+    <span class="text-key-point">This adapter is useful to insert new local variables in a method.</span>
+    Without this adapter it would be necessary to add new local variables after all the existing ones,
+    but unfortunately their number is not known until the end of the method, in <code>visitMaxs</code>.
+</p>
+
+<p class="indented">
+    In order to show how this adapter can be used, let’s suppose that we want to
+    use <span class="text-example">a local variable</span> to implement <code>AddTimerAdapter</code>:
+</p>
+
+<h3>预期结果</h3>
+
+<pre title="HelloWorld.java（修改前）" class="javacode">
+import java.util.Random;
+
+public class HelloWorld {
+    public void test(int a, int b) throws Exception {
+        int c = a + b;
+        int d = c * 10;
+        Random rand = new Random();
+        int value = rand.nextInt(d);
+        Thread.sleep(value);
+    }
+}
+</pre>
+
+<pre title="HelloWorld.java（修改后）" class="javacode">
+import java.util.Random;
+
+public class HelloWorld {
+    public void test(int a, int b) throws Exception {
+        long t = System.currentTimeMillis();
+
+        int c = a + b;
+        int d = c * 10;
+        Random rand = new Random();
+        int value = rand.nextInt(d);
+        Thread.sleep(value);
+
+        t = System.currentTimeMillis() - t;
+        System.out.println("test method execute: " + t);
+    }
+}
+</pre>
+
+<h3>编码实现</h3>
+
+<p class="indented">
+    This can be done easily by extending <code>LocalVariablesSorter</code>,
+    and by using the <code>newLocal</code> method defined in this class:
+</p>
+
+<pre title="ClassLocalTimerVisitor.java（使用LocalVariablesSorter）" hidden class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.LocalVariablesSorter;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class ClassLocalTimerVisitor extends ClassVisitor {
+    public ClassLocalTimerVisitor(int api, ClassVisitor cv) {
+        super(api, cv);
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        if (!name.equals("&lt;init&gt;") && mv != null) {
+            mv = new MethodLocalTimerAdapter(api, access, name, descriptor, mv);
+        }
+        return mv;
+    }
+
+    public static class MethodLocalTimerAdapter extends LocalVariablesSorter {
+        private final String methodName;
+        private final String methodDesc;
+        private int slotIndex;
+
+        public MethodLocalTimerAdapter(int api, int access, String name, String descriptor, MethodVisitor methodVisitor) {
+            super(api, access, descriptor, methodVisitor);
+            this.methodName = name;
+            this.methodDesc = descriptor;
+        }
+
+        @Override
+        public void visitCode() {
+            slotIndex = newLocal(Type.LONG_TYPE);
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+            mv.visitVarInsn(LSTORE, slotIndex);
+
+            super.visitCode();
+        }
+
+        @Override
+        public void visitInsn(int opcode) {
+            if ((opcode &gt;= IRETURN && opcode &lt;= RETURN) || opcode == ATHROW) {
+                mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+                mv.visitVarInsn(LLOAD, slotIndex);
+                mv.visitInsn(LSUB);
+                mv.visitVarInsn(LSTORE, slotIndex);
+                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+                mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
+                mv.visitInsn(DUP);
+                mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "&lt;init&gt;", "()V", false);
+                mv.visitLdcInsn(methodName + methodDesc + " method execute: ");
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+                mv.visitVarInsn(LLOAD, slotIndex);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(J)Ljava/lang/StringBuilder;", false);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            }
+            super.visitInsn(opcode);
+        }
+    }
+}
+</pre>
+
+<pre title="ClassLocalTimerVisitor.java（使用AdviceAdapter）" hidden class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.AdviceAdapter;
+
+public class ClassLocalTimerVisitor extends ClassVisitor {
+    public ClassLocalTimerVisitor(int api, ClassVisitor cv) {
+        super(api, cv);
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        if (mv != null) {
+            mv = new MethodLocalTimerAdapter(api, mv, access, name, descriptor);
+        }
+        return mv;
+    }
+
+    public static class MethodLocalTimerAdapter extends AdviceAdapter {
+        private int slotIndex;
+
+        public MethodLocalTimerAdapter(int api, MethodVisitor mv, int access, String name, String descriptor) {
+            super(api, mv, access, name, descriptor);
+        }
+
+        @Override
+        protected void onMethodEnter() {
+            slotIndex = newLocal(Type.LONG_TYPE);
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+            mv.visitVarInsn(LSTORE, slotIndex);
+        }
+
+        @Override
+        protected void onMethodExit(int opcode) {
+            if ((opcode &gt;= IRETURN && opcode &lt;= RETURN) || opcode == ATHROW) {
+                mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+                mv.visitVarInsn(LLOAD, slotIndex);
+                mv.visitInsn(LSUB);
+                mv.visitVarInsn(LSTORE, slotIndex);
+                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+                mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
+                mv.visitInsn(DUP);
+                mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "&lt;init&gt;", "()V", false);
+                mv.visitLdcInsn(getName() + methodDesc + " method execute: ");
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+                mv.visitVarInsn(LLOAD, slotIndex);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(J)Ljava/lang/StringBuilder;", false);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            }
+        }
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformCore.java" hidden class="javacode">
+import lsieun.core.ClassLocalTimerVisitor;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class HelloWorldTransformCore {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        int api = Opcodes.ASM9;
+        ClassVisitor cv = new ClassLocalTimerVisitor(api, cw);
+
+        //（4）结合ClassReader和ClassVisitor
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
+
+        //（5）生成byte[]
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<h3>验证结果</h3>
+
+<pre title="HelloWorldRun.java" class="javacode">
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        HelloWorld instance = new HelloWorld();
+        instance.test(10, 20);
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+test(II)V method execute: 214
+</pre>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一，<code>LocalVariablesSorter</code>，从字面上来理解，就是对局部变量（local variables）进行重新排序（Sort）。</li>
+    <li>第二，<code>LocalVariablesSorter</code>，从功能上来说，从使用角度来说，它可以在方法体内添加新的局部变量。</li>
+    <li>第三，<code>LocalVariablesSorter</code>，从本质上来说，从源代码角度来说，就是处理“新添加的变量”与“原有的变量”之间的关系。</li>
+</ul>

@@ -1,0 +1,197 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">MethodVisitor Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Obtain MethodVisitor</h2>
+
+<p class="indented">
+    <span class="text-key-point">The ASM API for generating and transforming compiled methods is based on the <code>MethodVisitor</code> abstract class</span>,
+    which is returned by the <code>ClassVisitor</code>'s <code>visitMethod</code> method.
+</p>
+
+<pre title="ClassVisitor.java" class="javacode">
+public abstract class ClassVisitor {
+    public MethodVisitor visitMethod(final int access, final String name, final String descriptor,
+                                     final String signature, final String[] exceptions) {
+        if (cv != null) {
+            return cv.visitMethod(access, name, descriptor, signature, exceptions);
+        }
+        return null;
+    }
+}
+</pre>
+
+<p class="indented">
+    In addition to some methods related to annotations and debug information,
+    <span class="text-key-point">this <code>MethodVisitor</code> class defines one method per bytecode instruction category</span>,
+    based on the number and type of arguments of these instructions.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_core_classes.png" alt=""/>
+</div>
+
+<h2>MethodVisitor</h2>
+
+<h3>Class Info</h3>
+
+<p class="indented">
+    第一个要注意的地方，就是<code>MethodVisitor</code>类是一个<code>abstract</code>类。
+</p>
+
+<pre title="ASM: MethodVisitor.java" class="javacode">
+public abstract class MethodVisitor {
+}
+</pre>
+
+<h3>fields</h3>
+
+<p class="indented">
+    第二个要注意的地方，就是<code>MethodVisitor</code>定义的字段有哪些。
+</p>
+
+<p class="indented">
+    从字段的角度上来说，<code>MethodVisitor</code>定义的字段与<code>ClassVisitor</code>和<code>FieldVisitor</code>有很大的相似性。
+</p>
+
+<pre title="ASM: MethodVisitor.java" class="javacode">
+public abstract class MethodVisitor {
+    protected final int api;
+    protected MethodVisitor mv;
+}
+</pre>
+
+<h3>Constructor</h3>
+
+<p class="indented">
+    第三个要注意的地方，就是<code>MethodVisitor</code>定义的构造函数。
+</p>
+
+<pre title="ASM: MethodVisitor.java" class="javacode">
+public abstract class MethodVisitor {
+    public MethodVisitor(final int api) {
+        this(api, null);
+    }
+
+    public MethodVisitor(final int api, final MethodVisitor methodVisitor) {
+        this.api = api;
+        this.mv = methodVisitor;
+    }
+}
+</pre>
+
+<h3>methods</h3>
+
+<p class="indented">
+    第四个要注意的地方，就是<code>MethodVisitor</code>定义的方法。
+</p>
+
+<p class="indented">
+    在<code>MethodVisitor</code>类当中，定义了许多的<code>visitXxx</code>方法。这些<code>visitXxx</code>方法的调用，也要遵循一定的顺序。
+</p>
+
+<p class="indented">
+    对于<code>visitXxx</code>方法的使用，一方面可以查看Java doc的描述，另一方面也可以参考<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html" target="_blank">Java Virtual Machine Specification</a>的Chapter 6. The Java Virtual Machine Instruction Set部分。
+</p>
+
+<pre title="ASM: MethodVisitor.java" class="javacode">
+public abstract class MethodVisitor {
+    public void visitParameter(final String name, final int access);
+    public void visitAttribute(final Attribute attribute);
+
+    public void visitCode();
+    public void visitInsn(final int opcode);
+    public void visitIntInsn(final int opcode, final int operand);
+    public void visitVarInsn(final int opcode, final int var);
+    public void visitTypeInsn(final int opcode, final String type);
+    public void visitFieldInsn(final int opcode, final String owner, final String name, final String descriptor);
+    public void visitMethodInsn(final int opcode, final String owner, final String name, final String descriptor,
+                                final boolean isInterface);
+    public void visitInvokeDynamicInsn(final String name, final String descriptor, final Handle bootstrapMethodHandle,
+                                       final Object... bootstrapMethodArguments);
+    public void visitJumpInsn(final int opcode, final Label label);
+    public void visitLabel(final Label label);
+    public void visitLdcInsn(final Object value);
+    public void visitIincInsn(final int var, final int increment);
+    public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label... labels);
+    public void visitLookupSwitchInsn(final Label dflt, final int[] keys, final Label[] labels);
+    public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions);
+
+
+    public void visitTryCatchBlock(final Label start, final Label end, final Label handler, final String type);
+
+    public void visitMaxs(final int maxStack, final int maxLocals);
+    public void visitEnd();
+
+    // ......
+}
+</pre>
+
+<h2>Method Invocation Order</h2>
+
+<p class="indented">
+    <span class="text-key-point">These <code>visitXxx</code> methods must be called in the following order</span>
+    (with some additional constraints specified in the
+    Javadoc of the <code>MethodVisitor</code> class):
+</p>
+
+<pre title="The methods of MethodVisitor class must be called in the following order" class="plaintext">
+(visitParameter)*
+[visitAnnotationDefault]
+(visitAnnotation | visitAnnotableParameterCount | visitParameterAnnotation | visitTypeAnnotation | visitAttribute)*
+[
+    visitCode
+    (
+        visitFrame |
+        visitXxxInsn |
+        visitLabel |
+        visitInsnAnnotation |
+        visitTryCatchBlock |
+        visitTryCatchAnnotation |
+        visitLocalVariable |
+        visitLocalVariableAnnotation |
+        visitLineNumber
+    )*
+    visitMaxs
+]
+visitEnd.
+</pre>
+
+<p class="indented">
+    This means that <span class="text-key-point">annotations and attributes</span>, if any, <span class="text-key-point">must be visited first</span>,
+    <span class="text-key-point">followed by the method's bytecode, for non abstract methods</span>.
+    For these methods the code must be visited in sequential order,
+    between exactly one call to <code>visitCode</code> and exactly one call to <code>visitMaxs</code>.
+</p>
+
+<p class="indented">
+    The <code>visitCode</code> and <code>visitMaxs</code> methods can therefore
+    be used to detect the start and end of the method’s bytecode in a sequence of events.
+    Like for classes, the <code>visitEnd</code> method must be called last,
+    and is used to detect the end of a method in a sequence of events.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        注意：在对<code>visitXxx</code>方法调用过程中，最后一定要调用<code>visitMaxs()</code>和<code>visitEnd()</code>方法。
+    </p>
+    <p>
+        联想一下：什么样的人是靠谱的人？所谓靠谱的人，就是凡事有交代，件件有着落，事事有回音！说是三件事，其实是一件事，就是一个人要在协作中完成闭环。所谓闭环，就是一件事有开头，就必有结尾。但是一般人做到这一条并不容易。
+    </p>
+    <p>
+        对于<code>visitMaxs()</code>和<code>visitEnd()</code>方法的调用，就是明确的声明“这件事情，我做完了”。
+    </p>
+</div>
+
+
+
+<h2>Summing Up</h2>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_study_three_level.png" alt=""/>
+</div>

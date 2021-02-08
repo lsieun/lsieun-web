@@ -1,5 +1,5 @@
 <!-- 标题 -->
-<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Add Interfaces</span></h1>
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">添加接口</span></h1>
 <!-- 内容 -->
 
 <div style="text-align: right">
@@ -8,6 +8,14 @@
 </div>
 
 <h2>预期目标</h2>
+
+<p>
+    预期目标：
+</p>
+
+<ul>
+    <li>给<code>HelloWorld</code>类添加<code>java.lang.Cloneable</code>和<code>java.io.Serializable</code>接口信息。</li>
+</ul>
 
 <pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
@@ -28,32 +36,111 @@ public class HelloWorld {
     public String toString() {
         return String.format("HelloWorld{name=%s, age=%d}", name, age);
     }
+}
+</pre>
 
-    public static void main(String[] args) {
-        System.out.println("Hello World");
+<h2>编码实现</h2>
+
+<p>
+    实现思路：
+</p>
+
+<ul>
+    <li>在<code>ClassVisitor.visit()</code>方法内进行处理</li>
+    <li>避免添加重复接口</li>
+</ul>
+
+<pre title="ClassAddInterfaceVisitor.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+public class ClassAddInterfaceVisitor extends ClassVisitor {
+    private final String[] newInterfaces;
+
+    public ClassAddInterfaceVisitor(int api, ClassVisitor cv, String[] newInterfaces) {
+        super(api, cv);
+        this.newInterfaces = newInterfaces;
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        Set&lt;String&gt; set = new HashSet&lt;&gt;(); // 注意，这里使用Set是为了避免出现重复接口
+        if (interfaces != null) {
+            set.addAll(Arrays.asList(interfaces));
+        }
+        if (newInterfaces != null) {
+            set.addAll(Arrays.asList(newInterfaces));
+        }
+        super.visit(version, access, name, signature, superName, set.toArray(new String[0]));
     }
 }
 </pre>
+
+<pre title="HelloWorldTransformCore.java" hidden class="javacode">
+import lsieun.template.ClassAddInterfaceVisitor;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class HelloWorldTransformCore {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        int api = Opcodes.ASM9;
+        String[] interfaces = new String[] {
+                "java/lang/Cloneable",
+                "java/io/Serializable",
+        };
+        ClassVisitor cv = new ClassAddInterfaceVisitor(api, cw, interfaces);
+
+        //（4）结合ClassReader和ClassVisitor
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
+
+        //（5）生成byte[]
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<h2>验证结果</h2>
 
 <pre title="HelloWorldRun.java" class="javacode">
 import java.io.*;
 
 public class HelloWorldRun {
     public static void main(String[] args) throws Exception {
-        HelloWorld instance = new HelloWorld("Tom", 10);
-        testClone(instance);
-        testSerialize(instance);
+        HelloWorld obj = new HelloWorld("Tom", 10);
+        testClone(obj);
+        testSerialize(obj);
     }
 
-    public static void testClone(HelloWorld instance) throws CloneNotSupportedException {
-        Object obj = instance.clone();
+    public static void testClone(HelloWorld obj) throws CloneNotSupportedException {
+        Object anotherObj = obj.clone();
+        System.out.println(anotherObj);
     }
 
-    public static void testSerialize(HelloWorld instance) {
+    public static void testSerialize(HelloWorld obj) {
         String filename = "obj.data";
-        write(instance, filename);
-        Object obj = read(filename);
-        System.out.println(obj);
+        write(obj, filename);
+        Object anotherObj = read(filename);
+        System.out.println(anotherObj);
     }
 
     public static void write(Object obj, String filename) {
@@ -82,97 +169,7 @@ public class HelloWorldRun {
 }
 </pre>
 
-<h2>编码实现</h2>
-
-<pre title="InterfaceAdder.java" class="javacode">
-import org.objectweb.asm.ClassVisitor;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-public class InterfaceAdder extends ClassVisitor {
-    private final String[] newInterfaces;
-
-    public InterfaceAdder(int api, ClassVisitor cv, String[] newInterfaces) {
-        super(api, cv);
-        this.newInterfaces = newInterfaces;
-    }
-
-    @Override
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        Set&lt;String&gt; set = new HashSet&lt;&gt;(); // 注意，这里使用Set是为了避免出现重复接口
-        if (interfaces != null) {
-            set.addAll(Arrays.asList(interfaces));
-        }
-        if (newInterfaces != null) {
-            set.addAll(Arrays.asList(newInterfaces));
-        }
-        super.visit(version, access, name, signature, superName, set.toArray(new String[0]));
-    }
-}
-</pre>
-
-<pre title="InterfaceAdderRun.java" class="javacode">
-import lsieun.utils.FileUtils;
-import lsieun.utils.ReadUtils;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
-
-public class InterfaceAdderRun {
-    public static void main(String[] args) {
-        String relative_path = "sample/HelloWorld.class";
-        String filepath = FileUtils.getFilePath(relative_path);
-        byte[] bytes1 = ReadUtils.readByPath(filepath);
-
-        //（1）构建ClassReader
-        ClassReader cr = new ClassReader(bytes1);
-
-        //（2）构建ClassWriter
-        ClassWriter cw = new ClassWriter(0);
-
-        //（3）串连ClassVisitor
-        String[] interfaces = new String[] {
-                "java/lang/Cloneable",
-                "java/io/Serializable",
-        };
-        ClassVisitor cv = new InterfaceAdder(Opcodes.ASM9, cw, interfaces);
-
-        //（4）两者进行结合
-        cr.accept(cv, 0);
-
-        //（5）重新生成Class
-        byte[] bytes2 = cw.toByteArray();
-
-        FileUtils.writeBytes(filepath, bytes2);
-    }
-}
-</pre>
-
-<h2>验证结果</h2>
-
-<pre title="check 1 (before)" class="plaintext">
-$ javap sample.HelloWorld
-public class sample.HelloWorld {
-  public java.lang.String name;
-  public int age;
-  public sample.HelloWorld(java.lang.String, int);
-  protected java.lang.Object clone() throws java.lang.CloneNotSupportedException;
-  public java.lang.String toString();
-  public static void main(java.lang.String[]);
-}
-</pre>
-
-<pre title="check 2 (after)" class="plaintext">
-javap sample.HelloWorld
-public class sample.HelloWorld implements java.io.Serializable,java.lang.Cloneable {
-  public java.lang.String name;
-  public int age;
-  public sample.HelloWorld(java.lang.String, int);
-  protected java.lang.Object clone() throws java.lang.CloneNotSupportedException;
-  public java.lang.String toString();
-  public static void main(java.lang.String[]);
-}
+<pre title="Run output" class="plaintext">
+HelloWorld{name=Tom, age=10}
+HelloWorld{name=Tom, age=10}
 </pre>

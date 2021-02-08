@@ -1,0 +1,329 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASMifier</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Usage from Command Line</h2>
+
+<p class="indented">
+    For instance, if you don’t know how to generate some compiled class with ASM,
+    write the corresponding source code,
+    compile it with <code>javac</code>,
+    and visit the compiled class with the <code>ASMifier</code>.
+    You will get the ASM code to generate this compiled class!
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}
+</pre>
+
+<pre title="javac" class="plaintext">
+$ javac HelloWorld.java
+</pre>
+
+<p>
+    The <code>ASMifier</code> class can be used from the command line. For example using:
+</p>
+
+<pre title="Linux分隔符是“:”" class="plaintext">
+$ java -classpath asm.jar:asm-util.jar org.objectweb.asm.util.ASMifier java.lang.Runnable
+</pre>
+
+<pre title="Windows分隔符是“;”" class="plaintext">
+$ java -classpath asm.jar;asm-util.jar org.objectweb.asm.util.ASMifier java.lang.Runnable
+</pre>
+
+<pre title="Cygwin分隔符是“\;”" class="plaintext">
+$ java -classpath asm.jar\;asm-util.jar org.objectweb.asm.util.ASMifier java.lang.Runnable
+</pre>
+
+<h2>Usage from Java Program</h2>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.util.ASMifier;
+
+import java.io.IOException;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws IOException {
+        String[] array = new String[] {
+                "-debug",
+                "sample.HelloWorld"
+        };
+        ASMifier.main(array);
+    }
+}
+</pre>
+
+<pre title="ASMifierTest.java" class="javacode">
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.util.ASMifier;
+import org.objectweb.asm.util.Printer;
+import org.objectweb.asm.util.Textifier;
+import org.objectweb.asm.util.TraceClassVisitor;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+public class ASMPrint {
+    public static void main(String[] args) throws IOException {
+        // 下面的代码是来源于{@code org.objectweb.asm.util.Printer#main}
+        int parsingOptions = ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG;
+        String className = "sample.HelloWorld";
+        // 可以使用 ASMifier 或 Textifier 来显示不同结果
+        Printer printer = new ASMifier();
+        TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, printer, new PrintWriter(System.out));
+        new ClassReader(className).accept(traceClassVisitor, parsingOptions);
+    }
+}
+</pre>
+
+<h2>Printer</h2>
+
+<p class="indented">
+    <code>ASMifier</code>类的父类是<code>Printer</code>类。
+</p>
+
+<h3>Class Info</h3>
+
+<p class="indented">
+    <code>Printer</code>类是一个<code>abstract</code>类，它有两个子类：<code>ASMifier</code>和<code>Textifier</code>。
+</p>
+
+<pre title="ASM: Printer.java" class="javacode">
+public abstract class Printer {
+}
+</pre>
+
+<h3>fields</h3>
+
+<pre title="ASM: Printer.java" class="javacode">
+public abstract class Printer {
+    protected final int api;
+
+    // The builder used to build strings in the various visit methods.
+    protected final StringBuilder stringBuilder;
+
+    // The text to be printed.
+    public final List&lt;Object&gt; text;
+}
+</pre>
+
+<h3>Constructor</h3>
+
+<pre title="ASM: Printer.java" class="javacode">
+public abstract class Printer {
+    protected Printer(final int api) {
+        this.api = api;
+        this.stringBuilder = new StringBuilder();
+        this.text = new ArrayList&lt;&gt;();
+    }
+}
+</pre>
+
+<h3>methods</h3>
+
+<pre title="ASM: Printer.java" class="javacode">
+public abstract class Printer {
+    // Classes，这部分方法可与ClassVisitor内定义的方法进行对比
+    public abstract void visit(int version, int access, String name, String signature,
+                               String superName, String[] interfaces);
+    public abstract void visitSource(String source, String debug);
+    public abstract Printer visitField(int access, String name, String descriptor, String signature, Object value);
+    public abstract Printer visitMethod(int access, String name, String descriptor,
+                                        String signature, String[] exceptions);
+    public abstract void visitClassEnd();
+    // ......
+
+
+    // Methods，这部分方法可与MethodVisitor内定义的方法进行对比
+    public abstract void visitCode();
+    public abstract void visitInsn(int opcode);
+    public abstract void visitIntInsn(int opcode, int operand);
+    public abstract void visitVarInsn(int opcode, int var);
+    public abstract void visitTypeInsn(int opcode, String type);
+    public abstract void visitFieldInsn(int opcode, String owner, String name, String descriptor);
+    public void visitMethodInsn(final int opcode, final String owner, final String name,
+                                final String descriptor, final boolean isInterface);
+    public abstract void visitJumpInsn(int opcode, Label label);
+    // ......
+    public abstract void visitMaxs(int maxStack, int maxLocals);
+    public abstract void visitMethodEnd();
+}
+</pre>
+
+<h3>static fields</h3>
+
+<p class="indented">
+    对于<code>TYPES</code>，可参考<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.newarray">这里</a>；对于<code>HANDLE_TAG</code>，可参考<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.8">这里</a>或<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-5.html#jvms-5.4.3.5">这里</a>。
+</p>
+
+<pre title="ASM: Printer.java" class="javacode">
+public abstract class Printer {
+    public static final String[] OPCODES = {
+        "NOP", // 0 (0x0)
+        "ACONST_NULL", // 1 (0x1)
+        "ICONST_M1", // 2 (0x2)
+        ......
+        "IFNULL", // 198 (0xc6)
+        "IFNONNULL" // 199 (0xc7)
+    };
+
+    // The names of the operand values of the org.objectweb.asm.MethodVisitor.visitIntInsn method
+    // when opcode is NEWARRAY.
+    public static final String[] TYPES = {
+        "",
+        "",
+        "",
+        "",
+        "T_BOOLEAN",
+        "T_CHAR",
+        "T_FLOAT",
+        "T_DOUBLE",
+        "T_BYTE",
+        "T_SHORT",
+        "T_INT",
+        "T_LONG"
+    };
+
+    // The names of the tag field values for Handle.
+    public static final String[] HANDLE_TAG = {
+        "",
+        "H_GETFIELD",
+        "H_GETSTATIC",
+        "H_PUTFIELD",
+        "H_PUTSTATIC",
+        "H_INVOKEVIRTUAL",
+        "H_INVOKESTATIC",
+        "H_INVOKESPECIAL",
+        "H_NEWINVOKESPECIAL",
+        "H_INVOKEINTERFACE"
+    };
+}
+</pre>
+
+<h3>static methods</h3>
+
+<p class="indented">
+    <code>Printer</code>类的<code>main</code>方法，从本质上来讲，只有两句代码。
+</p>
+
+<pre title="ASM: Printer.java" class="javacode">
+public abstract class Printer {
+    static void main(final String[] args, final String usage, final Printer printer,
+                     final PrintWriter output, final PrintWriter logger) throws IOException {
+        if (args.length < 1 || args.length > 2 || (args[0].equals("-debug") && args.length != 2)) {
+            logger.println(usage);
+            return;
+        }
+
+        TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, printer, output); // 第一句代码
+
+        String className;
+        int parsingOptions;
+        if (args[0].equals("-debug")) {
+            className = args[1];
+            parsingOptions = ClassReader.SKIP_DEBUG;
+        } else {
+            className = args[0];
+            parsingOptions = 0;
+        }
+
+        if (className.endsWith(".class")
+            || className.indexOf('\\') != -1
+            || className.indexOf('/') != -1) {
+            try (InputStream inputStream = new FileInputStream(className)) {
+                new ClassReader(inputStream).accept(traceClassVisitor, parsingOptions);  // 第二句代码
+            } catch (IOException ioe) {
+                throw ioe;
+            }
+        } else {
+            new ClassReader(className).accept(traceClassVisitor, parsingOptions);        // 第二句代码
+        }
+    }
+}
+</pre>
+
+<h2>ASMifier</h2>
+
+<h3>Class Info</h3>
+
+<p class="indented">
+    <code>ASMifier</code>类的父类是<code>Printer</code>类。
+</p>
+
+<h3>fields</h3>
+
+<pre title="ASM: ASMifier.java" class="javacode">
+public class ASMifier extends Printer {
+    protected final String name;
+    protected final int id;
+}
+</pre>
+
+<h3>Constructor</h3>
+
+<pre title="ASM: ASMifier.java" class="javacode">
+public class ASMifier extends Printer {
+    public ASMifier() {
+        this(Opcodes.ASM9, "classWriter", 0);
+        if (getClass() != ASMifier.class) {
+            throw new IllegalStateException();
+        }
+    }
+
+    protected ASMifier(final int api, final String visitorVariableName, final int annotationVisitorId) {
+        super(api);
+        this.name = visitorVariableName;
+        this.id = annotationVisitorId;
+    }
+}
+</pre>
+
+<h3>main methods</h3>
+
+<pre title="ASM: ASMifier.java" class="javacode">
+public class ASMifier extends Printer {
+    private static final String USAGE = "Prints the ASM code to generate the given class.\n"
+          + "Usage: ASMifier [-debug] &lt;fully qualified class name or class file name&gt;";
+
+    public static void main(final String[] args) throws IOException {
+        main(args, new PrintWriter(System.out, true), new PrintWriter(System.err, true));
+    }
+
+    static void main(final String[] args, final PrintWriter output, final PrintWriter logger) throws IOException {
+        main(args, USAGE, new ASMifier(), output, logger);
+    }
+}
+</pre>
+
+<p class="indented">
+    <code>ASMifier</code> class provides an alternative backend for the <code>TraceClassVisitor</code> tool
+    (which by default uses a <code>Textifier</code> backend).
+    <span class="text-key-point">This backend makes each method of the <code>TraceClassVisitor</code> class print the Java code that was used to call it.</span>
+    For instance calling the <code>visitEnd()</code> method prints <code>cv.visitEnd();</code>.
+    The result is that,
+    when a <code>TraceClassVisitor</code> visitor with an <code>ASMifier</code> backend visits a class,
+    it prints the source code to generate this class with ASM.
+    This is useful if you use this visitor to visit an already existing class.
+</p>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>第一，了解<code>ASMifier</code>是如何使用的。</li>
+    <li>第二，理解<code>ASMifier</code>的代码逻辑。</li>
+    <li>第三，<code>ASMifier</code>类是借助于<code>TraceClassVisitor</code>类来发挥作用的，后续内容会介绍<code>TraceClassVisitor</code>类。</li>
+</ul>

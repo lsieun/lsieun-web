@@ -1,5 +1,5 @@
 <!-- 标题 -->
-<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">MethodVisitor and MethodWriter<br/>Examples</span></h1>
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">MethodVisitor Examples</span></h1>
 <!-- 内容 -->
 
 <div style="text-align: right">
@@ -60,7 +60,6 @@ public class HelloWorldGenerateCore {
 
         // (2) 保存byte[]到文件
         FileUtils.writeBytes(filepath, bytes);
-        System.out.println("file://" + filepath);
     }
 
     public static byte[] dump() throws Exception {
@@ -159,7 +158,6 @@ public class HelloWorldGenerateCore {
 
         // (2) 保存byte[]到文件
         FileUtils.writeBytes(filepath, bytes);
-        System.out.println("file://" + filepath);
     }
 
     public static byte[] dump() throws Exception {
@@ -204,21 +202,21 @@ public class HelloWorldRun {
 }
 </pre>
 
-<h2>if clause</h2>
+
+<h2>lambda</h2>
 
 <p>
     预期结果：
 </p>
 
 <pre title="HelloWorld.java" class="javacode">
+import java.util.function.BiFunction;
+
 public class HelloWorld {
-    public void test(int value) {
-        if (value == 0) {
-            System.out.println("value is 0");
-        }
-        else {
-            System.out.println("value is not 0");
-        }
+    public void test() {
+        BiFunction&lt;Integer, Integer, Integer&gt; func = Math::max;
+        Integer result = func.apply(10, 20);
+        System.out.println(result);
     }
 }
 </pre>
@@ -227,11 +225,9 @@ public class HelloWorld {
     实现代码：
 </p>
 
-<pre title="HelloWorldGenerateCore.java" hidden class="javacode">
+<pre title="HelloWorldGenerateCore.java" class="javacode">
 import lsieun.utils.FileUtils;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -245,11 +241,11 @@ public class HelloWorldGenerateCore {
 
         // (2) 保存byte[]到文件
         FileUtils.writeBytes(filepath, bytes);
-        System.out.println("file://" + filepath);
     }
 
     public static byte[] dump() throws Exception {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
         cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "sample/HelloWorld",
                 null, "java/lang/Object", null);
 
@@ -264,27 +260,30 @@ public class HelloWorldGenerateCore {
         }
 
         {
-            MethodVisitor mv2 = cw.visitMethod(ACC_PUBLIC, "test", "(I)V", null, null);
-            Label elseLabel = new Label();
-            Label returnLabel = new Label();
-
-            // 第一段
+            MethodVisitor mv2 = cw.visitMethod(ACC_PUBLIC, "test", "()V", null, null);
             mv2.visitCode();
-            mv2.visitVarInsn(ILOAD, 1);
-            mv2.visitJumpInsn(IFNE, elseLabel);
+            Handle bootstrapMethodHandle = new Handle(H_INVOKESTATIC, "java/lang/invoke/LambdaMetafactory", "metafactory",
+                    "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;" +
+                            "Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;", false);
+            mv2.visitInvokeDynamicInsn("apply", "()Ljava/util/function/BiFunction;",
+                    bootstrapMethodHandle,
+                    Type.getType("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"),
+                    new Handle(H_INVOKESTATIC, "java/lang/Math", "max", "(II)I", false),
+                    Type.getType("(Ljava/lang/Integer;Ljava/lang/Integer;)Ljava/lang/Integer;")
+            );
+            mv2.visitVarInsn(ASTORE, 1);
+            mv2.visitVarInsn(ALOAD, 1);
+            mv2.visitIntInsn(BIPUSH, 10);
+            mv2.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+            mv2.visitIntInsn(BIPUSH, 20);
+            mv2.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+            mv2.visitMethodInsn(INVOKEINTERFACE, "java/util/function/BiFunction", "apply",
+                    "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
+            mv2.visitTypeInsn(CHECKCAST, "java/lang/Integer");
+            mv2.visitVarInsn(ASTORE, 2);
             mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-            mv2.visitLdcInsn("value is 0");
-            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-            mv2.visitJumpInsn(GOTO, returnLabel);
-
-            // 第二段
-            mv2.visitLabel(elseLabel);
-            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-            mv2.visitLdcInsn("value is not 0");
-            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-
-            // 第三段
-            mv2.visitLabel(returnLabel);
+            mv2.visitVarInsn(ALOAD, 2);
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/Object;)V", false);
             mv2.visitInsn(RETURN);
             mv2.visitMaxs(0, 0);
             mv2.visitEnd();
@@ -301,125 +300,11 @@ public class HelloWorldGenerateCore {
     验证结果：
 </p>
 
-<pre title="HelloWorldRun.java" class="javacode">
-import java.lang.reflect.Method;
-
+<pre title="HelloWorldRun" class="javacode">
 public class HelloWorldRun {
     public static void main(String[] args) throws Exception {
-        Class&lt;?&gt; clazz = Class.forName("sample.HelloWorld");
-        Object obj = clazz.newInstance();
-
-        Method method = clazz.getDeclaredMethod("test", int.class);
-        method.invoke(obj, 0);
-    }
-}
-</pre>
-
-<h2>for clause</h2>
-
-<p>
-    预期结果：
-</p>
-
-<pre title="HelloWorld.java" class="javacode">
-public class HelloWorld {
-    public void test() {
-        for (int i = 0; i < 10; i++) {
-            System.out.println(i);
-        }
-    }
-}
-</pre>
-
-<p>
-    实现代码：
-</p>
-
-<pre title="HelloWorldGenerateCore.java" hidden class="javacode">
-import lsieun.utils.FileUtils;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-
-import static org.objectweb.asm.Opcodes.*;
-
-public class HelloWorldGenerateCore {
-    public static void main(String[] args) throws Exception {
-        String relative_path = "sample/HelloWorld.class";
-        String filepath = FileUtils.getFilePath(relative_path);
-
-        // (1) 生成byte[]内容
-        byte[] bytes = dump();
-
-        // (2) 保存byte[]到文件
-        FileUtils.writeBytes(filepath, bytes);
-        System.out.println("file://" + filepath);
-    }
-
-    public static byte[] dump() throws Exception {
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "sample/HelloWorld",
-                null, "java/lang/Object", null);
-
-        {
-            MethodVisitor mv1 = cw.visitMethod(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
-            mv1.visitCode();
-            mv1.visitVarInsn(ALOAD, 0);
-            mv1.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false);
-            mv1.visitInsn(RETURN);
-            mv1.visitMaxs(0, 0);
-            mv1.visitEnd();
-        }
-
-        {
-            MethodVisitor methodVisitor = cw.visitMethod(ACC_PUBLIC, "test", "()V", null, null);
-            Label conditionLabel = new Label();
-            Label returnLabel = new Label();
-
-            // 第一段
-            methodVisitor.visitCode();
-            methodVisitor.visitInsn(ICONST_0);
-            methodVisitor.visitVarInsn(ISTORE, 1);
-
-            // 第二段
-            methodVisitor.visitLabel(conditionLabel);
-            methodVisitor.visitVarInsn(ILOAD, 1);
-            methodVisitor.visitIntInsn(BIPUSH, 10);
-            methodVisitor.visitJumpInsn(IF_ICMPGE, returnLabel);
-            methodVisitor.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-            methodVisitor.visitVarInsn(ILOAD, 1);
-            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
-            methodVisitor.visitIincInsn(1, 1);
-            methodVisitor.visitJumpInsn(GOTO, conditionLabel);
-
-            // 第三段
-            methodVisitor.visitLabel(returnLabel);
-            methodVisitor.visitInsn(RETURN);
-            methodVisitor.visitMaxs(0, 0);
-            methodVisitor.visitEnd();
-        }
-
-        cw.visitEnd();
-
-        return cw.toByteArray();
-    }
-}
-</pre>
-
-<p>
-    验证结果：
-</p>
-
-<pre title="HelloWorld.java" class="javacode">
-import java.lang.reflect.Method;
-
-public class HelloWorldRun {
-    public static void main(String[] args) throws Exception {
-        Class&lt;?&gt; clazz = Class.forName("sample.HelloWorld");
-        Object obj = clazz.newInstance();
-
-        Method method = clazz.getDeclaredMethod("test");
-        method.invoke(obj);
+        HelloWorld obj = new HelloWorld();
+        obj.test();
     }
 }
 </pre>
@@ -464,7 +349,6 @@ public class HelloWorldGenerateCore {
 
         // (2) 保存byte[]到文件
         FileUtils.writeBytes(filepath, bytes);
-        System.out.println("file://" + filepath);
     }
 
     public static byte[] dump() throws Exception {
