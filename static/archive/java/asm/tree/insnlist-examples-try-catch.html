@@ -1,0 +1,132 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">InsnList Examples <br/>try-catch</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    需要注意的是：<code>TryCatchBlockNode</code>添加到<code>MethodNode.tryCatchBlocks</code>内。
+</p>
+
+<h2>预期目标</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        try {
+            System.out.println("Before Sleep");
+            Thread.sleep(1000);
+            System.out.println("After Sleep");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+<h2>编码实现</h2>
+
+<pre title="HelloWorldGenerateTree.java" class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.tree.*;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldGenerateTree {
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // (1) 生成byte[]内容
+        byte[] bytes = dump();
+
+        // (2) 保存byte[]到文件
+        FileUtils.writeBytes(filepath, bytes);
+    }
+
+    public static byte[] dump() throws Exception {
+        ClassNode cn = new ClassNode();
+        cn.version = V1_8;
+        cn.access = ACC_PUBLIC | ACC_SUPER;
+        cn.name = "sample/HelloWorld";
+        cn.superName = "java/lang/Object";
+
+        {
+            MethodNode mn1 = new MethodNode(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
+            cn.methods.add(mn1);
+
+            InsnList il = mn1.instructions;
+            il.add(new VarInsnNode(ALOAD, 0));
+            il.add(new MethodInsnNode(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false));
+            il.add(new InsnNode(RETURN));
+            mn1.maxLocals = 0;
+            mn1.maxStack = 0;
+        }
+
+        {
+            MethodNode mn2 = new MethodNode(ACC_PUBLIC, "test", "()V", null, null);
+            cn.methods.add(mn2);
+
+            LabelNode startLabelNode = new LabelNode();
+            LabelNode endLabelNode = new LabelNode();
+            LabelNode handlerLabelNode = new LabelNode();
+            LabelNode returnLabelNode = new LabelNode();
+            TryCatchBlockNode tryCatchBlockNode = new TryCatchBlockNode(startLabelNode, endLabelNode, handlerLabelNode, "java/lang/InterruptedException");
+            mn2.tryCatchBlocks.add(tryCatchBlockNode);
+
+
+            InsnList il = mn2.instructions;
+            il.add(startLabelNode);
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("Before Sleep"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+            il.add(new LdcInsnNode(Long.valueOf(1000L)));
+            il.add(new MethodInsnNode(INVOKESTATIC, "java/lang/Thread", "sleep", "(J)V", false));
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("After Sleep"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+
+
+            il.add(endLabelNode);
+            il.add(new JumpInsnNode(GOTO, returnLabelNode)); // goto jump
+
+
+            il.add(handlerLabelNode);
+            il.add(new VarInsnNode(ASTORE, 1));
+            il.add(new VarInsnNode(ALOAD, 1));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/lang/InterruptedException", "printStackTrace", "()V", false));
+
+
+            il.add(returnLabelNode); // return label
+            il.add(new InsnNode(RETURN));
+
+
+            mn2.maxLocals = 0;
+            mn2.maxStack = 0;
+        }
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cn.accept(cw);
+        return cw.toByteArray();
+    }
+}
+</pre>
+
+<h2>验证结果</h2>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import java.lang.reflect.Method;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Class<?> clazz = Class.forName("sample.HelloWorld");
+        Method method = clazz.getDeclaredMethod("test");
+        Object instance = clazz.newInstance();
+        method.invoke(instance);
+    }
+}
+</pre>

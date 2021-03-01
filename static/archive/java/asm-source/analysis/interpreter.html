@@ -1,0 +1,42 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Interpreter</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-source-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Interpreter</h2>
+
+<h3>Class Info</h3>
+
+<pre title="Interpreter.java" class="javacode">
+public abstract class Interpreter&lt;V extends Value&gt; {
+}
+</pre>
+
+<h3>Field and Constructor</h3>
+
+<pre title="Interpreter.java" class="javacode">
+public abstract class Interpreter&lt;V extends Value&gt; {
+    protected final int api;
+
+    protected Interpreter(final int api) {
+        this.api = api;
+    }
+}
+</pre>
+
+<h3>Methods</h3>
+
+<pre title="Interpreter.java" class="javacode">
+public abstract class Interpreter&lt;V extends Value&gt; {
+    public abstract V newOperation(AbstractInsnNode insn) throws AnalyzerException;
+    public abstract V copyOperation(AbstractInsnNode insn, V value) throws AnalyzerException;
+
+    public abstract V unaryOperation(AbstractInsnNode insn, V value) throws AnalyzerException;
+    public abstract V binaryOperation(AbstractInsnNode insn, V value1, V value2) throws AnalyzerException;
+    public abstract V ternaryOperation(AbstractInsnNode insn, V value1, V value2, V value3) throws AnalyzerException;
+}
+</pre>

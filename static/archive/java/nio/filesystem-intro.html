@@ -1,0 +1,108 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">FileSystem Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-nio-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    An object of the <code>FileSystem</code> class represents a file system in a Java program.
+</p>
+
+<p>
+    A <code>FileSystem</code> object is used to perform two tasks:
+</p>
+
+<ul>
+    <li>an interface between a Java program and a file system.</li>
+    <li>a factory for creating many types of file system-related objects and services.</li>
+</ul>
+
+<p>
+    A <code>FileSystem</code> object is <span class="text-emphasize">platform-dependent</span>.
+</p>
+
+<h2>Create FileSystem</h2>
+
+<p>
+    To obtain the default <code>FileSystem</code> object, we need to use the <code>getDefault()</code> static method of the <code>FileSystems</code> class as follows:
+</p>
+
+<pre title="Create FileSystem" class="javacode">
+FileSystem fs  = FileSystems.getDefault();
+</pre>
+
+<p>
+    A <code>FileSystem</code> consists of one or more <code>FileStore</code>. The <code>getFileStores()</code> method from <code>FileSystem</code> returns an <code>Iterator</code> for the <code>FileStore</code> objects.
+</p>
+
+<p>
+    The <code>getRootDirectories()</code> method from <code>FileSystem</code> returns an iterator of <code>Path</code> objects, which represent paths to all top-level directories.
+</p>
+
+<p>
+    <code>isReadOnly()</code> method from <code>FileSystem</code> tells if we get read-only access to the file stores.
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+import java.io.IOException;
+import java.nio.file.FileStore;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+
+public class HelloWorld {
+    public static void main(String[] args) {
+        FileSystem fs = FileSystems.getDefault();
+
+        System.out.println("Read-only file system: " + fs.isReadOnly());
+        System.out.println("File name separator: " + fs.getSeparator());
+
+        for (FileStore store : fs.getFileStores()) {
+            printDetails(store);
+        }
+
+        for (Path root : fs.getRootDirectories()) {
+            System.out.println(root);
+        }
+    }
+
+    public static void printDetails(FileStore store) {
+        try {
+            String desc = store.toString();
+            String type = store.type();
+            long totalSpace = store.getTotalSpace();
+            long unallocatedSpace = store.getUnallocatedSpace();
+            long availableSpace = store.getUsableSpace();
+            System.out.println(desc + ", Type: " + type + ", Total: " + totalSpace + ",  Unallocated: "
+                    + unallocatedSpace + ",  Available: " + availableSpace);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+Read-only file system: false
+File name separator: \
+(C:), Type: NTFS, Total: 214749409280,  Unallocated: 98956914688,  Available: 98956914688
+(D:), Type: NTFS, Total: 297358323712,  Unallocated: 92309893120,  Available: 92309893120
+ANACONDA (E:), Type: FAT, Total: 4201316352,  Unallocated: 3793944576,  Available: 3793944576
+Backup Plus (F:), Type: exFAT, Total: 2000335929344,  Unallocated: 1786053394432,  Available: 1786053394432
+ISOIMAGE (H:), Type: CDFS, Total: 403701760,  Unallocated: 0,  Available: 0
+C:\
+D:\
+E:\
+F:\
+H:\
+</pre>
+
+<div class="w3-panel w3-pale-yellow w3-topbar w3-bottombar w3-border-yellow">
+    <p>
+        其中，C盘和D盘是我的笔记本的硬盘，而E盘是我的U盘，F盘是我的移动硬盘，H盘是我的虚拟光驱。
+    </p>
+</div>
+

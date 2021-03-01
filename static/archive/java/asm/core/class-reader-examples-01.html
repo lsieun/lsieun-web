@@ -1,0 +1,324 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassReader<br/> Examples-01</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    <span class="text-compare-green">The ASM core API</span> for
+    <span class="text-compare-grey">generating</span> and
+    <span class="text-compare-grey">transforming</span>
+    <span class="text-emphasize">compiled Java classes</span> is based on the <code>ClassVisitor</code> abstract class.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_can_do.png" alt=""/>
+</div>
+
+<h2>Class Transformation</h2>
+
+<h3>示例一：修改版本信息</h3>
+
+<p>
+    预期结果：
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+}
+</pre>
+
+<p>
+    实现代码：
+</p>
+
+<pre title="ClassChangeVersionVisitor.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Opcodes;
+
+public class ClassChangeVersionVisitor extends ClassVisitor {
+    public ClassChangeVersionVisitor(int api, ClassVisitor classVisitor) {
+        super(api, classVisitor);
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(Opcodes.V1_7, access, name, signature, superName, interfaces);
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformCore.java" class="javacode">
+import lsieun.core.ClassChangeVersionVisitor;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class HelloWorldTransformCore {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        int api = Opcodes.ASM9;
+        ClassVisitor cv = new ClassChangeVersionVisitor(api, cw);
+
+        //（4）结合ClassReader和ClassVisitor
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
+
+        //（5）生成byte[]
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<p>
+    验证结果：
+</p>
+
+<pre title="javap" class="plaintext">
+$ javap -p -v sample.HelloWorld
+</pre>
+
+<p>
+    By modifying other arguments of the <code>visit</code> method
+    you can implement other transformations than just <span class="text-compare-grey">changing the class version</span>.
+    For instance you can <span class="text-compare-grey">add an interface to the list of implemented interfaces</span>.
+    It is also possible to <span class="text-compare-grey">change the name of the class</span>,
+    but <span class="text-key-point">this requires much more than just changing the name argument</span> in the <code>visit</code> method.
+    Indeed the name of the class can appear in many different places inside a compiled class,
+    and all these occurrences must be changed to really rename the class.
+</p>
+
+<h3>示例二：修改接口信息</h3>
+
+<p>
+    预期结果：
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+}
+</pre>
+
+<p>
+    实现代码：
+</p>
+
+<pre title="ClassCloneVisitor.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+
+public class ClassCloneVisitor extends ClassVisitor {
+    public ClassCloneVisitor(int api, ClassVisitor cw) {
+        super(api, cw);
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(version, access, name, signature, superName, new String[]{"java/lang/Cloneable"});
+    }
+}
+</pre>
+
+<p>
+    验证结果：
+</p>
+
+<pre title="HelloWorldRun.java" class="javacode">
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        HelloWorld obj = new HelloWorld();
+        Object anotherObj = obj.clone();
+        System.out.println(anotherObj);
+    }
+}
+</pre>
+
+<h3>示例三：删除属性信息</h3>
+
+<p>
+    The class adapter <code>ClassRemoveAttributeVisitor</code> removes the information about
+    <span class="text-compare-grey">outer and inner classes</span>,
+    as well as <span class="text-compare-grey">the name of the source file</span> from which the class was compiled
+    (the resulting class remains fully functional, because these elements are only used for debugging purposes).
+    This is done by not forwarding anything in the appropriate <code>visitXxx</code> methods:
+</p>
+
+<p>
+    <span class="text-key-point">This strategy does not work for fields and methods</span>,
+    because the <code>visitField</code> and <code>visitMethod</code> methods must return a result.
+</p>
+
+<p>
+    预期结果：
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public class InnerClass {
+        //
+    }
+}
+</pre>
+
+<p>
+    实现代码：
+</p>
+
+<pre title="ClassRemoveAttributeVisitor.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+
+public class ClassRemoveAttributeVisitor extends ClassVisitor {
+    public ClassRemoveAttributeVisitor(int api, ClassVisitor cv) {
+        super(api, cv);
+    }
+
+    @Override
+    public void visitSource(String source, String debug) {
+        // do nothing
+    }
+
+    @Override
+    public void visitOuterClass(String owner, String name, String descriptor) {
+        // do nothing
+    }
+
+    @Override
+    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+        // do nothing
+    }
+}
+</pre>
+
+<p>
+    验证结果：
+</p>
+
+<pre title="HelloWorldRun.java" class="javacode">
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        HelloWorld instance = new HelloWorld();
+        HelloWorld.InnerClass obj = instance.new InnerClass();
+        System.out.println(obj);
+    }
+}
+</pre>
+
+<h2>Parsing classes</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int intValue;
+    public String strValue;
+
+    public void test() {
+        System.out.println("test method");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Hello ASM");
+    }
+}
+</pre>
+
+<p>
+    Suppose that we would like to print the content of a class, in a similar way as the <code>javap</code> tool.
+</p>
+
+<pre title="javap" class="plaintext">
+$ javap -p sample.HelloWorld
+Compiled from "HelloWorld.java"
+public class sample.HelloWorld {
+  public int intValue;
+  public java.lang.String strValue;
+  public sample.HelloWorld();
+  public void test();
+  public static void main(java.lang.String[]);
+}
+</pre>
+
+<p>
+    <span class="text-compare-grey">The first step</span> is to write a subclass of the <code>ClassVisitor</code> class
+    that prints information about the classes it visits.
+    Here is a possible, overly simplified implementation:
+</p>
+
+<pre title="ClassDecompileVisitor.java" hidden class="javacode">
+import org.objectweb.asm.*;
+
+public class ClassDecompileVisitor extends ClassVisitor {
+
+    public ClassDecompileVisitor() {
+        super(Opcodes.ASM9);
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        System.out.println(name + " extends " + superName + " {");
+    }
+
+    @Override
+    public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
+        System.out.println("    " + descriptor + " " + name);
+        return null;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        System.out.println("    " + name + " " + descriptor);
+        return null;
+    }
+
+    @Override
+    public void visitEnd() {
+        System.out.println("}");
+    }
+}
+</pre>
+
+<p>
+    <span class="text-compare-grey">The second step</span> is to combine this <code>ClassDecompileVisitor</code> with a <code>ClassReader</code> component,
+    so that the events produced by the <code>ClassReader</code> are consumed by our <code>ClassDecompileVisitor</code>:
+</p>
+
+<pre title="App.java" class="javacode">
+import lsieun.core.ClassDecompileVisitor;
+import org.objectweb.asm.ClassReader;
+
+public class App {
+    public static void main(String[] args) throws Exception {
+        ClassDecompileVisitor cp = new ClassDecompileVisitor();
+        ClassReader cr = new ClassReader("sample.HelloWorld");
+        cr.accept(cp, 0);
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+sample/HelloWorld extends java/lang/Object {
+    I intValue
+    Ljava/lang/String; strValue
+    &lt;init&gt; ()V
+    test ()V
+    main ([Ljava/lang/String;)V
+}
+</pre>

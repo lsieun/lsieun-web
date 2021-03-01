@@ -1,0 +1,60 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">BasicValue</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-source-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Value</h2>
+
+<pre title="Value.java" class="javacode">
+public interface Value {
+    int getSize();
+}
+</pre>
+
+<h2>BasicValue</h2>
+
+<h3>Class Info</h3>
+
+<pre title="BasicValue.java" class="javacode">
+public class BasicValue implements Value {
+}
+</pre>
+
+<h3>Field, Constructor and Getters</h3>
+
+<pre title="BasicValue.java" class="javacode">
+public class BasicValue implements Value {
+    private final Type type;
+
+    public BasicValue(final Type type) {
+        this.type = type;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    @Override
+    public int getSize() {
+        return type == Type.LONG_TYPE || type == Type.DOUBLE_TYPE ? 2 : 1;
+    }
+}
+</pre>
+
+<h3>Static Fields</h3>
+
+<pre title="BasicValue.java" class="javacode">
+public class BasicValue implements Value {
+    public static final BasicValue UNINITIALIZED_VALUE = new BasicValue(null);
+    public static final BasicValue INT_VALUE = new BasicValue(Type.INT_TYPE);
+    public static final BasicValue FLOAT_VALUE = new BasicValue(Type.FLOAT_TYPE);
+    public static final BasicValue LONG_VALUE = new BasicValue(Type.LONG_TYPE);
+    public static final BasicValue DOUBLE_VALUE = new BasicValue(Type.DOUBLE_TYPE);
+    public static final BasicValue REFERENCE_VALUE = new BasicValue(Type.getObjectType("java/lang/Object"));
+    public static final BasicValue RETURNADDRESS_VALUE = new BasicValue(Type.VOID_TYPE);
+}
+</pre>

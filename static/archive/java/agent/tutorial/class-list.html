@@ -1,0 +1,208 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Class List</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Program</h2>
+
+<pre title="Program.java" class="javacode">
+public class Program {
+    public static void main(String[] args) {
+        System.out.println("Hello, Everyone");
+    }
+}
+</pre>
+
+<h2>Java Agent三要素</h2>
+
+<h3>BasicAgent.java</h3>
+
+<pre title="BasicAgent.java" class="javacode">
+import java.lang.instrument.Instrumentation;
+
+public class BasicAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        inst.addTransformer(new ClassListingTransformer());
+    }
+}
+</pre>
+
+<h3>ClassListingTransformer.java</h3>
+
+<pre title="ClassListingTransformer.java" class="javacode">
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+
+public class ClassListingTransformer implements ClassFileTransformer {
+    @Override
+    public byte[] transform(ClassLoader loader,
+                            String className,
+                            Class&lt;?&gt; classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer) throws IllegalClassFormatException {
+        System.out.println(className);
+
+        // null means "use the bytecode without modifications".
+        return null;
+    }
+}
+</pre>
+
+<h3>Manifest.mf</h3>
+
+<pre title="Manifest.mf" class="plaintext">
+Premain-Class: BasicAgent
+</pre>
+
+<h2>生成Jar包</h2>
+
+<pre title="编译Java文件" class="plaintext">
+# 编译前
+$ ls
+BasicAgent.java  ClassListingTransformer.java  Manifest.mf  Program.java
+
+# 进行编译
+$ javac *.java
+
+# 编译后
+$ ls
+BasicAgent.class  ClassListingTransformer.class  Manifest.mf    Program.java
+BasicAgent.java   ClassListingTransformer.java   Program.class
+</pre>
+
+<pre title="生成Jar包（第一种写法）" class="plaintext">
+$ jar -cvfm TheAgent.jar Manifest.mf BasicAgent.class ClassListingTransformer.class
+added manifest
+adding: BasicAgent.class(in = 474) (out= 298)(deflated 37%)
+adding: ClassListingTransformer.class(in = 761) (out= 405)(deflated 46%)
+</pre>
+
+<pre title="生成Jar包（第二种写法）" class="plaintext">
+$ jar -cvmf Manifest.mf TheAgent.jar BasicAgent.class ClassListingTransformer.class
+added manifest
+adding: BasicAgent.class(in = 474) (out= 298)(deflated 37%)
+adding: ClassListingTransformer.class(in = 761) (out= 405)(deflated 46%)
+</pre>
+
+<h2>结果验证</h2>
+
+<p>
+    在这一部分，我们对<code>java Program</code>命令和<code>java -javaagent:TheAgent.jar Program</code>命令的执行结果进行比对，来观察Java Agent（<code>TheAgent.jar</code>）带来的影响。
+</p>
+
+<pre title="对比两个命令的输出结果" class="plaintext">
+$ java Program
+$ java -javaagent:TheAgent.jar Program
+</pre>
+
+<pre title="输出结果（1）：java Program" hidden class="plaintext">
+$ java Program
+Hello, Everyone
+</pre>
+
+<pre title="输出结果（2）：java -javaagent:TheAgent.jar Program" hidden class="plaintext">
+$ java -javaagent:TheAgent.jar Program
+Picked up JAVA_TOOL_OPTIONS: -Duser.language=en
+java/lang/invoke/MethodHandleImpl
+java/lang/invoke/MethodHandleImpl$1
+java/lang/invoke/MethodHandleImpl$2
+java/util/function/Function
+java/lang/invoke/MethodHandleImpl$3
+java/lang/invoke/MethodHandleImpl$4
+java/lang/ClassValue
+java/lang/ClassValue$Entry
+java/lang/ClassValue$Identity
+java/lang/ClassValue$Version
+java/lang/invoke/MemberName$Factory
+java/lang/invoke/MethodHandleStatics
+java/lang/invoke/MethodHandleStatics$1
+sun/misc/PostVMInitHook
+sun/misc/PostVMInitHook$2
+jdk/internal/util/EnvUtils
+sun/misc/PostVMInitHook$1
+sun/usagetracker/UsageTrackerClient
+java/util/concurrent/atomic/AtomicBoolean
+sun/usagetracker/UsageTrackerClient$1
+sun/usagetracker/UsageTrackerClient$4
+sun/usagetracker/UsageTrackerClient$2
+sun/usagetracker/UsageTrackerClient$3
+sun/nio/cs/UTF_8$Encoder
+java/io/FileOutputStream$1
+sun/launcher/LauncherHelper
+Program                 // &lt;------ 注意，这里加载了Program类
+sun/launcher/LauncherHelper$FXHelper
+java/lang/Class$MethodArray
+java/lang/Void
+Hello, Everyone         // &lt;------ 注意，这里是Program类中main方法的执行结果
+java/lang/Shutdown
+java/lang/Shutdown$Lock
+</pre>
+
+<p>
+    提问：通过输出结果（2），我们能得到一些什么有用的信息呢？
+</p>
+
+<p>
+    回答：Java虚拟机，在加载<code>Program</code>类之前，它会加载许多其它的类；Java虚拟机，在<code>Program</code>的main方法执行完成之后，也会加载一些类。
+</p>
+
+<hr/>
+
+<h2>额外拓展</h2>
+
+<p>
+    另外，在使用<code>java</code>命令时，可以添加<code>-verbose:class</code>选项，它可以显示每个已加载类的信息。
+</p>
+
+<pre title="使用-verbose:class选项" class="plaintext">
+$ java -verbose:class Program
+</pre>
+
+<pre title="输出结果（3）：java -verbose:class Program" hidden class="plaintext">
+$ java -verbose:class Program
+[Opened C:\Program Files\Java\jdk1.8.0_261\jre\lib\rt.jar]
+[Loaded java.lang.Object from C:\Program Files\Java\jdk1.8.0_261\jre\lib\rt.jar]
+[Loaded java.io.Serializable from C:\Program Files\Java\jdk1.8.0_261\jre\lib\rt.jar]
+[Loaded java.lang.Comparable from C:\Program Files\Java\jdk1.8.0_261\jre\lib\rt.jar]
+[Loaded java.lang.CharSequence from C:\Program Files\Java\jdk1.8.0_261\jre\lib\rt.jar]
+[Loaded java.lang.String from C:\Program Files\Java\jdk1.8.0_261\jre\lib\rt.jar]
+// ......内容省略
+[Loaded Program from file:/D:/tmp/test/]
+[Loaded sun.launcher.LauncherHelper$FXHelper from C:\Program Files\Java\jdk1.8.0_261\jre\lib\rt.jar]
+[Loaded java.lang.Class$MethodArray from C:\Program Files\Java\jdk1.8.0_261\jre\lib\rt.jar]
+[Loaded java.lang.Void from C:\Program Files\Java\jdk1.8.0_261\jre\lib\rt.jar]
+Hello, Everyone         // &lt;------ 注意，这里是Program类中main方法的执行结果
+[Loaded java.lang.Shutdown from C:\Program Files\Java\jdk1.8.0_261\jre\lib\rt.jar]
+[Loaded java.lang.Shutdown$Lock from C:\Program Files\Java\jdk1.8.0_261\jre\lib\rt.jar]
+</pre>
+
+<p>
+    提问：输出结果（2）和输出结果（3），两者是什么关系呢？
+</p>
+
+<p>
+    回答：输出结果（2），是输出结果（3）的一个子集。
+</p>
+
+<h2>总结</h2>
+
+<p>
+    本部内容总结如下：
+</p>
+
+<ul>
+    <li>
+        第一，本文讲了一个Java Agent的示例，该示例的主要目的是增强对Java Agent三要素的理解。
+    </li>
+    <li>
+        第二，生成jar包的命令是<code>jar -cvfm TheAgent.jar Manifest.mf BasicAgent.class ClassListingTransformer.class</code>。
+    </li>
+    <li>
+        第三，使用Java Agent的命令是<code>java -javaagent:TheAgent.jar Program</code>。
+    </li>
+</ul>

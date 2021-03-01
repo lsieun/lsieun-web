@@ -3,11 +3,11 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<p class="indented">
+<p>
     The <code>ClassWriter</code> class does not check that its methods are called in the appropriate order and with valid arguments.
     It is therefore possible to generate invalid classes that will be rejected by the Java Virtual Machine verifier.
     In order to detect some of these errors as soon as possible, it is possible to use the <code>CheckClassAdapter</code> class.
@@ -18,7 +18,7 @@
     In case of errors an <code>IllegalStateException</code> or <code>IllegalArgumentException</code> is thrown.
 </p>
 
-<p class="indented">
+<p>
     In order to <span class="text-example">check a class</span>, <span class="text-example">print a textual representation of this class</span>,
     and finally <span class="text-example">create a byte array representation</span>, you should use something like:
 </p>
@@ -33,7 +33,7 @@ cv.visitEnd();
 byte b[] = cw.toByteArray();
 </pre>
 
-<p class="indented">
+<p>
     Note that <span class="text-key-point">if you chain these class visitors in a different order</span>,
     <span class="text-key-point">the operations they perform will be done in a different order too</span>.
     For example, with the following code, <span class="text-example">the checks</span> will take place after <span class="text-example">the trace</span>:

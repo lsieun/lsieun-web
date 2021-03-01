@@ -1,0 +1,36 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">FileStore Source Code</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-nio-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Class Info</h2>
+
+<pre title="FileStore.java" class="javacode">
+public abstract class FileStore {
+}
+</pre>
+
+<h2>Constructor</h2>
+
+<pre title="FileStore.java" class="javacode">
+public abstract class FileStore {
+    protected FileStore() {
+    }
+}
+</pre>
+
+<h2>Methods: File Attribute View</h2>
+
+<pre title="FileStore.java" class="javacode">
+public abstract class FileStore {
+    public abstract boolean supportsFileAttributeView(Class&lt;? extends FileAttributeView&gt; type);
+    public abstract boolean supportsFileAttributeView(String name);
+
+    public abstract &lt;V extends FileStoreAttributeView&gt; V getFileStoreAttributeView(Class&lt;V&gt; type);
+    public abstract Object getAttribute(String attribute) throws IOException;
+}
+</pre>

@@ -3,19 +3,19 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
 <h2>Patterns</h2>
 
-<p class="indented">
+<p>
     It is possible to use a <span class="text-compare-green">tree based</span> <span class="text-compare-green">class transformer</span>
     like a <span class="text-compare-green">class adapter</span> with the <span class="text-compare-green">core API</span>.
     <span class="text-emphasize">Two common patterns</span> are used for that.
 </p>
 
-<p class="indented">
+<p>
     <span class="text-compare-grey">The first one</span> uses inheritance:
 </p>
 
@@ -37,7 +37,7 @@ public class MyClassAdapter extends ClassNode {
 }
 </pre>
 
-<p class="indented">
+<p>
     When this class adapter is used in a classical transformation chain:
 </p>
 
@@ -59,7 +59,7 @@ byte[] b = cw.toByteArray();
     which are consumed by <code>cw</code>.
 </p>
 
-<p class="indented">
+<p>
     <span class="text-compare-grey">The second pattern</span> that can be used to achieve the same result,
     with a similar sequence diagram, uses <span class="text-compare-green">delegation</span> instead of <span class="text-compare-green">inheritance</span>:
 </p>
@@ -84,7 +84,7 @@ public class MyClassAdapter extends ClassVisitor {
 }
 </pre>
 
-<p class="indented">
+<p>
     This pattern uses two objects instead of one,
     but works exactly in the same way as the first pattern:
     the received events are used to construct a <code>ClassNode</code>,
@@ -97,11 +97,11 @@ public class MyClassAdapter extends ClassVisitor {
         上面介绍的两种pattern，主要是希望将tree based api和core based api结合到一起使用。
     </p>
     <p>
-        如果单纯的想使用tree based api，可以可以直接使用<code>ClassTransformer</code>这种形式。对于如何使用<code>ClassTransformer</code>，可以参考这两个例子：<a href="/archive/java/asm/tree/field_add.html">Adding Field</a>和<a href="/archive/java/asm/tree/method_remove.html">Removing Method</a>。
+        如果单纯的想使用tree based api，可以可以直接使用<code>ClassTransformer</code>这种形式。对于如何使用<code>ClassTransformer</code>，可以参考这两个例子：<a href="field-node-examples.html">Adding Field</a>和<a href="method-node-examples.html">Removing Method</a>。
     </p>
 </div>
 
-<p class="indented">
+<p>
     Both patterns allow you to <span class="text-compare-green">compose your tree based class adapters with event based adapters</span>.
     They can also be used to compose tree based adapters together,
     but if you <span class="text-compare-green">only need to compose tree based adapters</span> this is not the best solution:

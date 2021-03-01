@@ -1,0 +1,125 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Path Source Code</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-nio-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Class Info</h2>
+
+<pre title="Path.java" class="javacode">
+public interface Path extends Comparable&lt;Path&gt;, Iterable&lt;Path&gt;, Watchable {
+    @Override
+    Iterator&lt;Path&gt; iterator();
+
+    @Override
+    int compareTo(Path other);
+}
+</pre>
+
+<h2>Methods</h2>
+
+<pre title="Path.java" class="javacode">
+public interface Path extends Comparable&lt;Path&gt;, Iterable&lt;Path&gt;, Watchable {
+    boolean isAbsolute();
+}
+</pre>
+
+<h3>Path-Components</h3>
+
+<pre title="Path.java" class="javacode">
+public interface Path extends Comparable&lt;Path&gt;, Iterable&lt;Path&gt;, Watchable {
+    Path getRoot();
+    Path getFileName();
+
+    Path getParent();
+
+    int getNameCount();
+    Path getName(int index);
+    Path subpath(int beginIndex, int endIndex);
+}
+</pre>
+
+<h3>Path</h3>
+
+<pre title="Path.java" class="javacode">
+public interface Path extends Comparable&lt;Path&gt;, Iterable&lt;Path&gt;, Watchable {
+    Path normalize();
+    Path resolve(Path other);
+    Path resolve(String other);
+    Path resolveSibling(Path other);
+    Path resolveSibling(String other);
+    Path relativize(Path other);
+
+    Path toAbsolutePath();
+    Path toRealPath(LinkOption... options) throws IOException;
+}
+</pre>
+
+<h3>Test Methods</h3>
+
+<pre title="Path.java" class="javacode">
+public interface Path extends Comparable&lt;Path&gt;, Iterable&lt;Path&gt;, Watchable {
+    boolean startsWith(Path other);
+    boolean startsWith(String other);
+    boolean endsWith(Path other);
+    boolean endsWith(String other);
+}
+</pre>
+
+<h2>Methods: Convert</h2>
+
+<h3>FileSystem</h3>
+
+<pre title="Path.java" class="javacode">
+public interface Path extends Comparable&lt;Path&gt;, Iterable&lt;Path&gt;, Watchable {
+    FileSystem getFileSystem();
+}
+</pre>
+
+<h3>URI</h3>
+
+<pre title="Path.java" class="javacode">
+public interface Path extends Comparable&lt;Path&gt;, Iterable&lt;Path&gt;, Watchable {
+    URI toUri();
+}
+</pre>
+
+<h3>File</h3>
+
+<p>
+    <code>Path</code> can work with the old <code>java.io.File</code> API.
+</p>
+
+<ul>
+    <li>
+        We can get a <code>Path</code> object from a <code>File</code> object using the method <code>toPath()</code> of the <code>File</code> class.
+    </li>
+    <li>
+        We can get a <code>File</code> object from a <code>Path</code> object using the <code>toFile()</code> method of a <code>Path</code> object.
+    </li>
+</ul>
+
+<pre title="Path.java" class="javacode">
+public interface Path extends Comparable&lt;Path&gt;, Iterable&lt;Path&gt;, Watchable {
+    File toFile();
+}
+</pre>
+
+<h2>Methods: Watchable</h2>
+
+<pre title="Path.java" class="javacode">
+public interface Path extends Comparable&lt;Path&gt;, Iterable&lt;Path&gt;, Watchable {
+    WatchKey register(WatchService watcher,
+                      WatchEvent.Kind&lt;?&gt;[] events,
+                      WatchEvent.Modifier... modifiers)
+        throws IOException;
+
+    @Override
+    WatchKey register(WatchService watcher,
+                      WatchEvent.Kind&lt;?&gt;... events)
+        throws IOException;
+}
+</pre>

@@ -1,0 +1,41 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Cipher Suites</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="tls_index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    There’s no particular reason to the identifiers assigned to the various cipher suites.
+    They’re just a sequential list of every combination that the writers of the specification could think of.
+    They’re not even grouped together meaningfully;
+    the RSA key exchange cipher suites aren’t all in the same place because after the specification was drafted,
+    new cipher suites that used the RSA key exchange method were identified.
+    It would certainly have been nicer, from an implementer’s perspective, if they had allocated, say,
+    three bits to identify the key exchange, five bits to identify the symmetric cipher, two for the MAC, and so on.
+    <sub class="my_note" style="color:blue">笔记：这里解释了为什么cipher suites的identifier和value之间没有规律</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>TLS_NULL_WITH_NULL_NULL</h2>
+
+<p class="indented">
+    <code>TLS_NULL_WITH_NULL_NULL</code> indicates that there’s no encryption, no MAC and no key exchange.
+    This is the default state for a TLS handshake — the state it starts out in.
+    Cipher suites <code>TLS_RSA_WITH_NULL_MD5</code> and <code>TLS_RSA_WITH_NULL_SHA</code> allow a non-encrypted, but MAC’ed, cipher suite to be negotiated.
+    This can actually be pretty handy when you’re trying to debug something and you don’t want to have to decrypt what you’re trying to debug.
+    Unfortunately for the would-be debugger, for obvious security reasons, most servers won’t allow you to negotiate this cipher suite by default.
+</p>
+
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+<p class="indented"></p>
+
+

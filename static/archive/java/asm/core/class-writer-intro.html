@@ -1,0 +1,322 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassWriter Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>ClassWriter</h2>
+
+<h3>Class Info</h3>
+
+<p>
+    第一个要注意的地方，就是<code>ClassWriter</code>的父类是<code>ClassVisitor</code>。
+</p>
+
+<p>
+    <code>ClassWriter</code>的父类是<code>ClassVisitor</code>类，因此<code>ClassWriter</code>类具有<code>visit</code>、<code>visitField</code>和<code>visitMethod</code>等方法。这些<code>visitXXX</code>方法的调用，就是在使用Core API来构造ClassFile的过程。
+</p>
+
+<pre title="ASM: ClassWriter.java" class="javacode">
+public class ClassWriter extends ClassVisitor {
+}
+</pre>
+
+<h3>fields</h3>
+
+<p>
+    第二个要注意的地方，就是<code>ClassWriter</code>定义的字段有哪些。
+</p>
+
+<p>
+    <code>ClassWriter</code>定义的字段与<code>.class</code>文件遵循的<code>ClassFile</code>结构密切相关。
+</p>
+
+<pre title="ClassFile" hidden class="plaintext">
+ClassFile {
+    u4             magic;
+    u2             minor_version;
+    u2             major_version;
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];
+    u2             access_flags;
+    u2             this_class;
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    u2             fields_count;
+    field_info     fields[fields_count];
+    u2             methods_count;
+    method_info    methods[methods_count];
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</pre>
+
+<pre title="ASM: ClassWriter.java" class="javacode">
+public class ClassWriter extends ClassVisitor {
+    private int version;
+    private final SymbolTable symbolTable;
+
+    private int accessFlags;
+    private int thisClass;
+    private int superClass;
+    private int interfaceCount;
+    private int[] interfaces;
+
+    private FieldWriter firstField;
+    private FieldWriter lastField;
+
+    private MethodWriter firstMethod;
+    private MethodWriter lastMethod;
+
+    private Attribute firstAttribute;
+
+    //......
+}
+</pre>
+
+<h3>Constructor</h3>
+
+<p>
+    第三个要注意的地方，就是<code>ClassWriter</code>定义的构造函数。
+</p>
+
+<p>
+    <code>ClassWriter</code>定义的构造函数有两个，这里只关注其中一个，也就是只接收一个<code>int</code>类型参数的构造函数。
+</p>
+
+<p>
+    在使用<code>new</code>关键字创建<code>ClassWriter</code>对象时，推荐使用<code>COMPUTE_FRAMES</code>参数。
+</p>
+
+<pre title="ASM: ClassWriter.java" class="javacode">
+public class ClassWriter extends ClassVisitor {
+    /* A flag to automatically compute the maximum stack size and the maximum number of local variables of methods. */
+    public static final int COMPUTE_MAXS = 1;
+    /* A flag to automatically compute the stack map frames of methods from scratch. */
+    public static final int COMPUTE_FRAMES = 2;
+
+    // flags option can be used to modify the default behavior of this class.
+    // Must be zero or more of COMPUTE_MAXS and COMPUTE_FRAMES.
+    public ClassWriter(final int flags) {
+        this(null, flags);
+    }
+}
+</pre>
+
+<h3>toByteArray Method</h3>
+
+<p>
+    第四个要注意的地方，就是<code>ClassWriter</code>提供了一个<code>toByteArray</code>方法。
+</p>
+
+<p>
+    <code>ClassWriter</code>提供的<code>toByteArray</code>方法，是将“所有的努力”（对<code>visitXxx</code>的调用）转换成<code>byte[]</code>，而这些<code>byte[]</code>的内容就是一个具体的ClassFile结构。
+</p>
+
+<pre title="ClassFile" hidden class="plaintext">
+ClassFile {
+    u4             magic;
+    u2             minor_version;
+    u2             major_version;
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];
+    u2             access_flags;
+    u2             this_class;
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    u2             fields_count;
+    field_info     fields[fields_count];
+    u2             methods_count;
+    method_info    methods[methods_count];
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</pre>
+
+<pre title="ASM: ClassWriter.java" class="javacode">
+public class ClassWriter extends ClassVisitor {
+    public byte[] toByteArray() {
+
+        // First step: compute the size in bytes of the ClassFile structure.
+        // The magic field uses 4 bytes, 10 mandatory fields (minor_version, major_version,
+        // constant_pool_count, access_flags, this_class, super_class, interfaces_count, fields_count,
+        // methods_count and attributes_count) use 2 bytes each, and each interface uses 2 bytes too.
+        int size = 24 + 2 * interfaceCount;
+        int fieldsCount = 0;
+        FieldWriter fieldWriter = firstField;
+        while (fieldWriter != null) {
+            ++fieldsCount;
+            size += fieldWriter.computeFieldInfoSize();
+            fieldWriter = (FieldWriter) fieldWriter.fv;
+        }
+        int methodsCount = 0;
+        MethodWriter methodWriter = firstMethod;
+        while (methodWriter != null) {
+            ++methodsCount;
+            size += methodWriter.computeMethodInfoSize();
+            methodWriter = (MethodWriter) methodWriter.mv;
+        }
+
+        // For ease of reference, we use here the same attribute order as in Section 4.7 of the JVMS.
+        int attributesCount = 0;
+
+        // ......
+
+        if (firstAttribute != null) {
+            attributesCount += firstAttribute.getAttributeCount();
+            size += firstAttribute.computeAttributesSize(symbolTable);
+        }
+        // IMPORTANT: this must be the last part of the ClassFile size computation, because the previous
+        // statements can add attribute names to the constant pool, thereby changing its size!
+        size += symbolTable.getConstantPoolLength();
+
+
+        // Second step: allocate a ByteVector of the correct size (in order to avoid any array copy in
+        // dynamic resizes) and fill it with the ClassFile content.
+        ByteVector result = new ByteVector(size);
+        result.putInt(0xCAFEBABE).putInt(version);
+        symbolTable.putConstantPool(result);
+        int mask = (version & 0xFFFF) < Opcodes.V1_5 ? Opcodes.ACC_SYNTHETIC : 0;
+        result.putShort(accessFlags & ~mask).putShort(thisClass).putShort(superClass);
+        result.putShort(interfaceCount);
+        for (int i = 0; i < interfaceCount; ++i) {
+            result.putShort(interfaces[i]);
+        }
+        result.putShort(fieldsCount);
+        fieldWriter = firstField;
+        while (fieldWriter != null) {
+            fieldWriter.putFieldInfo(result);
+            fieldWriter = (FieldWriter) fieldWriter.fv;
+        }
+        result.putShort(methodsCount);
+        boolean hasFrames = false;
+        boolean hasAsmInstructions = false;
+        methodWriter = firstMethod;
+        while (methodWriter != null) {
+            hasFrames |= methodWriter.hasFrames();
+            hasAsmInstructions |= methodWriter.hasAsmInstructions();
+            methodWriter.putMethodInfo(result);
+            methodWriter = (MethodWriter) methodWriter.mv;
+        }
+        // For ease of reference, we use here the same attribute order as in Section 4.7 of the JVMS.
+        result.putShort(attributesCount);
+
+        // ......
+
+        if (firstAttribute != null) {
+            firstAttribute.putAttributes(symbolTable, result);
+        }
+
+        // Third step: replace the ASM specific instructions, if any.
+        if (hasAsmInstructions) {
+            return replaceAsmInstructions(result.data, hasFrames);
+        } else {
+            return result.data;
+        }
+    }
+}
+</pre>
+
+<h2>How to Use ClassWriter</h2>
+
+<p>
+    <span class="text-compare-green">The ASM core API</span> for
+    <span class="text-compare-grey">generating</span> and
+    <span class="text-compare-grey">transforming</span>
+    <span class="text-emphasize">compiled Java classes</span> is based on the <code>ClassVisitor</code> abstract class.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_can_do.png" alt=""/>
+</div>
+
+<p>
+    在现阶段，我们只接触了两个类，即<code>ClassVisitor</code>和<code>ClassWriter</code>类，因此只能介绍Class Generation的操作。
+</p>
+
+<h3>Class Generation Pattern</h3>
+
+<p>
+    使用ASM生成一个Class文件，可以大致分成三个步骤：
+</p>
+
+<ol>
+    <li>创建ClassWriter对象</li>
+    <li>调用ClassWriter对象的visitXxx方法</li>
+    <li>调用ClassWriter对象的toByteArray方法</li>
+</ol>
+
+<pre title="HelloWorldGenerateCore.java" class="javacode">
+import org.objectweb.asm.ClassWriter;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldGenerateCore {
+    public static byte[] dump () throws Exception {
+        // (1) 创建ClassWriter对象
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        // (2) 调用visitXxx方法
+        cw.visit(...);
+        cw.visitField(...);
+        cw.visitMethod(...);
+        cw.visitEnd();       // 注意，最后要调用visitEnd()方法
+
+        // (3) 调用toByteArray方法
+        byte[] bytes = cw.toByteArray();
+        return bytes;
+    }
+}
+</pre>
+
+<h2>How to Write ASM Code</h2>
+
+<p>
+    ASM提供了一些工具类来生成具体代码，例如<code>ASMifier</code>类。
+</p>
+
+<pre title="ASMPrint.java" class="javacode">
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.util.ASMifier;
+import org.objectweb.asm.util.Printer;
+import org.objectweb.asm.util.Textifier;
+import org.objectweb.asm.util.TraceClassVisitor;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+public class ASMPrint {
+    public static void main(String[] args) throws IOException {
+        // 下面的代码是来源于{@code org.objectweb.asm.util.Printer#main}
+        int parsingOptions = ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG;
+        String className = "sample.HelloWorld";
+        // 可以使用 ASMifier 或 Textifier 来显示不同结果
+        Printer printer = new ASMifier();
+        TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, printer, new PrintWriter(System.out));
+        new ClassReader(className).accept(traceClassVisitor, parsingOptions);
+    }
+}
+</pre>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>
+        第一，<code>ClassWriter</code>类有哪些成员信息。
+    </li>
+    <li>
+        第二，使用<code>ClassWriter</code>类，大致分为三个步骤。另外，要注意<code>visitXxxx</code>方法的调用顺序，以及最后的时候要调用<code>visitEnd</code>方法。
+    </li>
+    <li>
+        第三，ASM提供了相关的工具类帮助生成代码。
+    </li>
+</ul>

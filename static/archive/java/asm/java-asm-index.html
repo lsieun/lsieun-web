@@ -1,0 +1,435 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java ASM</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p>
+    无论操作字节码（ByteCode）的类库（ASM、Javassist、BCEL）如何千变万化，它的本质都是在理解Java ClassFile的结构。
+</p>
+
+<p>
+    要有思维导图，要有破解软件
+</p>
+
+
+
+<p>
+    有人讲到Spring-core用到ASM，我要调查一下。
+</p>
+
+<p>
+    有一些学术论文，在讨论ASM的使用。
+</p>
+
+<p>
+    TODO: 要有obfuscator的示例。
+</p>
+
+
+
+<ul>
+    <li>
+        第一部分，先提供一些实践，让人可以有一些了解；第二部分，再讲一些理论的东西。
+    </li>
+    <li>
+
+    </li>
+</ul>
+
+<p>
+    Execution Model是一个要记住的东西。
+</p>
+
+<p>
+    分为参考性的内容（比如，Type类型，它主要是API的讲解）和学习性的内容
+</p>
+
+<p>
+    所有jar包里的内容，是不是都要涉及到呢？
+</p>
+
+<p>
+    TODO:
+</p>
+
+<ul>
+    <li>
+        <input type="checkbox"/>
+        <code>ClassReader.accept(final ClassVisitor classVisitor, final int parsingOptions)</code>，对于<code>parsingOptions</code>的理解:
+        <code>SKIP_CODE</code>、<code>SKIP_DEBUG</code>、<code>SKIP_FRAMES</code>、<code>EXPAND_FRAMES</code>
+    </li>
+    <li>
+        <input type="checkbox"/>
+        <code>ClassWriter(final ClassReader classReader, final int flags)</code>，对于<code>flags</code>的理解: <code>COMPUTE_MAXS</code>、<code>COMPUTE_FRAMES</code>
+    </li>
+    <li>
+        <input type="checkbox"/>
+        ASM版本信息，哪一个版本是在哪一年发布的，它都支持哪些特性。我想把它放在最后面，因为首先是对它有一个基本的了解，然后再对它的版本发布感兴趣。
+    </li>
+    <li>
+        <input type="checkbox"/>
+        如果在生成opcode的过程中，没有写<code>mv.visitInsn(RETURN);</code>会出现什么错误呢？
+    </li>
+    <li>
+        <input type="checkbox"/>
+        TryCatchBlock
+    </li>
+    <li>
+        <input type="checkbox"/>
+        visitLineNumber
+    </li>
+    <li>
+        <input type="checkbox"/>
+        visitParameter
+    </li>
+    <li>
+        <input type="checkbox"/>
+        frame是如何计算的呢？
+    </li>
+    <li>
+        <input type="checkbox"/>
+        visitLocalVariable
+    </li>
+    <li>
+        <input type="checkbox"/>
+        在处理混淆（obfuscate）之后的jar包时，例如idea.jar，不适合使用COMPUTE_FRAME。因为经常obfuscate之后，StackMapFrame会变得非常复杂，ASM在计算Frame的时候常常遇到错误。
+    </li>
+    <li>
+        工具的有限性，我们知道工具的有限性，ASM它是一个工具。有限性怎么理解呢？第一方面，并不是所有的功能都要通过ASM来进行实现，如果能通过写Java源代码实现，就不需要用ASM，这里主要是讲“用或者不用ASM”；第二方面，就是ASM的功能的有限性，有些功能ASM并没有提供给我们，我们需要自己来进行实现。
+    </li>
+    <li>
+        lsieun-utils-asm也纳入到我的课程当中来
+    </li>
+</ul>
+
+
+
+
+<h2>Main Content</h2>
+
+<p>
+    有三个基本操作：analyse、generate和transform，其中transform是最重要的操作。
+    transform的目标有ClassInfo、Field和Method，其中对于Method的变换是最重要的。
+</p>
+
+<p>
+    理论
+</p>
+
+<ul>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Intro</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul style="display: none;">
+            <li>
+                <a href="asm-intro.html">ASM Intro</a>
+            </li>
+            <li>
+                <a href="asm-overview.html">ASM Overview</a>
+            </li>
+            <li>
+                <a href="asm-architecture.html">ASM Architecture</a>
+            </li>
+            <li>
+                <a href="asm-course.html">课程内容规划</a>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Core API</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul style="display: none;">
+            <li><a href="core/core-api-overview.html">Core API Overview</a></li>
+            <li>
+                How to Write Code:
+                <a href="core/asm-print.html">ASMPrint</a>
+            </li>
+            <li>
+                ClassVisitor:
+                <a href="core/class-visitor-intro.html">Intro</a>
+            </li>
+            <li>
+                ClassWriter:
+                <a href="core/class-writer-intro.html">Intro</a>
+                <a href="core/class-writer-examples.html">Examples</a>
+                <a href="core/class-writer-options.html">Options</a>
+            </li>
+            <li>
+                FieldVisitor:
+                <a href="core/field-visitor-intro.html">Intro</a>
+                <a href="core/field-visitor-examples.html">Examples</a>
+            </li>
+            <li>
+                MethodVisitor:
+                <a href="core/method-visitor-intro.html">Intro</a>
+                <a href="core/method-visitor-examples.html">Examples</a>
+            </li>
+            <li>
+                Label:
+                <a href="core/label-intro.html">Intro</a>
+                <a href="core/label-examples-if-else.html">if-else</a>
+                <a href="core/label-examples-switch-case.html">switch-case</a>
+                <a href="core/label-examples-for-loop.html">for/while</a>
+                <a href="core/label-examples-try-catch.html">try-catch</a>
+            </li>
+            <li>
+                Frame:
+                <a href="core/frame-intro.html">Intro</a>
+            </li>
+            <li>
+                Opcodes:
+                <a href="core/opcodes.html">Intro</a>
+            </li>
+            <li>
+                ClassReader:
+                <a href="core/class-reader-intro.html">Intro</a>
+                <a href="core/class-reader-examples-01.html">Examples-01</a>
+                <a href="core/class-reader-examples-02.html">Examples-02</a>
+                <a href="core/class-reader-examples-03.html">Examples-03</a>
+                <a href="core/class-reader-options.html">Options</a>
+            </li>
+            <li>
+                Type:
+                <a href="core/type-intro.html">Intro</a>
+                <a href="core/type-examples-01.html">Examples-01</a>
+                <a href="core/type-examples-02.html">Examples-02</a>
+                <a href="core/type-examples-03.html">Examples-03</a>
+            </li>
+            <li>
+                Stateless Method Transformations:
+                <a href="core/stateless-method-transform-remove-nop.html">Remove Nop</a>
+                <a href="core/stateless-method-transform-timer.html">Timer</a>
+                <a href="core/stateless-method-transform-counter.html">Counter</a>
+            </li>
+            <li>
+                Stateful&nbsp; Method Transformations:
+                <a href="core/stateful-method-transform-remove-add-zero.html">Remove Add Zero</a>
+            </li>
+            <li>
+                asm-util:
+                <a href="util/asmifier.html">ASMifier</a>
+                <a href="util/trace_class_visitor.html">TraceClassVisitor</a>
+                <a href="util/check_class_adapter.html">CheckClassAdapter</a>
+            </li>
+            <li>
+                asm-commons:
+                <a href="commons/advice_adapter.html">AdviceAdapter</a>
+                <a href="commons/generator_adapter.html">GeneratorAdapter</a>
+                <a href="commons/local_variables_sorter.html">LocalVariablesSorter</a>
+                <a href="commons/analyzer_adapter.html">AnalyzerAdapter</a>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Tree API</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul>
+            <li><a href="tree/tree_api_overview.html">Tree API Overview</a></li>
+            <li>
+                ClassNode:
+                <a href="tree/class-node-intro.html">Intro</a>
+                <a href="tree/class-node-examples.html">Examples</a>
+            </li>
+            <li>
+                FieldNode:
+                <a href="tree/field-node-intro.html">Intro</a>
+                <a href="tree/field-node-examples.html">Examples</a>
+            </li>
+            <li>
+                MethodNode:
+                <a href="tree/method-node-intro.html">Intro</a>
+                <a href="tree/method-node-examples.html">Examples</a>
+            </li>
+            <li>
+                InsnList:
+                <a href="tree/insnlist-intro.html">Intro</a>
+                <a href="tree/insnlist-examples.html">Examples</a>
+                <a href="tree/insnlist-examples-if-else.html">if-else</a>
+                <a href="tree/insnlist-examples-switch-case.html">switch-case</a>
+                <a href="tree/insnlist-examples-for-loop.html">for/while</a>
+                <a href="tree/insnlist-examples-try-catch.html">try-catch</a>
+            </li>
+            <li>
+                Transforming methods Pattern:
+                <a href="tree/transform-method-pattern.html">Intro</a>
+                <a href="tree/stateless-method-transform-timer-with-tree-api.html">Timer</a>
+                <a href="tree/stateless-method-transform-remove-get-field-put-field-with-tree-api.html">Remove GETFIELD/PUTFIELD</a>
+                <a href="tree/stateless-method-transform-optimize-jump-with-tree-api.html">Optimize Jump</a>
+            </li>
+            <li><a href="tree/tree-analysis.html">Tree Analysis</a></li>
+            <li><a href="analysis/remove-dead-code.html">Remove Dead Code</a></li>
+            <li>
+                Analyzer:
+                <a href="analysis/analyzer-intro.html">Intro</a>
+                <a href="analysis/analyzer-examples.html">Examples</a>
+            </li>
+            <li><a href="tree/pattern.html">Core And Tree Pattern</a></li>
+        </ul>
+    </li>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Metadata</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul style="display: none;">
+            <li>
+                <a href="metadata/debug_info.html">Debug Info</a>
+            </li>
+            <li>
+                <a href="metadata/annotations.html">Annotations</a>
+            </li>
+            <li>
+                <a href="metadata/generics.html">Generics</a>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">ASM Common Transformations</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul style="display: none;">
+            <li>
+                Class Transformations
+                <ul>
+                    <li><a href="template/interface_add.html">Add Interface</a></li>
+                    <li><a href="template/field_add.html">Add Field</a></li>
+                    <li><a href="template/method_add.html">Add Method</a></li>
+                    <li><a href="template/method_body_replace.html">Replace Method Body</a></li>
+                    <li><a href="template/class_rename.html">Rename a Class</a></li>
+                    <li><a href="template/class_merge.html">Merge Two Classes into One</a></li>
+                </ul>
+            </li>
+            <li>
+                Method Transformations
+                <ul>
+                    <li><a href="template/code_inserted_before_execution.html">Insert Code before Method, Constructor or Static Initializer Execution</a></li>
+                    <li><a href="template/code_inserted_before_exit.html">Insert Code before Method Exit</a></li>
+                    <li><a href="template/field_access_replace.html">Replace Field Access</a></li>
+                    <li><a href="template/method_call_replace.html">Replace Method Call</a></li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+
+</ul>
+
+<div id="myDiagramDiv" style="width:100%; height:500px; background-color: #FFFFFF;"></div>
+<button id="SaveButton" onclick="save()">Save</button>
+<button onclick="load()">Load</button>
+<button onclick="layoutAll()">Layout</button>
+Diagram Model saved in JSON format:
+<br/>
+<textarea id="mySavedModel" style="width:100%;height:200px">
+{ "class": "TreeModel",
+  "nodeDataArray": [
+{"key":0, "text":"ASM", "loc":"-775 -50"},
+{"key":1, "parent":0, "text":"asm.jar", "brush":"skyblue", "dir":"right", "loc":"-725 -159.71254882812502"},
+{"key":2, "parent":0, "text":"asm-commons.jar", "brush":"darkseagreen", "dir":"right", "loc":"-725 -64.32250976562503"},
+{"text":"asm-util.jar", "brush":"palevioletred", "parent":0, "key":3, "loc":"-725 3.1774902343749716"},
+{"text":"asm-tree.jar", "brush":"coral", "parent":0, "key":4, "loc":"-725 44.212548828124994"},
+{"text":"asm-analysis.jar", "parent":0, "key":5, "loc":"-725 70.212548828125"},
+{"text":"ClassReader", "brush":"skyblue", "dir":"right", "parent":1, "key":6, "loc":"-662.3818359375 -216.10258789062502"},
+{"text":"ClassVisitor", "brush":"skyblue", "dir":"right", "parent":1, "key":7, "loc":"-662.3818359375 -181.322509765625"},
+{"text":"ClassWriter", "brush":"skyblue", "dir":"right", "parent":1, "key":8, "loc":"-662.3818359375 -129.322509765625"},
+{"text":"Type", "brush":"skyblue", "dir":"right", "parent":1, "key":9, "loc":"-662.3818359375 -103.32250976562501"},
+{"text":"FieldVisitor", "brush":"skyblue", "dir":"right", "parent":7, "key":-11, "loc":"-573.9921875 -194.322509765625"},
+{"text":"MethodVisitor", "brush":"skyblue", "dir":"right", "parent":7, "key":-12, "loc":"-573.9921875 -168.322509765625"},
+{"text":"FieldWriter", "brush":"skyblue", "dir":"right", "parent":8, "key":-13, "loc":"-575.4521484375 -142.322509765625"},
+{"text":"MethodWriter", "brush":"skyblue", "dir":"right", "parent":8, "key":-14, "loc":"-575.4521484375 -116.322509765625"},
+{"text":"AdviceAdapter", "brush":"darkseagreen", "dir":"right", "parent":2, "key":-15, "loc":"-601.70458984375 -90.32250976562503"},
+{"text":"GeneratorAdapter", "brush":"darkseagreen", "dir":"right", "parent":2, "key":-16, "loc":"-601.70458984375 -64.32250976562503"},
+{"text":"LocalVariablesSorter", "brush":"darkseagreen", "dir":"right", "parent":2, "key":-17, "loc":"-601.70458984375 -38.32250976562503"},
+{"text":"ASMifier", "brush":"palevioletred", "parent":3, "key":-18, "loc":"-641.4345703125 -22.82250976562503"},
+{"text":"CheckClassAdapter", "brush":"palevioletred", "parent":3, "key":-19, "loc":"-641.4345703125 3.1774902343749716"},
+{"text":"TraceClassVisitor", "brush":"palevioletred", "parent":3, "key":-20, "loc":"-641.4345703125 29.17749023437497"}
+ ]}
+</textarea>
+
+<p>
+    知识的组织形式 和 知识的教学形式 是不一样的。
+</p>
+
+<ul>
+    <li>
+        <a href="javascript:void(0);" onclick="$(this).next().next().toggle()">Core API</a>
+        <img src="/images/list.png" onclick="$(this).next().toggle()"/>
+        <ul>
+            <li>
+                Field
+                <ul>
+                    <li><a href="core/remove_class_members.html">Removing class members</a></li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<p>
+    应用
+</p>
+
+<ul>
+    <li>
+        方法
+        <ul>
+            <li>Intercepting parameter values passed between methods</li>
+            <li>calculation of execution time of methods</li>
+        </ul>
+    </li>
+</ul>
+
+<h2>More</h2>
+
+
+
+<ul>
+    <li>
+        <p>
+            <a class="external" href="https://en.wikipedia.org/wiki/FindBugs" target="_blank">FindBugs</a> uses BCEL to analyze Java bytecode for code idioms which indicate bugs.
+        </p>
+    </li>
+    <li>
+        Obfuscation
+    </li>
+</ul>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <ul>
+        <li>
+            <code>org.objectweb.asm</code>(<code>asm.jar</code>): <code>ClassVisitor</code>, <code>ClassReader</code>, <code>ClassWriter</code>, <code>Type</code>.
+        </li>
+        <li>
+            <code>org.objectweb.asm.commons</code>(<code>asm-commons.jar</code>): <code>AnalyzerAdapter</code>, <code>LocalVariablesSorter</code>, <code>AdviceAdapter</code>.
+        </li>
+        <li>
+            <code>org.objectweb.asm.util</code>(<code>asm-util.jar</code>): <code>TraceClassVisitor</code>, <code>CheckClassAdapter</code>.
+        </li>
+    </ul>
+</div>
+
+<h2>Resources</h2>
+
+<ul>
+    <li><a class="external" href="https://asm.ow2.io" target="_blank">ASM</a></li>
+    <li><a class="external" href="https://asm.ow2.io/asm4-guide.pdf" target="_blank">ASM User Guild (PDF)</a></li>
+    <li><a class="external" href="https://asm.ow2.io/javadoc/overview-summary.html" target="_blank">ASM Javadoc</a></li>
+    <li><a class="external" href="https://asm.ow2.io/developer-guide.html" target="_blank">ASM 6 Developer Guide</a></li>
+    <li><a class="external" href="https://asm.ow2.io/faq.html" target="_blank">ASM Frequently Asked Questions</a></li>
+    <li><a class="external" href="https://gitlab.ow2.org/asm/asm" target="_blank">GitLab: ASM Source Code</a></li>
+    <li><a class="external" href="https://github.com/cglib/cglib" target="_blank">Github: cglib</a>: Byte Code Generation Library is high level API to generate and transform JAVA byte code.</li>
+    <li><a class="external" href="https://github.com/cobertura/cobertura" target="_blank">Github: COBERTURA</a>: Cobertura is a free Java code coverage reporting tool.</li>
+    <li><a class="external" href="https://www.eclemma.org/jacoco/" target="_blank">EclEmma: JaCoCo</a>: Java Code Coverage Library. JaCoCo is a free code coverage library for Java, which has been created by the EclEmma team based on the lessons learned from using and integration existing libraries for many years.</li>
+    <li>
+        The Java Virtual Machine Specification, Java SE 8 Edition:
+        <a class="external" href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html" target="_blank">Oracle</a>
+        <a href="/doc/javase/jvms/se8/index.html" target="_blank">Local</a>
+    </li>
+</ul>
+
+<script type="application/javascript">
+    $(document).ready(function () {
+        initMindMap("myDiagramDiv");
+    });
+</script>

@@ -1,0 +1,355 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Analyzer Examples</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>HelloWorldFrame</h2>
+
+<pre title="HelloWorldFrame.java" class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.analysis.*;
+
+import java.util.List;
+
+public class HelloWorldFrame {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        // (1)构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        // (2) 构建ClassNode
+        int api = Opcodes.ASM9;
+        ClassNode cn = new ClassNode(api);
+        cr.accept(cn, ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+
+        String owner = cn.name;
+        List&lt;MethodNode&gt; methods = cn.methods;
+        for (MethodNode mn : methods) {
+            if (!"test".equals(mn.name)) continue;
+            System.out.println(mn.name + ":" + mn.desc);
+            Analyzer&lt;BasicValue&gt; analyzer = new Analyzer&lt;&gt;(new BasicInterpreter());
+            try {
+                analyzer.analyze(owner, mn);
+                Frame&lt;BasicValue&gt;[] frames = analyzer.getFrames();
+                for (Frame&lt;?&gt; frame : frames) {
+                    System.out.println(frame);
+                }
+            } catch (AnalyzerException e) {
+                e.printStackTrace();
+            }
+            System.out.println("====================================================");
+        }
+    }
+}
+</pre>
+
+<h2>Examples</h2>
+
+<h3>opcode-store</h3>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        int intValue = 4;
+        long longValue = 8L;
+        float floatValue = 3.14F;
+        double doubleValue = 6.28D;
+    }
+}
+</pre>
+
+<pre title="frames and instructions" class="plaintext">
+// access flags 0x1
+public test()V
+00  R......         ICONST_4
+01  R...... I       ISTORE 1
+02  RI.....         LDC 8
+03  RI..... J       LSTORE 2
+04  RIJ....         LDC 3.14
+05  RIJ.... F       FSTORE 4
+06  RIJ.F..         LDC 6.28
+07  RIJ.F.. D       DSTORE 5
+08  RIJ.FD.         RETURN
+                    MAXSTACK = 2
+                    MAXLOCALS = 7
+</pre>
+
+<h3>opcode-invokevirtual</h3>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int value) {
+        System.out.println(value);
+    }
+}
+</pre>
+
+<pre title="frames and instructions" class="plaintext">
+public test(I)V
+00  RI        GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+01  RI R      ILOAD 1
+02  RI RI     INVOKEVIRTUAL java/io/PrintStream.println (I)V
+03  RI        RETURN
+              MAXSTACK = 2
+              MAXLOCALS = 2
+</pre>
+
+<h3>opcode-if</h3>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(boolean flag) {
+        int value;
+        if (flag) {
+            value = 10;
+        }
+        else {
+            value = 20;
+        }
+        System.out.println(value);
+    }
+}
+</pre>
+
+<pre title="frames and instructions" class="plaintext">
+public test(Z)V
+00  RI.       ILOAD 1
+01  RI. I     IFEQ L0
+02  RI.       BIPUSH 10
+03  RI. I     ISTORE 2
+04  RII       GOTO L1
+05  RI.      L0
+06  RI.       BIPUSH 20
+07  RI. I     ISTORE 2
+08  RII      L1
+09  RII       GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+10  RII R     ILOAD 2
+11  RII RI    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+12  RII       RETURN
+              MAXSTACK = 2
+              MAXLOCALS = 3
+</pre>
+
+<h3>opcode-tableswitch</h3>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int value) {
+        String str;
+        switch (value) {
+            case 1:
+                str = "AAA";
+                break;
+            case 2:
+                str = "BBB";
+                break;
+            case 3:
+                str = "CCC";
+                break;
+            case 4:
+                str = "DDD";
+                break;
+            default:
+                str = "XXX";
+                break;
+        }
+        System.out.println(str);
+    }
+}
+</pre>
+
+<pre title="frames and instructions" class="plaintext">
+public test(I)V
+00    RI.        ILOAD 1
+01    RI. I      TABLESWITCH
+                   1: L0
+                   2: L1
+                   3: L2
+                   4: L3
+                   default: L4
+02    RI.       L0
+03    RI.        LDC "AAA"
+04    RI. R      ASTORE 2
+05    RIR        GOTO L5
+06    RI.       L1
+07    RI.        LDC "BBB"
+08    RI. R      ASTORE 2
+09    RIR        GOTO L5
+10    RI.       L2
+11    RI.        LDC "CCC"
+12    RI. R      ASTORE 2
+13    RIR        GOTO L5
+14    RI.       L3
+15    RI.        LDC "DDD"
+16    RI. R      ASTORE 2
+17    RIR        GOTO L5
+18    RI.       L4
+19    RI.        LDC "XXX"
+20    RI. R      ASTORE 2
+21    RIR       L5
+22    RIR        GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+23    RIR R      ALOAD 2
+24    RIR RR     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+25    RIR        RETURN
+                 MAXSTACK = 2
+                 MAXLOCALS = 3
+</pre>
+
+<h3>opcode-lookupswitch</h3>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int value) {
+        String str;
+        switch (value) {
+            case 10:
+                str = "AAA";
+                break;
+            case 20:
+                str = "BBB";
+                break;
+            case 30:
+                str = "CCC";
+                break;
+            case 40:
+                str = "DDD";
+                break;
+            default:
+                str = "XXX";
+                break;
+        }
+        System.out.println(str);
+    }
+}
+</pre>
+
+<pre title="frames and instructions" class="plaintext">
+public test(I)V
+00  RI.        ILOAD 1
+01  RI. I      LOOKUPSWITCH
+                 10: L0
+                 20: L1
+                 30: L2
+                 40: L3
+                 default: L4
+02  RI.        L0
+03  RI.         LDC "AAA"
+04  RI. R       ASTORE 2
+05  RIR         GOTO L5
+06  RI.        L1
+07  RI.         LDC "BBB"
+08  RI. R       ASTORE 2
+09  RIR         GOTO L5
+10  RI.        L2
+11  RI.         LDC "CCC"
+12  RI. R       ASTORE 2
+13  RIR         GOTO L5
+14  RI.        L3
+15  RI.         LDC "DDD"
+16  RI. R       ASTORE 2
+17  RIR         GOTO L5
+18  RI.        L4
+19  RI.         LDC "XXX"
+20  RI. R       ASTORE 2
+21  RIR        L5
+22  RIR         GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+23  RIR R       ALOAD 2
+24  RIR RR      INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+25  RIR         RETURN
+                MAXSTACK = 2
+                MAXLOCALS = 3
+</pre>
+
+<h3>merge frame</h3>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(boolean flag) {
+        Object obj;
+        if (flag) {
+            obj = Long.valueOf(100);
+        }
+        else {
+            obj = Integer.valueOf(10);
+        }
+        System.out.println(obj);
+    }
+}
+</pre>
+
+<pre title="frames and instructions" class="plaintext">
+public test(Z)V
+00  LHelloWorld;I.                                          ILOAD 1
+01  LHelloWorld;I.          I                               IFEQ L0
+02  LHelloWorld;I.                                          LDC 100
+03  LHelloWorld;I.          J                               INVOKESTATIC Long.valueOf(J)
+04  LHelloWorld;I.          Ljava/lang/Long;                ASTORE 2
+05  LHelloWorld;ILLong;                                     GOTO L1
+06  LHelloWorld;I.                                         L0
+07  LHelloWorld;I.                                          BIPUSH 10
+08  LHelloWorld;I.         I                                INVOKESTATIC Integer.valueOf(I)
+09  LHelloWorld;I.         Ljava/lang/Integer;              ASTORE 2
+10  LHelloWorld;ILNumber;                                  L1
+11  LHelloWorld;ILNumber;                                   GETSTATIC System.out
+12  LHelloWorld;ILNumber;  Ljava/io/PrintStream;            ALOAD 2
+13  LHelloWorld;ILNumber;  Ljava/io/PrintStream;LNumber;    INVOKEVIRTUAL PrintStream.println(LObject;)
+14  LHelloWorld;ILNumber;                                   RETURN
+                                                            MAXSTACK = 2
+                                                            MAXLOCALS = 3
+</pre>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(boolean flag) {
+        Object obj;
+        if (flag) {
+            obj = "ABC";
+        }
+        else {
+            obj = Integer.valueOf(10);
+        }
+        System.out.println(obj);
+    }
+}
+</pre>
+
+<pre title="frames and instructions" class="plaintext">
+public test(Z)V
+00  LHelloWorld;I.                                          ILOAD 1
+01  LHelloWorld;I.         I                                IFEQ L0
+02  LHelloWorld;I.                                          LDC "ABC"
+03  LHelloWorld;I.         Ljava/lang/String;               ASTORE 2
+04  LHelloWorld;ILString;                                   GOTO L1
+05  LHelloWorld;I.                                         L0
+06  LHelloWorld;I.                                          BIPUSH 10
+07  LHelloWorld;I.         I                                INVOKESTATIC Integer.valueOf(I)
+08  LHelloWorld;I.         Ljava/lang/Integer;              ASTORE 2
+09  LHelloWorld;ILObject;                                  L1
+10  LHelloWorld;ILObject;                                   GETSTATIC System.out
+11  LHelloWorld;ILObject;  Ljava/io/PrintStream;            ALOAD 2
+12  LHelloWorld;ILObject;  Ljava/io/PrintStream;LObject;    INVOKEVIRTUAL PrintStream.println(LObject;)
+13  LHelloWorld;ILObject;                                   RETURN
+                                                            MAXSTACK = 2
+                                                            MAXLOCALS = 3
+</pre>
+
+<h3>opcode-xxx</h3>
+
+<pre title="HelloWorld.java" class="javacode">
+
+</pre>
+
+<pre title="frames and instructions" class="plaintext">
+
+</pre>

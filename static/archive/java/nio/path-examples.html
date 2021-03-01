@@ -1,0 +1,316 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Paths Examples</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-nio-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Comparing Paths</h2>
+
+<p>
+    We can compare two <code>Path</code> objects for equality based on their textual representation.
+</p>
+
+<h3>equals()</h3>
+
+<p>
+    The <code>equals()</code> method tests for the equality of two <code>Path</code> objects by comparing their string forms.
+</p>
+
+<p>
+    Whether the equality test is case-sensitive depends on the file system.
+</p>
+
+<p>
+    The following code shows how to compare Windows paths:
+</p>
+
+<pre title="NIO_Path_Example_Equals.java" class="javacode">
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class NIO_Path_Example_Equals {
+    public static void main(String[] args) throws Exception {
+        Path p1 = Paths.get("C:\\Java_Dev\\test1.txt");
+        Path p2 = Paths.get("C:\\Java_Dev\\LUCI1.TXT");
+        Path p3 = Paths.get("C:\\Java_Dev\\..\\Java_Dev\\test1.txt");
+
+        boolean b1 = p1.equals(p2);
+        System.out.println(b1);
+
+        boolean b2 = p1.equals(p3);
+        System.out.println(b2);
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+false
+false
+</pre>
+
+<div class="w3-panel w3-pale-green w3-topbar w3-bottombar w3-border-green">
+    <p>
+        The <code>equals()</code> method compares two paths textually without resolving the actual file references and
+        it does not test a <code>Path</code> for existence in the file system.
+    </p>
+</div>
+
+<h3>compareTo()</h3>
+
+<p>
+    The <code>Path</code> interface implements the <code>java.lang.Comparable</code> interface.
+    We can use its <code>compareTo()</code> method to compare it with another <code>Path</code> object textually.
+</p>
+
+<p>
+    The <code>compareTo()</code> method returns an <code>int</code> value.
+</p>
+
+<ul>
+    <li>0 - when the two paths are equal</li>
+    <li>less than 0 - the path is less than the specified path</li>
+    <li>greater than 0 - the path is greater than the specified path</li>
+</ul>
+
+<pre title="NIO_Path_Example_CompareTo.java" class="javacode">
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class NIO_Path_Example_CompareTo {
+    public static void main(String[] args) throws Exception {
+        Path p1 = Paths.get("C:\\Java_Dev\\test1.txt");
+        Path p2 = Paths.get("C:\\Java_Dev\\Test1.txt");
+        Path p3 = Paths.get("C:\\Java_Dev\\..\\Java_Dev\\test1.txt");
+
+        int v1 = p1.compareTo(p2);
+        System.out.println(v1);
+
+        int v2 = p1.compareTo(p3);
+        System.out.println(v2);
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+0
+38
+</pre>
+
+<h3>startsWith() and endsWith()</h3>
+
+<p>
+    We can use the <code>endsWith()</code> and <code>startsWith()</code> methods to test if a path ends with and starts with a given path, respectively.
+</p>
+
+<pre title="NIO_Path_Example_StartEndWith.java" class="javacode">
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class NIO_Path_Example_StartEndWith {
+    public static void main(String[] args) throws Exception {
+        Path p1 = Paths.get("C:\\Java_Dev\\test1.txt");
+        Path p2 = Paths.get("test1.txt");
+        Path p3 = Paths.get("Java_Dev\\test1.txt");
+        Path p4 = Paths.get(".txt");
+
+        // Using endsWith()
+        boolean b1 = p1.endsWith(p2);
+        System.out.println(b1);
+        boolean b2 = p1.endsWith(p3);
+        System.out.println(b2);
+        boolean b3 = p1.endsWith(p4);
+        System.out.println(b3);
+
+        // Using startsWith()
+        Path p5 = Paths.get("C:\\");
+        Path p6 = Paths.get("C:\\Java_Dev");
+        Path p7 = Paths.get("C:\\Java_Dev\\test");
+
+        boolean b4 = p1.startsWith(p5);
+        System.out.println(b4);
+        boolean b5 = p1.startsWith(p6);
+        System.out.println(b5);
+        boolean b6 = p1.startsWith(p7);
+        System.out.println(b6);
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+true
+true
+false
+true
+true
+false
+</pre>
+
+<h3>isSameFile()</h3>
+
+<p>
+    The following code demonstrates how the <code>isSameFile()</code> method works. It checks If Two Paths Will Locate the Same File.
+</p>
+
+<pre title="NIO_Path_Example_IsSameFile.java" class="javacode">
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class NIO_Path_Example_IsSameFile {
+    public static void main(String[] args) {
+        // Assume that D:\tmp\test\abc.txt file exists
+        Path p1 = Paths.get("D:\\tmp\\test\\abc.txt");
+        Path p2 = Paths.get("D:\\tmp\\..\\tmp\\test\\abc.txt");
+
+        // Assume that D:\abc.txt file does not exist
+        Path p3 = Paths.get("D:\\abc.txt");
+        Path p4 = Paths.get("D:\\abc.txt");
+
+        try {
+            boolean isSame = Files.isSameFile(p1, p2);
+            System.out.println("p1 and  p2  are   the   same:  " + isSame);
+
+            isSame = Files.isSameFile(p3, p4);
+            System.out.println("p3 and  p4  are   the   same:  " + isSame);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+p1 and  p2  are   the   same:  true
+p3 and  p4  are   the   same:  true
+</pre>
+
+<h2>Normalizing Paths</h2>
+
+<p>
+    The <code>normalize()</code> method from the <code>Path</code> interface returns a <code>Path</code> after removing dot dot(<code>..</code>) characters.
+</p>
+
+<p>
+    This method does not access the file system.
+</p>
+
+<p>
+    The following code shows some examples of normalizing paths on Windows.
+</p>
+
+<pre title="NIO_Path_Example_Normalize.java" class="javacode">
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class NIO_Path_Example_Normalize {
+    public static void main(String[] args) throws Exception {
+        Path p1 = Paths.get("C:\\Java_Dev\\..\\\\Java_Dev\\test1.txt");
+        Path p1n = p1.normalize();
+        System.out.println(p1 + "  normalized to " + p1n);
+
+        Path p2 = Paths.get("C:\\Java_Dev\\test1.txt");
+        Path p2n = p2.normalize();
+        System.out.println(p2 + "  normalized to " + p2n);
+
+        Path p3 = Paths.get("\\..\\.\\test.txt");
+        Path p3n = p3.normalize();
+        System.out.println(p3 + "  normalized to " + p3n);
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+C:\Java_Dev\..\Java_Dev\test1.txt  normalized to C:\Java_Dev\test1.txt
+C:\Java_Dev\test1.txt  normalized to C:\Java_Dev\test1.txt
+\..\.\test.txt  normalized to \test.txt
+</pre>
+
+<h2>Resolving Paths</h2>
+
+<p>
+    We can combine two paths using the <code>resolve(Path p)</code> method of the <code>Path</code> interface.
+</p>
+
+<p>
+    If the specified path <code>p</code> is an absolute path, it returns the specified path.
+    It returns the path if the specified path <code>p</code> is an empty path.
+</p>
+
+<p>
+    In other cases, it simply combines the two paths and returns the result,
+    so the returned path ends with the specified path.
+</p>
+
+<p>
+    The following code has some examples of resolving paths.
+</p>
+
+<pre title="NIO_Path_Example_Resolve.java" class="javacode">
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class NIO_Path_Example_Resolve {
+    public static void main(String[] args) throws Exception {
+        Path p1 = Paths.get("C:\\Java_Dev");
+        Path p2 = Paths.get("test1.txt");
+        System.out.println(p1.resolve(p2));
+
+        Path p3 = Paths.get("C:\\test.txt");
+        System.out.println(p1.resolve(p3));
+
+        Path p4 = Paths.get("");
+        System.out.println(p1.resolve(p4));
+
+        Path p5 = Paths.get("Java_Dev\\Test");
+        Path p6 = Paths.get("test4.txt");
+        System.out.println(p5.resolve(p6));
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+C:\Java_Dev\test1.txt
+C:\test.txt
+C:\Java_Dev
+Java_Dev\Test\test4.txt
+</pre>
+
+<h2>Relativizing Paths</h2>
+
+<p>
+    The <code>relativize(Path p)</code> method of the <code>Path</code> interface gets a relative path for a given path against another path.
+</p>
+
+<p>
+    The following code has some examples of getting relative paths.
+</p>
+
+<pre title="NIO_Path_Example_Relativize.java" class="javacode">
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class NIO_Path_Example_Relativize {
+    public static void main(String[] args) throws Exception {
+        Path p1 = Paths.get("Java_Dev");
+        Path p2 = Paths.get("Java_Dev", "recent", "Test");
+        System.out.println(p1.relativize(p2));
+        System.out.println(p2.relativize(p1));
+
+        Path p3 = Paths.get("Abc");
+        Path p4 = Paths.get("Def");
+        System.out.println(p3.relativize(p4));
+        System.out.println(p4.relativize(p3));
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+recent\Test
+..\..
+..\Def
+..\Abc
+</pre>

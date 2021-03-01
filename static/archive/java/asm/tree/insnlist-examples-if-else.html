@@ -1,0 +1,117 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">InsnList Examples <br/>if-else</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>预期目标</h2>
+
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int val) {
+        if (val &gt; 10) {
+            System.out.println("val &gt; 10");
+        }
+        else {
+            System.out.println("val &lt;= 10");
+        }
+    }
+}
+</pre>
+
+<h2>编码实现</h2>
+
+<pre title="HelloWorldGenerateTree.java" class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.tree.*;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldGenerateTree {
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // (1) 生成byte[]内容
+        byte[] bytes = dump();
+
+        // (2) 保存byte[]到文件
+        FileUtils.writeBytes(filepath, bytes);
+    }
+
+    public static byte[] dump() throws Exception {
+        ClassNode cn = new ClassNode();
+        cn.version = V1_8;
+        cn.access = ACC_PUBLIC | ACC_SUPER;
+        cn.name = "sample/HelloWorld";
+        cn.superName = "java/lang/Object";
+
+        {
+            MethodNode mn1 = new MethodNode(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
+            cn.methods.add(mn1);
+
+            InsnList il = mn1.instructions;
+            il.add(new VarInsnNode(ALOAD, 0));
+            il.add(new MethodInsnNode(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false));
+            il.add(new InsnNode(RETURN));
+            mn1.maxLocals = 0;
+            mn1.maxStack = 0;
+        }
+
+        {
+            MethodNode mn2 = new MethodNode(ACC_PUBLIC, "test", "(I)V", null, null);
+            cn.methods.add(mn2);
+
+            LabelNode elseLabelNode = new LabelNode();
+            LabelNode returnLabelNode = new LabelNode();
+
+            InsnList il = mn2.instructions;
+            il.add(new VarInsnNode(ILOAD, 1));
+            il.add(new IntInsnNode(BIPUSH, 10));
+
+
+            il.add(new JumpInsnNode(IF_ICMPLE, elseLabelNode)); // if jump
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("val &gt; 10"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+            il.add(new JumpInsnNode(GOTO, returnLabelNode)); // goto jump
+
+
+            il.add(elseLabelNode); // else label
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("val &lt;= 10"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+
+
+            il.add(returnLabelNode); // return label
+            il.add(new InsnNode(RETURN));
+            mn2.maxLocals = 0;
+            mn2.maxStack = 0;
+        }
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cn.accept(cw);
+        return cw.toByteArray();
+    }
+}
+</pre>
+
+<h2>验证结果</h2>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import java.lang.reflect.Method;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Class&lt;?&gt; clazz = Class.forName("sample.HelloWorld");
+        Method method = clazz.getDeclaredMethod("test", int.class);
+        Object instance = clazz.newInstance();
+        method.invoke(instance, 100);
+    }
+}
+</pre>

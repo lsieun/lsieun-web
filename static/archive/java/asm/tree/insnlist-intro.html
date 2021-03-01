@@ -1,0 +1,284 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">InsnList Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>InsnList</h2>
+
+<p>
+    An <code>InsnList</code> is a doubly linked list of instructions,
+    whose links are stored in the <code>AbstractInsnNode</code> objects themselves.
+    This point is extremely important because it has many consequences on the way
+    instruction objects and instruction lists must be used:
+</p>
+
+<ul>
+    <li>
+        An <code>AbstractInsnNode</code> object cannot appear more than once in an instruction list.
+    </li>
+    <li>
+        An <code>AbstractInsnNode</code> object cannot belong to several instruction lists at the same time.
+    </li>
+    <li>
+        As a consequence, adding an <code>AbstractInsnNode</code> to a list requires removing it from the list to which it was belonging, if any.
+    </li>
+    <li>
+        As another consequence, adding all the elements of a list into another one clears the first list.
+    </li>
+</ul>
+
+<pre title="ASM: InsnList.java" class="javacode">
+public class InsnList implements Iterable&lt;AbstractInsnNode&gt; {
+    private int size;
+
+    private AbstractInsnNode firstInsn;
+    private AbstractInsnNode lastInsn;
+}
+</pre>
+
+<h2>AbstractInsnNode</h2>
+
+<pre title="ASM: AbstractInsnNode.java" class="javacode">
+public abstract class AbstractInsnNode {
+    public static final int INSN = 0;                   // InsnNode
+    public static final int INT_INSN = 1;               // IntInsnNode
+    public static final int VAR_INSN = 2;               // VarInsnNode
+    public static final int TYPE_INSN = 3;              // TypeInsnNode
+    public static final int FIELD_INSN = 4;             // FieldInsnNode
+    public static final int METHOD_INSN = 5;            // MethodInsnNode
+    public static final int INVOKE_DYNAMIC_INSN = 6;    // InvokeDynamicInsnNode
+    public static final int JUMP_INSN = 7;              // JumpInsnNode
+    public static final int LABEL = 8;                  // LabelNode
+    public static final int LDC_INSN = 9;               // LdcInsnNode
+    public static final int IINC_INSN = 10;             // IincInsnNode
+    public static final int TABLESWITCH_INSN = 11;      // TableSwitchInsnNode
+    public static final int LOOKUPSWITCH_INSN = 12;     // LookupSwitchInsnNode
+    public static final int MULTIANEWARRAY_INSN = 13;   // MultiANewArrayInsnNode
+    public static final int FRAME = 14;                 // FrameNode
+    public static final int LINE = 15;                  // LineNumberNode
+
+    protected int opcode;
+    int index;
+
+    AbstractInsnNode previousInsn;
+    AbstractInsnNode nextInsn;
+
+    protected AbstractInsnNode(final int opcode) {
+        this.opcode = opcode;
+        this.index = -1;
+    }
+
+    public int getOpcode() {
+        return opcode;
+    }
+
+    public AbstractInsnNode getPrevious() {
+        return previousInsn;
+    }
+
+    public AbstractInsnNode getNext() {
+        return nextInsn;
+    }
+
+    public abstract int getType();
+    public abstract void accept(MethodVisitor methodVisitor);
+}
+</pre>
+
+<h2>AbstractInsnNode Subclasses</h2>
+
+<p>
+    Labels and frames, as well as line numbers, although they are not instructions,
+    are also represented by sub classes of the <code>AbstractInsnNode</code> classes,
+    namely the <code>LabelNode</code>, <code>FrameNode</code> and <code>LineNumberNode</code> classes.
+    This allows them to be inserted just before the corresponding real instructions in the list,
+    as in the core API (where labels and frames are visited just before their corresponding instruction).
+</p>
+
+<h3>InsnNode</h3>
+
+<pre title="ASM: InsnNode.java" class="javacode">
+public class InsnNode extends AbstractInsnNode {
+    public InsnNode(final int opcode) {
+        super(opcode);
+    }
+
+    @Override
+    public int getType() {
+        return INSN;
+    }
+
+    @Override
+    public void accept(final MethodVisitor methodVisitor) {
+        methodVisitor.visitInsn(opcode);
+    }
+}
+</pre>
+
+<h3>IntInsnNode</h3>
+
+<pre title="ASM: IntInsnNode.java" class="javacode">
+public class IntInsnNode extends AbstractInsnNode {
+    public int operand;
+
+    public IntInsnNode(final int opcode, final int operand) {
+        super(opcode);
+        this.operand = operand;
+    }
+
+    @Override
+    public int getType() {
+        return INT_INSN;
+    }
+
+    @Override
+    public void accept(final MethodVisitor methodVisitor) {
+        methodVisitor.visitIntInsn(opcode, operand);
+    }
+}
+</pre>
+
+<h3>VarInsnNode</h3>
+
+<pre title="ASM: VarInsnNode.java" class="javacode">
+public class VarInsnNode extends AbstractInsnNode {
+    public int var;
+
+    public VarInsnNode(final int opcode, final int var) {
+        super(opcode);
+        this.var = var;
+    }
+
+    @Override
+    public int getType() {
+        return VAR_INSN;
+    }
+
+    @Override
+    public void accept(final MethodVisitor methodVisitor) {
+        methodVisitor.visitVarInsn(opcode, var);
+    }
+}
+</pre>
+
+<h3>TypeInsnNode</h3>
+
+<pre title="ASM: TypeInsnNode.java" class="javacode">
+public class TypeInsnNode extends AbstractInsnNode {
+    public String desc;
+
+    public TypeInsnNode(final int opcode, final String descriptor) {
+        super(opcode);
+        this.desc = descriptor;
+    }
+
+    @Override
+    public int getType() {
+        return TYPE_INSN;
+    }
+
+    @Override
+    public void accept(final MethodVisitor methodVisitor) {
+        methodVisitor.visitTypeInsn(opcode, desc);
+    }
+}
+</pre>
+
+<h3>FieldInsnNode</h3>
+
+<pre title="ASM: FieldInsnNode.java" class="javacode">
+public class FieldInsnNode extends AbstractInsnNode {
+    public String owner;
+    public String name;
+    public String desc;
+
+    public FieldInsnNode(int opcode, String owner, String name, String descriptor) {
+        super(opcode);
+        this.owner = owner;
+        this.name = name;
+        this.desc = descriptor;
+    }
+
+    @Override
+    public int getType() {
+        return FIELD_INSN;
+    }
+
+    @Override
+    public void accept(MethodVisitor methodVisitor) {
+        methodVisitor.visitFieldInsn(opcode, owner, name, desc);
+        acceptAnnotations(methodVisitor);
+    }
+}
+</pre>
+
+<h3>MethodInsnNode</h3>
+
+<pre title="ASM: MethodInsnNode.java" class="javacode">
+public class MethodInsnNode extends AbstractInsnNode {
+    public String owner;
+    public String name;
+    public String desc;
+    public boolean itf;
+
+    public MethodInsnNode(int opcode, String owner, String name, String descriptor) {
+        this(opcode, owner, name, descriptor, opcode == Opcodes.INVOKEINTERFACE);
+    }
+
+    public MethodInsnNode(int opcode, String owner, String name, String descriptor, boolean isInterface) {
+        super(opcode);
+        this.owner = owner;
+        this.name = name;
+        this.desc = descriptor;
+        this.itf = isInterface;
+    }
+
+    @Override
+    public int getType() {
+        return METHOD_INSN;
+    }
+
+    @Override
+    public void accept(final MethodVisitor methodVisitor) {
+        methodVisitor.visitMethodInsn(opcode, owner, name, desc, itf);
+    }
+}
+</pre>
+
+<h3>InvokeDynamicInsnNode</h3>
+
+<pre title="ASM: AbstractInsnNode.java" class="javacode">
+public class InvokeDynamicInsnNode extends AbstractInsnNode {
+}
+</pre>
+
+<pre title="ASM: AbstractInsnNode.java" class="javacode">
+public abstract class AbstractInsnNode {
+}
+</pre>
+
+<pre title="ASM: AbstractInsnNode.java" class="javacode">
+public abstract class AbstractInsnNode {
+}
+</pre>
+
+<pre title="ASM: AbstractInsnNode.java" class="javacode">
+public abstract class AbstractInsnNode {
+}
+</pre>
+
+<pre title="ASM: AbstractInsnNode.java" class="javacode">
+public abstract class AbstractInsnNode {
+}
+</pre>
+
+<pre title="ASM: AbstractInsnNode.java" class="javacode">
+public abstract class AbstractInsnNode {
+}
+</pre>
+
+<h2>Summing Up</h2>

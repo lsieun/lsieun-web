@@ -1,0 +1,352 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassNode Examples</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    <span class="text-compare-green">The ASM tree API</span> for
+    <span class="text-compare-grey">generating</span> and
+    <span class="text-compare-grey">transforming</span>
+    <span class="text-emphasize">compiled Java classes</span> is
+    based on the <code>ClassNode</code> class.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_can_do.png" alt=""/>
+</div>
+
+<h2>Class Generation</h2>
+
+<p>
+    <span class="text-emphasize">Generating a class</span> with <span class="text-compare-green">the tree API</span> simply
+    consists in creating a <code>ClassNode</code> object and in initializing its fields.
+</p>
+
+<p>
+    Using <span class="text-compare-green">the tree API</span> to <span class="text-emphasize">generate a class</span> takes about 30%
+    more time and consumes more memory than using <span class="text-compare-green">the core API</span>.
+    But it makes it possible to generate the class elements in any order, which can be convenient in some cases.
+</p>
+
+<p>
+    假设想生成的<code>HelloWorld</code>类是如下情况：
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public interface HelloWorld extends Cloneable {
+}
+</pre>
+
+<p>
+    那么，可以这样来写代码：
+</p>
+
+<pre title="HelloWorldGenerateTree.java" hidden class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.tree.*;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldGenerateTree {
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // (1) 生成byte[]内容
+        byte[] bytes = dump();
+
+        // (2) 保存byte[]到文件
+        FileUtils.writeBytes(filepath, bytes);
+    }
+
+    public static byte[] dump() throws Exception {
+        ClassNode cn = new ClassNode();
+        cn.version = V1_8;
+        cn.access = ACC_PUBLIC | ACC_ABSTRACT | ACC_INTERFACE;
+        cn.name = "sample/HelloWorld";
+        cn.superName = "java/lang/Object";
+        cn.interfaces.add("java/lang/Cloneable");
+
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cn.accept(cw);
+        return cw.toByteArray();
+    }
+}
+</pre>
+
+<p>
+    验证结果：
+</p>
+
+<pre title="javap" class="plaintext">
+$ javap sample.HelloWorld
+public interface sample.HelloWorld extends java.lang.Cloneable {
+}
+</pre>
+
+<h2>Class Transformation</h2>
+
+<p>
+    <span class="text-emphasize">Adding and removing class members</span> simply consists in adding or removing
+    elements in the <code>fields</code> or <code>methods</code> lists of a <code>ClassNode</code> object.
+</p>
+
+<p>
+    For example, if we define the <code>ClassTransformer</code> class as follows,
+    in order to be able to compose class transformers easily:
+</p>
+
+<pre title="ClassTransformer.java" class="javacode">
+import org.objectweb.asm.tree.ClassNode;
+
+public class ClassTransformer {
+    protected  ClassTransformer ct;
+
+    public ClassTransformer(ClassTransformer ct) {
+        this.ct = ct;
+    }
+
+    public void transform(ClassNode cn) {
+        if (ct != null) {
+            ct.transform(cn);
+        }
+    }
+}
+</pre>
+
+<h3>Removing Field</h3>
+
+<p>
+    预期目标：移除<code>HelloWorld</code>类当中的<code>String strValue;</code>字段。
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int intValue;
+    public String strValue;
+}
+</pre>
+
+<p>
+    编码实现：
+</p>
+
+<pre title="ClassRemoveFieldTransformer.java" class="javacode">
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
+
+import java.util.Iterator;
+
+public class ClassRemoveFieldTransformer extends ClassTransformer {
+    private final String fieldName;
+    private final String fieldDesc;
+
+    public ClassRemoveFieldTransformer(ClassTransformer ct, String fieldName, String fieldDesc) {
+        super(ct);
+        this.fieldName = fieldName;
+        this.fieldDesc = fieldDesc;
+    }
+
+    @Override
+    public void transform(ClassNode cn) {
+        Iterator&lt;FieldNode&gt; it = cn.fields.iterator();
+        while (it.hasNext()) {
+            FieldNode fn = it.next();
+            if (fieldName.equals(fn.name) && fieldDesc.equals(fn.desc)) {
+                it.remove();
+            }
+        }
+        super.transform(cn);
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformTree.java" hidden class="javacode">
+import lsieun.tree.ClassRemoveFieldTransformer;
+import lsieun.tree.ClassTransformer;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
+
+public class HelloWorldTransformTree {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        // (1)构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        // (2) 构建ClassNode
+        int api = Opcodes.ASM9;
+        ClassNode cn = new ClassNode(api);
+        cr.accept(cn, ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+
+        // (3) 进行transform
+        ClassTransformer ct = new ClassRemoveFieldTransformer(null, "strValue", "Ljava/lang/String;");
+        ct.transform(cn);
+
+        // (4) 构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cn.accept(cw);
+
+        // (5) 生成byte[]内容输出
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<p>
+    验证结果：
+</p>
+
+<pre title="javap" class="plaintext">
+$ javap sample.HelloWorld
+public class sample.HelloWorld {
+  public int intValue;
+  public sample.HelloWorld();
+}
+</pre>
+
+<h3>Removing Method</h3>
+
+<p>
+    预期目标：移除<code>HelloWorld</code>类当中的<code>int add(int a, int b)</code>方法。
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int add(int a, int b) {
+        return a + b;
+    }
+
+    public int sub(int a, int b) {
+        return a - b;
+    }
+}
+</pre>
+
+<p>
+    编码实现：
+</p>
+
+<pre title="ClassRemoveMethodTransformer.java" class="javacode">
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
+
+import java.util.Iterator;
+
+public class ClassRemoveMethodTransformer extends ClassTransformer {
+    private final String methodName;
+    private final String methodDesc;
+
+    public ClassRemoveMethodTransformer(ClassTransformer ct, String methodName, String methodDesc) {
+        super(ct);
+        this.methodName = methodName;
+        this.methodDesc = methodDesc;
+    }
+
+    @Override
+    public void transform(ClassNode cn) {
+        Iterator&lt;MethodNode&gt; it = cn.methods.iterator();
+        while (it.hasNext()) {
+            MethodNode mn = it.next();
+            if (methodName.equals(mn.name) && methodDesc.equals(mn.desc)) {
+                it.remove();
+            }
+        }
+        super.transform(cn);
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformTree.java" hidden class="javacode">
+import lsieun.tree.ClassRemoveMethodTransformer;
+import lsieun.tree.ClassTransformer;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
+
+public class HelloWorldTransformTree {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        // (1)构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        // (2) 构建ClassNode
+        int api = Opcodes.ASM9;
+        ClassNode cn = new ClassNode(api);
+        cr.accept(cn, ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+
+        // (3) 进行transform
+        ClassTransformer ct = new ClassRemoveMethodTransformer(null, "add", "(II)I");
+        ct.transform(cn);
+
+        // (4) 构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cn.accept(cw);
+
+        // (5) 生成byte[]内容输出
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<p>
+    验证结果：
+</p>
+
+<pre title="javap" class="plaintext">
+$ javap sample.HelloWorld
+public class sample.HelloWorld {
+  public sample.HelloWorld();
+  public int sub(int, int);
+}
+</pre>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>
+        第一，从研究对象上来说，这里的代码示例主要是围绕<code>ClassNode</code>展开，涉及到generation和transformation操作。
+    </li>
+    <li>
+        第二，从执行效率上来说，Tree API的执行效率要比Core API的执行效率低。
+    </li>
+    <li>
+        第三，从功能角度上来说，现阶段的代码并不能添加一个新方法，因为需要用到<code>MethodNode</code>类。
+    </li>
+</ul>
+
+<p>
+    <span class="text-compare-green">The ASM tree API</span> for
+    <span class="text-compare-grey">generating</span> and
+    <span class="text-compare-grey">transforming</span>
+    <span class="text-emphasize">compiled Java classes</span> is
+    based on the <code>ClassNode</code> class.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_can_do.png" alt=""/>
+</div>

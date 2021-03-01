@@ -1,0 +1,214 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">MethodNode Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    <span class="text-compare-green">The ASM tree API</span> for
+    <span class="text-compare-grey">generating</span> and
+    <span class="text-compare-grey">transforming</span>
+    <span class="text-emphasize">methods</span> is based on the <code>MethodNode</code> class.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_can_do.png" alt=""/>
+</div>
+
+<h2>MethodNode</h2>
+
+<h3>Class Info</h3>
+
+<p>
+    第一个要注意的地方，<code>MethodNode</code>的父类是哪个类？
+</p>
+
+<p>
+    回答：<code>MethodNode</code>的父类是<code>MethodVisitor</code>类。
+</p>
+
+<pre title="ASM: MethodNode.java" class="javacode">
+public class MethodNode extends MethodVisitor {
+}
+</pre>
+
+<h3>Fields</h3>
+
+<p>
+    第二个要注意的地方，就是<code>MethodNode</code>定义的字段有哪些？
+</p>
+
+<p>
+    回答：<code>MethodNode</code>定义的字段与<code>ClassFile</code>中的<code>method_info</code>结构密切相关。对于<code>InsnList</code>类，我们单独进行介绍。
+</p>
+
+<pre title="ASM: MethodNode.java" class="javacode">
+public class MethodNode extends MethodVisitor {
+    public int access;
+    public String name;
+    public String desc;
+    public String signature;
+    public List&lt;String&gt; exceptions;
+    public List&lt;TryCatchBlockNode&gt; tryCatchBlocks;
+    public InsnList instructions;
+
+    public int maxStack;
+    public int maxLocals;
+}
+</pre>
+
+<pre title="ClassFile: method_info" class="plaintext">
+method_info {
+    u2             access_flags;
+    u2             name_index;
+    u2             descriptor_index;
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+</pre>
+
+<h3>Constructors</h3>
+
+<p>
+    第三个要注意的地方，就是<code>MethodNode</code>定义的构造函数有哪些？
+</p>
+
+<pre title="ASM: MethodNode.java" class="javacode">
+public class MethodNode extends MethodVisitor {
+    public MethodNode() {
+        this(Opcodes.ASM9);
+    }
+
+    public MethodNode(int api) {
+        super(api);
+        this.instructions = new InsnList();
+    }
+
+    public MethodNode(int access, String name, String descriptor, String signature, String[] exceptions) {
+        this(Opcodes.ASM9, access, name, descriptor, signature, exceptions);
+    }
+
+    public MethodNode(int api, int access, String name, String descriptor,
+                      String signature, String[] exceptions) {
+        super(api);
+        this.access = access;
+        this.name = name;
+        this.desc = descriptor;
+        this.signature = signature;
+        this.exceptions = Util.asArrayList(exceptions);
+        if ((access & Opcodes.ACC_ABSTRACT) == 0) {
+            this.localVariables = new ArrayList&lt;&gt;(5);
+        }
+        this.tryCatchBlocks = new ArrayList&lt;&gt;();
+        this.instructions = new InsnList();
+    }
+}
+</pre>
+
+<h3>Methods</h3>
+
+<p>
+    第四个要注意的地方，就是<code>MethodNode</code>提供关键方法有哪些？
+</p>
+
+<p>
+    回答：<code>MethodNode</code>类提供的关键方法有<code>visitXxx</code>和<code>accept</code>方法。
+</p>
+
+<h4>visitXxx Method</h4>
+
+<pre title="ASM: MethodNode.java" class="javacode">
+public class MethodNode extends MethodVisitor {
+    @Override
+    public void visitCode() {
+        // Nothing to do.
+    }
+
+    @Override
+    public void visitInsn(int opcode) {
+        instructions.add(new InsnNode(opcode));
+    }
+
+    @Override
+    public void visitIntInsn(int opcode, int operand) {
+        instructions.add(new IntInsnNode(opcode, operand));
+    }
+
+    @Override
+    public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+        instructions.add(new FieldInsnNode(opcode, owner, name, descriptor));
+    }
+
+    @Override
+    public void visitMethodInsn(int opcodeAndSource, String owner, String name, String descriptor, boolean isInterface) {
+        int opcode = opcodeAndSource & ~Opcodes.SOURCE_MASK;
+        instructions.add(new MethodInsnNode(opcode, owner, name, descriptor, isInterface));
+    }
+
+    @Override
+    public void visitMaxs(int maxStack, int maxLocals) {
+        this.maxStack = maxStack;
+        this.maxLocals = maxLocals;
+    }
+
+    @Override
+    public void visitEnd() {
+        // Nothing to do.
+    }
+}
+</pre>
+
+<h4>accept Method</h4>
+
+<pre title="ASM: MethodNode.java" class="javacode">
+public class MethodNode extends MethodVisitor {
+    public void accept(ClassVisitor classVisitor) {
+        String[] exceptionsArray = exceptions == null ? null : exceptions.toArray(new String[0]);
+        MethodVisitor methodVisitor = classVisitor.visitMethod(access, name, desc, signature, exceptionsArray);
+        if (methodVisitor != null) {
+            accept(methodVisitor);
+        }
+    }
+
+    public void accept(MethodVisitor methodVisitor) {
+        // Visit the parameters.
+        if (parameters != null) {
+            for (int i = 0, n = parameters.size(); i < n; i++) {
+                parameters.get(i).accept(methodVisitor);
+            }
+        }
+
+        // ......
+
+        // Visit the non standard attributes.
+        if (visited) {
+            instructions.resetLabels();
+        }
+        if (attrs != null) {
+            for (int i = 0, n = attrs.size(); i < n; ++i) {
+                methodVisitor.visitAttribute(attrs.get(i));
+            }
+        }
+        // Visit the code.
+        if (instructions.size() > 0) {
+            methodVisitor.visitCode();
+            // Visits the try catch blocks.
+            if (tryCatchBlocks != null) {
+                for (int i = 0, n = tryCatchBlocks.size(); i < n; ++i) {
+                    tryCatchBlocks.get(i).updateIndex(i);
+                    tryCatchBlocks.get(i).accept(methodVisitor);
+                }
+            }
+            // Visit the instructions.
+            instructions.accept(methodVisitor);
+            // ......
+            methodVisitor.visitMaxs(maxStack, maxLocals);
+            visited = true;
+        }
+        methodVisitor.visitEnd();
+    }
+}
+</pre>

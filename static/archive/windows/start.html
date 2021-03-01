@@ -1,0 +1,60 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">start</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="windows-commands.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Starts a separate Command Prompt window to run a specified program or command.
+</p>
+
+<pre title="Syntax" class="plaintext">
+start [&lt;title&gt;] [/d &lt;path&gt;] [/i] [{/min | /max}] [{/separate | /shared}]
+    [{/low | /normal | /high | /realtime | /abovenormal | belownormal}]
+    [/affinity &lt;hexaffinity&gt;] [/wait] [/elevate] [/b]
+    [&lt;command&gt; [&lt;parameter&gt;... ] | &lt;program&gt; [&lt;parameter&gt;... ]]
+</pre>
+
+<ul>
+    <li>
+        <code>/d &lt;path&gt;</code>: Specifies the startup directory.
+    </li>
+    <li>
+        <code>[&lt;command&gt; [&lt;parameter&gt;... ] | &lt;program&gt; [&lt;parameter&gt;... ]]</code>: Specifies the command or program to start.
+    </li>
+    <li>
+        <code>/?</code>: Displays help at the command prompt.
+    </li>
+    <li></li>
+</ul>
+
+<h2>Remarks</h2>
+
+<p>
+    You can run non-executable files through their file association by typing the name of the file as a command.
+</p>
+
+<pre title="用记事本打开my.txt文件" class="plaintext">
+$ start my.txt
+</pre>
+
+<p>
+    When searching for an executable file, if there is no match on any extension,
+    <code>start</code> checks to see if the name matches a directory name.
+    If it does, <code>start</code> opens <code>Explorer.exe</code> on that path.
+</p>
+
+<pre title="打开文件夹" class="plaintext">
+$ start .       # 打开当前文件夹
+$ start D:\tmp  # 打开D:\tmp文件夹
+$ start %APPDATA%   # 打开C:\Users\用户名\AppData\Roaming文件夹
+</pre>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/start" target="_blank">MicroSoft: start</a></li>
+</ul>

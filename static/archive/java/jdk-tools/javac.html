@@ -1,0 +1,294 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">javac---The Java Compiler</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jdk-tools-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    javac is the Java compiler--it compiles Java source code (in <code>.java</code> files) into Java byte-codes (in <code>.class</code> files).
+    The Java compiler is itself written in Java.
+</p>
+
+<p class="indented">
+    javac may be passed any number of Java source files, whose names must all end with the <code>.java</code> extension.
+    javac produces a separate <code>.class</code> class file for each class defined in the source files, regardless of how many source files there are.
+    In other words, there need not be a one-to-one mapping between Java source files and Java class files.
+    Note also that the compiler requires that <b>there be only a single public class defined in any one source file</b>,
+    and that the name of the file (minus the <code>.java</code> extension) be the same as the name of the class (minus its package name, of course).
+</p>
+
+<p class="indented">
+    If javac compiles a source file that relies on a class that is out of date (i.e., if the source file for that class is newer than the class file), it automatically recompiles that file.
+</p>
+
+<h2>How to compile</h2>
+
+<h3>compile one file</h3>
+
+<p>
+    How to compile a single source file:
+</p>
+
+<div title="compile a single source file" class="plaintext">
+javac YourSourceFile.java
+</div>
+
+<h3>compile multiple files</h3>
+
+<p>
+    How to compile multiple source files by name:
+</p>
+
+<div title="compile multiple source files by name" class="plaintext">
+javac FileOne.java FileTwo.java FileThree.java
+</div>
+
+<h3>compile using wildcards</h3>
+
+<p>
+    How to compile multiple source files using wildcards - if you have all of the source files for a single program in the same directory you can compile them all with a single command without having to specify all of their names:
+</p>
+
+<div title="compile multiple source files using wildcards" class="plaintext">
+javac *.java
+</div>
+
+<ul>
+    <li>优点在于，不用指定特定的Java文件名</li>
+    <li>缺点在于，这些Java文件必须位于同一个目录下</li>
+</ul>
+
+<h3>compile recursively</h3>
+
+<p>
+    How to compile all java files under a given directory recursively
+</p>
+
+<p>
+    If you need to try something out for a larger project and don't have any proper build tools nearby,
+    you can always use a small trick that <code>javac</code> offers:
+    the classnames to compile can be specified in a file.
+    You simply have to pass the name of the file to javac with the <code>@</code> prefix.
+</p>
+
+<p>
+    If you can create a list of all the <code>*.java</code> files in your project, it's easy:
+</p>
+
+<pre title="Linux / MacOS" class="plaintext">
+$ find . -name "*.java" > sources.txt
+$ javac @sources.txt
+## 添加classpath的情况
+$ javac -classpath "${CLASSPATH}" @java_sources.txt
+</pre>
+
+<pre title="Windows" class="plaintext">
+&gt; dir /s/b *.java > sources.txt
+&gt; javac @sources.txt
+</pre>
+
+<p>
+    <b>The advantage</b> is that is is a quick and easy solution.
+</p>
+
+<p>
+    <b>The drawback</b> is that you have to regenerate the <code>sources.txt</code> file each time you create a new source or rename an existing one file which is an easy to forget (thus error-prone) and tiresome task.
+</p>
+
+<h2>Options</h2>
+
+<ul>
+    <li>
+        <code>-profile &lt;profile&gt;</code>: Control the profile that javac will use when compiling the application.
+    </li>
+    <li>
+        <code></code>:
+    </li>
+    <li>
+        <code></code>:
+    </li>
+    <li>
+        <code></code>:
+    </li>
+    <li>
+        <code></code>:
+    </li>
+</ul>
+
+<h3>-classpath</h3>
+
+<p class="indented">
+    When a source file references a class that is not defined in another source file on the command line, javac searches for the definition of that class using the class path.
+    The default class path contains only the current directory and the system classes.
+    You may specify additional classes and packages to be searched with the <code>-classpath</code> option or the <code>CLASSPATH</code> environment variable.
+</p>
+
+<ul>
+    <li>
+        <code>-classpath path</code>: The <code>path</code> that javac uses to look up classes referenced in the specified source code.
+        This option overrides the default path and any path specified by the <code>CLASSPATH</code> environment variable.
+        The <code>path</code> specified is an ordered list of directories and ZIP files, separated by <b>colons</b> on UNIX systems or <b>semicolons</b> on Windows systems.
+
+    </li>
+</ul>
+
+<p class="indented">
+    To specify additional directories or ZIP files to be searched, without overriding the default system class path, use the <code>CLASSPATH</code> environment variable.
+</p>
+
+<h3>-d</h3>
+
+<p class="indented">
+    By default, javac places the class files it generates in the same directory as the corresponding source file. You can override this behavior with the <code>-d</code> option.
+</p>
+
+<ul>
+    <li>
+        <code>-d &lt;directory&gt;</code>: The directory in which (or beneath which) class files should be stored.
+        By default, javac stores the <code>.class</code> files it generates in the same directory as the <code>.java</code> file that those classes were defined in.
+    </li>
+</ul>
+
+<p class="indented">
+    If the <code>-d</code> flag is specified, however, the specified directory is treated as the root of the class hierarchy and <code>.class</code> files are placed in this directory, or in the appropriate subdirectory below it, depending on the package name of the class.
+    Thus, the following command:
+</p>
+
+<div title="" class="plaintext">
+javac -d java/classes java/src/Checkers.java
+</div>
+
+<p>
+    places the file <code>Checkers.class</code> in the directory <code>java/classes</code> if the <code>Checkers.java</code> file has no package statement.
+</p>
+
+<p class="indented">
+    On the other hand, if the source file specifies that it is in a package: package <code>david.games</code>; then the <code>.class</code> file is stored in <code>java/classes/david/games</code>.
+    When the <code>-d</code> option is specified, javac automatically creates any directories it needs to store its class files in the appropriate place.
+</p>
+
+<h3>-g</h3>
+
+<ul>
+    <li>
+        <code>-g</code>: This option tells javac to add line numbers and local variable information to the output class files, for use by debuggers.
+        By default, javac only generates the line numbers.
+    </li>
+</ul>
+
+<ul>
+    <li>
+        <code>-g</code>: Generate all debugging info
+    </li>
+    <li>
+        <code>-g:none</code>: Generate no debugging info
+    </li>
+    <li>
+        <code>-g:{lines,vars,source}</code>: Generate only some debugging info
+    </li>
+</ul>
+
+<div title="javac example" class="plaintext">
+javac -g:vars Main.java
+javac -g:vars,lines Main.java
+</div>
+
+<h3>-source and -target</h3>
+
+<p class="indented">
+    javac has traditionally accepted switches (<code>-source</code> and <code>-target</code>) that control the version of the source language that the compiler would accept, and the version of the class file format that was used for the outputted class files.
+</p>
+
+<ul>
+    <li>
+        <code>-source &lt;version&gt;</code>: Control the Java version that javac will accept.
+    </li>
+    <li>
+        <code>-target &lt;version&gt;</code>: Control the version of class files that javac will output.
+    </li>
+</ul>
+
+<p class="indented">
+    From JDK 8 onward, javac will only accept <code>source</code> and <code>target</code> options from three versions back.
+    That is, only the formats from JDK 5, 6, 7, and 8 will be accepted by javac.
+    This does not affect the java interpreter—any class file from any Java version will still work on the JVM shipped with Java 8.
+</p>
+
+<h3>-parameters</h3>
+
+<ul>
+    <li>
+        <code>-parameters</code>: Stores formal parameter names of constructors and methods in the generated class file so that the method <code>java.lang.reflect.Executable.getParameters</code> from the Reflection API can retrieve them.
+    </li>
+</ul>
+
+<div title="parameters example" class="plaintext">
+javac -parameters Main.java
+</div>
+
+<p>
+    在<code>.class</code>文件中，为了生成Method的MethodParameters属性，需要满足这两个条件：
+</p>
+
+<ol>
+    <li>在使用javac时，使用<code>-parameters</code>参数</li>
+    <li>方法本身，至少要有一个参数；如果方法没有参数，也不会生成MethodParameters属性</li>
+</ol>
+
+<h2>javac restriction</h2>
+
+<p class="indented">
+    When javac is compiling code it doesn't link against <code>rt.jar</code> by default.
+    Instead it uses special symbol file <code>JAVA_HOME/lib/ct.sym</code> with class stubs.
+    Surprisingly this file contains many but not all of internal sun classes.
+    The option <code>-XDignore.symbol.file</code> is to ignore the symbol file so that it will link against <code>rt.jar</code>.
+</p>
+
+<div title="example" class="plaintext">
+javac -XDignore.symbol.file Main.java
+</div>
+
+<h3>Ant Solution</h3>
+
+<div title="ant example" class="plaintext">
+&lt;target name="compile" depends="init" description="Compiles the source code"&gt;
+    &lt;javac srcdir="${src}" destdir="${build.class}"&gt;
+        &lt;compilerarg value="-XDignore.symbol.file"/&gt;
+    &lt;/javac&gt;
+&lt;/target&gt;
+</div>
+
+<h3>Maven Solution</h3>
+
+<p>
+    If you're using Maven, note that the compiler plugin will silently drop any <code>-XD</code> flags, unless you also specify <code>&lt;fork&gt;true&lt;/fork&gt;</code>:
+</p>
+
+<div title="maven example" class="plaintext">
+&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+            &lt;version&gt;3.8.1&lt;/version&gt;
+            &lt;configuration&gt;
+                &lt;source&gt;1.8&lt;/source&gt;
+                &lt;target&gt;1.8&lt;/target&gt;
+                &lt;compilerArgs&gt;
+                    &lt;arg&gt;-g:none&lt;/arg&gt;
+                    &lt;arg&gt;-parameters&lt;/arg&gt;
+                    &lt;arg&gt;-XDignore.symbol.file&lt;/arg&gt;
+                &lt;/compilerArgs&gt;
+                &lt;fork&gt;true&lt;/fork&gt;
+            &lt;/configuration&gt;
+</div>
+
+
+
+
+

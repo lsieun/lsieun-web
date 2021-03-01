@@ -1,0 +1,215 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASM Counter Example</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>预期目标</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void add(int a, int b) {
+        int c = a + b;
+        System.out.printf("%d + %d = %d%n", a, b, c);
+    }
+
+    public void sub(int a, int b) {
+        int c = a - b;
+        System.out.printf("%d - %d = %d%n", a, b, c);
+    }
+}
+</pre>
+
+<pre title="GoodChild.java" class="javacode">
+import java.util.Random;
+
+public class GoodChild {
+    public static void doHomeWork() {
+        HelloWorld instance = new HelloWorld();
+
+        Random rand = new Random();
+        for (int i = 0; i < 10; i++) {
+            int a = rand.nextInt(10);
+            int b = rand.nextInt(10);
+            boolean flag = rand.nextBoolean();
+            if (flag) {
+                instance.add(a, b);
+            }
+            else {
+                instance.sub(a, b);
+            }
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        GoodChild.doHomeWork();
+    }
+}
+</pre>
+
+<p>
+    into this:
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static int add_count;
+    public static int sub_count;
+
+    public void add(int a, int b) {
+        add_count++;
+        int c = a + b;
+        System.out.printf("%d + %d = %d%n", a, b, c);
+    }
+
+    public void sub(int a, int b) {
+        sub_count++;
+        int c = a - b;
+        System.out.printf("%d - %d = %d%n", a, b, c);
+    }
+}
+</pre>
+
+<h2>编码实现</h2>
+
+<pre title="ClassCounterVisitor.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class ClassCounterVisitor extends ClassVisitor {
+    private String owner;
+    private boolean isInterface;
+
+    public ClassCounterVisitor(int api, ClassVisitor cv) {
+        super(api, cv);
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(version, access, name, signature, superName, interfaces);
+        owner = name;
+        isInterface = (access & ACC_INTERFACE) != 0;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        if (!isInterface && mv != null && !name.equals("&lt;init&gt;")) {
+            String fieldName = name + "_count";
+            mv = new MethodCounterAdapter(api, mv, owner, fieldName);
+
+            FieldVisitor fv = super.visitField(ACC_PUBLIC | ACC_STATIC, fieldName, "I", null, null);
+            if (fv != null) {
+                fv.visitEnd();
+            }
+        }
+        return mv;
+    }
+}
+</pre>
+
+<pre title="MethodCounterAdapter.java" class="javacode">
+import org.objectweb.asm.MethodVisitor;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class MethodCounterAdapter extends MethodVisitor {
+    private final String owner;
+    private final String fieldName;
+
+    public MethodCounterAdapter(int api, MethodVisitor mv, String owner, String fieldName) {
+        super(api, mv);
+        this.owner = owner;
+        this.fieldName = fieldName;
+    }
+
+    @Override
+    public void visitCode() {
+        super.visitFieldInsn(GETSTATIC, owner, fieldName, "I");
+        super.visitInsn(ICONST_1);
+        super.visitInsn(IADD);
+        super.visitFieldInsn(PUTSTATIC, owner, fieldName, "I");
+        super.visitCode();
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformCore.java" class="javacode">
+import lsieun.core.counter.ClassCounterVisitor;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class HelloWorldTransformCore {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        int api = Opcodes.ASM9;
+        ClassVisitor cv = new ClassCounterVisitor(api, cw);
+
+        //（4）结合ClassReader和ClassVisitor
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
+
+        //（5）生成byte[]
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<h2>验证结果</h2>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import java.lang.reflect.Field;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        GoodChild.doHomeWork();
+
+        Class&lt;HelloWorld&gt; clazz = HelloWorld.class;
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field f : fields) {
+            String fieldName = f.getName();
+            if (fieldName.endsWith("_count")) {
+                Object value = f.get(null);
+                System.out.printf("%s = %s%n", fieldName, value);
+            }
+
+        }
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+8 + 3 = 11
+2 + 4 = 6
+2 + 2 = 4
+6 - 1 = 5
+0 + 2 = 2
+0 - 9 = -9
+5 + 8 = 13
+3 - 0 = 3
+5 + 6 = 11
+6 + 4 = 10
+add_count = 7
+sub_count = 3
+</pre>

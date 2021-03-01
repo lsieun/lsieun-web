@@ -1,0 +1,402 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Path Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-nio-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    A <code>Path</code> object represents a path in a file system for <span class="text-compare-grey">a file</span>,
+    <span class="text-compare-grey">a directory</span>, and <span class="text-compare-grey">a symbolic link</span>.
+</p>
+
+<p>
+    <code>Path</code> is an interface in the <code>java.nio.file</code> package.
+</p>
+
+<pre title="Path.java" class="javacode">
+public interface Path extends Comparable&lt;Path&gt;, Iterable&lt;Path&gt;, Watchable {
+}
+</pre>
+
+<div class="w3-panel w3-pale-green w3-topbar w3-bottombar w3-border-green">
+    <p>
+        A path does not have to exist when we create a <code>Path</code> object.
+    </p>
+</div>
+
+<p>
+    We can perform two kinds of operations on a <code>Path</code> object:
+</p>
+
+<ul>
+    <li>
+        path operations
+        <ul>
+            <li>
+                We can use <code>Path</code> to <span class="text-underline">access the components of a path</span> such as the file name, root name, etc.
+            </li>
+            <li>
+                We can <span class="text-underline">compare and examine paths</span>.
+                For example, checking if a path ends with <code>.txt</code>,
+                comparing if two paths are identical,
+                checking if a path is absolute or relative, etc.
+            </li>
+            <li>
+                We can also <span class="text-underline">combine and resolve paths</span>.
+            </li>
+        </ul>
+    </li>
+    <li>
+        file operations
+        <ul>
+            <li>
+                We need to use the <code>Files</code> class to perform the file I/O operations on a <code>Path</code> object.
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<h2>Creating a Path Object</h2>
+
+<h3>FileSystem</h3>
+
+<p>
+    A <code>FileSystem</code> object acts as a factory to create a <code>Path</code> object.
+</p>
+
+<p>
+    <code>getPath()</code> method from <code>FileSystem</code> creates a <code>Path</code> object.
+</p>
+
+<p>
+    The following code creates a <code>Path</code> object for file path <code>C:\Java_Dev\test1.txt</code> on Windows:
+</p>
+
+<pre title="Creating a Path Object" class="javacode">
+Path p1 = FileSystems.getDefault().getPath("C:\\Java_Dev\\test1.txt");
+</pre>
+
+<p>
+    We can pass components of a path separately to the <code>getPath()</code> method when constructing a <code>Path</code> object.
+</p>
+
+<p>
+    The following statement creates a <code>Path</code> object to represent the <code>C:\Java_Dev\test1.txt</code> path on Windows:
+</p>
+
+<pre title="Creating a Path Object" class="javacode">
+Path p2 = FileSystems.getDefault().getPath("C:", "Java_Dev", "test1.txt");
+</pre>
+<hr/>
+
+<h3>Paths</h3>
+
+<p>
+    <code>Paths</code> class can create a <code>Path</code> object from the components of a path string or a <code>URI</code>.
+</p>
+
+<p>
+    The <code>Paths.get()</code> static method creates a <code>Path</code> object.
+</p>
+
+<p>
+    The following creates <code>Path</code> objects to represent the same path, <code>C:\Java_Dev\test1.txt</code>:
+</p>
+
+<pre title="Creating a Path Object" class="javacode">
+Path p3 = Paths.get("C:\\Java_Dev\\test1.txt");
+Path p4 = Paths.get("C:", "Java_Dev", "test1.txt");
+</pre>
+
+<p>
+    We can create a <code>Path</code> object from an empty path such as <code>Paths.get("")</code>.
+    A <code>Path</code> object with an empty path refers to the default directory,
+    which is the same as the current working directory.
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class HelloWorld {
+    public static void main(String[] args) {
+        Path path = Paths.get("");
+        System.out.println(path.getClass());
+        System.out.println(path.toAbsolutePath());
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+class sun.nio.fs.WindowsPath
+D:\git-repo\learn-java-nio
+</pre>
+
+<h2>Components of a Path</h2>
+
+<p>
+    A path in a file system consists of one or more components.
+</p>
+
+<div class="w3-panel w3-pale-green w3-topbar w3-bottombar w3-border-green">
+    <p>
+        A path does not have to exist to get information about its components.
+    </p>
+</div>
+
+<h3>getNameCount()</h3>
+
+<p>
+    The <code>getNameCount()</code> method returns the number of components in a <code>Path</code> object <span class="text-emphasize">excluding the root</span>.
+</p>
+
+<p>
+    For example, the path <code>C:\Java_Dev\test1.txt</code> consists of three components:
+    a root of <code>C:</code>, and two components named <code>Java_Dev</code> and <code>test1.txt</code>.
+    In this case, the <code>getNameCount()</code> method will return <code>2</code>.
+</p>
+
+<h3>getName(int index)</h3>
+
+<p>
+    The <code>getName(int index)</code> method returns the component name at the specified index.
+    The component that is closest to the root has an index of <code>0</code>.
+</p>
+
+<p>
+    The component that is farthest from the root has an index of <code>count - 1</code>.
+</p>
+
+<p>
+    <code>C:\Java_Dev\test1.txt</code>, the <code>Java_Dev</code> component has an index of <code>0</code> and the <code>test1.txt</code> component has an index of <code>1</code>.
+</p>
+
+<h3>getParent()</h3>
+
+<p>
+    The <code>getParent()</code> method returns the parent of a path.
+    If a path does not have a parent, it returns <code>null</code>.
+</p>
+
+<p>
+    The parent of the path <code>C:\Java_Dev\test.txt</code> is <code>C:\Java_Dev</code>.
+</p>
+
+<p>
+    The relative path <code>test.txt</code> has no parent.
+</p>
+
+<h3>getRoot()</h3>
+
+<p>
+    The <code>getRoot()</code> method returns the root of the path.
+    If a path does not have a root, it returns <code>null</code>.
+</p>
+
+<p>
+    For example, the path <code>C:\Java_Dev\test1.txt</code> on Windows has <code>C:\</code> as its root.
+</p>
+
+<h3>getFileName()</h3>
+
+<p>
+    The <code>getFileName()</code> method returns the file name denoted by the path.
+</p>
+
+<p>
+    If a path has no file name, it returns <code>null</code>.
+    The file name is the farthest component from the root.
+    For example, in the path <code>C:\Java_Dev\test1.txt</code>, <code>test1.txt</code> is the file name.
+</p>
+
+<h3>isAbsolute()</h3>
+
+<p>
+    We can check if a path represents an absolute path by using the <code>isAbsolute()</code> method.
+</p>
+
+
+
+<p>
+    The following code shows how to access components of a <code>Path</code> object.
+</p>
+
+<pre title="NIO_Path_Example.java" class="javacode">
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class NIO_Path_Example {
+    public static void main(String[] args) {
+        Path p1 = Paths.get("C:\\Java_Dev\\test1.txt");
+        printDetails(p1);
+
+        Path p2 = Paths.get("test1.txt");
+        printDetails(p2);
+    }
+
+    public static void printDetails(Path p) {
+        System.out.println("Details for path: " + p);
+
+        int count = p.getNameCount();
+        System.out.println("Name count: " + count);
+
+        for (int i = 0; i < count; i++) {
+            Path name = p.getName(i);
+            System.out.println("Name at  index   " + i + "  is " + name);
+        }
+
+        Path parent = p.getParent();
+        Path root = p.getRoot();
+        Path fileName = p.getFileName();
+        System.out.println("Parent: " + parent + ", Root:   " + root
+                + ", File Name: " + fileName);
+        System.out.println("Absolute Path: " + p.isAbsolute());
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+Details for path: C:\Java_Dev\test1.txt
+Name count: 2
+Name at  index   0  is Java_Dev
+Name at  index   1  is test1.txt
+Parent: C:\Java_Dev, Root:   C:\, File Name: test1.txt
+Absolute Path: true
+
+Details for path: test1.txt
+Name count: 1
+Name at  index   0  is test1.txt
+Parent: null, Root:   null, File Name: test1.txt
+Absolute Path: false
+</pre>
+
+<h2>Different Forms of a Path</h2>
+
+<h3>toAbsolutePath()</h3>
+
+<p>
+    We can get different type of representations for a path.
+    Suppose we create a <code>Path</code> object as follows:
+</p>
+
+<pre title="Code" class="javacode">
+Path p1 = Paths.get("test.txt");
+</pre>
+
+<p>
+    Here, <code>p1</code> is a relative path.
+    We can get the absolute path that is represented by <code>p1</code> using its <code>toAbsolutePath()</code> method as follows:
+</p>
+
+<pre title="Code" class="javacode">
+Path p1AbsPath = p1.toAbsolutePath();
+</pre>
+
+<p>
+    Now the <code>p1AbsPath</code> is the absolute path for <code>p1</code>.
+    For example, on Windows, <code>p1AbsPath</code> may look like <code>C:\testapp\test.txt</code>.
+</p>
+
+<p>
+    If a path is not an absolute path, the <code>toAbsolutePath()</code> method uses default directory to resolve the path.
+</p>
+
+<p>
+    If the path is an absolute path, the <code>toAbsolutePath()</code> method returns the same path.
+</p>
+
+<h3>toRealPath()</h3>
+
+<p>
+    We can use the <code>toRealPath()</code> method to get the real path of an existing file.
+    It returns a canonical path to an existing file.
+    If the path represents a symbolic link, it returns the real path of the target file.
+</p>
+
+<p>
+    We can pass a link option to this method indicating whether we want to follow the symbolic link to its target.
+</p>
+
+<p>
+    If the file represented by the path does not exist, the <code>toRealPath()</code> throws an <code>IOException</code>.
+</p>
+
+<p>
+    The following code shows how to get the real path from a <code>Path</code> object:
+</p>
+
+<pre title="NIO_Path_Example_RealPath.java" class="javacode">
+import java.io.IOException;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class NIO_Path_Example_RealPath {
+    public static void main(String[] args) throws IOException {
+        Path p2 = Paths.get("link01");
+        // Follow link for p2, if it is a symbolic link
+        Path p2RealPath = p2.toRealPath();
+        System.out.println("p2RealPath: " + p2RealPath);
+
+        Path p3 = Paths.get("link02");
+        // Do not follow link for p3, if it is a symbolic link
+        Path p3RealPath = p3.toRealPath(LinkOption.NOFOLLOW_LINKS);
+        System.out.println("p3RealPath: " + p3RealPath);
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+p2RealPath: D:\git-repo\learn-java-nio\README.md
+p3RealPath: D:\git-repo\learn-java-nio\link02
+</pre>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        在Windows 7操作系统上，以管理员身份打开<code>cmd.exe</code>（否则，提示权限不够），然后输入<code>mklink link01 README.md</code>来创建symbolic link。
+    </p>
+</div>
+
+<h2>Path URI</h2>
+
+<p>
+    Use the <code>toUri()</code> method of <code>Path</code> to get its <code>URI</code> representation.
+</p>
+
+<p>
+    The following code shows how to get the <code>URI</code> form of a path.
+</p>
+
+<pre title="NIO_Path_Example_URI.java" class="javacode">
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class NIO_Path_Example_URI {
+    public static void main(String[] args) throws Exception {
+        Path p2 = Paths.get("test2.txt");
+        java.net.URI p2UriPath = p2.toUri();
+        System.out.println("Absolute Path: " + p2.toAbsolutePath());
+        System.out.println("URI Path: " + p2UriPath);
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+Absolute Path: D:\git-repo\learn-java-nio\test2.txt
+URI Path: file:///D:/git-repo/learn-java-nio/test2.txt
+</pre>
+
+<p></p>
+<p></p>
+<p></p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="http://www.java2s.com/Tutorials/Java/Java_io/0970__Java_nio_Paths.htm" target="_blank">Java IO Tutorial - Java Paths</a></li>
+    <li><a class="external" href="http://www.java2s.com/Tutorials/Java/Java_io/0975__Java_nio_Paths_Operations.htm" target="_blank">Java IO Tutorial - Java Paths Operations</a></li>
+    <li><a class="external" href="https://www.howtogeek.com/howto/16226/complete-guide-to-symbolic-links-symlinks-on-windows-or-linux/" target="_blank">The Complete Guide to Creating Symbolic Links (aka Symlinks) on Windows</a></li>
+</ul>

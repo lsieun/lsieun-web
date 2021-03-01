@@ -1,0 +1,120 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java Agent Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p class="indented">
+    Java agent is a powerful tool introduced with <span class="text-emphasize">Java 5</span>.
+    <sub class="my_note" style="color:green">笔记：在哪个版本添加的功能</sub>
+    <span class="text-key-point">It has been highly useful in profiling activities</span><sub class="my_note" style="color:green">笔记：性能分析</sub>
+    where developers and application users can monitor tasks carried out within servers and applications.
+    The ability to inject code segments<sub class="my_note" style="color:green">笔记：嵌入代码片段</sub>
+    by modifying classes and their method bodies during the run time
+    has become useful in many ways.
+    <span class="text-example">Intercepting parameter values passed between methods</span>,
+    <sub class="my_note" style="color:green">笔记：拦截方法的参数值</sub>
+    <span class="text-example">calculation of execution time of methods</span>
+    <sub class="my_note" style="color:green">笔记：计算方法的执行时间</sub>
+    can be considered as some examples.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        Java agent --&gt; 从Java 5开始引入 --&gt; 有什么作用？profiling activities --&gt; 举两个例子
+    </p>
+</div>
+
+<p class="indented">
+    Well, <span class="text-key-point">the true power of these java agents lie on their ability to do the bytecode instrumentation</span>.
+    <sub class="my_note" style="color:green">笔记：Java agent，之所以有很大的用处，就在于它能够修改bytecode</sub>
+    Now, you may wonder what is this bytecode.
+    <sub class="my_note" style="color:green">笔记：这里提出问题，什么是bytecode？下面是进行解释</sub>
+    Although we humans can understand the program files written using programming languages known to us (java, python, php),
+    computer processors do not understand them.
+    Processors have their own language, with set of terms known as opcodes.
+    They represent the instruction needed to carryout operations.
+    Collection of these opcodes, instructions are referred to as bytecode,
+    which is included in <code>.class</code> files we obtain after compiling our <code>.java</code> files.
+    <span class="text-key-point">Instrumentation is the process of modifying these bytecode</span>.
+    <sub class="my_note" style="color:green">笔记：这里对于instrumentation进行解释</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    Given below are <span class="text-key-point">three most famous libraries used in bytecode instrumentation</span>.
+    <sub class="my_note" style="color:blue">笔记：三个与Java agent相关的类库</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<ul>
+    <li>
+        <a class="external" href="https://asm.ow2.io/" target="_blank">ASM</a> – <span class="text-emphasize">low level library</span>. Need to have better understanding about bytecode instructions
+    </li>
+    <li><a class="external" href="https://www.javassist.org/" target="_blank">Javassist</a> – <span class="text-emphasize">middle level library</span>. Operates on top of ASM. Knowledge about bytecode is not a must.</li>
+    <li><a class="external" href="https://www.eclipse.org/aspectj/" target="_blank">AspectJ</a> – <span class="text-emphasize">high level framework</span>. Much more easy to work with.</li>
+</ul>
+
+<h2>How an agent works</h2>
+<p class="indented">
+    Mainly, there are <span class="text-emphasize">two ways</span> that an agent can be invoked.
+    Type of the agent is decided based on the <span class="text-emphasize">main method type</span> selected by the developer.
+    <sub class="my_note" style="color:blue">笔记：使用Java Agent的两种方式</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<ul>
+    <li>
+        <code>premain()</code> – Agent is loaded <span class="text-key-point">before main class and other respective classes are loaded onto memory</span>.
+        This <code>premain</code> method, as its name described, will be invoked before the <code>main</code> method.
+        <sub class="my_note" style="color:blue">笔记：这里是一个.class文件加载进入JVM之前，来进行修改</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        <code>agentmain()</code> – Using this method, we can invoke an agent at an arbitrary point in time, <span class="text-key-point">after all the classes are load onto JVM</span>.
+        <sub class="my_note" style="color:blue">笔记：这里是一个.class文件已经加载到JVM之后，来进行修改</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ul>
+
+<p class="indented">
+    Since we are new to the process, let’s start with the simple <code>premain()</code> method.
+    <sub class="my_note" style="color:green">笔记：premain()和agentmain()两个方法，其中premain()是较为简单的那个</sub>
+    <span class="text-emphasize">JVM</span> will be informed about our agent by passing <span class="text-key-point">the path to our agent jar</span> as a parameter.
+    It can be done by including the <code>-javaagent</code> parameter in the command line.
+    <sub class="my_note" style="color:blue">笔记：JVM和agent之间的联系通过-javaagent参数来进行连接</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/agent/instrumentation-of-class-files-before-load-onto-JVM.jpg" alt="Instrumentation of class files before load onto JVM"/>
+    <br/>
+    <span>Instrumentation of class files before load onto JVM</span>
+</div>
+
+<p class="indented">
+    The above figure describes <span class="text-emphasize">the basic concept of this instrumentation process</span>.
+    Once we provide the details of the class we want to modify along with method names and content we need to inject,
+    agent will <span class="text-key-point">obtain the bytecode of the respective class before it load onto JVM</span>.
+    <sub class="my_note" style="color:green">笔记：第一步，获得到.class文件中的bytecode内容</sub>
+    It will <span class="text-key-point">make a copy of those byte code as a byte array and do requested changes on the instruction set</span>
+    by pushing and popping instruction on the stack.
+    <sub class="my_note" style="color:green">笔记：第二步，对bytecode内容进行修改</sub>
+    Finally, once the instrumentation is completed, it’ll <span class="text-key-point">recompile the new bytecode</span> to verify whether there are any compilation errors.
+    If it cause no compilation errors, it will <span class="text-key-point">load the new bytecode to the JVM</span>,
+    which can then be used in the tasks it was assigned to do.
+    <sub class="my_note" style="color:green">笔记：第三步，将修改之后的bytecode内容加载到JVM当中</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://udaniweeraratne.wordpress.com/2015/10/25/getting-to-know-javaagents/" target="_blank">Getting to know javaagents</a></li>
+</ul>

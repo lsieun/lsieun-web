@@ -1,0 +1,79 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASMPrint</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>ASMPrint</h2>
+
+<pre title="ASMPrint.java" class="javacode">
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.util.ASMifier;
+import org.objectweb.asm.util.Printer;
+import org.objectweb.asm.util.Textifier;
+import org.objectweb.asm.util.TraceClassVisitor;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+/**
+ * 这里的代码是参考自{@link org.objectweb.asm.util.Printer#main}
+ */
+public class ASMPrint {
+    public static void main(String[] args) throws IOException {
+        // (1) 设置参数
+        String className = "sample.HelloWorld";
+        int parsingOptions = ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG;
+        boolean asmCode = true;
+
+        // (2) 打印结果
+        Printer printer = asmCode ? new ASMifier() : new Textifier();
+        PrintWriter printWriter = new PrintWriter(System.out, true);
+        TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, printer, printWriter);
+        new ClassReader(className).accept(traceClassVisitor, parsingOptions);
+    }
+}
+</pre>
+
+<h2>使用场景</h2>
+
+<h3>Class Generation</h3>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        System.out.println("Test Method");
+    }
+}
+</pre>
+
+<h3>Class Transformation</h3>
+
+<p>
+    In order to have an idea of how class transformation can be implemented in ASM,
+    we can compile these two classes and compare the output of <code>TraceClassVisitor</code> on these two versions
+    (either with the default <code>Textifier</code> backend, or with an <code>ASMifier</code> backend).
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        System.out.println("Test Method");
+    }
+}
+</pre>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static long timer;
+
+    public void test() {
+        timer -= System.currentTimeMillis();
+        System.out.println("Test Method");
+        timer += System.currentTimeMillis();
+    }
+}
+</pre>

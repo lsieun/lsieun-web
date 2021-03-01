@@ -1,0 +1,312 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Type Examples 01</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Obtain Type Object</h2>
+
+<p>
+    A <code>Type</code>(<code>org.objectweb.asm.Type</code> in <code>asm.jar</code>) object represents a Java type,
+    and can be constructed either from <span class="text-example">a type descriptor</span> or from <span class="text-example">a <code>Class</code> object</span>.
+    The <code>Type</code> class also contains <span class="text-example">static variables</span> representing the primitive types.
+    For example <code>Type.INT_TYPE</code> is the <code>Type</code> object representing the <code>int</code> type.
+    <sub class="my_note" style="color:blue">笔记：这里主要讲如何得到一个Type对象实例。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    <code>Type</code>类有一个private的构造函数，因此<code>Type</code>对象实例不能通过<code>new</code>关键字来创建。但是，<code>Type</code>类提供了static method和static field来获取对象：
+</p>
+
+<p>
+    第一种方式：descriptor
+</p>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.Type;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Type t1 = Type.getType("Ljava/lang/String;");
+        System.out.println(t1);
+
+        Type t2 = Type.getMethodType("(II)I");
+        System.out.println(t2);
+    }
+}
+</pre>
+
+<p>
+    第二种方式：internal name
+</p>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.Type;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Type t = Type.getObjectType("java/lang/String");
+        System.out.println(t);
+    }
+}
+</pre>
+
+<p>
+    第三种方式：<code>java.lang.Class</code>
+</p>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.Type;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Type t = Type.getType(String.class);
+        System.out.println(t);
+    }
+}
+</pre>
+
+<p>
+    第四种方式：static field
+</p>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.Type;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Type t = Type.INT_TYPE;
+        System.out.println(t);
+    }
+}
+</pre>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_type_relation.png" alt=""/>
+</div>
+
+<h2>ClassName, Descriptor and Internal Name</h2>
+
+<ul>
+    <li>
+        The <code>getClassName()</code> method returns the binary name of the class corresponding to this type. This method must not be used on method types.
+    </li>
+    <li>
+        The <code>getInternalName()</code> method returns the internal name of a <code>Type</code>.
+        This method must be used only for class or interface types.
+    </li>
+    <li>
+        The <code>getDescriptor()</code> method returns the descriptor of a <code>Type</code>.
+    </li>
+</ul>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.Type;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Type t = Type.getType("Ljava/lang/String;");
+
+        String className = t.getClassName();       // Java File
+        String internalName = t.getInternalName(); // Class File
+        String descriptor = t.getDescriptor();     // Class File
+
+        System.out.println(className);    // java.lang.String   注意，分隔符是“.”
+        System.out.println(internalName); // java/lang/String   注意，分隔符是“/”
+        System.out.println(descriptor);   // Ljava/lang/String; 注意，分隔符是“/”，前有“L”，后有“;”
+    }
+}
+</pre>
+
+<h2>array type Examples</h2>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.Type;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Type t = Type.getType("[[[[[Ljava/lang/String;");
+
+        int dimensions = t.getDimensions();
+        Type elementType = t.getElementType();
+
+        System.out.println(dimensions);    // 5
+        System.out.println(elementType);   // Ljava/lang/String;
+    }
+}
+</pre>
+
+<h2>method type Examples</h2>
+
+<p>
+    <span class="text-key-point">A <code>Type</code> object can also represent a method type</span>.
+    Such objects can be constructed either from <span class="text-example">a method descriptor</span>
+    or from <span class="text-example">a <code>Method</code> object</span>.
+</p>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.Type;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Type methodType = Type.getMethodType("(Ljava/lang/String;I)V");
+
+        String descriptor = methodType.getDescriptor();
+        Type[] argumentTypes = methodType.getArgumentTypes();
+        Type returnType = methodType.getReturnType();
+
+        System.out.println("Descriptor: " + descriptor);
+        System.out.println("Argument Types:");
+        for (Type t : argumentTypes) {
+            System.out.println("    " + t);
+        }
+        System.out.println("Return Type: " + returnType);
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+Descriptor: (Ljava/lang/String;I)V
+Argument Types:
+    Ljava/lang/String;
+    I
+Return Type: V
+</pre>
+
+<p>
+    The <code>getDescriptor</code> method then returns the method descriptor corresponding to this type.
+</p>
+
+<p>
+    In addition, the <code>getArgumentTypes</code> and <code>getReturnType</code> methods
+    can be used to get the <code>Type</code> objects corresponding to the argument types and return types of a method.
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(String name, int age) {
+        System.out.println("name = " + name + ", age = " + age);
+    }
+}
+</pre>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.Type;
+
+import java.lang.reflect.Method;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Class&lt;HelloWorld&gt; clazz = HelloWorld.class;
+        Method method = clazz.getDeclaredMethod("test", String.class, int.class);
+        Type methodType = Type.getType(method);
+        String descriptor = methodType.getDescriptor();
+
+        System.out.println("Descriptor: " + descriptor);
+    }
+}
+</pre>
+
+<h2>Opcode Examples</h2>
+
+<p>
+    Many bytecode instructions, such as <code>xLOAD</code>, <code>xADD</code> or <code>xRETURN</code>,
+    depend on the type to which they are applied.
+    The <code>Type</code> class provides a <code>getOpcode</code> method that can be used to get,
+    for these instructions, the opcode corresponding to a given type.
+    This method takes as parameter an opcode for the <code>int</code> type,
+    and returns the opcode for the type on which it is called.
+    For instance <code>t.getOpcode(IMUL)</code> returns <code>FMUL</code> if <code>t</code> is equal to <code>Type.FLOAT_TYPE</code>.
+</p>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.util.Printer;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Type t = Type.FLOAT_TYPE;
+
+        int[] opcodes = new int[]{
+                Opcodes.IALOAD,
+                Opcodes.IASTORE,
+                Opcodes.ILOAD,
+                Opcodes.ISTORE,
+                Opcodes.IADD,
+                Opcodes.ISUB,
+                Opcodes.IRETURN,
+        };
+
+        for (int oldOpcode : opcodes) {
+            int newOpcode = t.getOpcode(oldOpcode);
+
+            String oldName = Printer.OPCODES[oldOpcode];
+            String newName = Printer.OPCODES[newOpcode];
+
+            System.out.printf("%-7s --- %-7s%n", oldName, newName);
+        }
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+IALOAD  --- FALOAD
+IASTORE --- FASTORE
+ILOAD   --- FLOAD
+ISTORE  --- FSTORE
+IADD    --- FADD
+ISUB    --- FSUB
+IRETURN --- FRETURN
+</pre>
+
+<h2>Size Examples</h2>
+
+<h3>int size</h3>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.Type;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Type t = Type.INT_TYPE;
+        System.out.println(t.getSize()); // 1
+    }
+}
+</pre>
+
+<h3>long size</h3>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.Type;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Type t = Type.LONG_TYPE;
+        System.out.println(t.getSize()); // 2
+    }
+}
+</pre>
+
+<h3>method size</h3>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import org.objectweb.asm.Type;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Type t = Type.getMethodType("(II)I");
+        int value = t.getArgumentsAndReturnSizes();
+
+        int argumentsSize = value >> 2;
+        int returnSize = value & 0b11;
+
+        System.out.println(argumentsSize); // 3
+        System.out.println(returnSize);    // 1
+    }
+}
+</pre>

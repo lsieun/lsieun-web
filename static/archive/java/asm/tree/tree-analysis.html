@@ -1,0 +1,45 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Tree Analysis</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Analyzer</h2>
+
+<h3>Class Info</h3>
+
+<pre title="Analyzer.java" class="javacode">
+public class Analyzer&lt;V extends Value&gt; implements Opcodes {
+}
+</pre>
+
+<h3>Fields</h3>
+
+<pre title="Analyzer.java" class="javacode">
+public class Analyzer&lt;V extends Value&gt; implements Opcodes {
+    private final Interpreter&lt;V&gt; interpreter;
+
+    private Frame&lt;V&gt;[] frames;
+
+    public Frame&lt;V&gt;[] getFrames() {
+        return frames;
+    }
+}
+</pre>
+
+<h3>Constructors</h3>
+
+<pre title="Analyzer.java" class="javacode">
+public class Analyzer&lt;V extends Value&gt; implements Opcodes {
+    public Analyzer(final Interpreter&lt;V&gt; interpreter) {
+        this.interpreter = interpreter;
+    }
+}
+</pre>
+
+<h3>Methods</h3>
+
+

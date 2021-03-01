@@ -1,0 +1,304 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">InsnList Examples <br/>switch-case</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>TableSwitch</h2>
+
+<h3>预期目标</h3>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int val) {
+        switch (val) {
+            case 1:
+                System.out.println("val = 1");
+                break;
+            case 2:
+                System.out.println("val = 2");
+                break;
+            case 3:
+                System.out.println("val = 3");
+                break;
+            case 4:
+                System.out.println("val = 4");
+                break;
+            default:
+                System.out.println("val is unknown");
+        }
+    }
+}
+</pre>
+
+<h3>编码实现</h3>
+
+<pre title="HelloWorldGenerateTree.java" class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.tree.*;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldGenerateTree {
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // (1) 生成byte[]内容
+        byte[] bytes = dump();
+
+        // (2) 保存byte[]到文件
+        FileUtils.writeBytes(filepath, bytes);
+    }
+
+    public static byte[] dump() throws Exception {
+        ClassNode cn = new ClassNode();
+        cn.version = V1_8;
+        cn.access = ACC_PUBLIC | ACC_SUPER;
+        cn.name = "sample/HelloWorld";
+        cn.superName = "java/lang/Object";
+
+        {
+            MethodNode mn1 = new MethodNode(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
+            cn.methods.add(mn1);
+
+            InsnList il = mn1.instructions;
+            il.add(new VarInsnNode(ALOAD, 0));
+            il.add(new MethodInsnNode(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false));
+            il.add(new InsnNode(RETURN));
+            mn1.maxLocals = 0;
+            mn1.maxStack = 0;
+        }
+
+        {
+            MethodNode mn2 = new MethodNode(ACC_PUBLIC, "test", "(I)V", null, null);
+            cn.methods.add(mn2);
+
+            LabelNode caseLabelNode1 = new LabelNode();
+            LabelNode caseLabelNode2 = new LabelNode();
+            LabelNode caseLabelNode3 = new LabelNode();
+            LabelNode caseLabelNode4 = new LabelNode();
+            LabelNode defaultLabelNode = new LabelNode();
+            LabelNode returnLabelNode = new LabelNode();
+
+            InsnList il = mn2.instructions;
+            il.add(new VarInsnNode(ILOAD, 1));
+            il.add(new TableSwitchInsnNode(1, 4,
+                    defaultLabelNode,
+                    new LabelNode[]{caseLabelNode1, caseLabelNode2, caseLabelNode3, caseLabelNode4}));
+
+            il.add(caseLabelNode1); // case 1
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("val = 1"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+            il.add(new JumpInsnNode(GOTO, returnLabelNode)); // goto jump
+
+
+            il.add(caseLabelNode2); // case 2
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("val = 2"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+            il.add(new JumpInsnNode(GOTO, returnLabelNode)); // goto jump
+
+
+            il.add(caseLabelNode3); // case 3
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("val = 3"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+            il.add(new JumpInsnNode(GOTO, returnLabelNode)); // goto jump
+
+
+            il.add(caseLabelNode4); // case 4
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("val = 4"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+            il.add(new JumpInsnNode(GOTO, returnLabelNode)); // goto jump
+
+
+            il.add(defaultLabelNode); // switch-default
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("val is unknown"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+
+
+            il.add(returnLabelNode); // return label
+            il.add(new InsnNode(RETURN));
+            mn2.maxLocals = 0;
+            mn2.maxStack = 0;
+        }
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cn.accept(cw);
+        return cw.toByteArray();
+    }
+}
+</pre>
+
+<h3>验证结果</h3>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import java.lang.reflect.Method;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Class&lt;?&gt; clazz = Class.forName("sample.HelloWorld");
+        Method method = clazz.getDeclaredMethod("test", int.class);
+        Object instance = clazz.newInstance();
+        for (int i = 1; i &lt; 6; i++) {
+            method.invoke(instance, i);
+        }
+    }
+}
+</pre>
+
+<h2>LookupSwitch</h2>
+
+<h3>预期目标</h3>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int val) {
+        switch (val) {
+            case 10:
+                System.out.println("val = 10");
+                break;
+            case 20:
+                System.out.println("val = 20");
+                break;
+            case 30:
+                System.out.println("val = 30");
+                break;
+            case 40:
+                System.out.println("val = 40");
+                break;
+            default:
+                System.out.println("val is unknown");
+        }
+    }
+}
+</pre>
+
+<h3>编码实现</h3>
+
+<pre title="HelloWorldGenerateTree.java" class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.tree.*;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldGenerateTree {
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // (1) 生成byte[]内容
+        byte[] bytes = dump();
+
+        // (2) 保存byte[]到文件
+        FileUtils.writeBytes(filepath, bytes);
+    }
+
+    public static byte[] dump() throws Exception {
+        ClassNode cn = new ClassNode();
+        cn.version = V1_8;
+        cn.access = ACC_PUBLIC | ACC_SUPER;
+        cn.name = "sample/HelloWorld";
+        cn.superName = "java/lang/Object";
+
+        {
+            MethodNode mn1 = new MethodNode(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
+            cn.methods.add(mn1);
+
+            InsnList il = mn1.instructions;
+            il.add(new VarInsnNode(ALOAD, 0));
+            il.add(new MethodInsnNode(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false));
+            il.add(new InsnNode(RETURN));
+            mn1.maxLocals = 0;
+            mn1.maxStack = 0;
+        }
+
+        {
+            MethodNode mn2 = new MethodNode(ACC_PUBLIC, "test", "(I)V", null, null);
+            cn.methods.add(mn2);
+
+            LabelNode caseLabelNode10 = new LabelNode();
+            LabelNode caseLabelNode20 = new LabelNode();
+            LabelNode caseLabelNode30 = new LabelNode();
+            LabelNode caseLabelNode40 = new LabelNode();
+            LabelNode defaultLabelNode = new LabelNode();
+            LabelNode returnLabelNode = new LabelNode();
+
+            InsnList il = mn2.instructions;
+            il.add(new VarInsnNode(ILOAD, 1));
+            il.add(new LookupSwitchInsnNode(defaultLabelNode,
+                    new int[]{10, 20, 30, 40},
+                    new LabelNode[]{caseLabelNode10, caseLabelNode20, caseLabelNode30, caseLabelNode40}));
+
+            il.add(caseLabelNode10); // case 10
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("val = 10"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+            il.add(new JumpInsnNode(GOTO, returnLabelNode)); // goto jump
+
+
+            il.add(caseLabelNode20); // case 20
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("val = 20"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+            il.add(new JumpInsnNode(GOTO, returnLabelNode)); // goto jump
+
+
+            il.add(caseLabelNode30); // case 30
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("val = 30"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+            il.add(new JumpInsnNode(GOTO, returnLabelNode)); // goto jump
+
+
+            il.add(caseLabelNode40); // case 40
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("val = 40"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+            il.add(new JumpInsnNode(GOTO, returnLabelNode)); // goto jump
+
+
+            il.add(defaultLabelNode); // switch-default
+            il.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            il.add(new LdcInsnNode("val is unknown"));
+            il.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false));
+
+
+            il.add(returnLabelNode); // return label
+            il.add(new InsnNode(RETURN));
+            mn2.maxLocals = 0;
+            mn2.maxStack = 0;
+        }
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cn.accept(cw);
+        return cw.toByteArray();
+    }
+}
+</pre>
+
+<h3>验证结果</h3>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import java.lang.reflect.Method;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Class&lt;?&gt; clazz = Class.forName("sample.HelloWorld");
+        Method method = clazz.getDeclaredMethod("test", int.class);
+        Object instance = clazz.newInstance();
+        for (int i = 1; i &lt; 6; i++) {
+            method.invoke(instance, i * 10);
+        }
+    }
+}
+</pre>

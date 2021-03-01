@@ -1,0 +1,164 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Requirements of a Javaagent</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    Before we jump in an write a java agent, lets see <span class="text-key-point">what are the main files needed by an java agent</span>.
+    First of all, you should notice that <span class="text-key-point">all the files required by the agent need to be bundled up in a JAR file</span>.
+    <sub class="my_note" style="color:green">笔记：所有文件，都将被打成JAR包</sub>
+    There are many ways to prepare our <code>agent.jar</code>.
+    But let’s keep the bundling part aside, till we finish writing a simple agent, and move to files needed.
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/agent/main-content-of-agent-jar.jpg" alt="Main content of a Agent.jar"/>
+</div>
+
+<p class="indented">
+    Unlike normal program with just a main class and bunch of other classes, <span class="text-key-point text-emphasize">agent require three main files</span> as described below.
+</p>
+
+<h2>SimpleAgent.java</h2>
+
+<p class="indented">
+    <span class="text-key-point">This is the class file which contain our agent</span>.
+    It’ll include a <code>premain</code> method or <code>agentmain</code> method according to the requirement of the writer.
+    There may be either one method type or both in a single class file.
+    <sub class="my_note" style="color:green">笔记：premain和agentmain这两个方法，可以使用其中的一个，也可以使用两个。</sub>
+    But <span class="text-key-point">the selection of method</span> used to invoke the agent <span class="text-key-point">will be decided based on the time user want to invoke the agent</span>.
+    <sub class="my_note" style="color:green">笔记：两个方法的选择，取决于用户调用的时机</sub>
+    As it is mentioned in earlier post,
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<ul>
+    <li><code>premain()</code> – invoke agent before VM start</li>
+    <li><code>agentmain()</code> – invoke agent after VM has stated</li>
+</ul>
+
+<p class="indented">
+    This class will be used to pass the <span class="text-emphasize">instrumentation object</span>(<code>Instrumentation instrumentation</code>)
+    along with <span class="text-emphasize">any parameters</span>(<code>String agentArgs</code>) needed by the agent and
+    add a <span class="text-emphasize">transformer</span>(<code>SimpleClassFileTransformer transformer</code>) to classes which we need to instrument.
+</p>
+
+<div title="SimpleAgent.java" class="javacode">
+import java.lang.instrument.Instrumentation;
+
+public class SimpleAgent {
+    public static void premain(String agentArgs, Instrumentation instrumentation) {
+        SimpleClassFileTransformer transformer = new SimpleClassFileTransformer();
+        instrumentation.addTransformer(transformer);
+    }
+}
+</div>
+
+<h2>SimpleClassFileTransformer.java</h2>
+
+<p class="indented">
+    This is where provide the instructions on all the operations we need to do on our classes.
+    This class is written by implementing the <code>ClassFileTransformer</code> interface.
+    The <code>transform</code> method will carryout redefinition/re-transformation of classes as specified by the user.
+    But the layout of the instruction given here would depend based on the bytecode instrumentation framework used.
+</p>
+
+<div title="HelloWorld.java" class="javacode">
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+
+public class SimpleClassFileTransformer implements ClassFileTransformer {
+    public byte[] transform(ClassLoader loader,
+                            String className,
+                            Class&lt;?&gt; classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer) throws IllegalClassFormatException {
+        byte[] byteCode = classfileBuffer;
+        // do something...
+        return byteCode;
+    }
+}
+</div>
+
+<h2>MANIFEST.MF</h2>
+
+<p class="indented">
+    Another most important file is <span class="text-emphasize">the manifest file</span>, which <span class="text-key-point">provide all the parameters needed to initialize the agent</span>.
+    <sub class="my_note" style="color:green">笔记：这个manifest文件，提供了java agent运行时需要的参数</sub>
+    This is a special type of file, which provide information on files packaged in a JAR.
+    <sub class="my_note" style="color:green">笔记：这个manifest文件，要包含在jar包当中</sub>
+    <span>When we create a jar, it will add a default manifest file, with set of default values</span> as follows including environment details as follows.
+    <sub class="my_note" style="color:green">笔记：当创建jar文件的时候，会有一个默认的manifest file</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div title="MANIFEST.MF" class="plaintext">
+Manifest-Version: 1.0
+Created-By: 1.7.0_06 (Oracle Corporation)
+</div>
+
+<p class="indented">
+    But, <span class="text-key-point">in a java agent, we need to include a few more attributes</span> as given below.
+    Except for those mentioned as optional,
+    we will not be able to start the agent, because it will throw some kind of an error and abort the agent.
+    <sub class="my_note" style="color:blue">笔记：有些参数是optional的，有些参数则必不可少，否则运行不起来</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<ul>
+    <li>
+        <code>Premain-class</code> – <span class="text-key-point">Used when agent is invoked at JVM launch time</span>.
+        It need to include <span class="text-emphasize">the fully qualified name of the agent class</span>.
+        In our case also, we’ll be defining this attribute, because we are working with <code>premain</code> method.
+        This will provide an entry point to our agent by specifying where to look for <code>SimpleAgent.class</code> which need to be invoked before the <code>main.class</code>
+    </li>
+    <li>
+        <code>Agent-class</code> – <span class="text-key-point">Used when we are invoking the agent after VM has started</span>.
+        This is used when we are using <code>agentmain</code> method in our <code>SimpleAgent.class</code>.
+    </li>
+    <li>
+        <code>Can-Retransform-Classes</code> – (optional) Specify as <code>true</code> or <code>false</code>, where default value is <code>false</code>.
+        If it is not specified as <code>true</code>, it won’t allow to carryout re-transformation of classes.
+    </li>
+    <li>
+        <code>Can-Redefine-Classes</code> – (optional) Specify as <code>true</code> or <code>false</code>.
+        It won’t allow to redefine classes during the instrumentation process, if it is not specified as <code>true</code>.
+    </li>
+    <li>
+        <code>Class-Path</code> – We need to add paths of all the jars needed by the agent during run time. (Eg; javassist-xyz.jar)
+        Importing all the relevant jars while working on the IDE will make us think everything is fine.
+        But those files will not be available during run time.
+        Hence it will abort the agent throwing <code>ClassNotFoundException</code> and <code>NoClassDefFoundError</code>.
+    </li>
+</ul>
+
+<p class="indented">
+    Therefore, we need to make sure that we add all these parameters and necessary files to our agent before we start our agent.
+    At first I started to manually write this manifest files, which turned out to be a real pain when the number of libraries used in the program increased.
+    （后面会讲解，使用pom.xml进行配置）
+</p>
+
+<h2>Other files</h2>
+
+<p class="indented">
+    Apart from above <span class="text-emphasize">three main files</span>,
+    <span class="text-key-point">it may include class files of any other Java classes needed by the agent as well</span>.
+    For an example, if you want to have a set of methods which you want to call from the instrumented class methods,
+    it would be less complex if you add them in a separate class and call those methods, than adding them in the <code>SimpleClassFileTransformer</code>.
+</p>
+
+<p>
+
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://udaniweeraratne.wordpress.com/2015/11/01/requirements-of-a-java-agent/" target="_blank">Requirements of a Javaagent</a></li>
+</ul>

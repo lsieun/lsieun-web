@@ -1,0 +1,277 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassReader<br/> Examples-03</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    <span class="text-compare-green">The ASM core API</span> for
+    <span class="text-compare-grey">generating</span> and
+    <span class="text-compare-grey">transforming</span>
+    <span class="text-emphasize">compiled Java classes</span> is based on the <code>ClassVisitor</code> abstract class.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_can_do.png" alt=""/>
+</div>
+
+<h2>Class Transformation</h2>
+
+<h3>示例一：删除方法</h3>
+
+<p>
+    Instead of <span class="text-compare-grey">forwarding a method call with modified arguments</span>,
+    you can <span class="text-compare-grey">choose to not forward this call at all</span>.
+    <span class="text-emphasize">The effect is that the corresponding class element is removed</span>.
+</p>
+
+<p>
+    <span class="text-key-point">In order to remove a field or method, you must not forward the method call, and return <code>null</code> to the caller</span>.
+    For example the following class adapter removes <span class="text-example">a single method</span>,
+    specified by its <code>name</code> and by its <code>descriptor</code>
+    (the <code>name</code> is not sufficient to identify a method,
+    because a class can contain several methods of the same name but with different parameters):
+</p>
+
+<p>
+    预期结果：
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int add(int a, int b) {
+        return a + b;
+    }
+
+    public int sub(int a, int b) {
+        return a - b;
+    }
+}
+</pre>
+
+<p>
+    实现代码：
+</p>
+
+<pre title="ClassRemoveMethodVisitor.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+public class ClassRemoveMethodVisitor extends ClassVisitor {
+    private final String methodName;
+    private final String methodDesc;
+
+    public ClassRemoveMethodVisitor(int api, ClassVisitor cv, String methodName, String methodDesc) {
+        super(api, cv);
+        this.methodName = methodName;
+        this.methodDesc = methodDesc;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        if(name.equals(methodName) && descriptor.equals(methodDesc)) {
+            // do not delegate to next visitor -> this removes the method
+            return null;
+        }
+        return super.visitMethod(access, name, descriptor, signature, exceptions);
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformCore.java" class="javacode">
+import lsieun.core.ClassRemoveMethodVisitor;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class HelloWorldTransformCore {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        int api = Opcodes.ASM9;
+        ClassVisitor cv = new ClassRemoveMethodVisitor(api, cw, "add", "(II)I");
+
+        //（4）结合ClassReader和ClassVisitor
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
+
+        //（5）生成byte[]
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<p>
+    验证结果：
+</p>
+
+<pre title="javap" class="plaintext">
+$ javap -p sample.HelloWorld
+public class sample.HelloWorld {
+  public sample.HelloWorld();
+  public int sub(int, int)
+}
+</pre>
+
+<h3>示例二：添加方法</h3>
+
+<p>
+    预期结果：
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int add(int a, int b) {
+        return a + b;
+    }
+
+    public int sub(int a, int b) {
+        return a - b;
+    }
+}
+</pre>
+
+<p>
+    实现代码：
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+import java.util.function.Consumer;
+
+public class ClassAddMethodVisitor extends ClassVisitor {
+    private final int methodAccess;
+    private final String methodName;
+    private final String methodDesc;
+    private final String methodSignature;
+    private final String[] methodExceptions;
+    private final Consumer&lt;MethodVisitor&gt; methodBody;
+    private boolean isMethodPresent;
+
+    public ClassAddMethodVisitor(int api, ClassVisitor cv, int methodAccess, String methodName, String methodDesc,
+                                 String methodSignature, String[] methodExceptions, Consumer&lt;MethodVisitor&gt; methodBody) {
+        super(api, cv);
+        this.methodAccess = methodAccess;
+        this.methodName = methodName;
+        this.methodDesc = methodDesc;
+        this.methodSignature = methodSignature;
+        this.methodExceptions = methodExceptions;
+        this.methodBody = methodBody;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        if (name.equals(methodName) && descriptor.equals(methodDesc)) {
+            isMethodPresent = true;
+        }
+        return super.visitMethod(access, name, descriptor, signature, exceptions);
+    }
+
+    @Override
+    public void visitEnd() {
+        if (!isMethodPresent) {
+            MethodVisitor mv = super.visitMethod(methodAccess, methodName, methodDesc, methodSignature, methodExceptions);
+            if (mv != null) {
+                methodBody.accept(mv);
+            }
+        }
+        super.visitEnd();
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformCore.java" class="javacode">
+import lsieun.core.ClassAddMethodVisitor;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.*;
+
+import java.util.function.Consumer;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldTransformCore {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        int api = Opcodes.ASM9;
+        String methodName = "mul";
+        String methodDesc = "(II)I";
+        Consumer&lt;MethodVisitor&gt; methodBody = methodVisitor -&gt; {
+            methodVisitor.visitCode();
+            methodVisitor.visitVarInsn(ILOAD, 1);
+            methodVisitor.visitVarInsn(ILOAD, 2);
+            methodVisitor.visitInsn(IMUL);
+            methodVisitor.visitInsn(IRETURN);
+            methodVisitor.visitMaxs(2, 3);
+            methodVisitor.visitEnd();
+        };
+        ClassVisitor cv = new ClassAddMethodVisitor(api, cw, Opcodes.ACC_PUBLIC, methodName, methodDesc,
+                                                    null, null, methodBody);
+
+        //（4）结合ClassReader和ClassVisitor
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
+
+        //（5）生成byte[]
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<p>
+    验证结果：
+</p>
+
+<pre title="javap" class="plaintext">
+$ javap -p sample.HelloWorld
+public class sample.HelloWorld {
+  public sample.HelloWorld();
+  public int add(int, int);
+  public int sub(int, int);
+  public int mul(int, int);
+}
+</pre>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import java.lang.reflect.Method;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Class&lt;HelloWorld&gt; clazz = HelloWorld.class;
+        Method method = clazz.getDeclaredMethod("mul", int.class, int.class);
+        HelloWorld obj = new HelloWorld();
+        Object value = method.invoke(obj, 3, 5);
+        System.out.println(value);
+    }
+}
+</pre>
+

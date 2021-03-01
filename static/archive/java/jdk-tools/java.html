@@ -1,0 +1,30 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">java</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jdk-tools-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>显示为英文</h2>
+
+<p>
+    临时改变：在java/javac命令后面加上<code>-Duser.language=en</code>
+</p>
+
+<pre title="显示为英文" class="plaintext">
+$ java -Duser.language=en
+$ javac -J-Duser.language=en
+$ javap -J-Duser.language=en
+</pre>
+
+<pre title="显示为中文" class="plaintext">
+$ java -Duser.language=zh
+$ javac -J-Duser.language=zh
+$ javap -J-Duser.language=zh
+</pre>
+
+<p>
+    永久改变：设置环境变量<code>JAVA_TOOL_OPTIONS</code>，其值为<code>-Duser.language=en</code>。
+</p>

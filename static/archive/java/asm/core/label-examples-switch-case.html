@@ -1,0 +1,290 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">switch-case</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>TableSwitch</h2>
+
+<h3>预期目标</h3>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int val) {
+        switch (val) {
+            case 1:
+                System.out.println("val = 1");
+                break;
+            case 2:
+                System.out.println("val = 2");
+                break;
+            case 3:
+                System.out.println("val = 3");
+                break;
+            case 4:
+                System.out.println("val = 4");
+                break;
+            default:
+                System.out.println("val is unknown");
+        }
+    }
+}
+</pre>
+
+<h3>编码实现</h3>
+
+<pre title="HelloWorldGenerateCore.java" class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.*;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldGenerateCore {
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // (1) 生成byte[]内容
+        byte[] bytes = dump();
+
+        // (2) 保存byte[]到文件
+        FileUtils.writeBytes(filepath, bytes);
+    }
+
+    public static byte[] dump() throws Exception {
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "sample/HelloWorld",
+                null, "java/lang/Object", null);
+
+        {
+            MethodVisitor mv1 = cw.visitMethod(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
+            mv1.visitCode();
+            mv1.visitVarInsn(ALOAD, 0);
+            mv1.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false);
+            mv1.visitInsn(RETURN);
+            mv1.visitMaxs(0, 0);
+            mv1.visitEnd();
+        }
+
+        {
+            MethodVisitor mv2 = cw.visitMethod(ACC_PUBLIC, "test", "(I)V", null, null);
+            mv2.visitCode();
+
+            Label caseLabel1 = new Label();
+            Label caseLabel2 = new Label();
+            Label caseLabel3 = new Label();
+            Label caseLabel4 = new Label();
+            Label defaultLabel = new Label();
+            Label returnLabel = new Label();
+
+            mv2.visitVarInsn(ILOAD, 1);
+            mv2.visitTableSwitchInsn(1, 4, defaultLabel, new Label[]{caseLabel1, caseLabel2, caseLabel3, caseLabel4});
+
+
+            mv2.visitLabel(caseLabel1);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("val = 1");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitJumpInsn(GOTO, returnLabel);
+
+
+            mv2.visitLabel(caseLabel2);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("val = 2");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitJumpInsn(GOTO, returnLabel);
+
+
+            mv2.visitLabel(caseLabel3);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("val = 3");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitJumpInsn(GOTO, returnLabel);
+
+
+            mv2.visitLabel(caseLabel4);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("val = 4");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitJumpInsn(GOTO, returnLabel);
+
+
+            mv2.visitLabel(defaultLabel);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("val is unknown");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+
+
+            mv2.visitLabel(returnLabel);
+            mv2.visitInsn(RETURN);
+            mv2.visitMaxs(0, 0);
+            mv2.visitEnd();
+        }
+
+        cw.visitEnd();
+
+        return cw.toByteArray();
+    }
+}
+</pre>
+
+<h3>验证结果</h3>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import java.lang.reflect.Method;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Class&lt;?&gt; clazz = Class.forName("sample.HelloWorld");
+        Method method = clazz.getDeclaredMethod("test", int.class);
+        Object instance = clazz.newInstance();
+        method.invoke(instance, 5);
+    }
+}
+</pre>
+
+<h2>LookupSwitch</h2>
+
+<h3>预期目标</h3>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int val) {
+        switch (val) {
+            case 10:
+                System.out.println("val = 10");
+                break;
+            case 20:
+                System.out.println("val = 20");
+                break;
+            case 30:
+                System.out.println("val = 30");
+                break;
+            case 40:
+                System.out.println("val = 40");
+                break;
+            default:
+                System.out.println("val is unknown");
+        }
+    }
+}
+</pre>
+
+<h3>编码实现</h3>
+
+<pre title="HelloWorldGenerateCore.java" class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.*;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldGenerateCore {
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // (1) 生成byte[]内容
+        byte[] bytes = dump();
+
+        // (2) 保存byte[]到文件
+        FileUtils.writeBytes(filepath, bytes);
+    }
+
+    public static byte[] dump() throws Exception {
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "sample/HelloWorld",
+                null, "java/lang/Object", null);
+
+        {
+            MethodVisitor mv1 = cw.visitMethod(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
+            mv1.visitCode();
+            mv1.visitVarInsn(ALOAD, 0);
+            mv1.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false);
+            mv1.visitInsn(RETURN);
+            mv1.visitMaxs(0, 0);
+            mv1.visitEnd();
+        }
+
+        {
+            MethodVisitor mv2 = cw.visitMethod(ACC_PUBLIC, "test", "(I)V", null, null);
+            mv2.visitCode();
+
+            Label caseLabel10 = new Label();
+            Label caseLabel20 = new Label();
+            Label caseLabel30 = new Label();
+            Label caseLabel40 = new Label();
+            Label defaultLabel = new Label();
+            Label returnLabel = new Label();
+
+            mv2.visitVarInsn(ILOAD, 1);
+            mv2.visitLookupSwitchInsn(defaultLabel,
+                    new int[]{10, 20, 30, 40},
+                    new Label[]{caseLabel10, caseLabel20, caseLabel30, caseLabel40});
+
+
+            mv2.visitLabel(caseLabel10);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("val = 10");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitJumpInsn(GOTO, returnLabel);
+
+
+            mv2.visitLabel(caseLabel20);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("val = 20");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitJumpInsn(GOTO, returnLabel);
+
+
+            mv2.visitLabel(caseLabel30);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("val = 30");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitJumpInsn(GOTO, returnLabel);
+
+
+            mv2.visitLabel(caseLabel40);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("val = 40");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitJumpInsn(GOTO, returnLabel);
+
+
+            mv2.visitLabel(defaultLabel);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("val is unknown");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitLabel(returnLabel);
+
+
+            mv2.visitInsn(RETURN);
+            mv2.visitMaxs(0, 0);
+            mv2.visitEnd();
+        }
+
+        cw.visitEnd();
+
+        return cw.toByteArray();
+    }
+}
+</pre>
+
+<h3>验证结果</h3>
+
+<pre title="HelloWorldRun.java" class="javacode">
+import java.lang.reflect.Method;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Class&lt;?&gt; clazz = Class.forName("sample.HelloWorld");
+        Method method = clazz.getDeclaredMethod("test", int.class);
+        Object instance = clazz.newInstance();
+        method.invoke(instance, 20);
+    }
+}
+</pre>

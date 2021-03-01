@@ -3,13 +3,13 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
 <h2>Usage from Command Line</h2>
 
-<p class="indented">
+<p>
     For instance, if you don’t know how to generate some compiled class with ASM,
     write the corresponding source code,
     compile it with <code>javac</code>,
@@ -88,13 +88,13 @@ public class ASMPrint {
 
 <h2>Printer</h2>
 
-<p class="indented">
+<p>
     <code>ASMifier</code>类的父类是<code>Printer</code>类。
 </p>
 
 <h3>Class Info</h3>
 
-<p class="indented">
+<p>
     <code>Printer</code>类是一个<code>abstract</code>类，它有两个子类：<code>ASMifier</code>和<code>Textifier</code>。
 </p>
 
@@ -162,7 +162,7 @@ public abstract class Printer {
 
 <h3>static fields</h3>
 
-<p class="indented">
+<p>
     对于<code>TYPES</code>，可参考<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.newarray">这里</a>；对于<code>HANDLE_TAG</code>，可参考<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.8">这里</a>或<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-5.html#jvms-5.4.3.5">这里</a>。
 </p>
 
@@ -212,7 +212,7 @@ public abstract class Printer {
 
 <h3>static methods</h3>
 
-<p class="indented">
+<p>
     <code>Printer</code>类的<code>main</code>方法，从本质上来讲，只有两句代码。
 </p>
 
@@ -256,7 +256,7 @@ public abstract class Printer {
 
 <h3>Class Info</h3>
 
-<p class="indented">
+<p>
     <code>ASMifier</code>类的父类是<code>Printer</code>类。
 </p>
 
@@ -305,7 +305,7 @@ public class ASMifier extends Printer {
 }
 </pre>
 
-<p class="indented">
+<p>
     <code>ASMifier</code> class provides an alternative backend for the <code>TraceClassVisitor</code> tool
     (which by default uses a <code>Textifier</code> backend).
     <span class="text-key-point">This backend makes each method of the <code>TraceClassVisitor</code> class print the Java code that was used to call it.</span>

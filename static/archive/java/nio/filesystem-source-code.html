@@ -1,0 +1,111 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">FileSystem Source Code</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-nio-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>FileSystem</h2>
+
+<h3>Class Info</h3>
+
+<p>
+    它是一个抽象类。
+</p>
+
+<pre title="FileSystem.java" class="javacode">
+public abstract class FileSystem implements Closeable {
+    @Override
+    public abstract void close() throws IOException;
+}
+</pre>
+
+<h3>Constructor</h3>
+
+<p>
+    它是一个<code>protected</code>修饰的构造方法。
+</p>
+
+<pre title="FileSystem.java" class="javacode">
+public abstract class FileSystem implements Closeable {
+    protected FileSystem() {
+    }
+}
+</pre>
+
+<h3>Methods</h3>
+
+<h4>整体情况</h4>
+
+<pre title="FileSystem.java" class="javacode">
+public abstract class FileSystem implements Closeable {
+    // Tells whether or not this file system is open.
+    // File systems created by the default provider are always open.
+    public abstract boolean isOpen();
+
+    // Tells whether or not this file system allows only read-only access to its file stores.
+    public abstract boolean isReadOnly();
+
+    // Returns the name separator, represented as a string.
+    public abstract String getSeparator();
+
+    // Returns the set of the names of the file attribute views supported by this FileSystem.
+    public abstract Set&lt;String&gt; supportedFileAttributeViews();
+}
+</pre>
+
+<h4>FileStore</h4>
+
+<pre title="FileSystem.java" class="javacode">
+public abstract class FileSystem implements Closeable {
+    public abstract Iterable&lt;FileStore&gt; getFileStores();
+}
+</pre>
+
+<h4>Path</h4>
+
+<pre title="FileSystem.java" class="javacode">
+public abstract class FileSystem implements Closeable {
+    public abstract Iterable&lt;Path&gt; getRootDirectories();
+
+    public abstract Path getPath(String first, String... more);
+}
+</pre>
+
+<h4>PathMatcher</h4>
+
+<pre title="FileSystem.java" class="javacode">
+public abstract class FileSystem implements Closeable {
+    public abstract PathMatcher getPathMatcher(String syntaxAndPattern);
+
+}
+</pre>
+
+<h4>FileSystemProvider</h4>
+
+<pre title="FileSystem.java" class="javacode">
+public abstract class FileSystem implements Closeable {
+    public abstract FileSystemProvider provider();
+}
+</pre>
+
+<h4>LookupService</h4>
+
+<pre title="FileSystem.java" class="javacode">
+public abstract class FileSystem implements Closeable {
+    public abstract UserPrincipalLookupService getUserPrincipalLookupService();
+}
+</pre>
+
+<h4>WatchService</h4>
+
+<pre title="FileSystem.java" class="javacode">
+public abstract class FileSystem implements Closeable {
+    public abstract WatchService newWatchService() throws IOException;
+}
+</pre>
+
+
+

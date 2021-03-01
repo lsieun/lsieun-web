@@ -1,0 +1,41 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Paths Source Code</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-nio-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Class Info</h2>
+
+<pre title="Paths.java" class="javacode">
+public final class Paths {
+}
+</pre>
+
+<h2>Constructor</h2>
+
+<p>
+    它的构造方法由<code>private</code>修饰，因此在类的外部不能直接使用<code>new</code>关键字来创建对象。
+</p>
+
+<pre title="Paths.java" class="javacode">
+public final class Paths {
+    private Paths() { }
+}
+</pre>
+
+<h2>Methods</h2>
+
+<pre title="Paths.java" class="javacode">
+public final class Paths {
+    public static Path get(String first, String... more) {
+        return FileSystems.getDefault().getPath(first, more);
+    }
+
+    public static Path get(URI uri) {
+        // ...
+    }
+}
+</pre>

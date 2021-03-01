@@ -1,0 +1,164 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">javap---The Java Class Disassembler</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jdk-tools-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<p>
+    javap is the Java class disassembler -- effectively a tool for peeking inside class files.
+    It can show the bytecode that Java methods have been compiled into, as well as the “constant pool” information.
+</p>
+
+<p>
+    By default, javap shows signatures of <code>public</code>, <code>protected</code>, and <b>default methods</b>.
+    The <code>-p</code> switch will also show <code>private</code> methods.
+    <sub class="my_note" style="color:blue">笔记：这一点很重要，在使用javap的过程中，有的时候可能发现没有private方法，是因为没有使用-p选项。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<p>
+    The javap tool will work with any class file, provided javap is from a JDK version the same as (or later) than the one that produced the file.
+</p>
+
+<h2>Options</h2>
+
+<ul>
+    <li>
+        <code>-c</code>: Decompile bytecode
+    </li>
+    <li>
+        <code>-v</code>: Verbose mode (include constant pool information)
+    </li>
+    <li>
+        <code>-p</code>: Include private methods
+    </li>
+    <li>
+        <code>-s</code>: Print internal type signatures
+    </li>
+    <li>
+        <code>-l</code>: Print line number and local variable tables
+    </li>
+</ul>
+
+<h2>Examples</h2>
+
+<div title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    private static int add(int a, int b) {
+        int sum = a + b;
+        return sum;
+    }
+}
+</div>
+
+<h3>no option</h3>
+
+<div title="javap" class="plaintext">
+$ javap HelloWorld.class
+Compiled from "HelloWorld.java"
+public class sample.HelloWorld {
+  public sample.HelloWorld();
+}
+</div>
+
+<h3>javap -s</h3>
+
+<div title="javap -s" class="plaintext">
+$ javap -s HelloWorld.class
+Compiled from "HelloWorld.java"
+public class sample.HelloWorld {
+  public sample.HelloWorld();
+    descriptor: ()V
+}
+</div>
+
+<h3>javap -c</h3>
+
+<div title="javap -c" class="plaintext">
+$ javap -c HelloWorld.class
+Compiled from "HelloWorld.java"
+public class sample.HelloWorld {
+  public sample.HelloWorld();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V
+       4: return
+}
+</div>
+
+<h3>javap -l</h3>
+
+<div title="javap -l" class="plaintext">
+$ javap -l HelloWorld.class
+Compiled from "HelloWorld.java"
+public class sample.HelloWorld {
+  public sample.HelloWorld();
+    LineNumberTable:
+      line 3: 0
+    LocalVariableTable:
+      Start  Length  Slot  Name   Signature
+          0       5     0  this   Lsample/HelloWorld;
+}
+</div>
+
+<h3>javap -v</h3>
+
+<div title="javap -v" class="plaintext">
+$ javap -v HelloWorld.class
+Classfile /D:/git-repo/java8-classfile-tutorial/target/classes/sample/HelloWorld.class
+  Last modified 2020-9-25; size 263 bytes
+  MD5 checksum 701f765fabb6a98f6054e21865fadddd
+  Compiled from "HelloWorld.java"
+public class sample.HelloWorld
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#12         // java/lang/Object."&lt;init&gt;":()V
+   #2 = Class              #13            // sample/HelloWorld
+   #3 = Class              #14            // java/lang/Object
+   #4 = Utf8               &lt;init&gt;
+   #5 = Utf8               ()V
+   #6 = Utf8               Code
+   #7 = Utf8               LineNumberTable
+   #8 = Utf8               add
+   #9 = Utf8               (II)I
+  #10 = Utf8               SourceFile
+  #11 = Utf8               HelloWorld.java
+  #12 = NameAndType        #4:#5          // "&lt;init&gt;":()V
+  #13 = Utf8               sample/HelloWorld
+  #14 = Utf8               java/lang/Object
+{
+  public sample.HelloWorld();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lsample/HelloWorld;
+}
+SourceFile: "HelloWorld.java"
+</div>
+
+<h3>javap -p</h3>
+
+<div title="javap -p" class="plaintext">
+$ javap -p HelloWorld.class
+Compiled from "HelloWorld.java"
+public class sample.HelloWorld {
+  public sample.HelloWorld();
+  private static int add(int, int);
+}
+</div>
+

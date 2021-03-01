@@ -1,0 +1,197 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ASM Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>What is ASM?</h2>
+
+<p>
+    The ASM library was designed to work on <span class="text-example">compiled Java classes</span>.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classfile/javac_from_java_to_class.jpeg" alt=""/>
+</div>
+
+<p>
+    ASM is an all purpose Java bytecode manipulation and analysis framework.
+    It can be used to modify existing classes or to dynamically generate classes, directly in binary form.
+</p>
+
+<table class="lamp">
+    <tbody>
+    <tr>
+        <th style="width:34px">
+            <img src="/images/lamp.jpg" alt="Note" style="height:32px;width:32px">
+        </th>
+        <td>
+            <b>Note:</b> The <span class="text-emphasize">ASM</span> name does not mean anything:
+            it is just a reference to the <code>__asm__</code> keyword in C,
+            which allows some functions to be implemented in assembly language.
+        </td>
+
+    </tr>
+    </tbody>
+</table>
+<hr>
+
+<h2>Java ByteCode Libraries</h2>
+
+<p>
+    一般来说，比较常用的操作字节码的类库有这三个：<a class="external" href="https://commons.apache.org/proper/commons-bcel/" target="_blank">Apache Commons BCEL</a>、<a class="external" href="http://www.javassist.org/" target="_blank">Javassist</a>和<a class="external" href="https://asm.ow2.io" target="_blank">ObjectWeb ASM</a>。如果想了解更多的操作字节码（ByteCode）的类库，可以参考<a class="external" href="https://java-source.net/open-source/bytecode-libraries" target="_blank">这里</a>
+</p>
+
+<h3>Timeline</h3>
+
+<ul>
+    <li>
+        <p>
+            1996, Java 1.0. The Very first version was released on January 23, 1996.
+        </p>
+    </li>
+    <li>
+        <p>
+            1998, <a class="external" href="https://commons.apache.org/proper/commons-bcel/" target="_blank">Apache Commons BCEL</a>.
+            The <span class="text-emphasize">Byte Code Engineering Library</span> (BCEL) was conceived and developed by
+            <span class="name-of-person">Markus Dahm</span> prior to officially being donated to the Apache Jakarta foundation on 27 October 2001.
+        </p>
+    </li>
+    <li>
+        <p>
+            1999, <a class="external" href="http://www.javassist.org/" target="_blank">Javassist</a>. Javassist (Java programming assistant) is a load-time reflective system for Java.
+        </p>
+    </li>
+    <li>
+        <p>
+            2002, <a class="external" href="https://asm.ow2.io" target="_blank">ObjectWeb ASM</a>.
+        </p>
+    </li>
+</ul>
+
+<h3>ASM Characteristics</h3>
+
+<p>
+    The ASM was designed to be as <span class="text-compare-grey">fast</span> and as <span class="text-compare-grey">small</span> as possible.
+</p>
+
+<ul>
+    <li>
+        Being as <span class="text-compare-grey">fast</span> as possible is important in order not to slow down too much the applications that use ASM at runtime,
+        for dynamic class generation or transformation.
+    </li>
+    <li>
+        And being as <span class="text-compare-grey">small</span> as possible is important in order to be used in memory constrained environments,
+        and to avoid bloating the size of small applications or libraries using ASM.
+    </li>
+</ul>
+
+<h2>What Can ASM Do?</h2>
+
+<p>
+    The goal of the ASM library is to
+    <span class="text-compare-grey">generate</span>,
+    <span class="text-compare-grey">transform</span> and
+    <span class="text-compare-grey">analyze</span> compiled Java classes,
+    represented as byte arrays (as they are stored on disk and loaded in the Java Virtual Machine).
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_can_do.png" alt=""/>
+</div>
+
+<ul>
+    <li>
+        <span class="text-compare-grey">Program analysis</span>, which can range from a simple syntactic parsing to a full semantic analysis,
+        can be used to find potential bugs in applications,
+        to detect unused code, to reverse engineer code, etc.
+        <sub class="my_note" style="color:blue">笔记：这里只分析，不改变原有的东西</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        <span class="text-compare-grey">Program generation</span> is used in compilers.
+        This include traditional compilers, but also stub or skeleton compilers used for distributed programming,
+        Just in Time compilers, etc.
+        <sub class="my_note" style="color:blue">笔记：从无到有的过程</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+    <li>
+        <span class="text-compare-grey">Program transformation</span> can be used to optimize or obfuscate programs,
+        to insert debugging or performance monitoring code into applications,
+        for aspect oriented programming, etc.
+        <sub class="my_note" style="color:blue">笔记：把原有的事物改变成新的事物</sub>
+        <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+    </li>
+</ul>
+
+<p>
+    在后续的内容当中，主要是侧重于<span class="text-compare-grey">program transformation</span>，就是对已经存在的某一个<code>.class</code>文件进行修改；有较少的内容会涉及到<span class="text-compare-grey">program generation</span>，因为一般情况下我们都可以直接写Java代码来实现功能后进行编译，而不是借助于字节码的工具来生成<code>.class</code>文件；不会涉及到<span class="text-compare-grey">program analysis</span>，因为它本质上是一个寻找pattern或规律，来识别某一种特定的东西，例如FindBugs，它就是按照某一种特征来寻找可能存在bug的代码。
+</p>
+
+<h2>Study Tips</h2>
+
+<p>
+    学习ASM，并不是一个“会”和“不会”二者选其一的问题？换句话说，对于ASM的掌握，可以分成不同的层次。有的人可能更精通一些，而有的人可能并不那么精通。对于ASM掌握程度的一个重要“分水岭”，就是对于ClassFile结构的理解。
+</p>
+
+<p>
+    ASM的本质，就是对<code>.class</code>文件的结构进行修改。无论是Apache Commons BCEL，还是Javassist，还是ObjectWeb ASM，它们本质上都是一种“外化”的技术思路，而它们的“内在核心”是同一件事物，就是对于Java ClassFile的理解。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/java_classfile_asm.png" alt=""/>
+</div>
+
+<p>
+    举一个形象的例子。对ClassFile的理解就好比“九阳神功”，而ASM就好比“乾坤大挪移”。九阳神功是一种内功，而乾坤大挪移是一种运劲用力的外功。那么，两者之间的关系可以描述成这样：
+    <a class="external" href="https://k.sina.com.cn/article_6478363898_m18223fcfa00101wikd.html" target="_blank">有九阳神功护体，学什么都快</a>。
+</p>
+
+<p>
+    总而言之，无论会不会Java ClassFile的知识，都能在一定程度上去掌握ASM。
+</p>
+
+<ul>
+    <li>
+        如果不会Java ClassFile的知识，也不必过分担心，因为ASM提供了一个工具类<code>org.objectweb.asm.util.ASMifier</code>来帮助我们生成代码。这种情况可能更侧重于“学以致用”、更侧重于“解决问题”，而不必对ASM的原理做进一步的深究。
+    </li>
+    <li>
+        如果会Java ClassFile的知识，就会成为学习ASM很好的助力，不仅仅是知道怎么使用它，还会知道它背后的运作原理是什么。
+    </li>
+</ul>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_study_three_level.png" alt=""/>
+</div>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_study_three_level_extended.png" alt=""/>
+</div>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>
+        第一，ASM处理的是<code>.class</code>文件，而不是<code>.java</code>文件。
+    </li>
+    <li>
+        第二，ASM的特点是fast和small，即运行速度快、占用内存空间小。
+    </li>
+    <li>
+        第三，Java ClassFile是核心，而ASM是“外化”的技术表现。
+    </li>
+</ul>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://asm.ow2.io" target="_blank">ASM</a></li>
+    <li><a class="external" href="https://java-source.net/open-source/bytecode-libraries" target="_blank">Open Source ByteCode Libraries in Java</a></li>
+</ul>

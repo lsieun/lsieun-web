@@ -1,0 +1,105 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Frame</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-source-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Frame</h2>
+
+<h3>Class Info</h3>
+
+<pre title="Frame.java" class="javacode">
+public class Frame&lt;V extends Value&gt; {
+}
+</pre>
+
+<h3>Fields</h3>
+
+<pre title="Frame.java" class="javacode">
+public class Frame&lt;V extends Value&gt; {
+    private V returnValue;
+    private V[] values;
+
+    private int numLocals;
+    private int numStack;
+}
+</pre>
+
+<h3>Constructor</h3>
+
+<pre title="Frame.java" class="javacode">
+public class Frame&lt;V extends Value&gt; {
+    public Frame(final int numLocals, final int numStack) {
+        this.values = (V[]) new Value[numLocals + numStack];
+        this.numLocals = numLocals;
+    }
+}
+</pre>
+
+<h3>Methods</h3>
+
+<h4>Locals and Stacks</h4>
+
+<pre title="Frame.java" class="javacode">
+public class Frame&lt;V extends Value&gt; {
+    public int getLocals() {
+        return numLocals;
+    }
+
+    public V getLocal(final int index) {
+        return values[index];
+    }
+
+    public void setLocal(final int index, final V value) {
+        values[index] = value;
+    }
+
+    //====================================================
+
+    public int getMaxStackSize() {
+        return values.length - numLocals;
+    }
+
+    public int getStackSize() {
+        return numStack;
+    }
+
+    public V getStack(final int index) {
+        return values[numLocals + index];
+    }
+
+    public void setStack(final int index, final V value) {
+        values[numLocals + index] = value;
+    }
+
+    public void clearStack() {
+        numStack = 0;
+    }
+
+    public V pop() {
+        if (numStack == 0) {
+            throw new IndexOutOfBoundsException("Cannot pop operand off an empty stack.");
+        }
+        return values[numLocals + (--numStack)];
+    }
+
+    public void push(final V value) {
+        if (numLocals + numStack >= values.length) {
+            throw new IndexOutOfBoundsException("Insufficient maximum stack size.");
+        }
+        values[numLocals + (numStack++)] = value;
+    }
+}
+</pre>
+
+<h4>execute Method</h4>
+
+<pre title="Frame.java" class="javacode">
+public class Frame&lt;V extends Value&gt; {
+    public void execute(final AbstractInsnNode insn, final Interpreter&lt;V&gt; interpreter) throws AnalyzerException {
+    }
+}
+</pre>

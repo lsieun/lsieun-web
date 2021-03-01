@@ -1,0 +1,150 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Remove Dead Code</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>预期目标</h2>
+<h2>编码实现</h2>
+
+<pre title="MethodRemoveDeadCodeAdapter.java" class="javacode">
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.analysis.*;
+
+public class MethodRemoveDeadCodeAdapter extends MethodVisitor {
+    private final String owner;
+    private final MethodVisitor next;
+
+    public MethodRemoveDeadCodeAdapter(int api, String owner, int access, String name, String desc, MethodVisitor next) {
+        super(api, new MethodNode(access, name, desc, null, null));
+        this.owner = owner;
+        this.next = next;
+    }
+
+    @Override
+    public void visitEnd() {
+        MethodNode mn = (MethodNode) mv;
+        Analyzer&lt;BasicValue&gt; analyzer = new Analyzer&lt;&gt;(new BasicInterpreter());
+        try {
+            analyzer.analyze(owner, mn);
+            Frame&lt;BasicValue&gt;[] frames = analyzer.getFrames();
+            AbstractInsnNode[] insnNodes = mn.instructions.toArray();
+            for (int i = 0; i &lt; frames.length; i++) {
+                if (frames[i] == null && !(insnNodes[i] instanceof LabelNode)) {
+                    mn.instructions.remove(insnNodes[i]);
+                }
+            }
+        } catch (AnalyzerException e) {
+            e.printStackTrace();
+        }
+
+        if (next != null) {
+            mn.accept(next);
+        }
+    }
+}
+</pre>
+
+<pre title="ClassRemoveDeadCodeVisitor.java" class="javacode">
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+public class ClassRemoveDeadCodeVisitor extends ClassVisitor {
+    private String owner;
+
+    public ClassRemoveDeadCodeVisitor(int api, ClassVisitor cv) {
+        super(api, cv);
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(version, access, name, signature, superName, interfaces);
+        this.owner = name;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        if (mv != null) {
+            mv = new MethodRemoveDeadCodeAdapter(api, owner, access, name, descriptor, mv);
+        }
+        return mv;
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformCore.java" class="javacode">
+import lsieun.analysis.ClassRemoveDeadCodeVisitor;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+
+public class HelloWorldTransformCore {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        //（1）构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        //（2）构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        //（3）串连ClassVisitor
+        int api = Opcodes.ASM9;
+        ClassVisitor cv = new ClassRemoveDeadCodeVisitor(api, cw);
+
+        //（4）结合ClassReader和ClassVisitor
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
+
+        //（5）生成byte[]
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<h2>验证结果</h2>
+
+<pre title="javap" class="plaintext">
+$ javap -c sample.HelloWorld
+public class sample.HelloWorld {
+  public sample.HelloWorld();
+    Code:
+       0: aload_0
+       1: invokespecial #8                  // Method java/lang/Object."&lt;init&gt;":()V
+       4: return
+
+  public void test(boolean);
+    Code:
+       0: iload_1
+       1: ifeq          33
+       4: getstatic     #16                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       7: ldc           #18                 // String 骄傲来自浅薄，
+       9: invokevirtual #24                 // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+      12: goto          24
+      15: getstatic     #16                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      18: ldc           #26                 // String arrogance comes from ignorance.
+      20: invokevirtual #29                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      23: return
+      24: getstatic     #16                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      27: ldc           #31                 // String 狂妄出于无知。
+      29: invokevirtual #29                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      32: return
+      33: getstatic     #16                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      36: ldc           #33                 // String Pride comes from shallowness,
+      38: invokevirtual #24                 // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+      41: goto          15
+}
+</pre>

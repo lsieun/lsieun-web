@@ -1,0 +1,151 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Timer</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>预期目标</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void add(int a, int b) {
+        int c = a + b;
+        System.out.printf("%d + %d = %d%n", a, b, c);
+    }
+
+    public void sub(int a, int b) {
+        int c = a - b;
+        System.out.printf("%d - %d = %d%n", a, b, c);
+    }
+}
+</pre>
+
+<h2>编码实现</h2>
+
+<pre title="ClassTimerTransformer.java" class="javacode">
+import lsieun.tree.ClassTransformer;
+import org.objectweb.asm.tree.*;
+
+import java.util.ListIterator;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class ClassTimerTransformer extends ClassTransformer {
+    public ClassTimerTransformer(ClassTransformer ct) {
+        super(ct);
+    }
+
+    @Override
+    public void transform(ClassNode cn) {
+        for (MethodNode mn : cn.methods) {
+            if ("&lt;init&gt;".equals(mn.name) || "&lt;clinit&gt;".equals(mn.name)) {
+                continue;
+            }
+            InsnList insns = mn.instructions;
+            if (insns.size() == 0) {
+                continue;
+            }
+            ListIterator&lt;AbstractInsnNode&gt; it = insns.iterator();
+            while (it.hasNext()) {
+                AbstractInsnNode item = it.next();
+                int opcode = item.getOpcode();
+                if ((opcode &gt;= IRETURN && opcode &lt;= RETURN) || (opcode == ATHROW)) {
+                    InsnList il = new InsnList();
+                    il.add(new FieldInsnNode(GETSTATIC, cn.name, "timer", "J"));
+                    il.add(new MethodInsnNode(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J"));
+                    il.add(new InsnNode(LADD));
+                    il.add(new FieldInsnNode(PUTSTATIC, cn.name, "timer", "J"));
+                    insns.insert(item.getPrevious(), il);
+                }
+            }
+
+            InsnList il = new InsnList();
+            il.add(new FieldInsnNode(GETSTATIC, cn.name, "timer", "J"));
+            il.add(new MethodInsnNode(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J"));
+            il.add(new InsnNode(LSUB));
+            il.add(new FieldInsnNode(PUTSTATIC, cn.name, "timer", "J"));
+            insns.insert(il);
+
+            mn.maxLocals = 0;
+            mn.maxStack = 0;
+        }
+
+        int acc = ACC_PUBLIC | ACC_STATIC;
+        cn.fields.add(new FieldNode(acc, "timer", "J", null, null));
+        super.transform(cn);
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformTree.java" class="javacode">
+import lsieun.tree.ClassTransformer;
+import lsieun.tree.timer.ClassTimerTransformer;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
+
+public class HelloWorldTransformTree {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        // (1)构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        // (2) 构建ClassNode
+        int api = Opcodes.ASM9;
+        ClassNode cn = new ClassNode(api);
+        cr.accept(cn, ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+
+        // (3) 进行transform
+        ClassTransformer ct = new ClassTimerTransformer(null);
+        ct.transform(cn);
+
+        // (4) 构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cn.accept(cw);
+
+        // (5) 生成byte[]内容输出
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<h2>验证结果</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+import java.lang.reflect.Field;
+import java.util.Random;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        HelloWorld instance = new HelloWorld();
+
+        Random rand = new Random();
+        for (int i = 0; i &lt; 10; i++) {
+            int a = rand.nextInt(10);
+            int b = rand.nextInt(10);
+            boolean flag = rand.nextBoolean();
+            if (flag) {
+                instance.add(a, b);
+            }
+            else {
+                instance.sub(a, b);
+            }
+        }
+
+        Class&lt;?&gt; clazz = HelloWorld.class;
+        Field f = clazz.getDeclaredField("timer");
+        Object value = f.get(null);
+        System.out.println("timer = " + value);
+    }
+}
+</pre>

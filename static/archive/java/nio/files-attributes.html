@@ -1,0 +1,427 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Files Attributes</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-nio-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    <code>Files</code> class can access the commonly used attributes of a file.
+</p>
+
+<p>
+    <code>Files.isHidden(Path p)</code> method tests if a file is hidden.
+</p>
+
+<p>
+    The following methods in the <code>Files</code> class can access various types of commonly used attributes of a file.
+</p>
+
+<pre title="commonly used attributes of a file" class="javacode">
+long size(Path)
+boolean isHidden(Path path)
+boolean isRegularFile(Path path, LinkOption... options)
+boolean isDirectory(Path path, LinkOption... options)
+boolean isSymbolicLink(Path path)
+FileTime getLastModifiedTime(Path path, LinkOption... options)
+</pre>
+
+<h2>File Attributes</h2>
+
+<p>
+    The <code>java.nio.file.attribute</code> package contains the attribute-related classes.
+    It bundles the file attributes in the following six types of views.
+</p>
+
+<ul>
+    <li>
+        <code>BasicFileAttributeView</code> manages the basic file attributes
+        such as creation time, last access time, last modified time, size,
+        file type (regular file, directory, symbolic link, or other), and
+        file key (a unique number for a file).
+        This view is supported on all platforms.
+    </li>
+    <li>
+        <code>DosFileAttributeView</code> extends the <code>BasicFileAttributeView</code>
+        accesses the file attributes that are specific to DOS.
+        It provides the support to check if a file is a hidden file, a system file, an archive file, and a read-only file.
+        It is available only on the systems that support DOS such as Microsoft Windows.
+    </li>
+    <li>
+        <strong>POSIX</strong> stands for <strong>Portable Operating System Interface for UNIX</strong>.
+        <code>PosixFileAttributeView</code> extends the <code>BasicFileAttributeView</code> and
+        adds support for attributes that are available on the systems that support POSIX standards such as UNIX.
+        It lets we manage owner, group, and [related access] permissions.
+    </li>
+    <li>
+        <code>FileOwnerAttributeView</code> manages the owner of a file.
+    </li>
+    <li>
+        <strong>ACL</strong> stands for <strong>Access Control List</strong>. <code>AclFileAttributeView manages</code> the ACL for a file.
+    </li>
+    <li>
+        <code>UserDefinedFileAttributeView</code> manages a set of user-defined attributes for a file.
+        The name of an attribute is a <code>String</code>.
+        The value of an attribute could be of any data type.
+    </li>
+</ul>
+
+<h2>File Attribute View Support</h2>
+
+<p>
+    <code>supportsFileAttributeView()</code> method from the <code>FileStore</code> class tells
+    whether a specific file attribute view is supported by a file store.
+</p>
+
+<p>
+    If the specified file attribute view is supported, it returns <code>true</code>; otherwise, it returns <code>false</code>.
+</p>
+
+<p>
+    The following code shows how to check for file attribute support.
+</p>
+
+<pre title="NIO_FileStore_Example_SupportedFileAttributeView.java" class="javacode">
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFileAttributeView;
+
+public class NIO_FileStore_Example_SupportedFileAttributeView {
+    public static void main(String[] args) throws Exception {
+        Path path = Paths.get("");
+        FileStore fs = Files.getFileStore(path);
+
+        // Check if POSIX file attribute is supported by the file store
+        boolean supported = fs.supportsFileAttributeView(PosixFileAttributeView.class);
+        if (supported) {
+            System.out.println("POSIX file attribute view is supported.");
+        }
+        else {
+            System.out.println("POSIX file attribute view is not supported.");
+        }
+
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+POSIX file attribute view is not supported.
+</pre>
+
+<pre title="NIO_FileStore_Example_SupportedFileAttributeViews.java" class="javacode">
+import java.io.IOException;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.*;
+
+public class NIO_FileStore_Example_SupportedFileAttributeViews {
+    public static void main(String[] args) {
+        Path path = Paths.get("C:");
+
+        try {
+            FileStore fs = Files.getFileStore(path);
+            printDetails(fs, AclFileAttributeView.class);
+            printDetails(fs, BasicFileAttributeView.class);
+            printDetails(fs, DosFileAttributeView.class);
+            printDetails(fs, FileOwnerAttributeView.class);
+            printDetails(fs, PosixFileAttributeView.class);
+            printDetails(fs, UserDefinedFileAttributeView.class);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static void printDetails(FileStore fs, Class&lt;? extends FileAttributeView&gt; attribClass) {
+        boolean supported = fs.supportsFileAttributeView(attribClass);
+        System.out.format("%s is supported: %s%n", attribClass.getSimpleName(), supported);
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+AclFileAttributeView is supported: true
+BasicFileAttributeView is supported: true
+DosFileAttributeView is supported: true
+FileOwnerAttributeView is supported: true
+PosixFileAttributeView is supported: false
+UserDefinedFileAttributeView is supported: true
+</pre>
+
+<h2>Reading and Updating File Attributes</h2>
+
+<p>
+    To read or update one file attribute, use <code>Files</code> class.
+</p>
+
+<p>
+    <code>Files</code> class has the following two static methods to read and update a file attribute using the attribute name as a string:
+</p>
+
+<pre title="read and update a file attribute" class="javacode">
+Object getAttribute(Path path, String attribute, LinkOption... options)
+Path setAttribute(Path path, String attribute, Object value, LinkOption... options)
+</pre>
+
+<p>
+    To read or update multiple attributes of a file, work with a specific file attribute view.
+</p>
+
+<p>
+    For most of the file attribute views, we have to work with two interfaces named as <code>TypeAttributes</code> and <code>TypeAttributeView</code>.
+</p>
+
+<p>
+    For the basic file attributes, we have the <code>BasicFileAttributes</code> and <code>BasicFileAtrributeView</code> interfaces.
+</p>
+
+<p>
+    The <code>TypeAttributes</code> <span class="text-underline">reads the attributes</span>.
+    The <code>TypeAttributeView</code> <span class="text-underline">reads/updates the attributes</span>.
+</p>
+
+<p>
+    The following two methods of the <code>Files</code> class read the file attributes in a bulk.
+</p>
+
+<pre title="read the file attributes" class="javacode">
+&lt;A extends BasicFileAttributes&gt; A readAttributes(Path path, Class&lt;A&gt; type, LinkOption... options)
+Map&lt;String,Object&gt; readAttributes(Path path, String attributes, LinkOption... options)
+</pre>
+
+<p>
+    The last argument of both methods specify how a symbolic link is handled.
+    By default, if a file is a symbolic link, the attributes of the target of the symbolic link are read.
+</p>
+
+<p>
+    If we specify <code>NOFOLLOW_LINKS</code> as the option,
+    the attributes of the symbolic link are read, not the attributes of its target.
+</p>
+
+<p>
+    The first <code>readAttributes()</code> method returns all file attributes of a specified type in an <code>TypeAttributes</code> object.
+</p>
+
+<p>
+    To create the <code>Path</code> object representing the path of the file
+</p>
+
+<pre title="Code" class="javacode">
+Path path = Paths.get("C:\\Java_Dev\\test1.txt");
+</pre>
+
+<p>
+    To Read the basic file attributes
+</p>
+
+<pre title="Code" class="javacode">
+BasicFileAttributes bfa = Files.readAttributes(path, BasicFileAttributes.class);
+</pre>
+
+<p>
+    To Get the last modified time
+</p>
+
+<pre title="Code" class="javacode">
+FileTime lastModifiedTime = bfa.lastModifiedTime();
+</pre>
+
+<p>
+    To Get the size of the file
+</p>
+
+<pre title="Code" class="javacode">
+long size = bfa.size();
+</pre>
+
+<p>
+    The second <code>readAttributes()</code> method returns all or some of the attributes of a specific type.
+</p>
+
+<p>
+    The list of attributes to read is supplied in a string form.
+    The string form of an attribute list uses the following syntax:
+</p>
+
+<pre title="The string form of an attribute list" class="plaintext">
+view-name:comma-separated-attributes
+</pre>
+
+<p>
+    The <code>view-name</code> is the name of the attribute view that we want to read, such as <code>basic</code>, <code>posix</code>, <code>acl</code>, etc.
+</p>
+
+<p>
+    If <code>view-name</code> is omitted, it defaults to <code>basic</code>.
+    If <code>view-name</code> is present, it is followed by a colon.
+</p>
+
+<p>
+    We can read all attributes of a specific view type by specifying <span class="text-emphasize">an asterisk</span> as the attributes list.
+    For example, we can specify <code>"basic:*"</code> or <code>"*"</code> to read all basic file attributes.
+</p>
+
+<p>
+    To read the size and the last modified time of the <code>basic</code> view, we would use
+</p>
+
+<pre title="attribute list" class="plaintext">
+"basic:size,lastModifiedTime" or "size,lastModifiedTime".
+</pre>
+
+<p>
+    To read the <code>owner</code> attribute of a file using an <code>ACL</code> view, we would use a string <code>"acl:owner"</code>.
+</p>
+
+<p>
+    To read all <code>posix</code> attributes of a file, we would use <code>"posix:*"</code>.
+</p>
+
+<p>
+    The following code prints the size and the last modified time of the file <code>D:\tmp\test\abc.txt</code>.
+</p>
+
+<pre title="NIO_Files_Example_AttributeList.java" class="javacode">
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
+
+public class NIO_Files_Example_AttributeList {
+    public static void main(String[] args) throws Exception {
+        Path path = Paths.get("D:\\tmp\\test\\abc.txt");
+
+        // Prepare the attribute list
+        String attribList = "basic:size,lastModifiedTime";
+
+        // Read the attributes
+        Map&lt;String, Object&gt; attribs = Files.readAttributes(path, attribList);
+
+        System.out.format("Size:%s, Last Modified Time: %s %n",
+                attribs.get("size"), attribs.get("lastModifiedTime"));
+
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+Size:49, Last Modified Time: 2020-12-30T21:12:45.741Z
+</pre>
+
+<p>
+    The following code reads the basic file attributes of the file <code>D:\tmp\test\abc.txt</code> and prints some of them on the standard output.
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+
+public class HelloWorld {
+    public static void main(String[] args) {
+        Path path = Paths.get("D:\\tmp\\test\\abc.txt");
+
+        try {
+            BasicFileAttributes bfa = Files.readAttributes(path, BasicFileAttributes.class);
+            System.out.format("Size:%s bytes %n", bfa.size());
+            System.out.format("Creation Time:%s %n", bfa.creationTime());
+            System.out.format("Last Access  Time:%s %n", bfa.lastAccessTime());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+Size:49 bytes
+Creation Time:2021-02-25T07:47:18.146921Z
+Last Access  Time:2021-02-25T07:47:18.146921Z
+</pre>
+
+<h3>getFileAttributeView()</h3>
+
+<p>
+    We can also read file attributes using a specific view object.
+</p>
+
+<p>
+    We can use the <code>getFileAttributeView()</code> method of the <code>Files</code> class to get a specific attribute view.
+    It returns <code>null</code> if the file attribute view is not available.
+</p>
+
+<pre title="Code" class="javacode">
+&lt;V extends FileAttributeView&gt; V getFileAttributeView(Path path, Class&lt;V&gt; type, LinkOption... options)
+</pre>
+
+<p>
+    After getting a view object of a specific view type, we can read all attributes of that view type using the view object's <code>readAttributes()</code> method.
+</p>
+
+<p>
+    The following code reads all basic attributes for <code>D:\tmp\test\abc.txt</code> file using a basic view object:
+</p>
+
+<pre title="Code" class="javacode">
+Path path = Paths.get("D:\\tmp\\test\\abc.txt");
+BasicFileAttributeView bfv = Files.getFileAttributeView(path,  BasicFileAttributeView.class);
+BasicFileAttributes bfa  = bfv.readAttributes();
+</pre>
+
+<p>
+    The following code shows how to use the basic file attribute view to read and update basic file attributes.
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
+
+public class HelloWorld {
+    public static void main(String[] args) {
+        Path path = Paths.get("D:\\tmp\\test\\abc.txt");
+
+        try {
+            BasicFileAttributeView bfv = Files.getFileAttributeView(path, BasicFileAttributeView.class);
+            BasicFileAttributes bfa = bfv.readAttributes();
+
+            System.out.format("Size:%s bytes %n", bfa.size());
+            System.out.format("Creation Time:%s %n", bfa.creationTime());
+            System.out.format("Last Access Time:%s %n", bfa.lastAccessTime());
+
+            FileTime newLastModifiedTime = null;
+            FileTime newLastAccessTime = null;
+            FileTime newCreateTime = FileTime.from(Instant.now());
+
+            bfv.setTimes(newLastModifiedTime, newLastAccessTime, newCreateTime);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+Size:49 bytes
+Creation Time:2021-02-25T16:33:37.83Z
+Last Access Time:2021-02-25T07:47:18.146921Z
+</pre>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="http://www.java2s.com/Tutorials/Java/Java_io/1000__Java_nio_File_Attributes.htm" target="_blank">Java IO Tutorial - Java Files Attributes</a></li>
+</ul>

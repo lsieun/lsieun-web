@@ -1,0 +1,62 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java ASM Source</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+
+
+
+<p>
+    ASM: a code manipulation tool to implement adaptable systems 下载<a href="https://lsieun.lanzous.com/i0bSCkc2uih" target="_blank">地址</a> 密码:<code>hsy6</code>
+</p>
+
+
+<h2>Intro</h2>
+
+<ul>
+    <li>
+        Methods
+        <ul>
+            <li>
+                the <code>Frame</code> and <code>CurrentFrame</code> classes are used for the automatic computation of the stack map frames of a method.
+            </li>
+            <li>
+                the <code>Edge</code> class is used to represent the <span class="text-emphasize">control flow graph</span> of a method,
+                which is a graph of basic blocks, i.e. of <code>Label</code> objects.
+                <span class="text-key-point">An <code>Edge</code> is an edge between two <code>Label</code> objects in this graph.</span>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<ul>
+    <li><a href="/archive/java/asm-source/label.html">ASM Label</a></li>
+    <li><a href="/archive/java/asm-source/method_writer.html">ASM MethodWriter</a></li>
+    <li><a href="/archive/java/asm-source/jump_instructions_encoding_algorithm.html">Jump instructions encoding algorithm</a></li>
+    <li><a href="/archive/java/asm-source/control_and_data_flow_analysis_algorithm.html">Control and data flow analysis algorithm</a></li>
+    <li>
+        asm-analysis
+        <ul>
+            <li><a href="./analysis/basic-value.html" target="_blank">BasicValue</a></li>
+            <li><a href="./analysis/frame.html" target="_blank">Frame</a></li>
+            <li><a href="./analysis/interpreter.html" target="_blank">Interpreter</a></li>
+            <li><a href="./analysis/analyzer.html" target="_blank">Analyzer</a></li>
+        </ul>
+    </li>
+</ul>
+
+<ul>
+    <li><a href="/archive/java/asm-source/write_01_simple.html">Hello ASM</a></li>
+</ul>
+
+<h2>Resources</h2>
+
+<ul>
+    <li><a class="external" href="https://asm.ow2.io" target="_blank">ASM</a></li>
+    <li><a class="external" href="https://asm.ow2.io/developer-guide.html" target="_blank">ASM 6 Developer Guide</a></li>
+    <li><a class="external" href="https://asm.ow2.io/faq.html" target="_blank">ASM Frequently Asked Questions</a></li>
+    <li><a class="external" href="https://gitlab.ow2.org/asm/asm" target="_blank">GitLab: ASM Source Code</a></li>
+</ul>

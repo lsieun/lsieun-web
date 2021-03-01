@@ -1,0 +1,227 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Road to IntelliJ IDEA</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jetbrains-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p class="indented">
+    关于这篇文章，我就是想想，而没有动手实践。任何渺小的想法，都需要付诸于一系列的实践；否则，将只是空谈。然而，我只是躺在床上，睡不着觉，心里琢磨着如何破解IntelliJ IDEA。如果读完了文章，有人可能觉得有道理，或者认为胡说八道，都是正常的。
+</p>
+
+<h2>分析IDEA</h2>
+
+<p class="indented">
+    在使用IDEA软件的时候，会经历三个步骤：<span class="text-emphasize">入口 --&gt; 验证机制 --&gt; 使用</span>。
+</p>
+
+<p class="indented">
+    IDEA软件提供的<span class="text-compare-red">入口</span>有四个：Evaluate for free、JB Account、Activation code和License Server。破解的着手点，也是从这四个入口开始。
+</p>
+
+<div id="intellij_idea_licenses" class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/ide/intellij_idea_licenses.png" alt=""/>
+</div>
+
+<p class="indented">
+    <span class="text-compare-red">验证机制</span>，就是指IDEA对已经选择的<span class="text-compare-red">入口</span>进行有效性验证。这套<span class="text-compare-red">验证机制</span>位于IDEA软件的内部，更进一步说，可能位于某一个jar包当中，它具体是什么，我们可能并不清楚。但是，我们可以做一些推测/假设，然后依据这些推测/假设来设计出相应的解决方案。
+</p>
+
+<p class="indented">
+    <span class="text-compare-red">使用</span>，就是我们正常的使用IDEA进行开发，没有太多可以说的内容。
+</p>
+
+<p class="indented">
+    破解的思路：我们先对<span class="text-compare-red">验证机制</span>做一个推测/假设，然后按照这个推测/假设来研究一个破解方案。如果破解方案生效了，那么说明当初的推测是对的；如果破解方案没有成功，那说明当初的推测可能是存在问题的，可能是推测的局部有问题，也可能整体推测都是错的。
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        破解的本质：绕过验证机制。
+    </p>
+</div>
+
+<p class="indented">
+    接下来，说一下从四个入口（Evaluate for free、JB Account、Activation code和License Server）所对应的破解思路。不必每一个方法都要尝试，只要一个方法尝试成功，就可以了。条条大路通罗马，我们的目的是到达罗马，而不是要把通向罗马的路都走一遍。
+</p>
+
+<h2>破解思路</h2>
+
+<h3>Evaluate for free</h3>
+
+<p class="indented">
+    如果选择了“Evaluate for free”，就会有30天的试用期。如果过了30天，IDEA就会提示过期了，然后退出。另外，如果删除用户目录下的<code>*IntelliJIdea*</code>文件夹，30天试用期就会重置。
+</p>
+
+<p class="indented">
+    推测/假设：IDEA软件是对“试用期的开始时间”和“当下的时间”进行比较，如果超出了30天，就会调用<code>System.exit()</code>或<code>Runtime.exit()</code>方法进行退出。根据这里的推测/假设，我觉得至少存在三个破解思路。
+</p>
+
+<p class="indented">
+    第一个破解思路：不断重置试用期。这个破解思路，针对的是IntelliJ IDEA的配置文件。如果能够找到那个关键性的文件，就能够实现重置试用期。
+</p>
+
+<p class="indented">
+    第二个破解思路：修改字节码，让时间判断永不过期。
+</p>
+
+<p class="indented">
+    第三个破解思路：修改字节码，试用期过了，但IDEA不退出。
+</p>
+
+<h3>JB Account</h3>
+
+<p class="indented">
+    如果选择了“JB Account”，那就需要输入账号和密码。
+</p>
+
+<p class="indented">
+    推测/假设：在IDEA界面输入用户名和密码，接着IDEA软件会把用户名和密码发送于Jetbrains的服务器，再接着Jetbrains服务器会根据用户名和密码找到用户的ID，然后再根据用户ID找到相应的License信息，最后Jetbrains服务器会将License信息返回给IDEA软件，IDEA软件对License信息进行验证来实现激活。
+</p>
+
+<p class="indented">
+    破解思路：准备一个有效的账号和密码，然后探索出在IDEA软件中的处理流程，在有些地方通过修改字节码来伪造License和绕过验证机制就可以了。
+    <a href="javascript:void(0);" onclick="$('#jb_account_thinking').toggle()">Click Me</a>
+</p>
+
+<div id="jb_account_thinking" style="display:none;" class="w3-panel w3-light-grey w3-border w3-round">
+    <p>第一步，使用Username和Password进行登陆</p>
+    <p>返回：一个ObtainUserIdResponse对象，包含了userId</p>
+    <p>第二步，IDEA会根据userId向JetBrains官网进行查询</p>
+    <p>返回：一个ObtainLicenseResponse对象，里面包含了一个集合对象Collection&lt;EncodedAsset&gt;。顾其名，思其义，EncodedAsset=Encoded(进行编码之后)+Asset(资产)，也就是说这些资产都是经过“加密”的。</p>
+    <p>&gt; 思路：可以自己伪造这样一个集合</p>
+    <p>第三步：EncodedAsset类有一个decode()方法</p>
+    <p>返回：一个License对象</p>
+    <p>&gt; 思路：可以自己提供解析的方法</p>
+    <p>第四步：JetBrains一定会对License进行某种验证</p>
+    <p>问题：进行验证的代码，究竟在哪里呢？</p>
+    <p>&gt; 思路：可以根据EncodedAsset.decode()方法的Stack Trace进行查找</p>
+    <p>第五步：JetBrains会把EncodedAsset和License对象封装到一个类中，暂且将这个类叫“百万富翁类”（可以将EncodedAsset和License想象成它的财产）</p>
+    <p>问题：代码经过加密，无法理解验证的算法是如何进行的（这个“百万富翁类”的一个儿子非常负责任，牢牢的把守着通往Freedom的大门）</p>
+    <p>&gt; 思路：这个“百万富翁类”可能有多个儿子，找一个别的儿子来打开这扇门。</p>
+    <p></p>
+</div>
+
+<h3>Activation code</h3>
+
+<p class="indented">
+    如果选择了“Activation code”，那就需要输入激活码。
+</p>
+
+<p class="indented">
+    推测/假设：IDEA软件会使用Jetbrains的公钥来对激活码进行验证。
+</p>
+
+<p class="indented">
+    第一个破解思路：替换公钥。首先，自己生成公钥和私钥对；然后，使用自己的私钥来生成激活码；最后，将Jetbrains的公钥替换成自己的公钥。
+</p>
+
+<p class="indented">
+    第二个破解思路：使用过期的key。网络上有一些key，这些key曾经有效过，但现在已经过期了。这里要注意的点是：这些key曾经有效过，说明这些key能够通过验证机制。对于时间过期这件事情，可以修改字节码，让它不过期。
+</p>
+
+<p class="indented">
+    对于第一个破解思路，如果能够实现它，那么也就能够写一个程序来判断一个activation code的有效性，正如下图当中提出的问题。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/ide/check_idea_key_validity.jpg" alt=""/>
+</div>
+
+
+<h3>License Server</h3>
+
+<p class="indented">
+    如果选择了“License Server”，那就需要输入License服务器。
+</p>
+
+<p class="indented">
+    推测/假设：IDEA软件会向License Server发送请求，而License Server会将一个具体的License返回给IDEA软件。
+</p>
+
+<p class="indented">
+    破解思路：找一个有效的License Server，然后研究IDEA软件的验证过程，最后通过修改字节码的方式来实现激活。
+</p>
+
+<h2>研究现有的破解方法</h2>
+
+<p>
+    现有的破解方法有
+</p>
+
+<ul>
+    <li><a class="external" href="https://shaka.rover.plus/zh/" target="_blank">Rover</a></li>
+    <li><a class="external" href="https://zhile.io/" target="_blank">zhile</a></li>
+    <li><a class="external" href="http://idea.studycoder.com/10086.html" target="_blank">BetterIntelliJ</a></li>
+</ul>
+
+<p>
+    这些破解方法的jar包，都通过了混淆处理，想要研究其字节码比较困难。
+</p>
+
+<p>
+    研究思路一：使用deobfuscator。
+</p>
+
+<p>
+    研究思路二：借助于Java Agent，对比class文件修改前和修改后的差异。
+</p>
+
+<p>
+    偶然遇到的激活IDEA的网站
+</p>
+
+<ul>
+    <li><a class="external" href="https://taojingling.cn/" target="_blank">taojingling.cn</a></li>
+</ul>
+
+<h2>最后的感想</h2>
+
+<p class="indented">
+    要实现破解IntelliJ IDEA，需要三个要素：心念、思路和技术手段。
+</p>
+
+<p class="indented">
+    心念，就是相信自己能行，believe in yourself。如果别人能够破解成功，那么我也有这个能力。如果一开始就想着“我不行”，那这条路就走不下去了。另外，在破解的过程中，尝试了多次都失败了，那该怎么办呢？在《牧羊少年奇幻之旅》这本书中讲到，成功的秘密，就是你跌倒七次，然后第八次站起来。这个“心念”对应了人体的“心”这个部位。
+</p>
+
+<p class="indented">
+    思路，就是构建自己的破解思路。初始尝试破解，可能陷入这样的循环：因为不知道怎么破解，所以就没有破解思路；因为没有破解思路，所以就破解不了；因为破解不了，所以就没有思路……事实上，要形成破解思路，需要先做一些推测或假设，然后按照这个推测或假设去探索，这样才能逐步形成自己的思路。另外，看到别人破解成功了，也不要盲目的学习他人的思路，很可能有一个更好的思路隐藏在你的头脑中，可能比他人的更好，只是这个更好的思路等待着你的“挖掘”。构建自己的思路，比学习他人的思路更好的一点是，你的破解思路是直接针对IDEA的，就类似于这样“你的思路－IDEA”，它是一个两层的关系；如果你学习别人的思路，那么就类似于这样“你的思路－别人的思路－IDEA”，它是一个三层的关系。不可否认，学习别人的思路，会让自己有所收获。但是，我觉得，“自己的思路”才是“主体”，“别人的思路”是帮助你理解问题的“辅助”。这个“思路”对应了人体的“大脑”这个部位。
+</p>
+
+<p class="indented">
+    技术手段，就是能够将思路转换成代码的编程能力。根据采用的破解思路不同，那么可能需要的技术手段也不同。就比如说，要想实现重置试用期，只需要找到哪些文件和试用期紧密相关，那么只需要会Java的I/O知识就可以了，就是把那些文件删除或修改访问时间就可以了；如果想修改.class文件，那就需要Java字节码的相关知识；如果想理解activation code验证的过程，那么可能就需要理解公钥/私钥、加密/解密的相关知识了。这个“技术手段”对应了人体的“双手”这个部位。
+</p>
+
+<div class="w3-panel w3-pale-green w3-bottombar w3-border-green w3-border">
+    <p>
+        FRODO: I can't do this, Sam.
+    </p>
+    <p>
+        SAM: I know. It's all wrong. By rights we shouldn't even be here. But we are.
+        It's like in the great stories, Mr. Frodo. The ones that really mattered.
+        Full of darkness and danger they were. And sometimes you didn't want to know the end.
+        Because how could the end be happy?
+        How could the world go back to the way it was when so much bad had happened?
+        But in the end, it’s only a passing thing, this shadow. Even darkness must pass.
+        A new day will come. And when the sun shines it will shine out the clearer.
+        Those were the stories that stayed with you.
+        That meant something, even if you were too small to understand why.
+        But I think, Mr. Frodo, I do understand. I know now.
+        <span class="text-key-point">
+            Folk in those stories had lots of chances of turning back, only they didn't.
+            They kept going, because they were holding on to something.
+        </span>
+    </p>
+    <p>
+        FRODO: What are we holding on to, Sam?
+    </p>
+    <p>
+        SAM: <span class="text-key-point">That there’s some good in this world,</span> Mr. Frodo... <span class="text-key-point">and it’s worth fighting for.</span>
+    </p>
+    <p style="text-align: right;">
+        The Lord of The Rings: The Two Towers
+    </p>
+</div>

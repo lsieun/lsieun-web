@@ -3,7 +3,7 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
@@ -203,12 +203,12 @@ public class LocalVariablesSorter extends MethodVisitor {
 
 <h2>How to Use</h2>
 
-<p class="indented">
+<p>
     This method adapter <span class="text-example">renumbers the local variables</span>
     used in a method in the order they appear in this method.
 </p>
 
-<p class="indented">
+<p>
     <span class="text-example">For instance</span> in a method with two parameters,
     the first local variable read or written whose index is greater than or equal to 3 –
     the first three local variables correspond to this and to the two method parameters,
@@ -216,13 +216,13 @@ public class LocalVariablesSorter extends MethodVisitor {
     the second one is assigned index 4, and so on.
 </p>
 
-<p class="indented">
+<p>
     <span class="text-key-point">This adapter is useful to insert new local variables in a method.</span>
     Without this adapter it would be necessary to add new local variables after all the existing ones,
     but unfortunately their number is not known until the end of the method, in <code>visitMaxs</code>.
 </p>
 
-<p class="indented">
+<p>
     In order to show how this adapter can be used, let’s suppose that we want to
     use <span class="text-example">a local variable</span> to implement <code>AddTimerAdapter</code>:
 </p>
@@ -264,7 +264,7 @@ public class HelloWorld {
 
 <h3>编码实现</h3>
 
-<p class="indented">
+<p>
     This can be done easily by extending <code>LocalVariablesSorter</code>,
     and by using the <code>newLocal</code> method defined in this class:
 </p>

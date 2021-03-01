@@ -3,7 +3,7 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/windows/windows_commands.html">TOC</a>
+    <a title="Table Of Content" href="windows-commands.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
@@ -11,9 +11,40 @@
 
 <ul>
     <li>
-        <code>/s</code>: Lists every occurrence of the specified file name within the specified directory and all subdirectories.
+        <code>/b</code>: Displays a bare list of directories and files, with no additional information. The <code>/b</code> parameter overrides <code>/w</code>.
     </li>
     <li>
-        <code>/b</code>: Displays a bare list of directories and files, with no additional information. The /b parameter overrides /w.
+        <code>/s</code>: Lists every occurrence of the specified file name within the specified directory and all subdirectories.
     </li>
+</ul>
+
+<h3>编译Java文件</h3>
+
+<p>
+    If you need to try something out for a larger project and don't have any proper build tools nearby,
+    you can always use a small trick that <code>javac</code> offers:
+    the classnames to compile can be specified in a file.
+    You simply have to pass the name of the file to javac with the <code>@</code> prefix.
+</p>
+
+<p>
+    If you can create a list of all the <code>*.java</code> files in your project, it's easy:
+</p>
+
+<pre title="Windows" class="plaintext">
+&gt; dir /s/b *.java > sources.txt
+&gt; javac @sources.txt
+</pre>
+
+<pre title="Linux / MacOS" class="plaintext">
+$ find . -name "*.java" > sources.txt
+$ javac @sources.txt
+## 添加classpath的情况
+$ javac -classpath "${CLASSPATH}" @java_sources.txt
+</pre>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/dir" target="_blank">MicroSoft: dir</a></li>
 </ul>

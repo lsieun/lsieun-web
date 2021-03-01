@@ -1,0 +1,73 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Files Source Code</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-nio-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Class Info</h2>
+
+<pre title="Files.java" class="javacode">
+public final class Files {
+}
+</pre>
+
+<h2>Constructor</h2>
+
+<pre title="Files.java" class="javacode">
+public final class Files {
+    private Files() { }
+}
+</pre>
+
+<h2>Methods: Create</h2>
+
+<pre title="Files.java" class="javacode">
+public final class Files {
+    public static Path createFile(Path path, FileAttribute&lt;?&gt;... attrs) throws IOException {}
+
+    public static Path createDirectory(Path dir, FileAttribute&lt;?&gt;... attrs) throws IOException {}
+    public static Path createDirectories(Path dir, FileAttribute&lt;?&gt;... attrs) throws IOException {}
+
+    public static Path createTempFile(Path dir,
+                                      String prefix,
+                                      String suffix,
+                                      FileAttribute&lt;?&gt;... attrs){}
+    public static Path createTempFile(String prefix,
+                                      String suffix,
+                                      FileAttribute&lt;?&gt;... attrs) {}
+
+    public static Path createTempDirectory(Path dir,
+                                           String prefix,
+                                           FileAttribute&lt;?&gt;... attrs) {}
+    public static Path createTempDirectory(String prefix,
+                                           FileAttribute&lt;?&gt;... attrs) {}
+}
+</pre>
+
+<h2>Methods: Symbolic Links</h2>
+
+<pre title="Files.java" class="javacode">
+public final class Files {
+    // Tests whether a file is a symbolic link.
+    public static boolean isSymbolicLink(Path path) {};
+
+    // Creates a symbolic link to a target (optional operation).
+    public static Path createSymbolicLink(Path link, Path target, FileAttribute&lt;?&gt;... attrs) {}
+
+    // Creates a new link (directory entry) for an existing file (optional operation).
+    public static Path createLink(Path link, Path existing) throws IOException {}
+}
+</pre>
+
+<h2>Methods: File Attribute</h2>
+
+<pre title="Files.java" class="javacode">
+public final class Files {
+    public static Object getAttribute(Path path, String attribute, LinkOption... options) {}
+    public static Path setAttribute(Path path, String attribute, Object value, LinkOption... options) {}
+}
+</pre>
+

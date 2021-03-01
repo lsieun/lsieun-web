@@ -1,0 +1,329 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Optimize Jump</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>预期目标</h2>
+
+<pre title="HelloWorldGenerateCore.java" hidden class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.*;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldGenerateCore {
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // (1) 生成byte[]内容
+        byte[] bytes = dump();
+
+        // (2) 保存byte[]到文件
+        FileUtils.writeBytes(filepath, bytes);
+    }
+
+    public static byte[] dump() throws Exception {
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "sample/HelloWorld",
+                null, "java/lang/Object", null);
+
+        {
+            MethodVisitor mv1 = cw.visitMethod(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
+            mv1.visitCode();
+            mv1.visitVarInsn(ALOAD, 0);
+            mv1.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false);
+            mv1.visitInsn(RETURN);
+            mv1.visitMaxs(0, 0);
+            mv1.visitEnd();
+        }
+
+        {
+            MethodVisitor mv2 = cw.visitMethod(ACC_PUBLIC, "test", "(Z)V", null, null);
+            Label label01 = new Label();
+            Label label02 = new Label();
+            Label label03 = new Label();
+            Label label04 = new Label();
+            Label label05 = new Label();
+            Label returnLabel = new Label();
+
+            mv2.visitCode();
+            mv2.visitVarInsn(ILOAD, 1);
+            mv2.visitJumpInsn(IFEQ, label01);
+
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("\u9a84\u50b2\u6765\u81ea\u6d45\u8584\uff0c");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "print", "(Ljava/lang/String;)V", false);
+            mv2.visitJumpInsn(GOTO, label02);
+
+            mv2.visitLabel(label01);
+            mv2.visitJumpInsn(GOTO, label05);
+
+            mv2.visitLabel(label02);
+            mv2.visitJumpInsn(GOTO, label04);
+
+            mv2.visitLabel(returnLabel);
+            mv2.visitInsn(RETURN);
+
+            mv2.visitLabel(label03);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("arrogance comes from ignorance.");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitJumpInsn(GOTO, returnLabel);
+
+            mv2.visitLabel(label04);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("\u72c2\u5984\u51fa\u4e8e\u65e0\u77e5\u3002");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv2.visitJumpInsn(GOTO, returnLabel);
+
+            mv2.visitLabel(label05);
+            mv2.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv2.visitLdcInsn("Pride comes from shallowness, ");
+            mv2.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "print", "(Ljava/lang/String;)V", false);
+            mv2.visitJumpInsn(GOTO, label03);
+
+
+            mv2.visitMaxs(0, 0);
+            mv2.visitEnd();
+        }
+
+        cw.visitEnd();
+
+        return cw.toByteArray();
+    }
+}
+</pre>
+
+<pre title="HelloWorldRun.java" class="javacode">
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        HelloWorld instance = new HelloWorld();
+        instance.test(true);
+        instance.test(false);
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+骄傲来自浅薄，狂妄出于无知。
+Pride comes from shallowness, arrogance comes from ignorance.
+</pre>
+
+<pre title="javap" hidden class="plaintext">
+$ javap -c sample.HelloWorld
+public class sample.HelloWorld {
+  public sample.HelloWorld();
+    Code:
+       0: aload_0
+       1: invokespecial #8                  // Method java/lang/Object."&lt;init&gt;":()V
+       4: return
+  public void test(boolean);
+    Code:
+       0: iload_1
+       1: ifeq          15
+       4: getstatic     #16                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       7: ldc           #18                 // String 骄傲来自浅薄，
+       9: invokevirtual #24                 // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+      12: goto          18
+      15: goto          44
+      18: goto          33
+      21: return
+      22: getstatic     #16                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      25: ldc           #26                 // String arrogance comes from ignorance.
+      27: invokevirtual #29                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      30: goto          21
+      33: getstatic     #16                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      36: ldc           #31                 // String 狂妄出于无知。
+      38: invokevirtual #29                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      41: goto          21
+      44: getstatic     #16                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      47: ldc           #33                 // String Pride comes from shallowness,
+      49: invokevirtual #24                 // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+      52: goto          22
+}
+</pre>
+
+<h2>编码实现</h2>
+
+<pre title="MethodTransformer.java" hidden class="javacode">
+import org.objectweb.asm.tree.MethodNode;
+
+public class MethodTransformer {
+    protected MethodTransformer mt;
+
+    public MethodTransformer(MethodTransformer mt) {
+        this.mt = mt;
+    }
+
+    public void transform(MethodNode mn) {
+        if (mt != null) {
+            mt.transform(mn);
+        }
+    }
+}
+</pre>
+
+<pre title="MethodOptimizeJumpTransformer.java" class="javacode">
+import org.objectweb.asm.tree.*;
+
+import java.util.ListIterator;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class MethodOptimizeJumpTransformer extends MethodTransformer {
+    public MethodOptimizeJumpTransformer(MethodTransformer mt) {
+        super(mt);
+    }
+
+    @Override
+    public void transform(MethodNode mn) {
+        InsnList instructions = mn.instructions;
+        ListIterator&lt;AbstractInsnNode&gt; it = instructions.iterator();
+        while (it.hasNext()) {
+            AbstractInsnNode insnNode = it.next();
+            if (insnNode instanceof JumpInsnNode) {
+                JumpInsnNode jumpInsnNode = (JumpInsnNode) insnNode;
+                LabelNode label = jumpInsnNode.label;
+                AbstractInsnNode target;
+                while (true) {
+                    target = label;
+                    while (target != null && target.getOpcode() &lt; 0) {
+                        target = target.getNext();
+                    }
+                    if (target != null && target.getOpcode() == GOTO) {
+                        label = ((JumpInsnNode) target).label;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                // update target
+                jumpInsnNode.label = label;
+                // if possible, replace jump with target instruction
+                if (insnNode.getOpcode() == GOTO && target != null) {
+                    int opcode = target.getOpcode();
+                    if ((opcode &gt;= IRETURN && opcode &lt;= RETURN) || opcode == ATHROW) {
+                        instructions.set(insnNode, target.clone(null));
+                    }
+                }
+            }
+        }
+        super.transform(mn);
+    }
+}
+</pre>
+
+<pre title="ClassOptimizeJumpTransformer.java" class="javacode">
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.MethodNode;
+
+public class ClassOptimizeJumpTransformer extends ClassTransformer {
+    public ClassOptimizeJumpTransformer(ClassTransformer ct) {
+        super(ct);
+    }
+
+    @Override
+    public void transform(ClassNode cn) {
+        for (MethodNode mn : cn.methods) {
+            if ("&lt;init&gt;".equals(mn.name) || "&lt;clinit&gt;".equals(mn.name)) {
+                continue;
+            }
+            InsnList insns = mn.instructions;
+            if (insns.size() == 0) {
+                continue;
+            }
+            MethodTransformer mt = new MethodOptimizeJumpTransformer(null);
+            mt.transform(mn);
+        }
+
+        super.transform(cn);
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformTree.java" hidden class="javacode">
+import lsieun.tree.ClassOptimizeJumpTransformer;
+import lsieun.tree.ClassTransformer;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
+
+public class HelloWorldTransformTree {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        // (1)构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        // (2) 构建ClassNode
+        int api = Opcodes.ASM9;
+        ClassNode cn = new ClassNode(api);
+        cr.accept(cn, ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+
+        // (3) 进行transform
+        ClassTransformer ct = new ClassOptimizeJumpTransformer(null);
+        ct.transform(cn);
+
+        // (4) 构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cn.accept(cw);
+
+        // (5) 生成byte[]内容输出
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<h2>验证结果</h2>
+
+<pre title="javap" class="plaintext">
+$ javap -c sample.HelloWorld
+public class sample.HelloWorld {
+  public sample.HelloWorld();
+    Code:
+       0: aload_0
+       1: invokespecial #8                  // Method java/lang/Object."&lt;init&gt;":()V
+       4: return
+
+  public void test(boolean);
+    Code:
+       0: iload_1
+       1: ifeq          40
+       4: getstatic     #16                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       7: ldc           #18                 // String 骄傲来自浅薄，
+       9: invokevirtual #24                 // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+      12: goto          31
+      15: nop
+      16: nop
+      17: athrow
+      18: nop
+      19: nop
+      20: athrow
+      21: athrow
+      22: getstatic     #16                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      25: ldc           #26                 // String arrogance comes from ignorance.
+      27: invokevirtual #29                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      30: return
+      31: getstatic     #16                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      34: ldc           #31                 // String 狂妄出于无知。
+      36: invokevirtual #29                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      39: return
+      40: getstatic     #16                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      43: ldc           #33                 // String Pride comes from shallowness,
+      45: invokevirtual #24                 // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+      48: goto          22
+}
+</pre>

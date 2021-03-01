@@ -3,7 +3,7 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
@@ -14,7 +14,7 @@
 
 <h2>Tree API VS Core API</h2>
 
-<p class="indented">
+<p>
     Using <span class="text-compare-green">the tree API</span> to <span class="text-compare-grey">generate a class</span>
     <span class="text-key-point">takes about 30% more time and consumes more memory</span>
     than using <span class="text-compare-green">the core API</span>.
@@ -30,14 +30,14 @@
     </p>
 </div>
 
-<p class="indented">
+<p>
     <span class="text-compare-grey">Adding and removing class members</span> simply consists in adding or removing
     elements in the <code>fields</code> or <code>methods</code> lists of a <code>ClassNode</code> object.
     <sub class="my_note" style="color:blue">笔记：对class members进行add和remove操作，就是transform class。</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
-<p class="indented">
+<p>
     Like for <span class="text-compare-grey">class generation</span>,
     using <span class="text-compare-green">the tree API</span> to <span class="text-compare-grey">transform classes</span>
     <span class="text-key-point">takes more time and consumes more memory</span>
@@ -50,7 +50,7 @@
     With <span class="text-compare-green">the tree API</span> this problem disappears because there is no such constraint in this case.
 </p>
 
-<p class="indented">
+<p>
     In fact it is possible to implement the <code>AddDigitalSignature</code> example with <span class="text-compare-green">the core API</span>,
     but then the class must be transformed in two passes.
     During <span class="text-compare-grey">the first pass</span> the class is visited with a <code>ClassReader</code> (and no <code>ClassWriter</code>),
@@ -65,7 +65,7 @@
     which must be compared to the cost of constructing the corresponding <code>ClassNode</code>.
 </p>
 
-<p class="indented">
+<p>
     The conclusion is that <span class="text-emphasize"><span class="text-compare-green">the tree API</span> is generally
     used for transformations that cannot be implemented in one pass with <span class="text-compare-green">the core API</span></span>.
     But there are of course exceptions.
@@ -83,6 +83,6 @@
 
 
 
-<p class="indented"></p>
-<p class="indented"></p>
-<p class="indented"></p>
+<p></p>
+<p></p>
+<p></p>

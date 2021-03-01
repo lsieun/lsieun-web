@@ -1,0 +1,71 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Transforming methods Pattern</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<ul>
+    <li>
+        Transforming a method = modify fields of a <code>MethodNode</code> object
+        <ul>
+            <li>
+                the instructions list (a common pattern is to modify it while iterating over it)
+                <ul>
+                    <li>
+                        remove one or more elements
+                    </li>
+                    <li>
+                        insert one or more elements (another common pattern is to add these new instructions in a temporary instruction list)
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<p>
+    Transforming a method with the tree API simply consists in modifying the
+    fields of a <code>MethodNode</code> object, and in particular the instructions list.
+</p>
+
+<p>
+    Although this instructions list can be modified in arbitrary ways,
+    <span class="text-compare-blue">a common pattern</span> is to modify it while iterating over it.
+    Indeed, unlike with the general <code>ListIterator</code> contract,
+    the <code>ListIterator</code> returned by an <code>InsnList</code> supports many concurrent list modifications.
+    In fact you can use the <code>InsnList</code> methods
+    to <span class="text-example">remove one or more elements before and including the current one</span>,
+    to <span class="text-example">remove one or more elements after the next element</span>
+    (i.e. not just after the current element, but after its successor),
+    or to <span class="text-example">insert one or more elements before the current one or after its successor</span>.
+    These changes will be reflected in the iterator, i.e.
+    the elements inserted (resp. removed) after the next element will be seen (resp. not seen) in the iterator.
+</p>
+
+<p>
+    <span class="text-compare-blue">Another common pattern</span> to modify an instruction list,
+    when you need to insert several instructions after an instruction <code>i</code> inside a list,
+    is to add these new instructions in a temporary instruction list <code>il</code>,
+    and to insert this temporary list <code>il</code> inside the main one in one step:
+</p>
+
+<pre title="insert several instructions after an instruction" class="javacode">
+InsnList il = new InsnList();
+il.add(...);
+...
+il.add(...);
+mn.instructions.insert(i, il);
+</pre>
+
+<p>
+    Inserting the instructions one by one is also possible but more cumbersome,
+    because the insertion point must be updated after each insertion.
+</p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>

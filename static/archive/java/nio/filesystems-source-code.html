@@ -1,0 +1,61 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">FileSystems Source Code</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-nio-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>FileSystems</h2>
+
+<h3>Class Info</h3>
+
+<p>
+    它用<code>final</code>修饰，因此不会存在子类继承。
+</p>
+
+<pre title="FileSystems.java" class="javacode">
+public final class FileSystems {
+}
+</pre>
+
+<h3>Constructor</h3>
+
+<p>
+    它的构造方法用<code>private</code>修饰，因此不能类的外部直接使用<code>new</code>关键字来创建对象。
+</p>
+
+<pre title="FileSystems.java" class="javacode">
+public final class FileSystems {
+    private FileSystems() {
+    }
+}
+</pre>
+
+<h3>Methods</h3>
+
+<h4>Get File System</h4>
+
+<pre title="FileSystems.java" class="javacode">
+public final class FileSystems {
+    public static FileSystem getDefault() {
+        return DefaultFileSystemHolder.defaultFileSystem;
+    }
+
+    public static FileSystem getFileSystem(URI uri) { }
+
+
+}
+</pre>
+
+<h4>New File System</h4>
+
+<pre title="FileSystems.java" class="javacode">
+public final class FileSystems {
+    public static FileSystem newFileSystem(URI uri, Map&lt;String,?&gt; env) {};
+    public static FileSystem newFileSystem(URI uri, Map&lt;String,?&gt; env, ClassLoader loader) {};
+    public static FileSystem newFileSystem(Path path, ClassLoader loader) {};
+}
+</pre>
+

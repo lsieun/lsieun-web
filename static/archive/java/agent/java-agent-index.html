@@ -1,0 +1,161 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Java Agent</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Instrumentation can be inserted in one of three ways:
+</p>
+
+<ul>
+    <li>
+        <b>Static Instrumentation</b>:
+        The class file is instrumented before it is loaded into the VM - for example,
+        by creating a duplicate directory of <code>*.class</code> files which have been modified to add the instrumentation.
+        This method is extremely awkward and, in general, an agent cannot know the origin of the class files which will be loaded.
+    </li>
+    <li>
+        <b>Load-Time Instrumentation</b>:
+        When a class file is loaded by the VM, the raw bytes of the class file are sent for instrumentation to the agent.
+        This mechanism provides efficient and complete access to one-time instrumentation.
+    </li>
+    <li>
+        <b>Dynamic Instrumentation</b>:
+        A class which is already loaded (and possibly even running) is modified.
+        Classes can be modified multiple times and can be returned to their original state.
+        The mechanism allows instrumentation which changes during the course of execution.
+    </li>
+</ul>
+
+<pre title="HelloWorld.java" class="javacode">
+import java.lang.instrument.Instrumentation;
+
+public class BasicAgent {
+    public static void premain(String agentArgs, Instrumentation inst) { // inst是接收一个Instrumentation类型的实例
+        System.out.println("premain start");
+        System.out.println(inst.getClass()); // 其具体实现是 sun.instrument.InstrumentationImpl
+        inst.addTransformer(new ClassListingTransformer());
+        System.out.println("premain over");
+    }
+}
+</pre>
+
+
+
+<p>
+    可以做什么呢？进入方法、退出方法时，打印信息；打印方法接收的参数; dump every loaded class file into a certain folder;
+</p>
+
+<h2>Basic</h2>
+
+<ul>
+    <li><a href="java-agent-intro.html">Intro</a></li>
+    <li><a href="requirements-of-java-agent.html">Requirements of a Javaagent</a></li>
+    <li><a href="manifest-attributes.html">Manifest Attributes</a></li>
+</ul>
+
+
+
+<p>
+    Java Attach API
+</p>
+
+<p>
+    Tutorial
+</p>
+
+<ul>
+    <li><a href="tutorial/class-list.html">ClassList</a></li>
+</ul>
+
+<h2>Java Agent Intro</h2>
+
+<ul>
+    <li>有一个示例，给别人演示，如何使用Java Agent</li>
+    <li>
+        <a href="intro/method-parameter-agent.html">MethodParameterAgent.jar</a>
+    </li>
+    <li>
+        <a href="intro/what-is-java-agent.html">Java Agent是什么?</a>
+    </li>
+    <li>
+        <a href="intro/java-agent-jar-three-components.html">Java Agent三要素</a>
+    </li>
+    <li>
+        内置的ASM使用
+    </li>
+    <li></li>
+
+    <li>
+        Java Agent，有两种使用方式：Command-Line和Starting Agents After VM Startup
+    </li>
+    <li>
+        使用Maven来配置，生成Agent.jar，Jar包的名字，一直叫<code>TheAgent.jar</code>
+    </li>
+</ul>
+
+<h2>Command-Line Interface</h2>
+
+<p>
+    Java Instrumentation API
+</p>
+
+<ul>
+    <li>
+        <a href="load-time/command-line.html">Command Line</a>
+    </li>
+    <li>
+        <a href="api/java-lang-instrument.html">Package java.lang.instrument</a>
+    </li>
+    <li>
+        Instrumentation:
+        <a href="api/instrument/instrumentation.html">Intro</a>
+        <a href="api/instrument/instrumentation-source-code.html">Source Code</a>
+    </li>
+    <li>
+        <a href="load-time/agent-class.html">Agent Class</a>
+    </li>
+    <li>
+        <a href="load-time/multiple-agents.html">Multiple Agents</a>
+    </li>
+</ul>
+
+<h2>Starting Agents After VM Startup</h2>
+
+<ul>
+    <li>
+        <a href="dynamic/dynamic-agent-class.html">Agent Class</a>
+    </li>
+    <li>
+        <a href="api/com-sun-tools-attach.html">Package com.sun.tools.attach</a>
+    </li>
+</ul>
+
+<h2>Application</h2>
+
+<ul>
+    <li><a href="/archive/java/agent/application/retrieving_class_files_from_a_running_app.html">Retrieving .class files from a running app</a></li>
+</ul>
+
+<h2>Build Tools</h2>
+
+<h3>Maven</h3>
+
+<h3>Ant</h3>
+
+<h2>Third Party Libraries</h2>
+
+<h3>ASM</h3>
+
+<h3>Javassist</h3>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://docs.oracle.com/javase/8/docs/api/java/lang/instrument/package-summary.html" target="_blank">Oracle: Package java.lang.instrument</a></li>
+    <li><a class="external" href="https://docs.oracle.com/javase/8/docs/jdk/api/attach/spec/com/sun/tools/attach/VirtualMachine.html" target="_blank">Oracle: Class VirtualMachine</a></li>
+    <li><a class="external" href="https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html" target="_blank">Oracle: JVM Tool Interface</a></li>
+</ul>

@@ -3,20 +3,20 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="/archive/java/java_asm_index.html">TOC</a>
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
 <h2>TraceClassVisitor</h2>
 
-<p class="indented">
+<p>
     This <code>TraceClassVisitor</code> class, as its name implies, extends the <code>ClassVisitor</code> class,
     and builds a textual representation of the visited class.
 </p>
 
 <h3>Class Info</h3>
 
-<p class="indented">
+<p>
     <code>TraceClassVisitor</code>类的父类是<code>ClassVisitor</code>类。
 </p>
 
@@ -95,7 +95,7 @@ public final class TraceClassVisitor extends ClassVisitor {
 
 <h3>Class Info</h3>
 
-<p class="indented">
+<p>
     <code>Textifier</code>类的父类是<code>Printer</code>类。
 </p>
 
@@ -140,7 +140,7 @@ public class Textifier extends Printer {
 
 <h2>How to Use</h2>
 
-<p class="indented">
+<p>
     In order to check that a generated or transformed class is conforming to what you expect,
     the byte array returned by a <code>ClassWriter</code> is not really helpful
     because it is unreadable by humans.
@@ -148,13 +148,13 @@ public class Textifier extends Printer {
     This is what the <code>TraceClassVisitor</code> class provides.
 </p>
 
-<p class="indented">
+<p>
     So, instead of using a <code>ClassWriter</code> to generate your classes,
     you can use a <code>TraceClassVisitor</code>,
     in order to get a readable trace of what is actually generated.
 </p>
 
-<p class="indented">
+<p>
     Or, even better, you can use both at the same time.
     Indeed the <code>TraceClassVisitor</code> can,
     in addition to its default behavior,

@@ -1,0 +1,148 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">FieldNode Examples</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    <span class="text-compare-green">The ASM tree API</span> for
+    <span class="text-compare-grey">generating</span> and
+    <span class="text-compare-grey">transforming</span>
+    <span class="text-emphasize">compiled Java classes</span> is
+    based on the <code>ClassNode</code> class.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_can_do.png" alt=""/>
+</div>
+
+<h2>Class Transformation</h2>
+
+<p>
+    <span class="text-emphasize">Adding and removing class members</span> simply consists in adding or removing
+    elements in the <code>fields</code> or <code>methods</code> lists of a <code>ClassNode</code> object.
+</p>
+
+<h3>Adding Field</h3>
+
+<p>
+    预期目标：在<code>HelloWorld</code>类当中，添加一个<code>Object objValue;</code>字段。
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int intValue;
+    public String strValue;
+}
+</pre>
+
+<p>
+    编码实现：
+</p>
+
+<pre title="ClassTransformer.java" hidden class="javacode">
+import org.objectweb.asm.tree.ClassNode;
+
+public class ClassTransformer {
+    protected  ClassTransformer ct;
+
+    public ClassTransformer(ClassTransformer ct) {
+        this.ct = ct;
+    }
+
+    public void transform(ClassNode cn) {
+        if (ct != null) {
+            ct.transform(cn);
+        }
+    }
+}
+</pre>
+
+<pre title="ClassAddFieldTransformer.java" class="javacode">
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
+
+public class ClassAddFieldTransformer extends ClassTransformer {
+    private final int fieldAccess;
+    private final String fieldName;
+    private final String fieldDesc;
+
+    public ClassAddFieldTransformer(ClassTransformer ct, int fieldAccess, String fieldName, String fieldDesc) {
+        super(ct);
+        this.fieldAccess = fieldAccess;
+        this.fieldName = fieldName;
+        this.fieldDesc = fieldDesc;
+    }
+
+    @Override
+    public void transform(ClassNode cn) {
+        boolean isPresent = false;
+        for (FieldNode fn : cn.fields) {
+            if (fieldName.equals(fn.name)) {
+                isPresent = true;
+                break;
+            }
+        }
+        if (!isPresent) {
+            cn.fields.add(new FieldNode(fieldAccess, fieldName, fieldDesc, null, null));
+        }
+        super.transform(cn);
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformTree.java" hidden class="javacode">
+import lsieun.tree.ClassAddFieldTransformer;
+import lsieun.tree.ClassTransformer;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
+
+public class HelloWorldTransformTree {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        // (1)构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        // (2) 构建ClassNode
+        int api = Opcodes.ASM9;
+        ClassNode cn = new ClassNode(api);
+        cr.accept(cn, ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+
+        // (3) 进行transform
+        ClassTransformer ct = new ClassAddFieldTransformer(null, Opcodes.ACC_PUBLIC, "objValue", "Ljava/lang/Object;");
+        ct.transform(cn);
+
+        // (4) 构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cn.accept(cw);
+
+        // (5) 生成byte[]内容输出
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<p>
+    验证结果：
+</p>
+
+<pre title="javap" class="plaintext">
+$ javap sample.HelloWorld
+public class sample.HelloWorld {
+  public int intValue;
+  public java.lang.String strValue;
+  public java.lang.Object objValue;
+  public sample.HelloWorld();
+}
+</pre>

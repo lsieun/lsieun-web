@@ -1,0 +1,32 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">The JAVA_TOOL_OPTIONS Environment Variable</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jdk-tools-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    In many environments the command line is not readily accessible to start the application with necessary command-line options.
+    This often arises with applications that use embedded VMs (meaning they use the Java Native Interface (JNI) Invocation API to start the VM),
+    or where the startup is deeply nested in scripts.
+    In these environments the <code>JAVA_TOOL_OPTIONS</code> environment variable can be useful to augment a command line.
+</p>
+
+<h2>修改java命令的语言</h2>
+
+<p>
+    设置环境变量快速方法：<code>Win+R</code>唤出“运行”，输入<code>sysdm.cpl</code>，进入系统属性——高级——环境变量。
+</p>
+
+<p>
+    设置环境变量<code>JAVA_TOOL_OPTIONS</code>，其值为<code>-Duser.language=en</code>。
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/envvars002.html" target="_blank">Oracle: The JAVA_TOOL_OPTIONS Environment Variable</a></li>
+    <li><a class="external" href="https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html#tooloptions" target="_blank">Oracle: JVM Tool Interface</a></li>
+</ul>

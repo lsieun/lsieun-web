@@ -1,0 +1,37 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">From bytes To Hex</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-radix-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Formatter</h2>
+
+<div title="方法1" class="javacode">
+public static String toHex(byte[] bytes) {
+    StringBuilder sb = new StringBuilder();
+    Formatter fm = new Formatter(sb);
+    for (byte b : bytes) {
+        fm.format("%02X", (b & 0xFF));
+    }
+    return sb.toString();
+}
+</div>
+
+<hr/>
+
+<h2>Integer.toString</h2>
+
+<div title="方法2" class="javacode">
+public static String toHex(byte[] bytes) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < bytes.length; ++i) {
+        sb.append(Integer.toString((bytes[i] & 0xFF) + 0x100, 16).substring(1));
+    }
+    return sb.toString();
+}
+</div>
+
+<hr/>

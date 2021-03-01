@@ -1,0 +1,374 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">MethodParameterAgent.jar</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Java Agent Components</h2>
+
+<h3>Agent Class</h3>
+
+<pre title="LoadTimeAgent.java" class="javacode">
+import java.lang.instrument.Instrumentation;
+
+public class LoadTimeAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Premain-Class: " + LoadTimeAgent.class.getName());
+        System.out.println("Can-Redefine-Classes: " + inst.isRedefineClassesSupported());
+        System.out.println("Can-Retransform-Classes: " + inst.isRetransformClassesSupported());
+        System.out.println("Can-Set-Native-Method-Prefix: " + inst.isNativeMethodPrefixSupported());
+        inst.addTransformer(new PrintMethodParameterTransformer());
+    }
+}
+</pre>
+
+<h3>ClassFileTransformer</h3>
+
+<pre title="PrintMethodParameterTransformer.java" class="javacode">
+import jdk.internal.org.objectweb.asm.ClassReader;
+import jdk.internal.org.objectweb.asm.ClassVisitor;
+import jdk.internal.org.objectweb.asm.ClassWriter;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+
+public class PrintMethodParameterTransformer implements ClassFileTransformer {
+    @Override
+    public byte[] transform(ClassLoader loader,
+                            String className,
+                            Class&lt;?&gt; classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer) throws IllegalClassFormatException {
+        if (className == null) return null;
+        if (className.startsWith("java/")) return null;
+        if (className.startsWith("jdk/")) return null;
+        if (className.startsWith("sun/")) return null;
+        if (className.startsWith("org/")) return null;
+        if (className.startsWith("com/")) return null;
+        if (className.equals("Constant")) return null;
+        if (className.equals("LoadTimeAgent")) return null;
+        if (className.equals("MethodInfoAdapter")) return null;
+        if (className.equals("MethodInfoVisitor")) return null;
+        if (className.equals("PrintMethodParameterTransformer")) return null;
+        if (className.equals("PrintUtils")) return null;
+        System.out.println("className: " + className);
+
+        ClassReader cr = new ClassReader(classfileBuffer);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        ClassVisitor cv = new MethodInfoVisitor(cw);
+
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
+        byte[] bytes = cw.toByteArray();
+
+        return bytes;
+    }
+}
+</pre>
+
+<h3>ASM Instrumentation</h3>
+
+<h4>Constant.java</h4>
+
+<pre title="Constant.java" class="javacode">
+import jdk.internal.org.objectweb.asm.Opcodes;
+
+public class Constant {
+    public static final int API_VERSION = Opcodes.ASM5;
+}
+</pre>
+
+<h4>MethodInfoVisitor.java</h4>
+
+<pre title="MethodInfoVisitor.java" class="javacode">
+import jdk.internal.org.objectweb.asm.ClassVisitor;
+import jdk.internal.org.objectweb.asm.MethodVisitor;
+
+public class MethodInfoVisitor extends ClassVisitor {
+    private String owner;
+
+    public MethodInfoVisitor(ClassVisitor classVisitor) {
+        super(Constant.API_VERSION, classVisitor);
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(version, access, name, signature, superName, interfaces);
+        this.owner = name;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        if (mv != null && !name.equals("&lt;init&gt;") && !name.equals("&lt;clinit&gt;")) {
+            mv = new MethodInfoAdapter(mv, owner, access, name, descriptor);
+        }
+        return mv;
+    }
+}
+</pre>
+
+<h4>MethodInfoAdapter.java</h4>
+
+<pre title="MethodInfoAdapter.java" class="javacode">
+import jdk.internal.org.objectweb.asm.MethodVisitor;
+import jdk.internal.org.objectweb.asm.Opcodes;
+import jdk.internal.org.objectweb.asm.Type;
+
+public class MethodInfoAdapter extends MethodVisitor {
+    private final String owner;
+    private final int methodAccess;
+    private final String methodName;
+    private final String methodDesc;
+
+    public MethodInfoAdapter(MethodVisitor methodVisitor, String owner,
+                             int methodAccess, String methodName, String methodDesc) {
+        super(Constant.API_VERSION, methodVisitor);
+        this.owner = owner;
+        this.methodAccess = methodAccess;
+        this.methodName = methodName;
+        this.methodDesc = methodDesc;
+    }
+
+    @Override
+    public void visitCode() {
+        if (mv != null) {
+            String line = String.format("Method Enter: %s.%s:%s", owner, methodName, methodDesc);
+            printMessage(line);
+
+            int slotIndex = (methodAccess & Opcodes.ACC_STATIC) != 0 ? 0 : 1;
+            Type methodType = Type.getMethodType(methodDesc);
+            Type[] argumentTypes = methodType.getArgumentTypes();
+            for (Type t : argumentTypes) {
+                int sort = t.getSort();
+                int size = t.getSize();
+                int opcode = t.getOpcode(Opcodes.ILOAD);
+                super.visitVarInsn(opcode, slotIndex);
+
+                if (sort &gt;= Type.BOOLEAN && sort &lt;= Type.DOUBLE) {
+                    String desc = t.getDescriptor();
+                    printValueOnStack("(" + desc + ")V");
+                }
+                else {
+                    printValueOnStack("(Ljava/lang/Object;)V");
+                }
+                slotIndex += size;
+            }
+        }
+
+        super.visitCode();
+    }
+
+    private void printMessage(String str) {
+        super.visitLdcInsn(str);
+        super.visitMethodInsn(Opcodes.INVOKESTATIC, "PrintUtils", "printText", "(Ljava/lang/String;)V", false);
+    }
+
+    private void printValueOnStack(String descriptor) {
+        super.visitMethodInsn(Opcodes.INVOKESTATIC, "PrintUtils", "printValueOnStack", descriptor, false);
+    }
+
+    private void printStackTrace() {
+        super.visitMethodInsn(Opcodes.INVOKESTATIC, "PrintUtils", "printStackTrace", "()V", false);
+    }
+}
+</pre>
+
+<h4>PrintUtils.java</h4>
+
+<pre title="PrintUtils.java" hidden class="javacode">
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+
+public class PrintUtils {
+    private static final DateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    public static void printValueOnStack(boolean value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(byte value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(char value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(short value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(int value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(float value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(long value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(double value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(Object value) {
+        if (value == null) {
+            System.out.println("    " + value);
+        }
+        else if (value instanceof String) {
+            System.out.println("    " + value);
+        }
+        else if (value instanceof Date) {
+            System.out.println("    " + fm.format(value));
+        }
+        else if (value instanceof char[]) {
+            System.out.println("    " + Arrays.toString((char[]) value));
+        }
+        else if (value instanceof Object[]) {
+            System.out.println("    " + Arrays.toString((Object[]) value));
+        }
+        else {
+            System.out.println("    " + value.getClass() + ": " + value.toString());
+        }
+    }
+
+    public static void printText(String str) {
+        System.out.println(str);
+    }
+
+    public static void printStackTrace() {
+        Exception ex = new Exception();
+        ex.printStackTrace();
+    }
+}
+
+</pre>
+
+<h3>manifest.mf</h3>
+
+<pre title="manifest.mf" class="plaintext">
+Premain-Class: LoadTimeAgent
+
+</pre>
+
+<p>
+    注意：在Windows 7操作系统上，<code>Premain-Class: LoadTimeAgent</code>结尾处应多添加一个回车符号；否则，无法添加<code>manifest.mf</code>成功。
+</p>
+
+<h2>编译并生成Jar包</h2>
+
+<pre title="编译Java文件" class="plaintext">
+$ javac -XDignore.symbol.file *.java
+</pre>
+
+<p>
+    注意：在编译的时候，要添加<code>-XDignore.symbol.file</code>选项；否则，会编译出错。
+</p>
+
+<pre title="生成Jar包" class="plaintext">
+$ jar -cvfm MethodParameterAgent.jar manifest.mf *.class
+# 或者
+$ jar -cvfm MethodParameterAgent.jar manifest.mf \
+    Constant.class LoadTimeAgent.class MethodInfoAdapter.class \
+    MethodInfoVisitor.class PrintMethodParameterTransformer.class PrintUtils.class
+</pre>
+
+<h2>运行测试</h2>
+
+<pre title="Program.java" class="javacode">
+import java.util.Random;
+
+public class Program {
+    public static void main(String[] args) {
+        System.out.println("Main Method");
+        Random rand = new Random();
+        for (int i = 0; i < 10; i++) {
+            int a = rand.nextInt(100);
+            int b = rand.nextInt(100);
+            int c = add(a, b);
+            System.out.println("result = " + c);
+        }
+    }
+
+    public static int add(int a, int b) {
+        return a + b;
+    }
+}
+</pre>
+
+<pre title="不使用Agent" class="plaintext">
+$ java Program
+Main Method
+result = 47
+result = 88
+result = 62
+result = 62
+result = 101
+result = 69
+result = 158
+result = 109
+result = 106
+result = 103
+</pre>
+
+<pre title="使用Agent" class="plaintext">
+$ java -javaagent:MethodParameterAgent.jar Program
+Premain-Class: LoadTimeAgent
+Can-Redefine-Classes: false
+Can-Retransform-Classes: false
+Can-Set-Native-Method-Prefix: false
+className: Program
+Method Enter: Program.main:([Ljava/lang/String;)V
+    []
+Main Method
+Method Enter: Program.add:(II)I
+    94
+    93
+result = 187
+Method Enter: Program.add:(II)I
+    39
+    66
+result = 105
+Method Enter: Program.add:(II)I
+    99
+    19
+result = 118
+Method Enter: Program.add:(II)I
+    98
+    27
+result = 125
+Method Enter: Program.add:(II)I
+    1
+    81
+result = 82
+Method Enter: Program.add:(II)I
+    8
+    40
+result = 48
+Method Enter: Program.add:(II)I
+    9
+    62
+result = 71
+Method Enter: Program.add:(II)I
+    99
+    54
+result = 153
+Method Enter: Program.add:(II)I
+    67
+    9
+result = 76
+Method Enter: Program.add:(II)I
+    67
+    30
+result = 97
+</pre>

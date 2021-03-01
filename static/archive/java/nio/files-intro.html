@@ -1,0 +1,375 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Files Intro</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-nio-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    <code>java.nio.file.Files</code> consists of all static methods
+    that let we perform most of the file operations on a <code>Path</code> object.
+</p>
+
+<h2>Creating New Files</h2>
+
+<p>
+    <code>Files</code> can create regular files, directories, symbolic links, and temporary files/directories.
+</p>
+
+<p>
+    Most of the methods accept a varargs parameter of the <code>FileAttribute</code> type, which lets we specify the file attributes.
+</p>
+
+<p>
+    <code>createFile()</code> method creates a new regular file. The new file created, is empty.
+</p>
+
+<p>
+    The file creation fails if the file already exists, or the parent directory does not exist.
+</p>
+
+<p>
+    The following code shows how to create a new file.
+</p>
+
+<pre title="NIO_Files_Example_CreateFile.java" class="javacode">
+import java.io.IOException;
+import java.nio.file.*;
+
+public class NIO_Files_Example_CreateFile {
+    public static void main(String[] args) {
+        Path p1 = Paths.get("test.txt");
+        try {
+            Files.createFile(p1);
+            System.out.format("File created: %s%n", p1.toRealPath());
+        } catch (FileAlreadyExistsException e) {
+            System.out.format("File %s already exists.%n", p1.normalize());
+        } catch (NoSuchFileException e) {
+            System.out.format("Directory %s does not exists.%n", p1.normalize().getParent());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+File created: D:\git-repo\learn-java-nio\test.txt
+</pre>
+
+<h2>Create Directory</h2>
+
+<p>
+    <code>createDirectory()</code> and <code>createDirectories()</code> methods create a new directory.
+</p>
+
+<p>
+    If the parent directory does not exist, the <code>createDirectory()</code> method fails.
+</p>
+
+<p>
+    The <code>createDirectories()</code> method creates a non-existent parent directory.
+</p>
+
+<p>
+    The <code>createTempDirectory()</code> and <code>createTempFile()</code> methods create a temporary directory and a temporary file respectively.
+</p>
+
+<p>
+    The following code shows how to create temporary files and directories.
+</p>
+
+<pre title="NIO_Files_Example_CreateTemp.java" class="javacode">
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class NIO_Files_Example_CreateTemp {
+    public static void main(String[] args) throws Exception {
+        String dirPrefix = "KDir";
+        Path tDir = Files.createTempDirectory(dirPrefix);
+        System.out.println("Temp directory: " + tDir);
+
+        String fPrefix = "Header_";
+        String fSuffix = ".txt";
+        Path tFile1 = Files.createTempFile(fPrefix, fSuffix);
+        System.out.println("Temp file1: " + tFile1);
+
+        Path p1 = Paths.get("C:\\temp");
+        Path tFile2 = Files.createTempFile(p1, fPrefix, fSuffix);
+        System.out.println("Temp file2: " + tFile2);
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+Temp directory: C:\Users\liusen\AppData\Local\Temp\KDir5320346901139347145
+Temp file1: C:\Users\liusen\AppData\Local\Temp\Header_4479656900988219837.txt
+Temp file2: C:\temp\Header_3864790037937033024.txt
+</pre>
+
+<p>
+    A temporary file/directory is not automatically deleted.
+    We may want to use the <code>deleteOnExit()</code> method of the <code>java.io.File</code> class to delete the file when the JVM exits.
+</p>
+
+<pre title="Code" class="javacode">
+Path tempFile = Files.createTempFile("myTempFile", ".txt");
+tempFile.toFile().deleteOnExit();
+</pre>
+
+<h2>Deleting Files</h2>
+
+<p>
+    <code>delete(Path p)</code> and <code>deleteIfExists(Path p)</code> from <code>Files</code> to delete a file, a directory, and a symbolic link.
+</p>
+
+<p>
+    <code>delete()</code> method throws an exception if the deletion fails.
+</p>
+
+<p>
+    <code>deleteIfExists()</code> method does not throw a <code>NoSuchFileException</code> if the file being deleted does not exist.
+</p>
+
+<p>
+    It returns <code>true</code> if it deletes the file. Otherwise, it returns <code>false</code>.
+</p>
+
+<p>
+    The following code shows how to delete a file and handle exceptions:
+</p>
+
+<pre title="NIO_Files_Example_Delete.java" class="javacode">
+import java.io.IOException;
+import java.nio.file.*;
+
+public class NIO_Files_Example_Delete {
+    public static void main(String[] args) throws Exception {
+        Path p = Paths.get("C:\\Java_Dev\\test1.txt");
+
+        try {
+            Files.delete(p);
+            System.out.println(p + " deleted successfully.");
+        } catch (NoSuchFileException e) {
+            System.out.println(p + " does not exist.");
+        } catch (DirectoryNotEmptyException e) {
+            System.out.println("Directory " + p + " is not empty.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+}
+</pre>
+
+<h2>Existence of a File</h2>
+
+<p>
+    <code>Files</code> class has two methods called <code>exists(Path p, LinkOption... options)</code> and
+    <code>notExists(Path p, LinkOption... options)</code> to check for the existence and non-existence of a file, respectively.
+</p>
+
+<h2>Copying Files</h2>
+
+<p>
+    <code>Files</code> class <code>copy(Path source, Path target, CopyOption... options)</code> method
+    can copy the specified source path to the specified target path.
+</p>
+
+<p>
+    If the specified source file is a symbolic link, the target of the symbolic link is copied, not the symbolic link.
+</p>
+
+<p>
+    If the specified source file is a directory,
+    an empty directory at the target location is created without copying the contents of the directory.
+</p>
+
+<p>
+    We can specify one or more of the following copy options with the <code>copy()</code> method:
+</p>
+
+<ul>
+    <li>StandardCopyOption.REPLACE_EXISTING</li>
+    <li>StandardCopyOption.COPY_ATTRIBUTES</li>
+    <li>LinkOption.NOFOLLOW_LINKS</li>
+</ul>
+
+<p>
+    We can specify the <code>REPLACE_EXISTING</code> option to replace the existing target file.
+</p>
+
+<p>
+    If the target file is a symbolic link and if it exists,
+    the symbolic link is replaced by specifying the <code>REPLACE_EXISTING</code> option, not the target of the symbolic link.
+</p>
+
+<p>
+    The <code>COPY_ATTRIBUTES</code> option copies the attributes of the source file to the target file.
+</p>
+
+<p>
+    If the <code>NOFOLLOW_LINKS</code> option is used, the <code>copy()</code> method copies the symbolic link, not the target of the symbolic link.
+</p>
+
+<p>
+    The following code shows the use of the <code>copy()</code> method to copy a file.
+    It handles the possible exceptions if the copy operation fails.
+</p>
+
+<pre title="NIO_Files_Example_Copy.java" class="javacode">
+import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
+public class NIO_Files_Example_Copy {
+    public static void main(String[] args) {
+        Path source = Paths.get("C:\\Java_Dev\\test1.txt");
+        Path target = Paths.get("C:\\Java_Dev\\test1_backup.txt");
+
+        try {
+            Path p = Files.copy(source, target, REPLACE_EXISTING, COPY_ATTRIBUTES);
+            System.out.println(source + " has been copied to " + p);
+        } catch (FileAlreadyExistsException e) {
+            System.out.println(target + " already exists.");
+        } catch (DirectoryNotEmptyException e) {
+            System.out.println(target + " is not empty.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+<h2>Moving Files</h2>
+
+<p>
+    <code>move(Path source, Path target, CopyOption... options)</code> method of the <code>Files</code> class moves or rename a file.
+</p>
+
+<p>
+    The move operation fails if the specified <code>target</code> file already exists.
+</p>
+
+<p>
+    We can specify the <code>REPLACE_EXISTING</code> option to replace the existing target file.
+</p>
+
+<p>
+    If the file to move is a symbolic link, it moves the symbolic link, not the target of the symbolic link.
+</p>
+
+<p>
+    The <code>move()</code> method can only be used to move an empty directory.
+</p>
+
+<p>
+    Apart from the <code>REPLACE_EXISTING</code> CopyOption, we can use the <code>ATOMIC_MOVE</code> as another <code>CopyOption</code>.
+</p>
+
+<p>
+    If the <code>ATOMIC_MOVE</code> option is used, it throws an <code>AtomicMoveNotSupportedException</code> if the file could not be moved atomically.
+</p>
+
+<p>
+    If <code>ATOMIC_MOVE</code> option is specified, all other options are ignored.
+</p>
+
+<p>
+    The following code shows how to move a file by handling possible exceptions:
+</p>
+
+<pre title="NIO_Files_Example_Move.java" class="javacode">
+import java.io.IOException;
+import java.nio.file.*;
+
+import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
+
+public class NIO_Files_Example_Move {
+    public static void main(String[] args) {
+        Path source = Paths.get("C:\\Java_Dev\\test1.txt");
+        Path target = Paths.get("C:\\Java_Dev\\dir2\\test1.txt");
+
+        try {
+            Path p = Files.move(source, target, ATOMIC_MOVE);
+            System.out.println(source + " has been moved to " + p);
+        } catch (NoSuchFileException e) {
+            System.out.println("Source/target does not exist.");
+        } catch (FileAlreadyExistsException e) {
+            System.out.println(target + " already exists. Move failed.");
+        } catch (DirectoryNotEmptyException e) {
+            System.out.println(target + " is not empty. Move failed.");
+        } catch (AtomicMoveNotSupportedException e) {
+            System.out.println("Atomic move is not supported. Move failed.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+<h2>Symbolic Links</h2>
+
+<p>
+    A symbolic link contains a reference to another file or directory.
+</p>
+
+<p>
+    The file referenced by a symbolic link is known as the target file for the symbolic link.
+</p>
+
+<p>
+    Operations on a symbolic link are transparent to the application.
+    We can work with symbolic links using the <code>java.nio.file.Files</code> class.
+</p>
+
+<p>
+    <code>isSymbolicLink(Path p)</code> method checks if the file specified by the specified path is a symbolic link.
+</p>
+
+<p>
+    <code>createSymbolicLink()</code> method of the <code>Files</code>, which may not be supported on all platforms, creates a symbolic link.
+</p>
+
+<pre title="NIO_Files_Example_SymbolicLink.java" class="javacode">
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class NIO_Files_Example_SymbolicLink {
+    public static void main(String[] args) throws Exception {
+        Path existingFilePath = Paths.get("D:\\tmp\\test1.txt");
+        Path symLinkPath = Paths.get("D:\\test1_link.txt");
+        Files.createSymbolicLink(symLinkPath, existingFilePath);
+    }
+}
+</pre>
+
+<p>
+    The Java NIO API follows the symbolic link by default.
+    We can specify whether we want to follow a symbolic link or not.
+    The option not to follow a symbolic link is indicated by using the enum constant <code>LinkOption.NOFOLLOW_LINKS</code>.
+</p>
+
+<p>
+    The <code>LinkOption</code> enum is declared in the <code>java.nio.file</code> package.
+    Methods supporting this option let we pass an argument of the <code>LinkOption</code> type.
+</p>
+
+<p>
+    We can use the <code>createLink(Path newLink, Path existingPath)</code> method of the Files class to create a <span class="text-emphasize">hard link</span>.
+</p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="http://www.java2s.com/Tutorials/Java/Java_io/0990__Java_nio_Files.htm" target="_blank">Java IO Tutorial - Java Files</a></li>
+    <li><a class="external" href="http://www.java2s.com/Tutorials/Java/Java_io/0980__Java_nio_Symbolic_Links.htm" target="_blank">Java IO Tutorial - Java Symbolic Links</a></li>
+</ul>

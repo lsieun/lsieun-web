@@ -1,0 +1,261 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassWriter Examples</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    <span class="text-compare-green">The ASM core API</span> for
+    <span class="text-compare-grey">generating</span> and
+    <span class="text-compare-grey">transforming</span>
+    <span class="text-emphasize">compiled Java classes</span> is based on the <code>ClassVisitor</code> abstract class.
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/asm/asm_can_do.png" alt=""/>
+</div>
+
+<h2>Class Generation</h2>
+
+<h3>示例一：接口</h3>
+
+<p>
+    预期结果：
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public interface HelloWorld {
+}
+</pre>
+
+<p>
+    实现代码：
+</p>
+
+<pre title="HelloWorldGenerateCore.java" class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassWriter;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldGenerateCore {
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // (1) 生成byte[]内容
+        byte[] bytes = dump();
+
+        // (2) 保存byte[]到文件
+        FileUtils.writeBytes(filepath, bytes);
+    }
+
+    public static byte[] dump() throws Exception {
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cw.visit(
+                V1_8,                                        // version
+                ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE,   // access
+                "sample/HelloWorld",                         // name
+                null,                                        // signature
+                "java/lang/Object",                          // superName
+                null                                         // interfaces
+        );
+
+        cw.visitEnd();
+
+        return cw.toByteArray();
+    }
+}
+</pre>
+
+<ul>
+    <li>
+        <code>visit(version, access, name, signature, superName, interfaces)</code>
+        <ul>
+            <li>
+                <code>version</code>: 表示当前类的版本信息。在示例代码中，其取值为<code>Opcodes.V1_8</code>，表示使用Java 8版本。
+            </li>
+            <li>
+                <code>access</code>: 表示当前类的访问标识（access flag）信息。如果想进一步了解，可以参考<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html" target="_blank">Java Virtual Machine Specification</a>的Chapter 4. The class File Format部分，或者参考<a href="https://edu.51cto.com/sd/7882b" target="_blank">Java 8 ClassFile</a>的3-27 ClassInfo: (2) access flag部分的内容。
+            </li>
+            <li>
+                <code>name</code>: 表示当前类的名字，它采用的格式是Internal Name的形式。
+            </li>
+            <li>
+                <code>signature</code>: 表示当前类的签名信息。
+            </li>
+            <li>
+                <code>superName</code>: 表示当前类的父类信息，它采用的格式是Internal Name的形式。
+            </li>
+            <li>
+                <code>interfaces</code>: 表示当前类实现了哪些接口信息。
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<p>
+    验证结果：
+</p>
+
+<pre title="HelloWorldRun.java" class="javacode">
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Class&lt;?&gt; clazz = Class.forName("sample.HelloWorld");
+        System.out.println(clazz);
+    }
+}
+</pre>
+
+<h3>示例二：接口+字段+方法</h3>
+
+<p>
+    预期结果：
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public interface HelloWorld extends Cloneable {
+    int LESS = -1;
+    int EQUAL = 0;
+    int GREATER = 1;
+    int compareTo(Object o);
+}
+</pre>
+
+<p>
+    实现代码：
+</p>
+
+<pre title="HelloWorldGenerateCore.java" class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassWriter;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldGenerateCore {
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // (1) 生成byte[]内容
+        byte[] bytes = dump();
+
+        // (2) 保存byte[]到文件
+        FileUtils.writeBytes(filepath, bytes);
+    }
+
+    public static byte[] dump () throws Exception {
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cw.visit(V1_8, ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE, "sample/HelloWorld",
+                null, "java/lang/Object", new String[]{"java/lang/Cloneable"});
+        cw.visitField(ACC_PUBLIC + ACC_FINAL + ACC_STATIC, "LESS", "I",
+                null, Integer.valueOf(-1)).visitEnd();
+        cw.visitField(ACC_PUBLIC + ACC_FINAL + ACC_STATIC, "EQUAL", "I",
+                null, Integer.valueOf(0)).visitEnd();
+        cw.visitField(ACC_PUBLIC + ACC_FINAL + ACC_STATIC, "GREATER", "I",
+                null, Integer.valueOf(1)).visitEnd();
+        cw.visitMethod(ACC_PUBLIC + ACC_ABSTRACT, "compareTo", "(Ljava/lang/Object;)I",
+                null, null).visitEnd();
+        cw.visitEnd();
+
+        return cw.toByteArray();
+    }
+}
+</pre>
+
+<p>
+    验证结果：
+</p>
+
+<pre title="验证方式一：javap" class="plaintext">
+$ javap sample.HelloWorld
+public interface sample.HelloWorld extends java.lang.Cloneable {
+  public static final int LESS;
+  public static final int EQUAL;
+  public static final int GREATER;
+  public abstract int compareTo(java.lang.Object);
+}
+</pre>
+
+<pre title="验证方式二：HelloWorldRun.java" class="javacode">
+import java.lang.reflect.Field;
+
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Class&lt;?&gt; clazz = Class.forName("sample.HelloWorld");
+        Field field = clazz.getDeclaredField("GREATER");
+        Object o = field.get(null);
+        System.out.println(o);
+    }
+}
+</pre>
+
+<h3>示例三：类</h3>
+
+<p>
+    预期结果：
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+}
+</pre>
+
+<p>
+    实现代码：
+</p>
+
+<pre title="HelloWorldGenerateCore.java" class="javacode">
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class HelloWorldGenerateCore {
+    public static void main(String[] args) throws Exception {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+
+        // (1) 生成byte[]内容
+        byte[] bytes = dump();
+
+        // (2) 保存byte[]到文件
+        FileUtils.writeBytes(filepath, bytes);
+    }
+
+    public static byte[] dump() throws Exception {
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "sample/HelloWorld",
+                null, "java/lang/Object", null);
+
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false);
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
+
+        cw.visitEnd();
+
+        return cw.toByteArray();
+    }
+}
+</pre>
+
+<p>
+    验证结果：
+</p>
+
+<pre title="HelloWorldRun.java" class="javacode">
+public class HelloWorldRun {
+    public static void main(String[] args) throws Exception {
+        Class&lt;?&gt; clazz = Class.forName("sample.HelloWorld");
+        System.out.println(clazz);
+    }
+}
+</pre>

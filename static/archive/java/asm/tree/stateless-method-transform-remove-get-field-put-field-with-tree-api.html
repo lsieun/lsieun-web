@@ -1,0 +1,200 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Remove GETFIELD/PUTFIELD</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-asm-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>预期目标</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public int value;
+
+    public void test() {
+        System.out.println("test method");
+        this.value = this.value;
+    }
+}
+</pre>
+
+<h2>编码实现</h2>
+
+<pre title="MethodTransformer.java" class="javacode">
+import org.objectweb.asm.tree.MethodNode;
+
+public class MethodTransformer {
+    protected MethodTransformer mt;
+
+    public MethodTransformer(MethodTransformer mt) {
+        this.mt = mt;
+    }
+
+    public void transform(MethodNode mn) {
+        if (mt != null) {
+            mt.transform(mn);
+        }
+    }
+}
+</pre>
+
+<pre title="MethodRemoveGetFieldPutFieldTransformer.java" class="javacode">
+import org.objectweb.asm.tree.*;
+
+import java.util.ListIterator;
+
+import static org.objectweb.asm.Opcodes.*;
+
+public class MethodRemoveGetFieldPutFieldTransformer extends MethodTransformer {
+    public MethodRemoveGetFieldPutFieldTransformer(MethodTransformer mt) {
+        super(mt);
+    }
+
+    @Override
+    public void transform(MethodNode mn) {
+        InsnList instructions = mn.instructions;
+        ListIterator&lt;AbstractInsnNode&gt; it = instructions.iterator();
+        while (it.hasNext()) {
+            AbstractInsnNode node1 = it.next();
+            if (isALOAD0(node1)) {
+                AbstractInsnNode node2 = getNext(node1);
+                if (node2 != null && isALOAD0(node2)) {
+                    AbstractInsnNode node3 = getNext(node2);
+                    if (node3 != null && node3.getOpcode() == GETFIELD) {
+                        AbstractInsnNode node4 = getNext(node3);
+                        if (node4 != null && node4.getOpcode() == PUTFIELD) {
+                            if (sameField(node3, node4)) {
+                                while (it.next() != node4) {
+                                }
+                                instructions.remove(node1);
+                                instructions.remove(node2);
+                                instructions.remove(node3);
+                                instructions.remove(node4);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        super.transform(mn);
+    }
+
+    private static AbstractInsnNode getNext(AbstractInsnNode insn) {
+        do {
+            insn = insn.getNext();
+            if (insn != null && !(insn instanceof LineNumberNode)) {
+                break;
+            }
+        } while (insn != null);
+        return insn;
+    }
+
+    private static boolean isALOAD0(AbstractInsnNode insnNode) {
+        return insnNode.getOpcode() == ALOAD && ((VarInsnNode) insnNode).var == 0;
+    }
+
+    private static boolean sameField(AbstractInsnNode oneInsnNode, AbstractInsnNode anotherInsnNode) {
+        if (!(oneInsnNode instanceof FieldInsnNode)) return false;
+        if (!(anotherInsnNode instanceof FieldInsnNode)) return false;
+        FieldInsnNode fieldInsnNode1 = (FieldInsnNode) oneInsnNode;
+        FieldInsnNode fieldInsnNode2 = (FieldInsnNode) anotherInsnNode;
+        String name1 = fieldInsnNode1.name;
+        String name2 = fieldInsnNode2.name;
+        return name1.equals(name2);
+    }
+}
+</pre>
+
+<pre title="ClassRemoveGetFieldPutFieldTransformer.java" class="javacode">
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.MethodNode;
+
+public class ClassRemoveGetFieldPutFieldTransformer extends ClassTransformer {
+
+    public ClassRemoveGetFieldPutFieldTransformer(ClassTransformer ct) {
+        super(ct);
+    }
+
+    @Override
+    public void transform(ClassNode cn) {
+        for (MethodNode mn : cn.methods) {
+            if ("&lt;init&gt;".equals(mn.name) || "&lt;clinit&gt;".equals(mn.name)) {
+                continue;
+            }
+            InsnList insns = mn.instructions;
+            if (insns.size() == 0) {
+                continue;
+            }
+            MethodTransformer mt = new MethodRemoveGetFieldPutFieldTransformer(null);
+            mt.transform(mn);
+        }
+
+        super.transform(cn);
+    }
+}
+</pre>
+
+<pre title="HelloWorldTransformTree.java" class="javacode">
+import lsieun.tree.ClassRemoveGetFieldPutFieldTransformer;
+import lsieun.tree.ClassTransformer;
+import lsieun.utils.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
+
+public class HelloWorldTransformTree {
+    public static void main(String[] args) {
+        String relative_path = "sample/HelloWorld.class";
+        String filepath = FileUtils.getFilePath(relative_path);
+        byte[] bytes1 = FileUtils.readBytes(filepath);
+
+        // (1)构建ClassReader
+        ClassReader cr = new ClassReader(bytes1);
+
+        // (2) 构建ClassNode
+        int api = Opcodes.ASM9;
+        ClassNode cn = new ClassNode(api);
+        cr.accept(cn, ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+
+        // (3) 进行transform
+        ClassTransformer ct = new ClassRemoveGetFieldPutFieldTransformer(null);
+        ct.transform(cn);
+
+        // (4) 构建ClassWriter
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cn.accept(cw);
+
+        // (5) 生成byte[]内容输出
+        byte[] bytes2 = cw.toByteArray();
+
+        FileUtils.writeBytes(filepath, bytes2);
+    }
+}
+</pre>
+
+<h2>验证结果</h2>
+
+<pre title="javap" class="plaintext">
+$ javap -c -p sample.HelloWorld
+public class sample.HelloWorld {
+  public int value;
+
+  public sample.HelloWorld();
+    Code:
+       0: aload_0
+       1: invokespecial #10                 // Method java/lang/Object."&lt;init&gt;":()V
+       4: return
+
+  public void test();
+    Code:
+       0: getstatic     #17                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: ldc           #19                 // String test method
+       5: invokevirtual #25                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       8: return
+}
+</pre>
