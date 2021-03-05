@@ -1,0 +1,139 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Agent Class Examples</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Java Agent</h2>
+
+<h3>Application</h3>
+
+<pre title="Program.java" class="javacode">
+public class Program {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}
+</pre>
+
+<h3>Agent Class</h3>
+
+<pre title="BasicAgent.java" class="javacode">
+import java.lang.instrument.Instrumentation;
+
+public class BasicAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        // TODO
+    }
+}
+</pre>
+
+<h3>Manifest.mf</h3>
+
+<pre title="Manifest.mf" class="plaintext">
+Premain-Class: BasicAgent
+</pre>
+
+<h3>Run</h3>
+
+<pre title="编译" class="plaintext">
+$ javac BasicAgent.java
+$ jar -cvfm TheAgent.jar Manifest.mf BasicAgent.class
+</pre>
+
+<pre title="生成Jar包" class="plaintext">
+$ jar -cvfm TheAgent.jar Manifest.mf BasicAgent.class
+</pre>
+
+<h2>Examples</h2>
+
+<h3>premain vs main</h3>
+
+<p>
+    本示例目的：展示<code>premain</code>方法和<code>main</code>方法两者执行的先后顺序。Agent Class的<code>premain</code>方法先执行，而Application的<code>main</code>方法后执行。
+</p>
+
+<pre title="BasicAgent.java" class="javacode">
+import java.lang.instrument.Instrumentation;
+
+public class BasicAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Agent Class: " + BasicAgent.class.getName());
+    }
+}
+</pre>
+
+<pre title="Run" class="plaintext">
+$ java -javaagent:TheAgent.jar Program
+Agent Class: BasicAgent
+Hello World
+</pre>
+
+<h3>premain-&gt;agentArgs</h3>
+
+<p>
+    本示例目的：Agent Class的<code>premain</code>方法的<code>agentArgs</code>参数是从命令行中的<code>options</code>传递而来。
+</p>
+
+<pre title="Java Agent Command-Line Option" class="plaintext">
+-javaagent:jarpath[=options]
+</pre>
+
+<pre title="BasicAgent.java" class="javacode">
+import java.lang.instrument.Instrumentation;
+
+public class BasicAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Agent Args: " + agentArgs);
+    }
+}
+</pre>
+
+<pre title="Run" class="plaintext">
+$ java -javaagent:TheAgent.jar=One,Two,Three Program
+Agent Args: One,Two,Three
+Hello World
+</pre>
+
+<h3>premain-&gt;inst</h3>
+
+<p>
+    本示例目的：在启动的过程当中，JVM会创建一个<code>Instrumentation</code>对象，并将其传递给Agent Class的<code>premain</code>方法。<code>Instrumentation</code>是一个接口，它的具体实现类型是<code>class sun.instrument.InstrumentationImpl</code>。
+</p>
+
+<pre title="BasicAgent.java" class="javacode">
+import java.lang.instrument.Instrumentation;
+
+public class BasicAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Instrumentation Class: " + inst.getClass());
+    }
+}
+</pre>
+
+<pre title="Run" class="plaintext">
+$ java -javaagent:TheAgent.jar Program
+Instrumentation Class: class sun.instrument.InstrumentationImpl
+Hello World
+</pre>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>
+        第一，Java Agent在执行过程中，<code>premain</code>方法先执行，而<code>main</code>方法后执行。
+    </li>
+    <li>
+        第二，在Agent Class中，<code>premain</code>方法的<code>agentArgs</code>参数是由<code>-javaagent:jarpath[=options]</code>中<code>options</code>转换而来。
+    </li>
+    <li>
+        第三，JVM会为Java Agent提供一个<code>Instrumentation</code>对象，其实现是由<code>class sun.instrument.InstrumentationImpl</code>提供。
+    </li>
+</ul>

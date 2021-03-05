@@ -105,6 +105,13 @@
             document.getElementById('img_modal').style.display='block'
         }
 
+        function myFunction(key_id) {
+            let copyText = document.getElementById(key_id);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+        }
+
         function toggle_paragraph_sub_note(obj) {
             $(obj).parent().find("sub.my_note").toggle();
         }

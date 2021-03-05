@@ -1,0 +1,88 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">redefine VS. retransform</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    When packing a jar file with custom java agent, you can add the following properties:
+</p>
+
+<ul>
+    <li>Can-Redefine-Classes</li>
+    <li>Can-Retransform-Classes</li>
+</ul>
+
+<p>
+    What is the difference between redefine and retransform?
+</p>
+
+<h2>First Difference</h2>
+
+<p>
+    They seem almost redundant in the functionality they offer us.
+</p>
+
+<p class="text-underline">
+    The main difference seems to be that when we <strong>redefine</strong> a class,
+    we supply a <code>byte[]</code> with the new definition out of the blue,
+    whereas when we <strong>retransform</strong>,
+    we get a <code>byte[]</code> containing the current definition via the same API, and we return a modified <code>byte[]</code>.
+</p>
+
+<p>
+    Therefore, to <strong>redefine</strong>, we need to know more about the class.
+    Consider the use-case of injecting profiling trace statements.
+    With <strong>retransform</strong> you can do that more directly:
+    just look at the bytecode given, modify it, and return it.
+    But if we went the <strong>redefine</strong> route,
+    we would need to fetch the original <code>byte[]</code> from somewhere (like <code>getResourceAsStream()</code>).
+</p>
+
+<h2>Second Difference</h2>
+
+<p>
+    Another apparent difference is in how we interact with other class transformers: who goes first.
+    Transforms are applied to the original or a redefined class, so several transforms can be additive, for example.
+</p>
+
+<p>
+    Historically, if we look at the Since comments in the <a class="external" href="https://docs.oracle.com/javase/8/docs/api/java/lang/instrument/Instrumentation.html#redefineClasses-java.lang.instrument.ClassDefinition...-" target="_blank">API documentation</a>,
+    or on page 238 of <a class="external" href="https://www.amazon.com/Beginning-Java-SE-Platform-Professional/dp/159059830X" target="_blank">this book</a> (Friesen 2007 Beginning Java SE 6 Platform),
+    we notice that <strong>redefinition</strong> capabilities were introduced in Java 5,
+    and <strong>retransformation</strong> in Java 6.
+    My guess is that <strong>retransformation</strong> was introduced as a more general capability,
+    but <strong>redefinition</strong> had to be retained for backwards compatibility.
+</p>
+
+<p>
+    Quoting the key sentence about <strong>retransformation</strong> methods from the book linked above:
+</p>
+
+<div class="w3-panel w3-light-grey w3-border w3-round">
+    <p>
+        Agents use these methods to retransform previously loaded classes without needing to access their class files.
+    </p>
+</div>
+
+<p>
+    redefinition happens after the class is loaded, as well as retransformation.
+    They happen when you call your <code>Instrumentation</code> instance's <code>redefineClasses(..)</code> and <code>retransformClasses(..)</code> methods, respectively.
+</p>
+
+<p>
+    Here is a question to any experts passing by:
+    is there anything you can do by <strong>redefining</strong> classes,
+    that you can't do by <strong>retransforming</strong> them?
+    My guess is that the answer is "nothing".
+</p>
+
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://stackoverflow.com/questions/19009583/difference-between-redefine-and-retransform-in-javaagent" target="_blank">StackOverflow: Difference between redefine and retransform in javaagent</a></li>
+</ul>

@@ -7,40 +7,124 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
-<h2>三个要素</h2>
+<h2>Evaluation License Expired</h2>
 
-<p class="indented">
-    要想实现IntelliJ IDEA的破解，需要三个要素：心念、思路和技术手段。
+<p>
+    观察：IDEA提供30天的试用期，在30天以内，可以免费试用IDEA的功能；超出30天以后，每一次启动IDEA后，只能够使用30分钟。
 </p>
 
-<p class="indented">
-    第一，心念。“我想破解IDEA”，这个想法，明确了想要实现的目标（“破解IDEA”），它是孕育一切可能性的开始。接下来需要做的就是，将这个想法（“破解IDEA”）转换成现实。
-    <sub class="my_note" style="color:blue">笔记：这里是Heart</sub>
-    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/ide/idea-session-30-minutes.png" alt=""/>
+</div>
+
+<p>
+    30分钟过后，IDEA就会提示退出：
 </p>
 
-<p class="indented">
-    第二，思路。要想实现破解IDEA，就要有破解思路；因为不知道怎么破解，所以就没有破解思路；因为没有破解思路，所以就破解不了。其实，要有一个破解思路，并不是因为事先知道如何破解。破解思路，是通过做出一系列的假设，然后对这些假设进行验证。思路的来源，就是“大胆假设，小心求证”的过程。
-    <sub class="my_note" style="color:blue">笔记：这里是Brain</sub>
-    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/ide/idea-will-now-exit.png" alt=""/>
+</div>
+
+<p>
+    思路：30分钟后，IDEA会提示退出，这是表面观察到的现象；从这个表面现象，回归到代码层面，我猜测，它调用了<code>System.exit(int)</code>方法；那么，我的思路就是，如果能够让IDEA不去调用<code>System.exit(int)</code>方法，是不是就不会退出了呢？
 </p>
 
-<p class="indented">
-    第三，技术手段。有了破解思路之后，还需要一定的技术手段来实现。
-    <sub class="my_note" style="color:blue">笔记：这里是Hand</sub>
-    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+<h3>第一步，查找</h3>
+
+<p>
+    思路：在<code>idea.jar</code>中，查找一下，看看究竟是哪一个方法的内部实现中调用了<code>System.exit(int)</code>方法。
 </p>
 
-<p class="indented">
-    结合我自己的经历来说一下。首先，是心念。刚开始想要破解IDEA的时候，我就想：别人能破解，大概我也能。接着，是思路。When There's A Will, There's A Way. 我在网上搜索相关内容，有价值的东西还是有的，但是很少，然后自己想破解思路，想了多个，陆续试验的时候都不成功。
+<p>
+    经查找，发现是以下的5个方法：
 </p>
 
-<h2>破解的着手点</h2>
+<pre title="5个调用System.exit(int)的地方" class="plaintext">
+(1)ClassName: com/intellij/ide/b/g/ag
+b: (J)V
 
-<p class="indented">
-    <span class="text-compare-blue">破解的着手点</span>。面对这个想法（“破解IDEA”），可能会感到“拔剑四顾心茫然”，不知该从何处开始。此时，需要有一个“着手点”，由它来开启这个过程，也就是将想法转换成现实的过程。
+(2)ClassName: com/intellij/ide/b/h/a
+a: (JLcom/intellij/ide/b/x;S)V
+
+(3)ClassName: com/intellij/ide/b/h/b
+a: (JLcom/intellij/ide/b/x;S)V
+
+(4)ClassName: com/intellij/ide/b/h/c
+a: (JLcom/intellij/ide/b/x;S)V
+
+(5)ClassName: com/intellij/ide/b/l/e
+a: (JLcom/intellij/ide/b/x;S)V
+</pre>
+
+<h3>第二步，定位</h3>
+
+<p>
+    思路：30分钟过后，IDEA就会提示退出，我需要确定，它究竟是调用了上述5个方法中的哪一个？
 </p>
 
-<p class="indented">
-    <span class="text-compare-blue">寻找着手点，要结合IDEA软件自身的特点来进行</span>。“着手点”应该是一个具体的、可实施的内容。事实上，我们会发现“着手点”有多个。在下面的内容当中，会讨论具体的“着手点”在哪儿；现在，先来看一下IDEA软件本身所具体的特点。
+<p>
+    我给这5个方法都添加打印信息。等待30分钟后，IDEA退出，就能看到究竟是调用了哪个方法。根据打印信息，发现它调用的是<code>com/intellij/ide/b/g/ag.class</code>的<code>b:(J)V</code>方法。
+</p>
+
+<pre title="30分钟后，IDEA退出时打印的信息" class="plaintext">
+Method Enter: com/intellij/ide/b/g/ag.b:(J)V
+    55161591693382
+java.lang.Exception
+        at com.jetbrains.ls.PrintUtils.printStackTrace(PrintUtils.java:69)
+        at com.intellij.ide.b.g.ag.b(ag.java)
+        at com.intellij.ide.b.g.d.a(d.java:123)
+        at com.intellij.ide.b.g.d.a(d.java:46)
+        at com.intellij.ide.b.g.d.a(d.java:68)
+        at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)
+        at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+        at com.intellij.util.concurrency.SchedulingWrapper$MyScheduledFutureTask.run(SchedulingWrapper.java:220)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+        at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1$1.run(Executors.java:668)
+        at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1$1.run(Executors.java:665)
+        at java.base/java.security.AccessController.doPrivileged(Native Method)
+        at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1.run(Executors.java:665)
+        at java.base/java.lang.Thread.run(Thread.java:834)
+</pre>
+
+<h3>第三步，修改</h3>
+
+<p>
+    思路：将<code>idea.jar</code>的<code>com/intellij/ide/b/g/ag.class</code>中<code>b:(J)V</code>方法体修改成空的方法体，看看有什么样的结果？
+</p>
+
+<p>
+    经过修改之后，启动IDEA，等待30分钟后，会弹出提示退出的对话框；但是，点击OK按钮后，IDEA不会退出了，能够正常使用。
+</p>
+
+<h3>第四步，二次修改</h3>
+
+<p>
+    思路：30分钟后，还会弹出提示退出的对话框，还是有点不太好，能不能进一步修改，让它不弹出提示退出的对话框呢？
+</p>
+
+<p>
+    参照第二步的输出结果，会发现调用<code>com/intellij/ide/b/g/ag.class</code>中<code>b:(J)V</code>方法的上一层是<code>com/intellij/ide/b/g/d.class</code>中的<code>a</code>方法。
+</p>
+
+<p>
+    经过分析之后，将<code>com/intellij/ide/b/g/d.class</code>中的<code>a:(JIILcom/intellij/ide/b/g/ag;C)V</code>方法的方法体修改为空方法体。
+</p>
+
+<p>
+    修改之后，启动IDEA，静待30分钟，似乎是不再弹出提示退出的对话框了。
+</p>
+
+<h2>EAP</h2>
+
+<p>
+    对于EAP版本，我觉得，有可以进一步探索的地方。
+</p>
+
+<p>
+    在<code>platform-api.jar</code>内，有<code>com.intellij.openapi.application.ApplicationInfo</code>、<code>com.intellij.openapi.application.ex.ApplicationInfoEx</code>和<code>com.intellij.openapi.application.impl.ApplicationInfoImpl</code>这些类，我觉得，从想象的角度来说，挺有用的。
+</p>
+
+<p>
+    <code>com.intellij.openapi.application.ex.ApplicationInfoEx</code>的<code>ApplicationInfoEx.getInstanceEx().isEAP();</code>
 </p>

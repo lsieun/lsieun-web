@@ -35,3 +35,27 @@ JVM
 <p>
     An agent is deployed as a JAR file. An attribute in the JAR file manifest specifies the agent class which will be loaded to start the agent.
 </p>
+
+<p>
+    Instrumentation can be inserted in one of three ways:
+</p>
+
+<ul>
+    <li>
+        <b>Static Instrumentation</b>:
+        The class file is instrumented before it is loaded into the VM - for example,
+        by creating a duplicate directory of <code>*.class</code> files which have been modified to add the instrumentation.
+        This method is extremely awkward and, in general, an agent cannot know the origin of the class files which will be loaded.
+    </li>
+    <li>
+        <b>Load-Time Instrumentation</b>:
+        When a class file is loaded by the VM, the raw bytes of the class file are sent for instrumentation to the agent.
+        This mechanism provides efficient and complete access to one-time instrumentation.
+    </li>
+    <li>
+        <b>Dynamic Instrumentation</b>:
+        A class which is already loaded (and possibly even running) is modified.
+        Classes can be modified multiple times and can be returned to their original state.
+        The mechanism allows instrumentation which changes during the course of execution.
+    </li>
+</ul>
