@@ -1,0 +1,57 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">AddMethodVisitor</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<pre title="AddMethodVisitor.java" class="javacode">
+import lsieun.cst.Constant;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+public abstract class AddMethodVisitor extends ClassVisitor {
+    private final int methodAccess;
+    private final String methodName;
+    private final String methodDesc;
+    private final String methodSignature;
+    private final String[] methodExceptions;
+    private boolean isMethodPresent;
+
+    public AddMethodVisitor(ClassVisitor cv, int methodAccess, String methodName, String methodDesc,
+                            String signature, String[] exceptions) {
+        super(Constant.API_VERSION, cv);
+        this.methodAccess = methodAccess;
+        this.methodName = methodName;
+        this.methodDesc = methodDesc;
+        this.methodSignature = signature;
+        this.methodExceptions = exceptions;
+        this.isMethodPresent = false;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        if (name.equals(methodName) && descriptor.equals(methodDesc)) {
+            isMethodPresent = true;
+        }
+        return super.visitMethod(access, name, descriptor, signature, exceptions);
+    }
+
+    @Override
+    public void visitEnd() {
+        if (!isMethodPresent) {
+            MethodVisitor mv = super.visitMethod(methodAccess, methodName, methodDesc, methodSignature, methodExceptions);
+            if (mv != null) {
+                // create method body
+                generateMethodBody(mv);
+            }
+        }
+
+        super.visitEnd();
+    }
+
+    protected abstract void generateMethodBody(MethodVisitor mv);
+}
+</pre>

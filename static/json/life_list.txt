@@ -1,5 +1,6 @@
+2021-03-07 23:00#问道于盲#Life##/archive/life/ask-the-way-from-a-blind-person.html#问道于盲。
 2021-02-08 23:00#Movies#Life##/archive/movie/movie-index.html#电影。
-2021-02-07 20:00#戒色#Life##/archive/abstention/abstention_index.html#戒色。
+2021-02-07 20:00#戒色#Life##/archive/abstention/abstention-index.html#戒色。
 2021-01-20 13:00#Diary Beta#Life##/archive/diary/diary_index.html#事件记录。
 2021-01-24 11:50#Science Beta#Life##/archive/life/science_index.html#科学。
 2021-01-24 11:50#Education Beta#Life##/archive/life/education_index.html#教育。

@@ -1,0 +1,165 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Print Method Parameters</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Application</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static int add(int a, int b) {
+        return a + b;
+    }
+}
+</pre>
+
+<pre title="Program.java" class="javacode">
+import java.util.Random;
+
+public class Program {
+    public static void main(String[] args) {
+        Random rand = new Random();
+        for (int i = 0; i < 10; i++) {
+            int a = rand.nextInt(100);
+            int b = rand.nextInt(100);
+            int c = HelloWorld.add(a, b);
+            System.out.println("result = " + c);
+        }
+    }
+}
+</pre>
+
+<h2>Agent Class</h2>
+
+<pre title="LoadTimeAgent.java" class="javacode">
+import lsieun.transformer.ASMTransformer;
+
+import java.lang.instrument.Instrumentation;
+
+public class LoadTimeAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Premain-Class: " + LoadTimeAgent.class.getName());
+        System.out.println("Can-Redefine-Classes: " + inst.isRedefineClassesSupported());
+        System.out.println("Can-Retransform-Classes: " + inst.isRetransformClassesSupported());
+        System.out.println("Can-Set-Native-Method-Prefix: " + inst.isNativeMethodPrefixSupported());
+
+        inst.addTransformer(new ASMTransformer());
+    }
+}
+</pre>
+
+<h2>Transformer</h2>
+
+<pre title="ASMTransformer.java" class="javacode">
+import lsieun.visitor.modify.PrintMethodParameterVisitor;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+
+public class ASMTransformer implements ClassFileTransformer {
+    @Override
+    public byte[] transform(ClassLoader loader,
+                            String className,
+                            Class&lt;?&gt; classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer) throws IllegalClassFormatException {
+        if (className == null) return null;
+        if (className.startsWith("java")) return null;
+        if (className.startsWith("javax")) return null;
+        if (className.startsWith("jdk")) return null;
+        if (className.startsWith("sun")) return null;
+        if (className.startsWith("org")) return null;
+        if (className.startsWith("com")) return null;
+        if (className.startsWith("lsieun")) return null;
+
+        System.out.println("candidate className: " + className);
+
+        if (className.equals("sample/HelloWorld")) {
+            ClassReader cr = new ClassReader(classfileBuffer);
+            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+            ClassVisitor cv = new PrintMethodParameterVisitor(cw);
+
+            int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+            cr.accept(cv, parsingOptions);
+            byte[] bytes = cw.toByteArray();
+            return bytes;
+        }
+
+        return null;
+    }
+}
+</pre>
+
+<h2>Run</h2>
+
+<pre title="java sample.Program" hidden class="plaintext">
+$ java sample.Program
+result = 82
+result = 31
+result = 133
+result = 105
+result = 142
+result = 93
+result = 90
+result = 122
+result = 99
+result = 126
+</pre>
+
+<pre title="java -javaagent:TheAgent.jar sample.Program" hidden class="plaintext">
+$ java -javaagent:D:/git-repo/learn-java-agent/target/TheAgent.jar sample.Program
+Premain-Class: lsieun.agent.LoadTimeAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Can-Set-Native-Method-Prefix: true
+candidate className: sample/Program
+candidate className: sample/HelloWorld
+Method Enter: sample/HelloWorld.add:(II)I
+    34
+    15
+result = 49
+Method Enter: sample/HelloWorld.add:(II)I
+    45
+    37
+result = 82
+Method Enter: sample/HelloWorld.add:(II)I
+    90
+    82
+result = 172
+Method Enter: sample/HelloWorld.add:(II)I
+    45
+    19
+result = 64
+Method Enter: sample/HelloWorld.add:(II)I
+    65
+    79
+result = 144
+Method Enter: sample/HelloWorld.add:(II)I
+    0
+    70
+result = 70
+Method Enter: sample/HelloWorld.add:(II)I
+    86
+    99
+result = 185
+Method Enter: sample/HelloWorld.add:(II)I
+    32
+    22
+result = 54
+Method Enter: sample/HelloWorld.add:(II)I
+    96
+    12
+result = 108
+Method Enter: sample/HelloWorld.add:(II)I
+    21
+    1
+result = 22
+</pre>

@@ -1,0 +1,33 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">RemoveFieldVisitor</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<pre title="RemoveFieldVisitor.java" class="javacode">
+import lsieun.cst.Constant;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+
+public class RemoveFieldVisitor extends ClassVisitor {
+    private final String fieldName;
+    private final String fieldDesc;
+
+    public RemoveFieldVisitor(ClassVisitor cv, String fieldName, String fieldDesc) {
+        super(Constant.API_VERSION, cv);
+        this.fieldName = fieldName;
+        this.fieldDesc = fieldDesc;
+    }
+
+    @Override
+    public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
+        if (name.equals(fieldName) && descriptor.equals(fieldDesc)) {
+            return null;
+        }
+        return super.visitField(access, name, descriptor, signature, value);
+    }
+}
+</pre>

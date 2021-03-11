@@ -1,0 +1,47 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">AddFiledVisitor</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<pre title="AddFiledVisitor.java" class="javacode">
+import lsieun.cst.Constant;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+
+public class AddFiledVisitor extends ClassVisitor {
+    private final int fieldAccess;
+    private final String fieldName;
+    private final String fieldDesc;
+    private boolean isFieldPresent;
+
+    public AddFiledVisitor(ClassVisitor classVisitor, int fieldAccess, String fieldName, String fieldDesc) {
+        super(Constant.API_VERSION, classVisitor);
+        this.fieldAccess = fieldAccess;
+        this.fieldName = fieldName;
+        this.fieldDesc = fieldDesc;
+    }
+
+    @Override
+    public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
+        if (name.equals(fieldName)) {
+            isFieldPresent = true;
+        }
+        return super.visitField(access, name, descriptor, signature, value);
+    }
+
+    @Override
+    public void visitEnd() {
+        if (!isFieldPresent) {
+            FieldVisitor fv = cv.visitField(fieldAccess, fieldName, fieldDesc, null, null);
+            if (fv != null) {
+                fv.visitEnd();
+            }
+        }
+        super.visitEnd();
+    }
+}
+</pre>

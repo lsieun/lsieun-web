@@ -1,0 +1,155 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Instrumentation</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<pre title="Program.java" class="javacode">
+public class Program {
+    public static void main(String[] args) {
+        System.out.println("Hello Java Agent");
+    }
+}
+</pre>
+
+<h2>111</h2>
+
+<pre title="LoadTimeAgent.java" class="javacode">
+import java.lang.instrument.Instrumentation;
+
+public class LoadTimeAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Premain-Class: " + LoadTimeAgent.class.getName());
+        System.out.println("Instrumentation Class: " + inst.getClass().getName());
+    }
+}
+</pre>
+
+<p>
+    既然<code>Instrumentation</code>是一个接口，那么就有必要去探究一下，它的实现类究竟是哪一个？根据下面的输出结果，我们知道它的具体实现是<code>sun.instrument.InstrumentationImpl</code>类。
+</p>
+
+<pre title="Run output" hidden class="plaintext">
+$ java -javaagent:D:/git-repo/learn-java-agent/target/TheAgent.jar Program
+Premain-Class: lsieun.agent.LoadTimeAgent
+Instrumentation Class: sun.instrument.InstrumentationImpl
+Hello Java Agent
+</pre>
+
+<h2>222</h2>
+
+<pre title="LoadTimeAgent.java" class="javacode">
+import java.lang.instrument.Instrumentation;
+
+public class LoadTimeAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Premain-Class: " + LoadTimeAgent.class.getName());
+        System.out.println("Can-Redefine-Classes: " + inst.isRedefineClassesSupported());
+        System.out.println("Can-Retransform-Classes: " + inst.isRetransformClassesSupported());
+        System.out.println("Can-Set-Native-Method-Prefix: " + inst.isNativeMethodPrefixSupported());
+    }
+}
+</pre>
+
+<pre title="Run output" hidden class="plaintext">
+$ java -javaagent:D:/git-repo/learn-java-agent/target/TheAgent.jar Program
+Premain-Class: lsieun.agent.LoadTimeAgent
+Can-Redefine-Classes: false
+Can-Retransform-Classes: true
+Can-Set-Native-Method-Prefix: false
+Hello Java Agent
+</pre>
+
+<h2>333</h2>
+
+<pre title="LoadTimeAgent.java" class="javacode">
+import java.lang.instrument.Instrumentation;
+
+public class LoadTimeAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Premain-Class: " + LoadTimeAgent.class.getName());
+        System.out.println("Can-Redefine-Classes: " + inst.isRedefineClassesSupported());
+        System.out.println("Can-Retransform-Classes: " + inst.isRetransformClassesSupported());
+        System.out.println("Can-Set-Native-Method-Prefix: " + inst.isNativeMethodPrefixSupported());
+
+        Class[] allLoadedClasses = inst.getAllLoadedClasses();
+        for (Class&lt;?&gt; clazz : allLoadedClasses) {
+            boolean isModifiable = inst.isModifiableClass(clazz);
+            System.out.println(clazz.getName() + ": " + isModifiable);
+        }
+    }
+}
+</pre>
+
+<pre title="Run output" hidden class="plaintext">
+$ java -javaagent:D:/git-repo/learn-java-agent/target/TheAgent.jar Program
+Premain-Class: lsieun.agent.LoadTimeAgent
+Can-Redefine-Classes: false
+Can-Retransform-Classes: true
+Can-Set-Native-Method-Prefix: false
+lsieun.agent.LoadTimeAgent: true
+//...... java.lang
+java.lang.Object: true
+java.lang.Number: true
+java.lang.Boolean: true
+java.lang.Character: true
+java.lang.Byte: true
+java.lang.Short: true
+java.lang.Integer: true
+java.lang.Long: true
+java.lang.Float: true
+java.lang.Double: true
+java.lang.String: true
+//...... java.lang
+java.lang.Class: true
+java.lang.ClassLoader: true
+java.lang.Comparable: true
+java.lang.Math: true
+java.lang.Runnable: true
+java.lang.Thread: true
+java.lang.System: true
+java.lang.instrument.Instrumentation: true
+//...... java.io
+java.io.File: true
+java.io.FileReader: true
+java.io.Serializable: true
+//...... java.util
+java.util.Map: true
+java.util.HashMap: true
+//...... Error and Exception
+java.lang.Throwable: true
+java.lang.Error: true
+java.lang.OutOfMemoryError: true
+java.lang.StackOverflowError: true
+java.lang.VirtualMachineError: true
+java.lang.Exception: true
+java.lang.RuntimeException: true
+java.lang.ArithmeticException: true
+java.lang.ClassNotFoundException: true
+java.lang.NullPointerException: true
+//...... sun
+sun.misc.VM: true
+sun.net.www.URLConnection: true
+//...... Array
+[Ljava.lang.Object;: false
+[Ljava.lang.Integer;: false
+[Ljava.lang.Number;: false
+[Ljava.lang.OutOfMemoryError;: false
+[Ljava.lang.VirtualMachineError;: false
+[Ljava.lang.Error;: false
+[Ljava.lang.Throwable;: false
+[Ljava.io.File;: false
+[[C: false
+[J: false
+[I: false
+[S: false
+[B: false
+[D: false
+[F: false
+[C: false
+[Z: false
+Hello Java Agent
+</pre>

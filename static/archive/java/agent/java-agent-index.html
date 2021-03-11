@@ -6,7 +6,15 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<p>
+    TODO:
+</p>
 
+<ul>
+    <li>
+        <input type="checkbox"/>我想用两个Agent来检测，别的Agent到底做了什么？
+    </li>
+</ul>
 
 <pre title="HelloWorld.java" class="javacode">
 import java.lang.instrument.Instrumentation;
@@ -90,8 +98,7 @@ public class BasicAgent {
     </li>
     <li>
         Instrumentation:
-        <a href="api/instrument/instrumentation.html">Intro</a>
-        <a href="api/instrument/instrumentation-source-code.html">Source Code</a>
+        <a href="api/instrumentation.html">Intro</a>
     </li>
     <li>
         Agent Class:
@@ -100,6 +107,20 @@ public class BasicAgent {
     </li>
     <li>
         <a href="load-time/multiple-agents.html">Multiple Agents</a>
+    </li>
+    <li>
+        <a href="api/sun-instrument.html">sun.instrument</a>
+    </li>
+    <li>
+        Examples:
+        <ul>
+            <li><a href="load-time/example/add-interface.html">Add Interface</a></li>
+            <li><a href="load-time/example/add-field.html">Add Field</a></li>
+            <li><a href="load-time/example/add-method.html">Add Method</a></li>
+            <li><a href="load-time/example/print-method-parameters.html">Print Method Parameters</a></li>
+            <li><a href="load-time/example/proxy-method.html">Proxy Method</a></li>
+            <li><a href="load-time/example/replace-method.html">Replace Method</a></li>
+        </ul>
     </li>
 </ul>
 
@@ -119,8 +140,53 @@ public class BasicAgent {
 
 <h2>Application</h2>
 
+<p>
+    目前主流的APM开源框架如<code>Pinpoint</code>、<code>SkyWalking</code>等等都是通过<code>java.lang.instrument</code>包提供的字节码增强功能来实现的。
+</p>
+
 <ul>
     <li><a href="application/retrieving-class-files-from-a-running-app.html">Retrieving .class files from a running app</a></li>
+</ul>
+
+<h2>Code</h2>
+
+<ul>
+    <li>
+        Add:
+        <ul>
+            <li><a href="code/add-interface-visitor.html" target="_blank">AddInterfaceVisitor.java</a></li>
+            <li><a href="code/add-field-visitor.html" target="_blank">AddFiledVisitor.java</a></li>
+            <li><a href="code/add-method-visitor.html" target="_blank">AddMethodVisitor.java</a></li>
+        </ul>
+    </li>
+    <li>
+        Modify:
+        <ul>
+            <li><a href="code/print-method-parameter-visitor.html" target="_blank">PrintMethodParameterVisitor.java</a></li>
+            <li><a href="code/proxy-method-visitor.html" target="_blank">ProxyMethodVisitor.java</a></li>
+            <li><a href="code/replace-method-body-visitor.html" target="_blank">ReplaceMethodBodyVisitor.java</a></li>
+        </ul>
+    </li>
+    <li>
+        Remove:
+        <ul>
+            <li><a href="code/remove-field-visitor.html" target="_blank">RemoveFieldVisitor.java</a></li>
+            <li><a href="code/remove-method-visitor.html" target="_blank">RemoveMethodVisitor.java</a></li>
+        </ul>
+    </li>
+</ul>
+
+<h2>API</h2>
+
+<ul>
+    <li><a href="api/instrumentation-source-code.html">java.lang.instrument.Instrumentation Source Code</a></li>
+    <li><a href="api/class-file-transformer.html">java.lang.instrument.ClassFileTransformer Source Code</a></li>
+</ul>
+
+<h2>Resources</h2>
+
+<ul>
+    <li><a href="agent-resource.html">Agent Resource</a></li>
 </ul>
 
 <h2>Build Tools</h2>

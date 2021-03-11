@@ -1,0 +1,86 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Instrumentation Source Code</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Class Info</h2>
+
+<pre title="Instrumentation.java" class="javacode">
+public interface Instrumentation {
+}
+</pre>
+
+
+
+<h2>manifest.mf Methods</h2>
+
+<pre title="Instrumentation.java" class="javacode">
+public interface Instrumentation {
+    boolean isRedefineClassesSupported();
+    boolean isRetransformClassesSupported();
+    boolean isNativeMethodPrefixSupported();
+}
+</pre>
+
+<h2>addTransformer Methods</h2>
+
+<p>
+    Registers the supplied transformer.
+</p>
+
+<pre title="Instrumentation.java" class="javacode">
+public interface Instrumentation {
+    void addTransformer(ClassFileTransformer transformer, boolean canRetransform);
+
+    void addTransformer(ClassFileTransformer transformer); // Same as addTransformer(transformer, false).
+}
+</pre>
+
+<p>
+    All future class definitions will be seen by the transformer,
+    except definitions of classes upon which any registered transformer is dependent.
+</p>
+
+<p>
+    The transformer is called when classes are <span class="text-underline">loaded</span>,
+    when they are <span class="text-underline">redefined</span>
+    and if <code>canRetransform</code> is <code>true</code>, when they are <span class="text-underline">retransformed</span>.
+    <sub class="my_note" style="color:blue">笔记：这里讲了transformer的调用时机。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>Methods</h2>
+
+<pre title="Instrumentation.java" class="javacode">
+public interface Instrumentation {
+    Class[] getAllLoadedClasses();
+    boolean isModifiableClass(Class&lt;?&gt; theClass);
+}
+</pre>
+
+<h2>redefineClasses Method</h2>
+
+<pre title="Instrumentation.java" class="javacode">
+public interface Instrumentation {
+    void redefineClasses(ClassDefinition... definitions)
+        throws  ClassNotFoundException, UnmodifiableClassException;
+}
+</pre>
+
+<h2>redefineClasses Method</h2>
+
+<pre title="Instrumentation.java" class="javacode">
+public interface Instrumentation {
+    void retransformClasses(Class&lt;?&gt;... classes) throws UnmodifiableClassException;
+}
+</pre>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://docs.oracle.com/javase/8/docs/api/java/lang/instrument/package-summary.html" target="_blank">Oracle: Package java.lang.instrument</a></li>
+</ul>
