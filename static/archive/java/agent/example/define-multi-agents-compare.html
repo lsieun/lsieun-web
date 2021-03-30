@@ -1,0 +1,210 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Multiple Agents Compare</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Application</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void validate(String username, String password) {
+        if ("tomcat".equals(username) && "123456".equals(password)) {
+            return;
+        }
+        else {
+            throw new IllegalArgumentException("username or password is not correct");
+        }
+    }
+}
+</pre>
+
+<pre title="Program.java" class="javacode">
+public class Program {
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+        instance.validate("jerry", "abc");
+        System.out.println("Username and Password is correct.");
+    }
+}
+</pre>
+
+<h2>Agent Class</h2>
+
+<pre title="LoadTimeAgent.java" class="javacode">
+import lsieun.transformer.ASMTransformer;
+import lsieun.transformer.CompareTransformer;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.Instrumentation;
+
+public class LoadTimeAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Premain-Class: " + LoadTimeAgent.class.getName());
+        System.out.println("Can-Redefine-Classes: " + inst.isRedefineClassesSupported());
+        System.out.println("Can-Retransform-Classes: " + inst.isRetransformClassesSupported());
+        System.out.println("Can-Set-Native-Method-Prefix: " + inst.isNativeMethodPrefixSupported());
+
+        ClassFileTransformer transformer1 = new CompareTransformer(false);
+        ClassFileTransformer transformer2 = new ASMTransformer();
+        ClassFileTransformer transformer3 = new CompareTransformer(true);
+        inst.addTransformer(transformer1, false);
+        inst.addTransformer(transformer2, false);
+        inst.addTransformer(transformer3, false);
+    }
+}
+</pre>
+
+<h2>Transformer</h2>
+
+<pre title="ASMTransformer.java" class="javacode">
+import lsieun.visitor.modify.ReplaceMethodBodyVisitor;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+
+public class ASMTransformer implements ClassFileTransformer {
+    @Override
+    public byte[] transform(ClassLoader loader,
+                            String className,
+                            Class&lt;?&gt; classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer) throws IllegalClassFormatException {
+        if (className == null) return null;
+        if (className.startsWith("java")) return null;
+        if (className.startsWith("javax")) return null;
+        if (className.startsWith("jdk")) return null;
+        if (className.startsWith("sun")) return null;
+        if (className.startsWith("org")) return null;
+        if (className.startsWith("com")) return null;
+        if (className.startsWith("lsieun")) return null;
+
+        System.out.println("candidate className: " + className);
+
+        if (className.equals("sample/HelloWorld")) {
+            ClassReader cr = new ClassReader(classfileBuffer);
+            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+            ClassVisitor cv = new ReplaceMethodBodyVisitor(cw, "validate", "(Ljava/lang/String;Ljava/lang/String;)V");
+
+            int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+            cr.accept(cv, parsingOptions);
+            byte[] bytes = cw.toByteArray();
+            return bytes;
+        }
+
+        return null;
+    }
+}
+</pre>
+
+<pre title="CompareTransformer.java" class="javacode">
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+public class CompareTransformer implements ClassFileTransformer {
+    private final boolean compare;
+
+    public CompareTransformer(boolean compare) {
+        this.compare = compare;
+    }
+
+    @Override
+    public byte[] transform(ClassLoader loader,
+                            String className,
+                            Class&lt;?&gt; classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer) throws IllegalClassFormatException {
+        if (!compare) {
+            addClass(className, classfileBuffer);
+        }
+        else {
+            compareClass(className, classfileBuffer);
+        }
+        return null;
+    }
+
+    private static final DateFormat fm = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
+    private static final Map&lt;String, byte[]&gt; map = new HashMap&lt;&gt;();
+
+    private static void addClass(String className, byte[] bytes) {
+        map.put(className, bytes);
+    }
+
+    private static void compareClass(String className, byte[] bytes) {
+        byte[] origin_bytes = map.get(className);
+        if (origin_bytes == null) return;
+        boolean isEqual = Arrays.equals(origin_bytes, bytes);
+        if (isEqual) {
+            map.remove(className);
+            return;
+        }
+
+        String newName = className.replace('/', '.');
+        Date now = new Date();
+        String dateStr = fm.format(now);
+        String filenameA = String.format("%s.%s.%s.class", newName, dateStr, "A");
+        String filenameB = String.format("%s.%s.%s.class", newName, dateStr, "B");
+        dump(filenameA, origin_bytes);
+        dump(filenameB, bytes);
+        System.out.println("Diff: " + filenameA);
+        System.out.println("Diff: " + filenameB);
+    }
+
+    private static void dump(String filename, byte[] bytes) {
+        String user_home = System.getProperty("user.home");
+        String dir_path = user_home + File.separator + "compare_class";
+        File dirFile = new File(dir_path);
+        dirFile.mkdirs();
+        String filepath = dir_path + File.separator + filename;
+        try (
+                FileOutputStream fout = new FileOutputStream(filepath);
+                BufferedOutputStream bout = new BufferedOutputStream(fout);
+        ) {
+            bout.write(bytes);
+            bout.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+<h2>Run</h2>
+
+<pre title="java sample.Program" class="plaintext">
+$ java sample.Program
+Exception in thread "main" java.lang.IllegalArgumentException: username or password is not correct
+        at sample.HelloWorld.validate(Unknown Source)
+        at sample.Program.main(Unknown Source)
+</pre>
+
+<pre title="java -javaagent:TheAgent.jar sample.Program" class="plaintext">
+$ java -javaagent:D:/git-repo/learn-java-agent/target/TheAgent.jar sample.Program
+Premain-Class: lsieun.agent.LoadTimeAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Can-Set-Native-Method-Prefix: true
+candidate className: sample/Program
+candidate className: sample/HelloWorld
+Diff: sample.HelloWorld.2021.03.11.23.18.10.A.class
+Diff: sample.HelloWorld.2021.03.11.23.18.10.B.class
+Username and Password is correct.
+</pre>

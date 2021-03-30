@@ -1,0 +1,65 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Instrumentation Implementation</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    既然<code>java.lang.instrument.Instrumentation</code>是一个接口，那么就有必要去探究一下，它的具体实现类究竟是哪一个？它的具体实现是<code>sun.instrument.InstrumentationImpl</code>类。
+</p>
+
+<h2 id="application">Application</h2>
+
+<pre title="Program.java" class="javacode">
+public class Program {
+    public static void main(String[] args) {
+        System.out.println("Hello Program");
+    }
+}
+</pre>
+
+<h2 id="java-agent-jar">Java Agent Jar</h2>
+
+<h3 id="agent-class">Agent Class</h3>
+
+<pre title="LoadTimeAgent.java" class="javacode">
+import java.lang.instrument.Instrumentation;
+
+public class LoadTimeAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Premain-Class: " + LoadTimeAgent.class.getName());
+        System.out.println("Instrumentation Class: " + inst.getClass().getName());
+    }
+}
+</pre>
+
+<h2 id="run-application">Run Application</h2>
+
+<h3 id="run-without-agent">Run</h3>
+
+<pre title="java sample.Program" class="plaintext">
+$ java sample.Program
+Hello Program
+</pre>
+
+<h3 id="run-with-agent">Run With Agent</h3>
+
+<p>
+    根据下面的输出结果，我们知道它的具体实现是<code>sun.instrument.InstrumentationImpl</code>类。
+</p>
+
+<pre title="Run output" class="plaintext">
+$ java -javaagent:D:/git-repo/learn-java-agent/target/TheAgent.jar sample.Program
+Premain-Class: lsieun.agent.LoadTimeAgent
+Instrumentation Class: sun.instrument.InstrumentationImpl
+Hello Program
+</pre>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://hg.openjdk.java.net/jdk8/jdk8/jdk/file/687fd7c7986d/src/share/classes/sun/instrument" target="_blank">OpenJDK: sun.instrument.InstrumentationImpl.java</a></li>
+</ul>

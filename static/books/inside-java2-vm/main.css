@@ -249,7 +249,7 @@ ol ol, ol ul, ul ol, ul ul {
 
 .text-underline {
     text-decoration-line: underline;
-    text-decoration-style: double;
+    text-decoration-style: solid;
 }
 
 .u-pull-right {

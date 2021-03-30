@@ -1,0 +1,106 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">redefineClasses: change interface</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="application">Application</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+}
+</pre>
+
+<pre title="Program.java" class="javacode">
+public class Program {
+    public static void main(String[] args) throws Exception {
+        for (int i = 0; i < 10; i++) {
+            HelloWorld instance = new HelloWorld();
+            System.out.println(instance);
+            Thread.sleep(5000);
+        }
+    }
+}
+</pre>
+
+<h2 id="java-agent-jar">Java Agent Jar</h2>
+
+<h3 id="agent-class">Agent Class</h3>
+
+<pre title="DynamicAgent.java" class="javacode">
+import lsieun.utils.FileUtils;
+
+import java.lang.instrument.ClassDefinition;
+import java.lang.instrument.Instrumentation;
+import java.lang.instrument.UnmodifiableClassException;
+
+public class DynamicAgent {
+    public static void agentmain(String agentArgs, Instrumentation inst) {
+        System.out.println("Agent-Class: " + DynamicAgent.class.getName());
+        System.out.println("Can-Redefine-Classes: " + inst.isRedefineClassesSupported());
+        System.out.println("Can-Retransform-Classes: " + inst.isRetransformClassesSupported());
+        System.out.println("Can-Set-Native-Method-Prefix: " + inst.isNativeMethodPrefixSupported());
+
+        try {
+            Class[] allLoadedClasses = inst.getAllLoadedClasses();
+            for (Class&lt;?&gt; clazz : allLoadedClasses) {
+                String className = clazz.getName();
+                boolean isModifiable = inst.isModifiableClass(clazz);
+                // 注意：修改类的名字
+                if ("sample.HelloWorld".equals(className) && isModifiable) {
+                    // 注意：修改文件的路径
+                    String filepath = "D:/git-repo/learn-java-agent/target/classes/sample/HelloWorld.class";
+                    byte[] bytes = FileUtils.readBytes(filepath);
+                    if (bytes == null) continue;
+                    ClassDefinition classDefinition = new ClassDefinition(clazz, bytes);
+                    inst.redefineClasses(classDefinition);
+                }
+            }
+        } catch (UnmodifiableClassException | ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+    }
+}
+</pre>
+
+<h2 id="run-application">Run Application</h2>
+
+<pre title="HelloWorld.java（修改接口）" class="javacode">
+public class HelloWorld implements Cloneable {
+}
+</pre>
+
+<pre title="java sample.Program" class="plaintext">
+$ java sample.Program
+sample.HelloWorld@15db9742
+sample.HelloWorld@6d06d69c
+sample.HelloWorld@7852e922
+sample.HelloWorld@4e25154f
+sample.HelloWorld@70dea4e
+Agent-Class: lsieun.agent.DynamicAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Can-Set-Native-Method-Prefix: true
+Exception in thread "Attach Listener" java.lang.reflect.InvocationTargetException
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at sun.instrument.InstrumentationImpl.loadClassAndStartAgent(InstrumentationImpl.java:386)
+        at sun.instrument.InstrumentationImpl.loadClassAndCallAgentmain(InstrumentationImpl.java:411)
+Caused by: java.lang.UnsupportedOperationException: class redefinition failed: attempted to change superclass or interfaces
+        at sun.instrument.InstrumentationImpl.redefineClasses0(Native Method)
+        at sun.instrument.InstrumentationImpl.redefineClasses(InstrumentationImpl.java:170)
+        at lsieun.agent.DynamicAgent.agentmain(Unknown Source)
+        ... 6 more
+Agent failed to start!
+sample.HelloWorld@5c647e05
+sample.HelloWorld@33909752
+sample.HelloWorld@55f96302
+sample.HelloWorld@3d4eac69
+sample.HelloWorld@42a57993
+</pre>
+

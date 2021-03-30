@@ -16,6 +16,52 @@
     The mechanism for instrumentation is modification of the byte-codes of methods.
 </p>
 
+<p>
+    <code>java.lang.instrument</code>位于<code>rt.jar</code>文件当中，一共包含了5个<code>.class</code>文件，其中有3个类和2个接口。
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/agent/package-java-lang-instrument.png" alt=""/>
+</div>
+
+<ul>
+    <li>
+        Class:
+        <ul>
+            <li>ClassDefinition</li>
+            <li>IllegalClassFormatException，继承自<code>Exception</code>类</li>
+            <li>UnmodifiableClassException，继承自<code>Exception</code>类</li>
+        </ul>
+    </li>
+    <li>
+        Interface:
+        <ul>
+            <li>ClassFileTransformer</li>
+            <li>Instrumentation</li>
+        </ul>
+    </li>
+</ul>
+
+<p>
+    其中，<code>ClassDefinition</code>类是一个非常简单的类，本质上就是对<code>Class</code>和<code>byte[]</code>两个字段的封装，很容易就能够掌握。
+</p>
+
+<pre title="ClassDefinition.java" class="javacode">
+public final class ClassDefinition {
+    private final Class&lt;?&gt; mClass;
+    private final byte[] mClassFile;
+}
+</pre>
+
+<p>
+    其中，<code>IllegalClassFormatException</code>类和<code>UnmodifiableClassException</code>类，都是<code>Exception</code>类的子类，它们表示了某些情况下无法实现的操作。这些“无法实现的操作”就以Exception的形式存在，既然这些操作无法实现（可能是由于JVM本身不支持），那就避免做这些操作，因此这两个Exception类也不需要投入很多时间研究。
+</p>
+
+<p>
+    我们的关注点就是<code>ClassFileTransformer</code>和<code>Instrumentation</code>这两个接口。换句话说，理解了这两个接口，也就是理解了<code>java.lang.instrument</code>的精髓。
+</p>
+
+
 <h2>References</h2>
 
 <ul>

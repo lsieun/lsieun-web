@@ -1,0 +1,103 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">define VS redefine VS. retransform</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Three Triggers</h2>
+
+<ul>
+    <li>
+        <strong>new class definition</strong> is made with <code>ClassLoader.defineClass</code> or its native equivalents
+    </li>
+    <li>
+        <strong>class redefinition</strong> is made with <code>Instrumentation.redefineClasses</code> or its native equivalents.
+    </li>
+    <li>
+        <strong>class retransformation</strong> is made with <code>Instrumentation.retransformClasses</code> or its native equivalents.
+    </li>
+</ul>
+
+<h2>Two kinds of Transformers</h2>
+
+<p>
+    There are two kinds of transformers, determined by the <code>canRetransform</code> parameter of
+    <code>Instrumentation.addTransformer(ClassFileTransformer transformer, boolean canRetransform)</code>:
+</p>
+
+<ul>
+    <li>
+        <strong>retransformation capable transformers</strong> that were added with <code>canRetransform</code> as <code>true</code>.
+    </li>
+    <li>
+        <strong>retransformation incapable transformers</strong> that were added with <code>canRetransform</code> as <code>false</code>
+        or where added with <code>Instrumentation.addTransformer(ClassFileTransformer transformer)</code>
+    </li>
+</ul>
+
+<h2>Multiple Transformers</h2>
+
+<p>
+    When there are multiple transformers, transformations are composed by chaining the transform calls.
+    That is, the byte array returned by one call to transform becomes the input (via the <code>classfileBuffer</code> parameter) to the next call.
+</p>
+
+<h3>Transformations Order</h3>
+
+<p>
+    Transformations are applied in the following order:
+</p>
+
+<ul>
+    <li>
+        <strong>Retransformation incapable transformers</strong>
+    </li>
+    <li>
+        <span style="text-decoration: line-through; color:grey;">Retransformation incapable native transformers</span>
+    </li>
+    <li>
+        <strong>Retransformation capable transformers</strong>
+    </li>
+    <li>
+        <span style="text-decoration: line-through; color:grey;">Retransformation capable native transformers</span>
+    </li>
+</ul>
+
+<p>
+    For <span class="text-compare-blue">retransformations</span>, the <strong>retransformation incapable transformers</strong> are not called,
+    instead the result of the previous transformation is reused.
+    In all other cases, this method is called.
+    <span class="text-underline">Within each of these groupings, transformers are called in the order registered.</span>
+    Native transformers are provided by the <code>ClassFileLoadHook</code> event in the Java Virtual Machine Tool Interface).
+</p>
+
+<h3>The First classfileBuffer</h3>
+
+<p>
+    The input (via the <code>classfileBuffer</code> parameter) to the first transformer is:
+</p>
+
+<ul>
+    <li>
+        for <span class="text-compare-blue">new class definition</span>, the bytes passed to <code>ClassLoader.defineClass</code>
+    </li>
+    <li>
+        for <span class="text-compare-blue">class redefinition</span>, <code>definitions.getDefinitionClassFile()</code> where <code>definitions</code> is the parameter to <code>Instrumentation.redefineClasses(ClassDefinition... definitions)</code>
+    </li>
+    <li>
+        for <span class="text-compare-blue">class retransformation</span>, the bytes passed to the <span class="text-compare-blue">new class definition</span> or,
+        <span class="text-compare-blue">if redefined, the last redefinition</span>,
+        with all transformations made by <strong>retransformation incapable transformers</strong> reapplied automatically and unaltered.
+    </li>
+</ul>
+
+<p>
+    If the implementing method determines that <strong>no transformations are needed</strong>, it should return <code>null</code>.
+    Otherwise, it should create a new <code>byte[]</code> array,
+    copy the input <code>classfileBuffer</code> into it,
+    along with all desired transformations, and return the new array.
+    The input <code>classfileBuffer</code> must not be modified.
+</p>

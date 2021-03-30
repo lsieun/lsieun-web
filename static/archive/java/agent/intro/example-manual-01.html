@@ -1,0 +1,396 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">First Example</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="application">Application</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+package sample;
+
+public class HelloWorld {
+    public static int add(int a, int b) {
+        return a + b;
+    }
+
+    public static int sub(int a, int b) {
+        return a - b;
+    }
+}
+</pre>
+
+<pre title="Program.java" class="javacode">
+package sample;
+
+import java.util.Random;
+
+public class Program {
+    public static void main(String[] args) throws Exception {
+        Random rand = new Random();
+
+        for (int i = 0; i < 10; i++) {
+            int a = rand.nextInt(100);
+            int b = rand.nextInt(100);
+            boolean flag = rand.nextBoolean();
+            int result = flag ? HelloWorld.add(a, b) : HelloWorld.sub(a, b);
+            System.out.println("result = " + result);
+            Thread.sleep(500);
+        }
+    }
+}
+</pre>
+
+<h2 id="java-agent-jar">Java Agent Jar</h2>
+
+<h3 id="agent-class">Agent Class</h3>
+
+<pre title="LoadTimeAgent.java" class="javacode">
+package lsieun.agent;
+
+import lsieun.transformer.InfoTransformer;
+
+import java.lang.instrument.Instrumentation;
+
+public class LoadTimeAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        inst.addTransformer(new InfoTransformer());
+    }
+}
+</pre>
+
+<h3 id="transformer">Transformer</h3>
+
+<pre title="InfoTransformer.java" class="javacode">
+package lsieun.transformer;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+import java.util.Formatter;
+
+public class InfoTransformer implements ClassFileTransformer {
+    @Override
+    public byte[] transform(ClassLoader loader,
+                            String className,
+                            Class&lt;?&gt; classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer) throws IllegalClassFormatException {
+        StringBuilder sb = new StringBuilder();
+        Formatter fm = new Formatter(sb);
+        fm.format("ClassName: %s%n", className);
+        fm.format("    ClassLoader: %s%n", loader);
+        fm.format("    ClassBeingRedefined: %s%n", classBeingRedefined);
+        fm.format("    ProtectionDomain: %s%n", protectionDomain);
+        System.out.println(sb.toString());
+
+        return null;
+    }
+}
+</pre>
+
+<h3 id="manifest">manifest.mf</h3>
+
+<pre title="manifest.mf" class="plaintext">
+Premain-Class: lsieun.agent.LoadTimeAgent
+
+</pre>
+
+<h3 id="compile-and-package">Compile And Package</h3>
+
+<p>
+    第一阶段，编译。对<code>.java</code>文件进行编译，生成<code>.class</code>文件。
+</p>
+
+<pre title="编译Java文件" class="plaintext">
+# 切换目录
+$ cd java-agent-manual/
+
+# 查看目录下的内容，代码位于src文件夹中
+$ ls
+LICENSE  README.en.md  README.md  java-agent-manual.iml  src/
+
+# 添加out子目录
+$ mkdir out
+
+# 将所有.java文件放到sources.txt文件中
+$ find ./src/ -name "*.java" > sources.txt
+
+# 将编译结果放到out目录中
+$ javac -d out/ @sources.txt
+</pre>
+
+<p>
+    第二阶段，打包。将<code>.class</code>文件和<code>manifest.mf</code>文件进行打包，生成Jar文件。
+</p>
+
+<pre title="生成Jar包" class="plaintext">
+# 复制manifest.mf文件
+$ cp src/manifest.mf out/
+
+# 切换到out目录
+$ cd out/
+
+# 生成Jar包
+$ jar -cvfm TheAgent.jar manifest.mf lsieun/
+已添加清单
+正在添加: lsieun/(输入 = 0) (输出 = 0)(存储了 0%)
+正在添加: lsieun/agent/(输入 = 0) (输出 = 0)(存储了 0%)
+正在添加: lsieun/agent/DynamicAgent.class(输入 = 324) (输出 = 229)(压缩了 29%)
+正在添加: lsieun/agent/LoadTimeAgent.class(输入 = 504) (输出 = 310)(压缩了 38%)
+正在添加: lsieun/transformer/(输入 = 0) (输出 = 0)(存储了 0%)
+正在添加: lsieun/transformer/InfoTransformer.class(输入 = 1215) (输出 = 641)(压缩了 47%)
+</pre>
+
+<h2 id="run-application">Run Application</h2>
+
+<h3 id="run-without-agent">Run</h3>
+
+<pre title="java sample.Program" class="plaintext">
+$ java sample.Program
+result = -3
+result = 4
+result = 80
+result = -16
+result = -2
+result = 20
+result = 35
+result = 13
+result = 76
+result = 182
+</pre>
+
+<h3 id="run-with-agent">Run With Agent</h3>
+
+<p>
+    在使用<code>java</code>命令时，我们可以通过使用<code>-javaagent</code>选项来使用Java Agent Jar。
+</p>
+
+<pre title="java -javaagent:TheAgent.jar sample.Program" hidden class="plaintext">
+$ java -javaagent:TheAgent.jar sample.Program
+ClassName: java/lang/invoke/MethodHandleImpl
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/invoke/MethodHandleImpl$1
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/invoke/MethodHandleImpl$2
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/util/function/Function
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/invoke/MethodHandleImpl$3
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/invoke/MethodHandleImpl$4
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/ClassValue
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/ClassValue$Entry
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/ClassValue$Identity
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/ClassValue$Version
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/invoke/MemberName$Factory
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/invoke/MethodHandleStatics
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/invoke/MethodHandleStatics$1
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: sun/misc/PostVMInitHook
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: sun/misc/PostVMInitHook$2
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: jdk/internal/util/EnvUtils
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: sun/misc/PostVMInitHook$1
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: sun/usagetracker/UsageTrackerClient
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/util/concurrent/atomic/AtomicBoolean
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: sun/usagetracker/UsageTrackerClient$1
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: sun/usagetracker/UsageTrackerClient$4
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: sun/usagetracker/UsageTrackerClient$2
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: sun/usagetracker/UsageTrackerClient$3
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/io/FileOutputStream$1
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: sun/launcher/LauncherHelper
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: sample/Program                  // &lt;-- 注意，这里是sample.Program类
+    ClassLoader: sun.misc.Launcher$AppClassLoader@18b4aac2
+    ClassBeingRedefined: null
+    ProtectionDomain: ProtectionDomain
+    (file:/D:/gitee/java-agent-manual/out/ &lt;no signer certificates&gt;)
+     sun.misc.Launcher$AppClassLoader@18b4aac2
+     &lt;no principals&gt;
+     java.security.Permissions@4aa298b7 (
+     ("java.io.FilePermission" "\D:\gitee\java-agent-manual\out\-" "read")
+     ("java.lang.RuntimePermission" "exitVM")
+)
+
+
+
+ClassName: sun/launcher/LauncherHelper$FXHelper
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/Class$MethodArray
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/Void
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/util/Random
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: sample/HelloWorld                  // &lt;-- 注意，这里是sample.HelloWorld类
+    ClassLoader: sun.misc.Launcher$AppClassLoader@18b4aac2
+    ClassBeingRedefined: null
+    ProtectionDomain: ProtectionDomain
+    (file:/D:/gitee/java-agent-manual/out/ &lt;no signer certificates&gt;)
+     sun.misc.Launcher$AppClassLoader@18b4aac2
+     &lt;no principals&gt;
+     java.security.Permissions@4aa298b7 (
+     ("java.io.FilePermission" "\D:\gitee\java-agent-manual\out\-" "read")
+     ("java.lang.RuntimePermission" "exitVM")
+)
+
+
+
+result = 48
+result = 102
+result = 31
+result = 77
+result = 126
+result = -5
+result = 5
+result = 131
+result = 91
+result = -67
+ClassName: java/lang/Shutdown
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+ClassName: java/lang/Shutdown$Lock
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+</pre>
+
+<p>
+    另外，在使用<code>java</code>命令时，可以添加<code>-verbose:class</code>选项，它可以显示每个已加载类的信息。
+</p>
+
+<pre title="使用-verbose:class选项" class="plaintext">
+$ java -verbose:class sample.Program
+</pre>
+
+<h2 id="summing-up">Summing Up</h2>
+
+<p>
+    这里Java Agent的示例，并没有实现什么有用的功能，其主要目的是为了展示：Java Agent Jar主要由Agent Class、Transformer和manifest.mf三个要素组成。
+</p>
+
+<p>
+    生成和使用Java Agent Jar的一般步骤如下：
+</p>
+
+<ul>
+    <li>
+        第一步，将<code>.java</code>代码编译成<code>.class</code>文件：<code>find . -name "*.java" > sources.txt</code> 和 <code>javac -d out/ @sources.txt</code>。
+    </li>
+    <li>
+        第二步，将<code>.class</code>文件和<code>manifest.mf</code>包装成Jar包：<code>jar -cvfm TheAgent.jar manifest.mf lsieun/</code>。
+    </li>
+    <li>
+        第三步，使用Jar包的命令：<code>java -javaagent:TheAgent.jar sample.Program</code>。
+    </li>
+</ul>

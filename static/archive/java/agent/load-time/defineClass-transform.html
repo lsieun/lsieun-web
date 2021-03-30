@@ -1,0 +1,56 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">defineClass --&gt; transform</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<pre title="java -javaagent:TheAgent.jar sample.Program" class="plaintext">
+ClassName: sample/HelloWorld
+    ClassLoader: sun.misc.Launcher$AppClassLoader@18b4aac2
+    ClassBeingRedefined: null
+    ProtectionDomain: ProtectionDomain
+        (file:/D:/git-repo/learn-java-agent/target/classes/ &lt;no signer certificates&gt;)
+        sun.misc.Launcher$AppClassLoader@18b4aac2
+        &lt;no principals&gt;
+        java.security.Permissions@1d44bcfa (
+        ("java.io.FilePermission" "\D:\git-repo\learn-java-agent\target\classes\-" "read")
+        ("java.lang.RuntimePermission" "exitVM")
+)
+
+
+
+java.lang.Exception: Exception From lsieun.transformer.InfoTransformer
+	at lsieun.transformer.InfoTransformer.transform(Unknown Source)
+	at sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:428)    "&lt;--这是第4个关注点"
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:756)
+	at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
+	at java.net.URLClassLoader.defineClass(URLClassLoader.java:468)
+	at java.net.URLClassLoader.access$100(URLClassLoader.java:74)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:369)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:363)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:362)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:418)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:355)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:351)
+	at sample.Program.main(Unknown Source)
+========= ========= =========
+This is test method from HelloWorld class.
+==========================================
+</pre>
+
+<p>
+    这里的关注点是<code>ClassLoader.defineClass</code>和<code>InstrumentationImpl.transform</code>之间调用关系。
+</p>
+
+<pre title="" class="plaintext">
+	at sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:428)    "&lt;--这是第4个关注点"
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:756)
+</pre>
+

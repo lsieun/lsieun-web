@@ -1,0 +1,221 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Third Example</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="application">Application</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+package sample;
+
+public class HelloWorld {
+    public static int add(int a, int b) {
+        return a + b;
+    }
+
+    public static int sub(int a, int b) {
+        return a - b;
+    }
+}
+</pre>
+
+<pre title="Program.java" class="javacode">
+package sample;
+
+import java.util.Random;
+
+public class Program {
+    public static void main(String[] args) throws Exception {
+        Random rand = new Random();
+
+        for (int i = 0; i < 10; i++) {
+            int a = rand.nextInt(100);
+            int b = rand.nextInt(100);
+            boolean flag = rand.nextBoolean();
+            int result = flag ? HelloWorld.add(a, b) : HelloWorld.sub(a, b);
+            System.out.println("result = " + result);
+            Thread.sleep(5000);
+        }
+    }
+}
+</pre>
+
+<h2 id="java-agent-jar">Java Agent Jar</h2>
+
+<h3 id="agent-class">Agent Class</h3>
+
+<pre title="DynamicAgent.java" class="javacode">
+package lsieun.agent;
+
+import lsieun.transformer.ASMTransformer;
+
+import java.lang.instrument.Instrumentation;
+
+public class DynamicAgent {
+    public static void agentmain(String agentArgs, Instrumentation inst) {
+        try {
+            inst.addTransformer(new ASMTransformer(), true);
+            Class&lt;?&gt; targetClass = Class.forName("sample.HelloWorld");
+            inst.retransformClasses(targetClass);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+}
+</pre>
+
+<h3 id="manifest">manifest.mf</h3>
+
+<pre title="manifest.mf" class="plaintext">
+Agent-Class: lsieun.agent.DynamicAgent
+Can-Retransform-Classes: true
+
+</pre>
+
+
+
+<h3 id="compile-and-package">Compile And Package</h3>
+
+<p>
+    第一阶段，编译。对<code>.java</code>文件进行编译，生成<code>.class</code>文件。
+</p>
+
+<pre title="编译Java文件" class="plaintext">
+# 添加out子目录
+$ mkdir out
+
+# 将所有.java文件放到sources.txt文件中
+$ find ./src/ -name "*.java" > sources.txt
+
+# 将编译结果放到out目录中
+# 注意添加 -XDignore.symbol.file 选项
+$ javac -XDignore.symbol.file -d out/ @sources.txt
+</pre>
+
+<p>
+    第二阶段，打包。将<code>.class</code>文件和<code>manifest.mf</code>文件进行打包，生成Jar文件。
+</p>
+
+<pre title="生成Jar包" class="plaintext">
+# 复制manifest.mf文件
+$ cp src/manifest.mf out/
+
+# 切换到out目录
+$ cd out/
+
+# 生成Jar包
+$ jar -cvfm TheAgent.jar manifest.mf lsieun/
+已添加清单
+正在添加: lsieun/(输入 = 0) (输出 = 0)(存储了 0%)
+正在添加: lsieun/agent/(输入 = 0) (输出 = 0)(存储了 0%)
+正在添加: lsieun/agent/DynamicAgent.class(输入 = 803) (输出 = 488)(压缩了 39%)
+正在添加: lsieun/agent/LoadTimeAgent.class(输入 = 503) (输出 = 310)(压缩了 38%)
+正在添加: lsieun/transformer/(输入 = 0) (输出 = 0)(存储了 0%)
+正在添加: lsieun/transformer/ASMTransformer.class(输入 = 1735) (输出 = 923)(压缩了 46%)
+正在添加: lsieun/transformer/InfoTransformer.class(输入 = 1215) (输出 = 641)(压缩了 47%)
+正在添加: lsieun/utils/(输入 = 0) (输出 = 0)(存储了 0%)
+正在添加: lsieun/utils/PrintUtils.class(输入 = 2502) (输出 = 1040)(压缩了 58%)
+正在添加: lsieun/visitor/(输入 = 0) (输出 = 0)(存储了 0%)
+正在添加: lsieun/visitor/Constant.class(输入 = 304) (输出 = 245)(压缩了 19%)
+正在添加: lsieun/visitor/PrintMethodAdapter.class(输入 = 1891) (输出 = 993)(压缩了 47%)
+正在添加: lsieun/visitor/PrintMethodParameterAdapter.class(输入 = 1962) (输出 = 1043)(压缩了 46%)
+正在添加: lsieun/visitor/PrintMethodParameterVisitor.class(输入 = 1202) (输出 = 551)(压缩了 54%)
+</pre>
+
+<h2 id="vm-attach">VMAttach</h2>
+
+<pre title="VMAttach.java" class="javacode">
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.VirtualMachineDescriptor;
+
+import java.util.List;
+
+public class VMAttach {
+    public static void main(String[] args) throws Exception {
+        String agent = "TheAgent.jar";
+        System.out.println("Agent Path: " + agent);
+        List&lt;VirtualMachineDescriptor&gt; vmds = VirtualMachine.list();
+        for (VirtualMachineDescriptor vmd : vmds) {
+            if (vmd.displayName().equals("sample.Program")) {
+                VirtualMachine vm = VirtualMachine.attach(vmd.id());
+                System.out.println("Load Agent");
+                vm.loadAgent(agent);
+                System.out.println("Detach");
+                vm.detach();
+            }
+        }
+    }
+}
+</pre>
+
+<pre title="编译VMAttach.java" class="plaintext">
+# 编译VMAttach.java（Windows)
+$ javac -cp "%JAVA_HOME%/lib/tools.jar";. -d out/ VMAttach.java
+
+# 编译VMAttach.java（Linux)
+$ javac -cp "${JAVA_HOME}/lib/tools.jar":. -d out/ VMAttach.java
+
+# 编译VMAttach.java（MINGW64)
+$ javac -cp "${JAVA_HOME}/lib/tools.jar"\;. -d out/ VMAttach.java
+</pre>
+
+<h2 id="run-application">Run Application</h2>
+
+<h3 id="run-without-agent">Run</h3>
+
+<pre title="java sample.Program" class="plaintext">
+$ java sample.Program
+result = 34
+result = 75
+result = 108
+candidate className: sample/HelloWorld
+Method Enter: sample/HelloWorld.add:(II)I
+    82
+    47
+result = 129
+Method Enter: sample/HelloWorld.add:(II)I
+    75
+    47
+result = 122
+Method Enter: sample/HelloWorld.add:(II)I
+    92
+    77
+result = 169
+Method Enter: sample/HelloWorld.sub:(II)I
+    79
+    44
+result = 35
+Method Enter: sample/HelloWorld.sub:(II)I
+    62
+    72
+result = -10
+Method Enter: sample/HelloWorld.sub:(II)I
+    90
+    1
+result = 89
+Method Enter: sample/HelloWorld.add:(II)I
+    28
+    15
+result = 43
+
+</pre>
+
+<h3 id="run-vm-attach">Run VMAttach</h3>
+
+<pre title="java VMAttach" class="plaintext">
+# 编译VMAttach.java（Windows)
+$ java -cp "%JAVA_HOME%/lib/tools.jar";. VMAttach
+
+# 编译VMAttach.java（Linux)
+$ java -cp "${JAVA_HOME}/lib/tools.jar":. VMAttach
+
+# 编译VMAttach.java（MINGW64)
+$ java -cp "${JAVA_HOME}/lib/tools.jar"\;. VMAttach
+
+</pre>
+
+<h2 id="summing-up">Summing Up</h2>

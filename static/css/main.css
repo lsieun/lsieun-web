@@ -31,6 +31,17 @@
     font-weight: bold;
 }
 
+.note {
+    font-family: "Microsoft JhengHei","courier new", sans-serif;
+    color: blue;
+}
+
+.pre-block {
+    display: block;
+    white-space: pre-wrap;
+    border:dashed 1px grey;
+}
+
 .text-compare-blue {
     text-decoration-line: underline;
     text-decoration-color: blue;
@@ -165,3 +176,4 @@ code {
     border: 1px solid #e1e1e8;
     border-radius: 3px;
 }
+

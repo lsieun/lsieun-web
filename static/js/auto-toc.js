@@ -47,9 +47,17 @@
                     text = first_index + "." + second_index + "." + third_index + " " + text;
                 }
 
-                let anchor = "mark_" + first_index + "_" + second_index + "_" + third_index;
+                let head_id = h.attr("id");
+                let anchor;
+                if (head_id != null) {
+                    anchor = head_id;
+                }
+                else {
+                    anchor = "mark_" + first_index + "_" + second_index + "_" + third_index;
+                    h.attr("id", anchor);
+                }
                 h.text(text);
-                h.attr("id", anchor);
+
 
                 $li = $("<li></li>");
                 $a = $("<a></a>").text(text).attr("href", "#" + anchor);

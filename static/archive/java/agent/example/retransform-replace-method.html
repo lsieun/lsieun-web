@@ -3,7 +3,7 @@
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="../../java-agent-index.html">TOC</a>
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
@@ -24,29 +24,52 @@ public class HelloWorld {
 
 <pre title="Program.java" class="javacode">
 public class Program {
-    public static void main(String[] args) {
-        HelloWorld instance = new HelloWorld();
-        instance.validate("jerry", "abc");
-        System.out.println("Username and Password is correct.");
+    public static void main(String[] args) throws InterruptedException {
+        for (int i = 0; i < 10; i++) {
+            try {
+                HelloWorld instance = new HelloWorld();
+                instance.validate("jerry", "abc");
+                System.out.println("Username and Password is correct.");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            System.out.println("=========");
+            Thread.sleep(5000);
+        }
     }
 }
 </pre>
 
 <h2>Agent Class</h2>
 
-<pre title="LoadTimeAgent.java" class="javacode">
+<pre title="DynamicAgent.java" class="javacode">
 import lsieun.transformer.ASMTransformer;
 
+import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
+import java.lang.instrument.UnmodifiableClassException;
 
-public class LoadTimeAgent {
-    public static void premain(String agentArgs, Instrumentation inst) {
-        System.out.println("Premain-Class: " + LoadTimeAgent.class.getName());
+public class DynamicAgent {
+    public static void agentmain(String agentArgs, Instrumentation inst) {
+        System.out.println("Agent-Class: " + DynamicAgent.class.getName());
         System.out.println("Can-Redefine-Classes: " + inst.isRedefineClassesSupported());
         System.out.println("Can-Retransform-Classes: " + inst.isRetransformClassesSupported());
         System.out.println("Can-Set-Native-Method-Prefix: " + inst.isNativeMethodPrefixSupported());
 
-        inst.addTransformer(new ASMTransformer());
+        ClassFileTransformer transformer = new ASMTransformer();
+        inst.addTransformer(transformer, true);
+
+        Class[] allLoadedClasses = inst.getAllLoadedClasses();
+        for (Class&lt;?&gt; clazz : allLoadedClasses) {
+            boolean isModifiable = inst.isModifiableClass(clazz);
+            if (isModifiable) {
+                try {
+                    inst.retransformClasses(clazz);
+                } catch (UnmodifiableClassException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
 </pre>
@@ -101,18 +124,59 @@ public class ASMTransformer implements ClassFileTransformer {
 
 <pre title="java sample.Program" class="plaintext">
 $ java sample.Program
-Exception in thread "main" java.lang.IllegalArgumentException: username or password is not correct
+java.lang.IllegalArgumentException: username or password is not correct
         at sample.HelloWorld.validate(Unknown Source)
         at sample.Program.main(Unknown Source)
-</pre>
-
-<pre title="java -javaagent:TheAgent.jar sample.Program" class="plaintext">
-$ java -javaagent:D:/git-repo/learn-java-agent/target/TheAgent.jar sample.Program
-Premain-Class: lsieun.agent.LoadTimeAgent
+=========
+java.lang.IllegalArgumentException: username or password is not correct
+        at sample.HelloWorld.validate(Unknown Source)
+        at sample.Program.main(Unknown Source)
+=========
+Agent-Class: lsieun.agent.DynamicAgent
 Can-Redefine-Classes: true
 Can-Retransform-Classes: true
 Can-Set-Native-Method-Prefix: true
-candidate className: sample/Program
 candidate className: sample/HelloWorld
+candidate className: sample/Program
 Username and Password is correct.
+=========
+Username and Password is correct.
+=========
+Username and Password is correct.
+=========
+
+</pre>
+
+<h2>Attach</h2>
+
+<pre title="VMAttach.java" class="javacode">
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.VirtualMachineDescriptor;
+
+import java.io.File;
+import java.util.List;
+
+public class VMAttach {
+    public static void main(String[] args) throws Exception {
+        String agent = System.getProperty("user.dir") + File.separator +
+                "target" + File.separator + "TheAgent.jar";
+        System.out.println("Agent Path: " + agent);
+        List&lt;VirtualMachineDescriptor&gt; vmds = VirtualMachine.list();
+        for (VirtualMachineDescriptor vmd : vmds) {
+            if (vmd.displayName().equals("sample.Program")) {
+                VirtualMachine vm = VirtualMachine.attach(vmd.id());
+                System.out.println("Load Agent");
+                vm.loadAgent(agent);
+                System.out.println("Detach");
+                vm.detach();
+            }
+        }
+    }
+}
+</pre>
+
+<pre title="Run" class="plaintext">
+Agent Path: D:\git-repo\learn-java-agent\target\TheAgent.jar
+Load Agent
+Detach
 </pre>

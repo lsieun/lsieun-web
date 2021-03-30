@@ -1,0 +1,220 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">retransformClasses: transformer</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="application">Application</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test(int a, int b) {
+        int result = a + b;
+        System.out.println("result = " + result);
+        System.out.println("==================");
+    }
+}
+</pre>
+
+<pre title="Program.java" class="javacode">
+import java.util.Random;
+
+public class Program {
+    public static void main(String[] args) throws Exception {
+        Random rand = new Random();
+        for (int i = 0; i < 10; i++) {
+            HelloWorld instance = new HelloWorld();
+            int a = rand.nextInt(10);
+            int b = rand.nextInt(10);
+            instance.test(a, b);
+            Thread.sleep(5000);
+        }
+    }
+}
+</pre>
+
+<h2 id="java-agent-jar">Java Agent Jar</h2>
+
+<h3 id="agent-class">Agent Class</h3>
+
+<pre title="LoadTimeAgent.java" class="javacode">
+import lsieun.transformer.ASMTransformer;
+
+import java.lang.instrument.Instrumentation;
+
+public class LoadTimeAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Premain-Class: " + LoadTimeAgent.class.getName());
+        System.out.println("Can-Redefine-Classes: " + inst.isRedefineClassesSupported());
+        System.out.println("Can-Retransform-Classes: " + inst.isRetransformClassesSupported());
+        System.out.println("Can-Set-Native-Method-Prefix: " + inst.isNativeMethodPrefixSupported());
+        System.out.println("========= ========= =========");
+
+        inst.addTransformer(new ASMTransformer(), false);
+    }
+}
+</pre>
+
+<pre title="DynamicAgent.java" class="javacode">
+import lsieun.utils.FileUtils;
+
+import java.lang.instrument.ClassDefinition;
+import java.lang.instrument.Instrumentation;
+import java.lang.instrument.UnmodifiableClassException;
+
+public class DynamicAgent {
+    public static void agentmain(String agentArgs, Instrumentation inst) {
+        System.out.println("Agent-Class: " + DynamicAgent.class.getName());
+        System.out.println("Can-Redefine-Classes: " + inst.isRedefineClassesSupported());
+        System.out.println("Can-Retransform-Classes: " + inst.isRetransformClassesSupported());
+        System.out.println("Can-Set-Native-Method-Prefix: " + inst.isNativeMethodPrefixSupported());
+
+        try {
+            Class[] allLoadedClasses = inst.getAllLoadedClasses();
+            for (Class&lt;?&gt; clazz : allLoadedClasses) {
+                String className = clazz.getName();
+                boolean isModifiable = inst.isModifiableClass(clazz);
+                // 注意：修改类的名字
+                if ("sample.HelloWorld".equals(className) && isModifiable) {
+                    // 注意：修改文件的路径
+                    String filepath = "D:/git-repo/learn-java-agent/target/classes/sample/HelloWorld.class";
+                    byte[] bytes = FileUtils.readBytes(filepath);
+                    if (bytes == null) continue;
+                    ClassDefinition classDefinition = new ClassDefinition(clazz, bytes);
+                    inst.redefineClasses(classDefinition);
+                }
+            }
+        } catch (UnmodifiableClassException | ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+    }
+}
+</pre>
+
+<h3 id="transformer">Transformer</h3>
+
+<pre title="ASMTransformer.java" class="javacode">
+import lsieun.visitor.modify.PrintMethodParameterVisitor;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+
+public class ASMTransformer implements ClassFileTransformer {
+    @Override
+    public byte[] transform(ClassLoader loader,
+                            String className,
+                            Class&lt;?&gt; classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer) throws IllegalClassFormatException {
+        if (className == null) return null;
+        if (className.startsWith("java")) return null;
+        if (className.startsWith("javax")) return null;
+        if (className.startsWith("jdk")) return null;
+        if (className.startsWith("sun")) return null;
+        if (className.startsWith("org")) return null;
+        if (className.startsWith("com")) return null;
+        if (className.startsWith("lsieun")) return null;
+
+        System.out.println("candidate className: " + className);
+
+        if (className.equals("sample/HelloWorld")) {
+            ClassReader cr = new ClassReader(classfileBuffer);
+            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+            ClassVisitor cv = new PrintMethodParameterVisitor(cw);
+
+            int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+            cr.accept(cv, parsingOptions);
+            byte[] bytes = cw.toByteArray();
+            return bytes;
+        }
+
+        return null;
+    }
+}
+</pre>
+
+<h2 id="run-application">Run Application</h2>
+
+<pre title="HelloWorld.java（修改“+”为“*”）" class="javacode">
+public class HelloWorld {
+    public void test(int a, int b) {
+        int result = a * b;
+        System.out.println("result = " + result);
+        System.out.println("==================");
+    }
+}
+</pre>
+
+<pre title="java -javaagent:TheAgent.jar sample.Program" class="plaintext">
+$ java -javaagent:D:/git-repo/learn-java-agent/target/TheAgent.jar sample.Program
+Premain-Class: lsieun.agent.LoadTimeAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Can-Set-Native-Method-Prefix: true
+========= ========= =========
+candidate className: sample/Program
+candidate className: sample/HelloWorld
+Method Enter: sample/HelloWorld.test:(II)V
+    7
+    1
+result = 8
+==================
+Method Enter: sample/HelloWorld.test:(II)V
+    8
+    5
+result = 13
+==================
+Method Enter: sample/HelloWorld.test:(II)V
+    3
+    4
+result = 7
+==================
+Method Enter: sample/HelloWorld.test:(II)V
+    2
+    8
+result = 10
+==================
+Agent-Class: lsieun.agent.DynamicAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Can-Set-Native-Method-Prefix: true
+candidate className: sample/HelloWorld
+Method Enter: sample/HelloWorld.test:(II)V
+    7
+    1
+result = 7
+==================
+Method Enter: sample/HelloWorld.test:(II)V
+    8
+    2
+result = 16
+==================
+Method Enter: sample/HelloWorld.test:(II)V
+    4
+    9
+result = 36
+==================
+Method Enter: sample/HelloWorld.test:(II)V
+    1
+    9
+result = 9
+==================
+Method Enter: sample/HelloWorld.test:(II)V
+    2
+    3
+result = 6
+==================
+Method Enter: sample/HelloWorld.test:(II)V
+    1
+    8
+result = 8
+==================
+</pre>
+

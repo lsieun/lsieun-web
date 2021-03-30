@@ -1,9 +1,9 @@
 <!-- 标题 -->
-<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Add Field</span></h1>
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Remove Field</span></h1>
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="../../java-agent-index.html">TOC</a>
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
@@ -52,11 +52,10 @@ public class LoadTimeAgent {
 <h2>Transformer</h2>
 
 <pre title="ASMTransformer.java" class="javacode">
-import lsieun.visitor.add.AddFiledVisitor;
+import lsieun.visitor.remove.RemoveFieldVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
@@ -83,7 +82,7 @@ public class ASMTransformer implements ClassFileTransformer {
         if (className.equals("sample/HelloWorld")) {
             ClassReader cr = new ClassReader(classfileBuffer);
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-            ClassVisitor cv = new AddFiledVisitor(cw, Opcodes.ACC_PUBLIC, "objValue", "Ljava/lang/Object;");
+            ClassVisitor cv = new RemoveFieldVisitor(cw, "strValue", "Ljava/lang/String;");
 
             int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
             cr.accept(cv, parsingOptions);
@@ -113,6 +112,4 @@ Can-Set-Native-Method-Prefix: true
 candidate className: sample/Program
 candidate className: sample/HelloWorld
 intValue
-strValue
-objValue
 </pre>

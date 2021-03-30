@@ -1,0 +1,180 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">InstrumentationImpl.loadClassAndCallPremain</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    前情回顾：在下面的输出结果当中，我们在后几行中看到<code>sun.instrument.InstrumentationImpl</code>类当中的<code>loadClassAndCallPremain</code>方法和<code>loadClassAndStartAgent</code>方法。这是我们的第一个关注点。
+</p>
+
+<pre title="java -javaagent:TheAgent.jar sample.Program" class="plaintext">
+$ java -javaagent:D:/git-repo/learn-java-agent/target/TheAgent.jar sample.Program
+Premain-Class: lsieun.agent.LoadTimeAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Can-Set-Native-Method-Prefix: true
+java.lang.Exception: Exception From lsieun.agent.LoadTimeAgent
+	at lsieun.agent.LoadTimeAgent.premain(Unknown Source)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at sun.instrument.InstrumentationImpl.loadClassAndStartAgent(InstrumentationImpl.java:386)
+	at sun.instrument.InstrumentationImpl.loadClassAndCallPremain(InstrumentationImpl.java:401)  "&lt;--这是第1个关注点"
+========= ========= =========
+</pre>
+
+<p>
+    接下来，让我们从源代码中来探究一下。
+</p>
+
+<h2 id="class-info">Class Info</h2>
+
+<p>
+    <code>sun.instrument.InstrumentationImpl</code>实现了<code>java.lang.instrument.Instrumentation</code>接口。
+</p>
+
+<pre title="InstrumentationImpl.java" class="javacode">
+public class InstrumentationImpl implements Instrumentation {
+}
+</pre>
+
+<h2 id="loadClassAndCallPremain-method">loadClassAndCallPremain method</h2>
+
+<p>
+    在<code>sun.instrument.InstrumentationImpl</code>类当中，<code>loadClassAndCallPremain</code>方法的实现非常简单，它直接调用了<code>loadClassAndStartAgent</code>方法。
+</p>
+
+<pre title="InstrumentationImpl.java" class="javacode">
+public class InstrumentationImpl implements Instrumentation {
+    private void loadClassAndCallPremain(String classname, String optionsString) throws Throwable {
+        loadClassAndStartAgent(classname, "premain", optionsString);
+    }
+}
+</pre>
+
+<h2 id="loadClassAndStartAgent-method">loadClassAndStartAgent method</h2>
+
+<p>
+    在<code>sun.instrument.InstrumentationImpl</code>类当中，<code>loadClassAndStartAgent</code>方法的作用就是通过Java反射的机制来对<code>premain</code>或<code>agentmain</code>方法进行调用。
+</p>
+
+<p>
+    在<code>loadClassAndStartAgent</code>源码中，我们能够看到更多的细节信息：
+</p>
+
+<ul>
+    <li>
+        第一步，从自身的方法定义中，去寻找目标方法：先找带有两个参数的方法；如果没有找到，则找带有一个参数的方法。如果第一步没有找到，则进行第二步。
+    </li>
+    <li>
+        第二步，从父的依法定义中，去寻找目标方法：先找带有两个参数的方法；如果没有找到，则找带有一个参数的方法。
+    </li>
+</ul>
+
+<pre title="InstrumentationImpl.java" class="javacode">
+public class InstrumentationImpl implements Instrumentation {
+    private void loadClassAndStartAgent(String classname,
+                                        String methodname,
+                                        String optionsString) throws Throwable {
+        ClassLoader mainAppLoader = ClassLoader.getSystemClassLoader();
+        Class<?> javaAgentClass = mainAppLoader.loadClass(classname);
+
+        Method m = null;
+        NoSuchMethodException firstExc = null;
+        boolean twoArgAgent = false;
+
+        // The agent class must have a premain or agentmain method that
+        // has 1 or 2 arguments. We check in the following order:
+        //
+        // 1) declared with a signature of (String, Instrumentation)
+        // 2) declared with a signature of (String)
+        // 3) inherited with a signature of (String, Instrumentation)
+        // 4) inherited with a signature of (String)
+        //
+        // So the declared version of either 1-arg or 2-arg always takes
+        // primary precedence over an inherited version. After that, the
+        // 2-arg version takes precedence over the 1-arg version.
+        //
+        // If no method is found then we throw the NoSuchMethodException
+        // from the first attempt so that the exception text indicates
+        // the lookup failed for the 2-arg method (same as JDK5.0).
+
+        try {
+            m = javaAgentClass.getDeclaredMethod(methodname,              // (1) 从当前类的自身进行寻找
+                    new Class[]{
+                            String.class,
+                            java.lang.instrument.Instrumentation.class
+                    }
+            );
+            twoArgAgent = true;
+        } catch (NoSuchMethodException x) {
+            // remember the NoSuchMethodException
+            firstExc = x;
+        }
+
+        if (m == null) {
+            // now try the declared 1-arg method
+            try {
+                m = javaAgentClass.getDeclaredMethod(methodname,           // (2) 从当前类的自身进行寻找
+                        new Class[]{String.class});
+            } catch (NoSuchMethodException x) {
+                // ignore this exception because we'll try
+                // two arg inheritance next
+            }
+        }
+
+        if (m == null) {
+            // now try the inherited 2-arg method
+            try {
+                m = javaAgentClass.getMethod(methodname,                   // (3) 从父类中寻找
+                        new Class[]{
+                                String.class,
+                                java.lang.instrument.Instrumentation.class
+                        }
+                );
+                twoArgAgent = true;
+            } catch (NoSuchMethodException x) {
+                // ignore this exception because we'll try
+                // one arg inheritance next
+            }
+        }
+
+        if (m == null) {
+            // finally try the inherited 1-arg method
+            try {
+                m = javaAgentClass.getMethod(methodname,                   // (4) 从父类中寻找
+                        new Class[]{String.class});
+            } catch (NoSuchMethodException x) {
+                // none of the methods exists so we throw the
+                // first NoSuchMethodException as per 5.0
+                throw firstExc;
+            }
+        }
+
+        // the premain method should not be required to be public,
+        // make it accessible so we can call it
+        // Note: The spec says the following:
+        //     The agent class must implement a public static premain method...
+        setAccessible(m, true);
+
+        // invoke the 1 or 2-arg method
+        if (twoArgAgent) {
+            m.invoke(null, new Object[]{optionsString, this});
+        }
+        else {
+            m.invoke(null, new Object[]{optionsString});
+        }
+
+        // don't let others access a non-public premain method
+        setAccessible(m, false);
+    }
+}
+</pre>
+
+
+

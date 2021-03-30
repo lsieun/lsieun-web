@@ -12,7 +12,9 @@
 
 <ul>
     <li>
-        <input type="checkbox"/>我想用两个Agent来检测，别的Agent到底做了什么？
+        <label>
+            <input type="checkbox"/> 我想用两个Agent来检测，别的Agent到底做了什么？
+        </label>
     </li>
 </ul>
 
@@ -35,32 +37,21 @@ public class BasicAgent {
     可以做什么呢？进入方法、退出方法时，打印信息；打印方法接收的参数; dump every loaded class file into a certain folder;
 </p>
 
-<h2>Basic</h2>
-
-<ul>
-    <li><a href="java-agent-intro.html">Intro</a></li>
-    <li><a href="requirements-of-java-agent.html">Requirements of a Javaagent</a></li>
-    <li><a href="manifest-attributes.html">Manifest Attributes</a></li>
-</ul>
-
-
-
-<p>
-    Java Attach API
-</p>
-
-<p>
-    Tutorial
-</p>
-
-<ul>
-    <li><a href="tutorial/class-list.html">ClassList</a></li>
-</ul>
-
 <h2>Java Agent Intro</h2>
 
 <ul>
     <li>有一个示例，给别人演示，如何使用Java Agent</li>
+    <li><a href="java-agent-intro.html">Intro</a></li>
+    <li>
+        <a href="javascript:void(0);" onclick="display_img('mind-map')">MindMap</a>
+        <img id="mind-map" style="display: none;" src="/images/java/agent/java-agent-mindmap.png" alt="Java Agent Mind Map"/>
+    </li>
+    <li><a href="requirements-of-java-agent.html">Requirements of a Javaagent</a></li>
+    <li><a href="manifest-attributes.html">Manifest Attributes</a></li>
+    <li><a href="intro/example-manual-01.html">First Example</a></li>
+    <li><a href="intro/example-manual-02.html">Second Example</a></li>
+    <li><a href="intro/example-manual-03.html">Third Example</a></li>
+    <li><a href="intro/example-maven-04.html">Fourth Example</a></li>
     <li>
         <a href="intro/method-parameter-agent.html">MethodParameterAgent.jar</a>
     </li>
@@ -98,7 +89,30 @@ public class BasicAgent {
     </li>
     <li>
         Instrumentation:
-        <a href="api/instrumentation.html">Intro</a>
+        <ul>
+            <li><a href="api/instrumentation.html">Intro</a></li>
+            <li>
+                <a href="load-time/Instrumentation-overview.html">Overview</a>
+            </li>
+            <li>
+                <a href="load-time/Instrumentation-implementation.html">Implementation</a>
+            </li>
+            <li>
+                <a href="load-time/Instrumentation-isXxxSupported.html">isXxxSupported()</a>
+            </li>
+            <li>
+                <a href="load-time/Instrumentation-getXxxClasses.html">getXxxClasses()</a>
+            </li>
+            <li>
+                <a href="load-time/Instrumentation-redefineClasses.html">redefineClasses(ClassDefinition... definitions)</a>
+            </li>
+            <li>
+                <a href="load-time/Instrumentation-retransformClasses.html">retransformClasses(Class&lt;?&gt;... classes)</a>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="load-time/ClassDefinition.html">ClassDefinition</a>
     </li>
     <li>
         Agent Class:
@@ -110,16 +124,27 @@ public class BasicAgent {
     </li>
     <li>
         <a href="api/sun-instrument.html">sun.instrument</a>
+        <ul>
+            <li><a href="load-time/stack-trace.html">Stack Trace</a></li>
+            <li><a href="load-time/InstrumentationImpl-loadClassAndCallPremain.html">InstrumentationImpl.loadClassAndCallPremain</a></li>
+            <li><a href="load-time/InstrumentationImpl-transform.html">InstrumentationImpl.transform</a></li>
+            <li><a href="load-time/classloader.html">ClassLoader</a></li>
+            <li><a href="load-time/defineClass-transform.html">defineClass --&gt; transform</a></li>
+        </ul>
     </li>
     <li>
         Examples:
         <ul>
-            <li><a href="load-time/example/add-interface.html">Add Interface</a></li>
-            <li><a href="load-time/example/add-field.html">Add Field</a></li>
-            <li><a href="load-time/example/add-method.html">Add Method</a></li>
-            <li><a href="load-time/example/print-method-parameters.html">Print Method Parameters</a></li>
-            <li><a href="load-time/example/proxy-method.html">Proxy Method</a></li>
-            <li><a href="load-time/example/replace-method.html">Replace Method</a></li>
+            <li><a href="example/define-add-interface.html">Add Interface</a></li>
+            <li><a href="example/define-add-field.html">Add Field</a></li>
+            <li><a href="example/define-remove-field.html">Remove Field</a></li>
+            <li><a href="example/define-add-method.html">Add Method</a></li>
+            <li><a href="example/define-remove-method.html">Remove Method</a></li>
+            <li><a href="example/define-print-method-parameters.html">Print Method Parameters</a></li>
+            <li><a href="example/define-proxy-method.html">Proxy Method</a></li>
+            <li><a href="example/define-replace-method.html">Replace Method</a></li>
+            <li><a href="example/define-multi-agents-compare.html">Multiple Agents Compare</a></li>
+            <li><a href="example/define-dump.html">Dump Transformed Class</a></li>
         </ul>
     </li>
 </ul>
@@ -131,10 +156,49 @@ public class BasicAgent {
         <a href="dynamic/dynamic-agent-class.html">Agent Class</a>
     </li>
     <li>
-        <a href="api/redefine-vs-retransform.html">redefine VS. retransform</a>
+        <a href="dynamic/redefine-stack-trace.html">Redefine Stack Trace</a>
+    </li>
+    <li>
+        <a href="dynamic/retransform-stack-trace.html">Re-Transform Stack Trace</a>
+    </li>
+    <li>
+        <a href="compare/define-vs-redefine-vs-retransform.html">define VS redefine VS. retransform</a>
+    </li>
+    <li>
+        <a href="compare/redefine-vs-retransform.html">redefine VS. retransform</a>
     </li>
     <li>
         <a href="api/com-sun-tools-attach.html">Package com.sun.tools.attach</a>
+    </li>
+    <li>
+        redefineClasses
+        <ul>
+            <li><a href="example/redefine-change-superclass.html">change superclass</a></li>
+            <li><a href="example/redefine-change-interface.html">change interface</a></li>
+            <li><a href="example/redefine-add-field.html">add field</a></li>
+            <li><a href="example/redefine-remove-field.html">remove field</a></li>
+            <li><a href="example/redefine-add-method.html">add method</a></li>
+            <li><a href="example/redefine-remove-method.html">remove method</a></li>
+            <li><a href="example/redefine-change-method-body.html">change method body</a></li>
+            <li><a href="example/redefine-with-transformer.html">transformer</a></li>
+            <li><a href="example/redefine-reset.html">Redefine Reset</a></li>
+        </ul>
+    </li>
+    <li>
+        retransformClasses:
+        <ul>
+            <li><a href="example/retransform-add-interface.html">Add Interface</a></li>
+            <li><a href="example/retransform-add-field.html">Add Field</a></li>
+            <li><a href="example/retransform-remove-field.html">Remove Field</a></li>
+            <li><a href="example/retransform-add-method.html">Add Method</a></li>
+            <li><a href="example/retransform-remove-method.html">Remove Method</a></li>
+            <li><a href="example/retransform-print-method-parameters.html">Print Method Parameters</a></li>
+            <li><a href="example/retransform-proxy-method.html">Proxy Method</a></li>
+            <li><a href="example/retransform-replace-method.html">Replace Method</a></li>
+            <li><a href="example/retransform-with-transformer.html">transformer</a></li>
+            <li><a href="example/retransform-dump.html">Dump Transformed Class</a></li>
+            <li><a href="example/retransform-reset.html">Re-transform Reset</a></li>
+        </ul>
     </li>
 </ul>
 
@@ -151,6 +215,7 @@ public class BasicAgent {
 <h2>Code</h2>
 
 <ul>
+    <li><a href="code/VMAttach.html" target="_blank">VMAttach.java</a></li>
     <li>
         Add:
         <ul>
@@ -204,7 +269,9 @@ public class BasicAgent {
 <h2>References</h2>
 
 <ul>
-    <li><a class="external" href="https://docs.oracle.com/javase/8/docs/api/java/lang/instrument/package-summary.html" target="_blank">Oracle: Package java.lang.instrument</a></li>
-    <li><a class="external" href="https://docs.oracle.com/javase/8/docs/jdk/api/attach/spec/com/sun/tools/attach/VirtualMachine.html" target="_blank">Oracle: Class VirtualMachine</a></li>
+    <li><a class="external" href="https://docs.oracle.com/javase/8/docs/api/java/lang/instrument/package-summary.html" target="_blank">Oracle: Package java.lang.instrument API</a></li>
+    <li><a class="external" href="https://docs.oracle.com/javase/8/docs/jdk/api/attach/spec/com/sun/tools/attach/package-summary.html" target="_blank">Oracle: Package com.sun.tools.attach API</a></li>
     <li><a class="external" href="https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html" target="_blank">Oracle: JVM Tool Interface</a></li>
+    <li><a class="external" href="https://hg.openjdk.java.net/jdk8" target="_blank">OpenJDK: JDK 8 Source Code</a></li>
+    <li><a class="external" href="https://hg.openjdk.java.net/jdk8/jdk8/jdk/file/687fd7c7986d/src/share/classes/sun/instrument" target="_blank">OpenJDK: Package sun.instrument Source Code</a></li>
 </ul>

@@ -1,0 +1,471 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Second Example</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="application">Application</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+package sample;
+
+public class HelloWorld {
+    public static int add(int a, int b) {
+        return a + b;
+    }
+
+    public static int sub(int a, int b) {
+        return a - b;
+    }
+}
+</pre>
+
+<pre title="Program.java" class="javacode">
+package sample;
+
+import java.util.Random;
+
+public class Program {
+    public static void main(String[] args) throws Exception {
+        Random rand = new Random();
+
+        for (int i = 0; i < 10; i++) {
+            int a = rand.nextInt(100);
+            int b = rand.nextInt(100);
+            boolean flag = rand.nextBoolean();
+            int result = flag ? HelloWorld.add(a, b) : HelloWorld.sub(a, b);
+            System.out.println("result = " + result);
+            Thread.sleep(500);
+        }
+    }
+}
+</pre>
+
+<h2 id="java-agent-jar">Java Agent Jar</h2>
+
+<h3 id="agent-class">Agent Class</h3>
+
+<pre title="LoadTimeAgent.java" class="javacode">
+package lsieun.agent;
+
+import lsieun.transformer.ASMTransformer;
+
+import java.lang.instrument.Instrumentation;
+
+public class LoadTimeAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        inst.addTransformer(new ASMTransformer());
+    }
+}
+</pre>
+
+<h3 id="transformer">Transformer</h3>
+
+<pre title="ASMTransformer.java" class="javacode">
+package lsieun.transformer;
+
+import jdk.internal.org.objectweb.asm.ClassReader;
+import jdk.internal.org.objectweb.asm.ClassVisitor;
+import jdk.internal.org.objectweb.asm.ClassWriter;
+import lsieun.visitor.PrintMethodParameterVisitor;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+
+public class ASMTransformer implements ClassFileTransformer {
+    @Override
+    public byte[] transform(ClassLoader loader,
+                            String className,
+                            Class&lt;?&gt; classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer) throws IllegalClassFormatException {
+        if (className == null) return null;
+        if (className.startsWith("java")) return null;
+        if (className.startsWith("javax")) return null;
+        if (className.startsWith("jdk")) return null;
+        if (className.startsWith("sun")) return null;
+        if (className.startsWith("org")) return null;
+        if (className.startsWith("com")) return null;
+        if (className.startsWith("lsieun")) return null;
+
+        System.out.println("candidate className: " + className);
+
+        if (className.equals("sample/HelloWorld")) {
+            ClassReader cr = new ClassReader(classfileBuffer);
+            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+            ClassVisitor cv = new PrintMethodParameterVisitor(cw);
+
+            int parsingOptions = 0;
+            cr.accept(cv, parsingOptions);
+
+            return cw.toByteArray();
+        }
+
+        return null;
+    }
+}
+</pre>
+
+<h3 id="asm-visitor">visitor</h3>
+
+<pre title="Constant.java" class="javacode">
+package lsieun.visitor;
+
+import jdk.internal.org.objectweb.asm.Opcodes;
+
+public class Constant {
+    public static final int API_VERSION = Opcodes.ASM5;
+}
+</pre>
+
+<pre title="PrintMethodAdapter.java" class="javacode">
+package lsieun.visitor;
+
+import jdk.internal.org.objectweb.asm.MethodVisitor;
+import jdk.internal.org.objectweb.asm.Opcodes;
+import jdk.internal.org.objectweb.asm.Type;
+import lsieun.utils.PrintUtils;
+
+public class PrintMethodAdapter extends MethodVisitor implements Opcodes {
+    private static final String PRINT_UTILS = PrintUtils.class.getName().replace('.', '/');
+
+    public PrintMethodAdapter(MethodVisitor methodVisitor) {
+        super(Constant.API_VERSION, methodVisitor);
+    }
+
+    // region Common
+    protected void dup(Type t) {
+        int size = t.getSize();
+        if (size == 1) {
+            super.visitInsn(DUP);
+        }
+        else if (size == 2) {
+            super.visitInsn(DUP2);
+        }
+        else {
+            // do nothing
+        }
+    }
+    // endregion
+
+    // region PrintUtils
+    protected void printMessage(String str) {
+        super.visitLdcInsn(str);
+        super.visitMethodInsn(INVOKESTATIC, PRINT_UTILS, "printText", "(Ljava/lang/String;)V", false);
+    }
+
+    protected void printValueOnStack(String descriptor) {
+        super.visitMethodInsn(INVOKESTATIC, PRINT_UTILS, "printValueOnStack", descriptor, false);
+    }
+
+    protected void printValueOnStack(Type t) {
+        int sort = t.getSort();
+        if (sort == 0) {
+            super.visitLdcInsn("void");
+            printValueOnStack("(Ljava/lang/Object;)V");
+        }
+        else if (sort &gt;= Type.BOOLEAN && sort &lt;= Type.DOUBLE) {
+            String desc = t.getDescriptor();
+            printValueOnStack("(" + desc + ")V");
+        }
+        else {
+            printValueOnStack("(Ljava/lang/Object;)V");
+        }
+    }
+
+    protected void dupAndPrintValueOnStack(Type t) {
+        dup(t);
+        printValueOnStack(t);
+    }
+
+    protected void printStackTrace() {
+        super.visitMethodInsn(INVOKESTATIC, PRINT_UTILS, "printStackTrace", "()V", false);
+    }
+    // endregion
+
+}
+</pre>
+
+<pre title="PrintMethodParameterAdapter.java" class="javacode">
+package lsieun.visitor;
+
+import jdk.internal.org.objectweb.asm.MethodVisitor;
+import jdk.internal.org.objectweb.asm.Type;
+
+public class PrintMethodParameterAdapter extends PrintMethodAdapter {
+    private final String owner;
+    private final int methodAccess;
+    private final String methodName;
+    private final String methodDesc;
+
+    public PrintMethodParameterAdapter(MethodVisitor methodVisitor, String owner,
+                                       int methodAccess, String methodName, String methodDesc) {
+        super(methodVisitor);
+        this.owner = owner;
+        this.methodAccess = methodAccess;
+        this.methodName = methodName;
+        this.methodDesc = methodDesc;
+    }
+
+    @Override
+    public void visitCode() {
+        if (mv != null) {
+            String line = String.format("Method Enter: %s.%s:%s", owner, methodName, methodDesc);
+            printMessage(line);
+
+            int slotIndex = (methodAccess & ACC_STATIC) != 0 ? 0 : 1;
+            Type methodType = Type.getMethodType(methodDesc);
+            Type[] argumentTypes = methodType.getArgumentTypes();
+            for (Type t : argumentTypes) {
+                int sort = t.getSort();
+                int size = t.getSize();
+                int opcode = t.getOpcode(ILOAD);
+                super.visitVarInsn(opcode, slotIndex);
+
+                if (sort &gt;= Type.BOOLEAN && sort &lt;= Type.DOUBLE) {
+                    String desc = t.getDescriptor();
+                    printValueOnStack("(" + desc + ")V");
+                }
+                else {
+                    printValueOnStack("(Ljava/lang/Object;)V");
+                }
+                slotIndex += size;
+            }
+        }
+
+        super.visitCode();
+    }
+}
+</pre>
+
+<pre title="PrintMethodParameterVisitor.java" class="javacode">
+package lsieun.visitor;
+
+import jdk.internal.org.objectweb.asm.ClassVisitor;
+import jdk.internal.org.objectweb.asm.MethodVisitor;
+
+public class PrintMethodParameterVisitor extends ClassVisitor {
+    private String owner;
+
+    public PrintMethodParameterVisitor(ClassVisitor classVisitor) {
+        super(Constant.API_VERSION, classVisitor);
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(version, access, name, signature, superName, interfaces);
+        this.owner = name;
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        if (mv != null && !name.equals("&lt;init&gt;") && !name.equals("&lt;clinit&gt;")) {
+            mv = new PrintMethodParameterAdapter(mv, owner, access, name, descriptor);
+        }
+        return mv;
+    }
+}
+</pre>
+
+<pre title="PrintUtils.java" class="javacode">
+package lsieun.utils;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+
+public class PrintUtils {
+    private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    public static void printValueOnStack(boolean value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(byte value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(char value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(short value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(int value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(float value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(long value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(double value) {
+        System.out.println("    " + value);
+    }
+
+    public static void printValueOnStack(Object value) {
+        if (value == null) {
+            System.out.println("    " + value);
+        }
+        else if (value instanceof String) {
+            System.out.println("    " + value);
+        }
+        else if (value instanceof Date) {
+            System.out.println("    " + df.format(value));
+        }
+        else if (value instanceof char[]) {
+            System.out.println("    " + Arrays.toString((char[]) value));
+        }
+        else if (value instanceof Object[]) {
+            System.out.println("    " + Arrays.toString((Object[]) value));
+        }
+        else {
+            System.out.println("    " + value.getClass() + ": " + value.toString());
+        }
+    }
+
+    public static void printText(String str) {
+        System.out.println(str);
+    }
+
+    public static void printStackTrace() {
+        Exception ex = new Exception();
+        ex.printStackTrace(System.out);
+    }
+}
+</pre>
+
+<h3 id="manifest">manifest.mf</h3>
+
+<pre title="manifest.mf" class="plaintext">
+Premain-Class: lsieun.agent.LoadTimeAgent
+
+</pre>
+
+<h3 id="compile-and-package">Compile And Package</h3>
+
+<p>
+    第一阶段，编译。对<code>.java</code>文件进行编译，生成<code>.class</code>文件。
+</p>
+
+<pre title="编译Java文件" class="plaintext">
+# 添加out子目录
+$ mkdir out
+
+# 将所有.java文件放到sources.txt文件中
+$ find ./src/ -name "*.java" > sources.txt
+
+# 将编译结果放到out目录中
+# 注意添加 -XDignore.symbol.file 选项
+$ javac -XDignore.symbol.file -d out/ @sources.txt
+</pre>
+
+<p>
+    第二阶段，打包。将<code>.class</code>文件和<code>manifest.mf</code>文件进行打包，生成Jar文件。
+</p>
+
+<pre title="生成Jar包" class="plaintext">
+# 复制manifest.mf文件
+$ cp src/manifest.mf out/
+
+# 切换到out目录
+$ cd out/
+
+# 生成Jar包
+$ jar -cvfm TheAgent.jar manifest.mf lsieun/
+已添加清单
+正在添加: lsieun/(输入 = 0) (输出 = 0)(存储了 0%)
+正在添加: lsieun/agent/(输入 = 0) (输出 = 0)(存储了 0%)
+正在添加: lsieun/agent/DynamicAgent.class(输入 = 324) (输出 = 229)(压缩了 29%)
+正在添加: lsieun/agent/LoadTimeAgent.class(输入 = 503) (输出 = 310)(压缩了 38%)
+正在添加: lsieun/transformer/(输入 = 0) (输出 = 0)(存储了 0%)
+正在添加: lsieun/transformer/ASMTransformer.class(输入 = 1735) (输出 = 923)(压缩了 46%)
+正在添加: lsieun/transformer/InfoTransformer.class(输入 = 1215) (输出 = 641)(压缩了 47%)
+正在添加: lsieun/utils/(输入 = 0) (输出 = 0)(存储了 0%)
+正在添加: lsieun/utils/PrintUtils.class(输入 = 2502) (输出 = 1040)(压缩了 58%)
+正在添加: lsieun/visitor/(输入 = 0) (输出 = 0)(存储了 0%)
+正在添加: lsieun/visitor/Constant.class(输入 = 304) (输出 = 245)(压缩了 19%)
+正在添加: lsieun/visitor/PrintMethodAdapter.class(输入 = 1891) (输出 = 993)(压缩了 47%)
+正在添加: lsieun/visitor/PrintMethodParameterAdapter.class(输入 = 1962) (输出 = 1043)(压缩了 46%)
+正在添加: lsieun/visitor/PrintMethodParameterVisitor.class(输入 = 1202) (输出 = 551)(压缩了 54%)
+</pre>
+
+<h2 id="run-application">Run Application</h2>
+
+<h3 id="run-without-agent">Run</h3>
+
+<pre title="java sample.Program" class="plaintext">
+$ java sample.Program
+result = 10
+result = -56
+result = 13
+result = 15
+result = 117
+result = -76
+result = 59
+result = -42
+result = 86
+result = 57
+</pre>
+
+<h3 id="run-with-agent">Run With Agent</h3>
+
+<pre title="java -javaagent:TheAgent.jar sample.Program" class="plaintext">
+$ java -javaagent:TheAgent.jar sample.Program
+candidate className: sample/Program
+candidate className: sample/HelloWorld
+Method Enter: sample/HelloWorld.add:(II)I
+    6
+    96
+result = 102
+Method Enter: sample/HelloWorld.add:(II)I
+    52
+    95
+result = 147
+Method Enter: sample/HelloWorld.add:(II)I
+    87
+    3
+result = 90
+Method Enter: sample/HelloWorld.sub:(II)I
+    48
+    85
+result = -37
+Method Enter: sample/HelloWorld.add:(II)I
+    84
+    58
+result = 142
+Method Enter: sample/HelloWorld.add:(II)I
+    8
+    98
+result = 106
+Method Enter: sample/HelloWorld.add:(II)I
+    98
+    88
+result = 186
+Method Enter: sample/HelloWorld.add:(II)I
+    74
+    2
+result = 76
+Method Enter: sample/HelloWorld.sub:(II)I
+    49
+    83
+result = -34
+Method Enter: sample/HelloWorld.sub:(II)I
+    86
+    9
+result = 77
+</pre>
+
+<h2 id="summing-up">Summing Up</h2>

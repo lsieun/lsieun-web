@@ -1,0 +1,202 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Stack Trace</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="application">Application</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public void test() {
+        System.out.println("This is test method from HelloWorld class.");
+        System.out.println("==========================================");
+    }
+}
+</pre>
+
+<pre title="Program.java" class="javacode">
+public class Program {
+    public static void main(String[] args) throws Exception {
+        System.out.println("This is main method from Program class.");
+        System.out.println("=======================================");
+
+        HelloWorld instance = new HelloWorld();
+        instance.test();
+    }
+}
+</pre>
+
+<h2 id="java-agent-jar">Java Agent Jar</h2>
+
+<h3 id="agent-class">Agent Class</h3>
+
+<pre title="LoadTimeAgent.java" class="javacode">
+import lsieun.transformer.*;
+
+import java.lang.instrument.Instrumentation;
+
+public class LoadTimeAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Premain-Class: " + LoadTimeAgent.class.getName());
+        System.out.println("Can-Redefine-Classes: " + inst.isRedefineClassesSupported());
+        System.out.println("Can-Retransform-Classes: " + inst.isRetransformClassesSupported());
+        System.out.println("Can-Set-Native-Method-Prefix: " + inst.isNativeMethodPrefixSupported());
+
+        Exception ex = new Exception("Exception From " + LoadTimeAgent.class.getName());
+        ex.printStackTrace(System.out);
+        System.out.println("========= ========= =========");
+
+        inst.addTransformer(new InfoTransformer());
+    }
+}
+</pre>
+
+<h3 id="transformer">Transformer</h3>
+
+<pre title="InfoTransformer.java" class="javacode">
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+import java.util.Formatter;
+
+public class InfoTransformer implements ClassFileTransformer {
+    @Override
+    public byte[] transform(ClassLoader loader,
+                            String className,
+                            Class&lt;?&gt; classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer) throws IllegalClassFormatException {
+        StringBuilder sb = new StringBuilder();
+        Formatter fm = new Formatter(sb);
+        fm.format("ClassName: %s%n", className);
+        fm.format("    ClassLoader: %s%n", loader);
+        fm.format("    ClassBeingRedefined: %s%n", classBeingRedefined);
+        fm.format("    ProtectionDomain: %s%n", protectionDomain);
+        System.out.println(sb.toString());
+
+        Exception ex = new Exception("Exception From " + InfoTransformer.class.getName());
+        ex.printStackTrace(System.out);
+        System.out.println("========= ========= =========");
+
+        return null;
+    }
+}
+</pre>
+
+<h2 id="run-application">Run Application</h2>
+
+<h3 id="run-without-agent">Run</h3>
+
+<pre title="java sample.Program" class="plaintext">
+$ java sample.Program
+This is main method from Program class.
+=======================================
+This is test method from HelloWorld class.
+==========================================
+
+</pre>
+
+<h3 id="run-with-agent">Run With Agent</h3>
+
+<pre title="java -javaagent:TheAgent.jar sample.Program" class="plaintext">
+$ java -javaagent:D:/git-repo/learn-java-agent/target/TheAgent.jar sample.Program
+Premain-Class: lsieun.agent.LoadTimeAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Can-Set-Native-Method-Prefix: true
+java.lang.Exception: Exception From lsieun.agent.LoadTimeAgent
+	at lsieun.agent.LoadTimeAgent.premain(Unknown Source)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at sun.instrument.InstrumentationImpl.loadClassAndStartAgent(InstrumentationImpl.java:386)
+	at sun.instrument.InstrumentationImpl.loadClassAndCallPremain(InstrumentationImpl.java:401)  "&lt;--这是第1个关注点"
+========= ========= =========
+......
+ClassName: sun/launcher/LauncherHelper
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+java.lang.Exception: Exception From lsieun.transformer.InfoTransformer
+	at lsieun.transformer.InfoTransformer.transform(Unknown Source)
+	at sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:428)    "&lt;--这是第2个关注点"
+========= ========= =========
+ClassName: sample/Program
+    ClassLoader: sun.misc.Launcher$AppClassLoader@18b4aac2
+    ClassBeingRedefined: null
+    ProtectionDomain: ProtectionDomain
+        (file:/D:/git-repo/learn-java-agent/target/classes/ &lt;no signer certificates&gt;)
+        sun.misc.Launcher$AppClassLoader@18b4aac2
+        &lt;no principals&gt;
+        java.security.Permissions@1d44bcfa (
+        ("java.io.FilePermission" "\D:\git-repo\learn-java-agent\target\classes\-" "read")
+        ("java.lang.RuntimePermission" "exitVM")
+)
+
+
+
+java.lang.Exception: Exception From lsieun.transformer.InfoTransformer
+	at lsieun.transformer.InfoTransformer.transform(Unknown Source)
+	at sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:428)
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:756)
+	at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
+	at java.net.URLClassLoader.defineClass(URLClassLoader.java:468)
+	at java.net.URLClassLoader.access$100(URLClassLoader.java:74)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:369)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:363)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:362)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:418)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:355)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:351)                  "&lt;--这是第3个关注点"
+	at sun.launcher.LauncherHelper.checkAndLoadMain(LauncherHelper.java:601)
+========= ========= =========
+......
+This is main method from Program class.
+=======================================
+ClassName: sample/HelloWorld
+    ClassLoader: sun.misc.Launcher$AppClassLoader@18b4aac2
+    ClassBeingRedefined: null
+    ProtectionDomain: ProtectionDomain
+        (file:/D:/git-repo/learn-java-agent/target/classes/ &lt;no signer certificates&gt;)
+        sun.misc.Launcher$AppClassLoader@18b4aac2
+        &lt;no principals&gt;
+        java.security.Permissions@1d44bcfa (
+        ("java.io.FilePermission" "\D:\git-repo\learn-java-agent\target\classes\-" "read")
+        ("java.lang.RuntimePermission" "exitVM")
+)
+
+
+
+java.lang.Exception: Exception From lsieun.transformer.InfoTransformer
+	at lsieun.transformer.InfoTransformer.transform(Unknown Source)
+	at sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:428)    "&lt;--这是第4个关注点"
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:756)
+	at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
+	at java.net.URLClassLoader.defineClass(URLClassLoader.java:468)
+	at java.net.URLClassLoader.access$100(URLClassLoader.java:74)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:369)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:363)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:362)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:418)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:355)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:351)
+	at sample.Program.main(Unknown Source)
+========= ========= =========
+This is test method from HelloWorld class.
+==========================================
+......
+
+</pre>

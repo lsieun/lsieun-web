@@ -1,0 +1,185 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Instrumentation.redefineClasses(ClassDefinition... definitions)</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>Intro</h2>
+
+<ul>
+    <li>
+        <code>void redefineClasses(ClassDefinition... definitions)</code>:
+        Redefine the supplied set of classes using the supplied class files.
+    </li>
+</ul>
+
+<p>
+    This method operates on a set in order to allow interdependent changes to more than one class at the same time
+    (a redefinition of class A can require a redefinition of class B).
+</p>
+
+<h3>existing class file bytes</h3>
+
+<p>
+    This method is used to replace the definition of a class without reference to <strong>the existing class file bytes</strong>,
+    as one might do when recompiling from source for fix-and-continue debugging.
+    Where <strong>the existing class file bytes</strong> are to be transformed
+    (for example in bytecode instrumentation) <code>retransformClasses</code> should be used.
+</p>
+
+<h3>active stack frames</h3>
+
+<p>
+    If a redefined method has active stack frames, those active frames continue to run the bytecodes of the original method.
+    The redefined method will be used on new invokes.
+</p>
+
+<h3>initialization</h3>
+
+<p>
+    This method does not cause any initialization except that which would occur under the customary JVM semantics.
+    In other words, redefining a class does not cause its initializers to be run.
+    The values of static variables will remain as they were prior to the call.
+</p>
+
+<p>
+    Instances of the redefined class are not affected.
+</p>
+
+<h3>restrictions</h3>
+
+<p>
+    The redefinition may change method bodies, the constant pool and attributes.
+    The redefinition must not add, remove or rename fields or methods, change the signatures of methods, or change inheritance.
+    These restrictions maybe be lifted in future versions.
+</p>
+
+<h3>transformations</h3>
+
+<p>
+    The class file bytes are not checked, verified and installed until after the transformations have been applied,
+    if the resultant bytes are in error this method will throw an exception.
+</p>
+
+<h3>exception</h3>
+
+<p>
+    If this method throws an exception, no classes have been redefined.
+</p>
+<p></p>
+
+<h2 id="static-instrumentation">Static Instrumentation</h2>
+
+<pre title="StaticInstrumentation.java" class="javacode">
+import lsieun.utils.FileUtils;
+import lsieun.visitor.modify.ReplaceMethodBodyVisitor;
+import org.objectweb.asm.*;
+
+import java.io.File;
+
+public class StaticInstrumentation {
+    public static void main(String[] args) {
+        String user_dir = System.getProperty("user.dir");
+        String filepath = user_dir + File.separator + "target/classes/java/lang/Object.class";
+
+        byte[] bytes = modifyToString(Object.class);
+        FileUtils.writeBytes(filepath, bytes);
+        System.out.println(filepath);
+    }
+
+    public static byte[] modifyToString(Class&lt;?&gt; clazz) {
+        String className = clazz.getName();
+        byte[] bytes = FileUtils.readClassBytes(className);
+
+        ClassReader cr = new ClassReader(bytes);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassVisitor cv = new ReplaceMethodBodyVisitor(cw, "toString", "()Ljava/lang/String;") {
+            @Override
+            protected void generateNewBody(MethodVisitor mv, String owner,
+                                           int methodAccess, String methodName, String methodDesc) {
+                mv.visitCode();
+                mv.visitLdcInsn("This is an object.");
+                mv.visitInsn(Opcodes.ARETURN);
+                mv.visitMaxs(1, 1);
+                mv.visitEnd();
+            }
+        };
+
+        cr.accept(cv, 0);
+        return cw.toByteArray();
+    }
+}
+</pre>
+
+<h2 id="application">Application</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+}
+</pre>
+
+<pre title="Program.java" class="javacode">
+public class Program {
+    public static void main(String[] args) throws Exception {
+        HelloWorld instance = new HelloWorld();
+        System.out.println(instance);
+    }
+}
+</pre>
+
+<h2 id="java-agent-jar">Java Agent Jar</h2>
+
+<h3 id="agent-class">Agent Class</h3>
+
+<pre title="LoadTimeAgent.java" class="javacode">
+import lsieun.utils.FileUtils;
+
+import java.lang.instrument.ClassDefinition;
+import java.lang.instrument.Instrumentation;
+import java.lang.instrument.UnmodifiableClassException;
+
+public class LoadTimeAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Premain-Class: " + LoadTimeAgent.class.getName());
+        System.out.println("Can-Redefine-Classes: " + inst.isRedefineClassesSupported());
+        System.out.println("Can-Retransform-Classes: " + inst.isRetransformClassesSupported());
+        System.out.println("Can-Set-Native-Method-Prefix: " + inst.isNativeMethodPrefixSupported());
+
+        try {
+            Class&lt;?&gt; clazz = Object.class;
+            if (inst.isModifiableClass(clazz)) {
+                String filepath = "D:/git-repo/learn-java-agent/target/classes/java/lang/Object.class";
+                byte[] bytes = FileUtils.readBytes(filepath);
+                ClassDefinition classDefinition = new ClassDefinition(clazz, bytes);
+                inst.redefineClasses(classDefinition);
+            }
+        } catch (UnmodifiableClassException | ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+
+    }
+}
+</pre>
+
+<h2 id="run-application">Run Application</h2>
+
+<h3 id="run-without-agent">Run</h3>
+
+<pre title="java sample.Program" class="plaintext">
+$ java sample.Program
+sample.HelloWorld@15db9742
+</pre>
+
+<h3 id="run-with-agent">Run With Agent</h3>
+
+<pre title="java -javaagent:TheAgent.jar sample.Program" class="plaintext">
+$ java -javaagent:D:/git-repo/learn-java-agent/target/TheAgent.jar sample.Program
+Premain-Class: lsieun.agent.LoadTimeAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Can-Set-Native-Method-Prefix: true
+This is an object.
+</pre>

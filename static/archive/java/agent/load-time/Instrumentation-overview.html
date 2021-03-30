@@ -1,0 +1,65 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Instrumentation Overview</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="class-info">Class Info</h2>
+
+<pre title="Instrumentation.java" class="javacode">
+public interface Instrumentation {
+}
+</pre>
+
+<h2 id="methods">Methods</h2>
+
+<h3>isXxxSupported methods</h3>
+
+<pre title="Instrumentation.java" class="javacode">
+public interface Instrumentation {
+    boolean isRedefineClassesSupported();
+    boolean isRetransformClassesSupported();
+    boolean isNativeMethodPrefixSupported();
+}
+</pre>
+
+<h3>xxxTransformer methods</h3>
+
+<pre title="Instrumentation.java" class="javacode">
+public interface Instrumentation {
+    void addTransformer(ClassFileTransformer transformer);
+    void addTransformer(ClassFileTransformer transformer, boolean canRetransform);
+    boolean removeTransformer(ClassFileTransformer transformer);
+}
+</pre>
+
+<h3>getXxxClasses methods</h3>
+
+<pre title="Instrumentation.java" class="javacode">
+public interface Instrumentation {
+    Class[] getAllLoadedClasses();
+    Class[] getInitiatedClasses(ClassLoader loader);
+    boolean isModifiableClass(Class&lt;?&gt; theClass);
+}
+</pre>
+
+<h3>redefineClasses Method</h3>
+
+<pre title="Instrumentation.java" class="javacode">
+public interface Instrumentation {
+    void redefineClasses(ClassDefinition... definitions)
+        throws ClassNotFoundException, UnmodifiableClassException;
+}
+</pre>
+
+<h3>retransformClasses Method</h3>
+
+<pre title="Instrumentation.java" class="javacode">
+public interface Instrumentation {
+    void retransformClasses(Class&lt;?&gt;... classes) throws UnmodifiableClassException;
+}
+</pre>
+

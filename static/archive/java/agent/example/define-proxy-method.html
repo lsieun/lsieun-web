@@ -1,9 +1,9 @@
 <!-- 标题 -->
-<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Add Interface</span></h1>
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Proxy Method</span></h1>
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="../../java-agent-index.html">TOC</a>
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
@@ -11,20 +11,26 @@
 
 <pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public void test() {
+        System.out.println("This is test method.");
     }
 }
 </pre>
 
 <pre title="Program.java" class="javacode">
+import java.lang.reflect.Method;
+
 public class Program {
-    public static void main(String[] args) throws Exception {
-        HelloWorld oneInstance = new HelloWorld();
-        Object anotherInstance = oneInstance.clone();
-        System.out.println(oneInstance);
-        System.out.println(anotherInstance);
+    public static void main(String[] args) {
+        HelloWorld instance = new HelloWorld();
+        instance.test();
+
+        Class&lt;?&gt; clazz = HelloWorld.class;
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+        System.out.println("methods:");
+        for (Method m : declaredMethods) {
+            System.out.println("    " + m.getName());
+        }
     }
 }
 </pre>
@@ -51,10 +57,8 @@ public class LoadTimeAgent {
 <h2>Transformer</h2>
 
 <pre title="ASMTransformer.java" class="javacode">
-import lsieun.visitor.add.AddInterfaceVisitor;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
+import lsieun.visitor.modify.ProxyMethodVisitor;
+import org.objectweb.asm.*;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
@@ -81,7 +85,23 @@ public class ASMTransformer implements ClassFileTransformer {
         if (className.equals("sample/HelloWorld")) {
             ClassReader cr = new ClassReader(classfileBuffer);
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-            ClassVisitor cv = new AddInterfaceVisitor(cw, "java/lang/Cloneable");
+            ClassVisitor cv = new ProxyMethodVisitor(cw, "test", "()V") {
+                @Override
+                protected void proxyEnter(MethodVisitor mv, String owner, int methodAccess, String methodName, String methodDesc) {
+                    super.proxyEnter(mv, owner, methodAccess, methodName, methodDesc);
+                    mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+                    mv.visitLdcInsn("do something before proxy");
+                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+                }
+
+                @Override
+                protected void proxyExit(MethodVisitor mv, String owner, int methodAccess, String methodName, String methodDesc) {
+                    mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+                    mv.visitLdcInsn("do something after proxy");
+                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+                    super.proxyExit(mv, owner, methodAccess, methodName, methodDesc);
+                }
+            };
 
             int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
             cr.accept(cv, parsingOptions);
@@ -98,11 +118,9 @@ public class ASMTransformer implements ClassFileTransformer {
 
 <pre title="java sample.Program" class="plaintext">
 $ java sample.Program
-Exception in thread "main" java.lang.CloneNotSupportedException: sample.HelloWorld
-        at java.lang.Object.clone(Native Method)
-        at sample.HelloWorld.clone(Unknown Source)
-        at sample.Program.main(Unknown Source)
-
+This is test method.
+methods:
+    test
 </pre>
 
 <pre title="java -javaagent:TheAgent.jar sample.Program" class="plaintext">
@@ -113,6 +131,10 @@ Can-Retransform-Classes: true
 Can-Set-Native-Method-Prefix: true
 candidate className: sample/Program
 candidate className: sample/HelloWorld
-sample.HelloWorld@76ed5528
-sample.HelloWorld@2c7b84de
+do something before proxy
+This is test method.
+do something after proxy
+methods:
+    test
+    origin_test
 </pre>

@@ -1,9 +1,9 @@
 <!-- 标题 -->
-<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Proxy Method</span></h1>
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Add Method</span></h1>
 <!-- 内容 -->
 
 <div style="text-align: right">
-    <a title="Table Of Content" href="../../java-agent-index.html">TOC</a>
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
@@ -11,33 +11,39 @@
 
 <pre title="HelloWorld.java" class="javacode">
 public class HelloWorld {
-    public void test() {
-        System.out.println("This is test method.");
+    public int add(int a, int b) {
+        return a + b;
     }
 }
 </pre>
 
 <pre title="Program.java" class="javacode">
 import java.lang.reflect.Method;
+import java.util.Random;
 
 public class Program {
-    public static void main(String[] args) {
-        HelloWorld instance = new HelloWorld();
-        instance.test();
+    public static void main(String[] args) throws Exception {
+        Random rand = new Random();
+        int a = rand.nextInt(100);
+        int b = rand.nextInt(100);
+        System.out.println("a = " + a + ", b = " + b);
 
         Class&lt;?&gt; clazz = HelloWorld.class;
+        Object instance = clazz.newInstance();
         Method[] declaredMethods = clazz.getDeclaredMethods();
-        System.out.println("methods:");
         for (Method m : declaredMethods) {
-            System.out.println("    " + m.getName());
+            String methodName = m.getName();
+            Object result = m.invoke(instance, a, b);
+            System.out.println(methodName + ": " + result.toString());
         }
+
     }
 }
 </pre>
 
 <h2>Agent Class</h2>
 
-<pre title="HelloWorld.java" class="javacode">
+<pre title="LoadTimeAgent.java" class="javacode">
 import lsieun.transformer.ASMTransformer;
 
 import java.lang.instrument.Instrumentation;
@@ -57,7 +63,7 @@ public class LoadTimeAgent {
 <h2>Transformer</h2>
 
 <pre title="ASMTransformer.java" class="javacode">
-import lsieun.visitor.modify.ProxyMethodVisitor;
+import lsieun.visitor.add.AddMethodVisitor;
 import org.objectweb.asm.*;
 
 import java.lang.instrument.ClassFileTransformer;
@@ -85,21 +91,16 @@ public class ASMTransformer implements ClassFileTransformer {
         if (className.equals("sample/HelloWorld")) {
             ClassReader cr = new ClassReader(classfileBuffer);
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-            ClassVisitor cv = new ProxyMethodVisitor(cw, "test", "()V") {
+            ClassVisitor cv = new AddMethodVisitor(cw, Opcodes.ACC_PUBLIC, "sub", "(II)I", null, null) {
                 @Override
-                protected void proxyEnter(MethodVisitor mv, String owner, int methodAccess, String methodName, String methodDesc) {
-                    super.proxyEnter(mv, owner, methodAccess, methodName, methodDesc);
-                    mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-                    mv.visitLdcInsn("do something before proxy");
-                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-                }
-
-                @Override
-                protected void proxyExit(MethodVisitor mv, String owner, int methodAccess, String methodName, String methodDesc) {
-                    mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-                    mv.visitLdcInsn("do something after proxy");
-                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-                    super.proxyExit(mv, owner, methodAccess, methodName, methodDesc);
+                protected void generateMethodBody(MethodVisitor mv) {
+                    mv.visitCode();
+                    mv.visitVarInsn(Opcodes.ILOAD, 1);
+                    mv.visitVarInsn(Opcodes.ILOAD, 2);
+                    mv.visitInsn(Opcodes.ISUB);
+                    mv.visitInsn(Opcodes.IRETURN);
+                    mv.visitMaxs(2, 3);
+                    mv.visitEnd();
                 }
             };
 
@@ -118,9 +119,8 @@ public class ASMTransformer implements ClassFileTransformer {
 
 <pre title="java sample.Program" class="plaintext">
 $ java sample.Program
-This is test method.
-methods:
-    test
+a = 23, b = 71
+add: 94
 </pre>
 
 <pre title="java -javaagent:TheAgent.jar sample.Program" class="plaintext">
@@ -130,11 +130,8 @@ Can-Redefine-Classes: true
 Can-Retransform-Classes: true
 Can-Set-Native-Method-Prefix: true
 candidate className: sample/Program
+a = 76, b = 72
 candidate className: sample/HelloWorld
-do something before proxy
-This is test method.
-do something after proxy
-methods:
-    test
-    origin_test
+add: 148
+sub: 4
 </pre>

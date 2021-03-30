@@ -1,0 +1,52 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassDefinition</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="class-info">Class Info</h2>
+
+<pre title="ClassDefinition.java" class="javacode">
+public final class ClassDefinition {
+}
+</pre>
+
+<h2 id="fields">Fields</h2>
+
+<pre title="ClassDefinition.java" class="javacode">
+public final class ClassDefinition {
+    private final Class&lt;?&gt; mClass;
+    private final byte[] mClassFile;
+}
+</pre>
+
+<h2 id="constructor">Constructor</h2>
+
+<pre title="ClassDefinition.java" class="javacode">
+public final class ClassDefinition {
+    public ClassDefinition(Class&lt;?&gt; theClass, byte[] theClassFile) {
+        if (theClass == null || theClassFile == null) {
+            throw new NullPointerException();
+        }
+        mClass      = theClass;
+        mClassFile  = theClassFile;
+    }
+}
+</pre>
+
+<h2 id="methods">Methods</h2>
+
+<pre title="ClassDefinition.java" class="javacode">
+public final class ClassDefinition {
+    public Class&lt;?&gt; getDefinitionClass() {
+        return mClass;
+    }
+
+    public byte[] getDefinitionClassFile() {
+        return mClassFile;
+    }
+}
+</pre>

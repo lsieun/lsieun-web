@@ -32,8 +32,8 @@
         .bgimg {
             background-position: center;
             background-size: auto;
-            background-image: url("/images/bg/jia_luo.jpg");
-            min-height: 38.2%;/*0.618是黄金分割点*/
+            /*background-image: url("/images/bg/humanities.jpg");*/
+            min-height: 0%;/*0.618是黄金分割点*/
         }
 
         .auto-toc {
@@ -105,7 +105,7 @@
             document.getElementById('img_modal').style.display='block'
         }
 
-        function myFunction(key_id) {
+        function selectAndCopyText(key_id) {
             let copyText = document.getElementById(key_id);
             copyText.select();
             copyText.setSelectionRange(0, 99999);

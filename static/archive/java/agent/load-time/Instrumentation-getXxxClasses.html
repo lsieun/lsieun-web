@@ -1,0 +1,219 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Instrumentation.getXxxClasses()</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="intro">Intro</h2>
+
+<ul>
+    <li>
+        <code>Class[] getAllLoadedClasses()</code>:
+        Returns an array containing all the classes loaded by the JVM, zero-length if there are none.
+    </li>
+    <li>
+        <code>Class[] getInitiatedClasses(ClassLoader loader)</code>:
+        Returns an array of all classes for which loader is an initiating loader.
+        If the supplied loader is <code>null</code>, classes initiated by the bootstrap class loader are returned.
+    </li>
+    <li>
+        <code>boolean isModifiableClass(Class&lt;?&gt; theClass)</code>:
+        Determines whether a class is modifiable by <strong>retransformation</strong> or <strong>redefinition</strong>.
+        If a class is modifiable then this method returns <code>true</code>.
+        If a class is not modifiable then this method returns <code>false</code>.
+        <ul>
+            <li>
+                For a class to be <strong>retransformed</strong>, <code>isRetransformClassesSupported</code> must also be <code>true</code>.
+                But the value of <code>isRetransformClassesSupported()</code> does not influence the value returned by this function.
+            </li>
+            <li>
+                For a class to be <strong>redefined</strong>, <code>isRedefineClassesSupported</code> must also be <code>true</code>.
+                But the value of <code>isRedefineClassesSupported()</code> does not influence the value returned by this function.
+            </li>
+            <li>
+                <strong>Primitive classes</strong> (for example, <code>java.lang.Integer.TYPE</code>) and <strong>array classes</strong> are never modifiable.
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<p>
+    为什么没有将<code>boolean isModifiableClass(Class&lt;?&gt; theClass)</code>方法和<code>isXxxSupported()</code>方法放到一起讲解呢？它们都是以is开头的方法。
+</p>
+
+<p>
+    因为<code>isXxxSupported()</code>方法只需要一个<code>Instrumentation</code>类型的实例就可以进行调用，例如<code>inst.isRedefineClassesSupported()</code>；而<code>boolean isModifiableClass(Class&lt;?&gt; theClass)</code>方法除了需要一个<code>Instrumentation</code>类型的实例之外，还需要一个<code>Class&lt;?&gt; theClass</code>参数。<code>boolean isModifiableClass(Class&lt;?&gt; theClass)</code>方法的作用，就是在对一个<strong>已经加载的类</strong>（<code>Class&lt;?&gt; theClass</code>）进行retransformation或redefinition之前，先判断JVM是否支持该操作。
+</p>
+
+<p>
+    <code>Class[] getAllLoadedClasses()</code>方法的作用，就是获取所有<strong>已经加载的类</strong>；在得到这些<strong>已经加载的类</strong>，我们可以再利用<code>boolean isModifiableClass(Class&lt;?&gt; theClass)</code>方法进行判断，来进一步决定是否可以进行retransformation或redefinition操作。因此，这两个方法放到一起讲解更符合实际使用的场景。
+</p>
+
+<h2 id="application">Application</h2>
+
+<pre title="Program.java" class="javacode">
+public class Program {
+    public static void main(String[] args) {
+        System.out.println("Hello Program");
+    }
+}
+</pre>
+
+<h2 id="java-agent-jar">Java Agent Jar</h2>
+
+<h3 id="agent-class">Agent Class</h3>
+
+<pre title="LoadTimeAgent.java" class="javacode">
+import java.lang.instrument.Instrumentation;
+
+public class LoadTimeAgent {
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("Premain-Class: " + LoadTimeAgent.class.getName());
+        System.out.println("Can-Redefine-Classes: " + inst.isRedefineClassesSupported());
+        System.out.println("Can-Retransform-Classes: " + inst.isRetransformClassesSupported());
+        System.out.println("Can-Set-Native-Method-Prefix: " + inst.isNativeMethodPrefixSupported());
+        System.out.println("========= ========= =========");
+
+        ClassLoader classLoader = LoadTimeAgent.class.getClassLoader();
+        Class[] initiatedClasses = inst.getInitiatedClasses(classLoader);
+        System.out.println("Initiated Classes: " + classLoader.getClass().getName());
+        for (Class&lt;?&gt; clazz : initiatedClasses) {
+            System.out.println("    " + clazz.getName() + "-" + clazz.getClassLoader());
+        }
+        System.out.println("========= ========= =========");
+
+        Class[] allLoadedClasses = inst.getAllLoadedClasses();
+        System.out.println("All Loaded Classes:");
+        for (Class&lt;?&gt; clazz : allLoadedClasses) {
+            boolean isModifiable = inst.isModifiableClass(clazz);
+            System.out.println(clazz.getName() + ": " + isModifiable);
+        }
+    }
+}
+</pre>
+
+<h2 id="run-application">Run Application</h2>
+
+<h3 id="run-without-agent">Run</h3>
+
+<pre title="java sample.Program" class="plaintext">
+$ java sample.Program
+Hello Program
+</pre>
+
+<h3 id="run-with-agent">Run With Agent</h3>
+
+<pre title="java -javaagent:TheAgent.jar sample.Program" hidden class="plaintext">
+$ java -javaagent:D:/git-repo/learn-java-agent/target/TheAgent.jar sample.Program
+Premain-Class: lsieun.agent.LoadTimeAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Can-Set-Native-Method-Prefix: true
+========= ========= =========
+Initiated Classes: sun.misc.Launcher$AppClassLoader
+    lsieun.agent.LoadTimeAgent-sun.misc.Launcher$AppClassLoader@18b4aac2
+    java.io.PrintStream-null
+    java.lang.StringBuilder-null
+    java.lang.instrument.Instrumentation-null
+    java.lang.InternalError-null
+    sun.instrument.InstrumentationImpl-null
+    java.lang.Class-null
+    [Ljava.lang.Class;-null
+    java.lang.String-null
+    [Ljava.lang.String;-null
+    java.lang.Object-null
+    [Ljava.lang.Object;-null
+    java.lang.System-null
+    [Z-null
+    [B-null
+    [C-null
+    [[C-null
+    [I-null
+    [S-null
+    [J-null
+    [F-null
+    [D-null
+========= ========= =========
+All Loaded Classes:
+lsieun.agent.LoadTimeAgent: true
+//...... java.lang
+java.lang.Object: true
+java.lang.Number: true
+java.lang.Boolean: true
+java.lang.Character: true
+java.lang.Byte: true
+java.lang.Short: true
+java.lang.Integer: true
+java.lang.Long: true
+java.lang.Float: true
+java.lang.Double: true
+java.lang.String: true
+//...... java.lang
+java.lang.Class: true
+java.lang.ClassLoader: true
+java.lang.Comparable: true
+java.lang.Math: true
+java.lang.Runnable: true
+java.lang.Thread: true
+java.lang.System: true
+java.lang.instrument.Instrumentation: true
+//...... java.io
+java.io.File: true
+java.io.FileReader: true
+java.io.Serializable: true
+//...... java.util
+java.util.Map: true
+java.util.HashMap: true
+//...... Error and Exception
+java.lang.Throwable: true
+java.lang.Error: true
+java.lang.OutOfMemoryError: true
+java.lang.StackOverflowError: true
+java.lang.VirtualMachineError: true
+java.lang.Exception: true
+java.lang.RuntimeException: true
+java.lang.ArithmeticException: true
+java.lang.ClassNotFoundException: true
+java.lang.NullPointerException: true
+//...... sun
+sun.misc.VM: true
+sun.net.www.URLConnection: true
+//...... Array
+[Ljava.lang.Object;: false
+[Ljava.lang.Integer;: false
+[Ljava.lang.Number;: false
+[Ljava.lang.OutOfMemoryError;: false
+[Ljava.lang.VirtualMachineError;: false
+[Ljava.lang.Error;: false
+[Ljava.lang.Throwable;: false
+[Ljava.io.File;: false
+[[C: false
+[J: false
+[I: false
+[S: false
+[B: false
+[D: false
+[F: false
+[C: false
+[Z: false
+Hello Program
+</pre>
+
+<p>
+    第一点，从上面的输出结果可以看到，Agent Class在运行的时候，有些类已经被加载，还有一些类有待于被加载。对于<strong>已经被加载的类</strong>，我们有可能对这些类进行<strong>retransformation</strong>和<strong>redefinition</strong>操作；对于<strong>尚未被加载且将来要加载的类</strong>，我们有可能对这些类加载时（load-time）对它们进行<strong>transform</strong>操作。
+</p>
+
+<p>
+    第二点，在使用<code>Instrumentation.isModifiableClass(Class&lt;?&gt; theClass)</code>判断时，除了数组类型（例如，<code>[Ljava.lang.Object;</code>和<code>[B</code>等），其它的类型（例如，<code>java.lang.Object</code>和<code>sun.misc.VM</code>等）都会返回<code>true</code>。这也就意味着我们可以对大部分的Class进行<strong>retransformation</strong>和<strong>redefinition</strong>操作。
+</p>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+

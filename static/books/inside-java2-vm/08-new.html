@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>08. The Linking Model | Inside the Java 2 Virtual Machine</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/w3.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="text/javascript" src="/js/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="/js/auto-toc.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".at").autoToc();
+        });
+    </script>
+</head>
+
+<body>
+
+<div class="w3-margin-bottom w3-center">
+    <h1 class="w3-jumbo">08. The Linking Model</h1>
+</div>
+
+<div class="w3-row-padding w3-content" style="max-width:1400px">
+    <p class="article">
+        原文地址：<a class="external" href="https://www.artima.com/insidejvm/ed2/linkmodP.html" target="_blank">Chapter 8 of Inside the Java Virtual Machine</a>
+    </p>
+    <div id="main" class="w3-container w3-justify">
+        <article>
+            <p>
+                From the programmer's perspective,<br/>
+                <span class="text-underline">one of the most important aspects of Java's architecture to understand is the <b>linking model</b>.</span><br/>
+                As mentioned in earlier chapters, Java's <b>linking model</b> allows you to design <b>user-defined class loaders</b><br/>
+                that extend your application in custom ways at run-time.<br/>
+                Through <b>user-defined class loaders</b>,<br/>
+                your application can load and dynamically link to classes and interfaces<br/>
+                that were unknown or did not even exist when your application was compiled.<br/>
+                <span class="note">note：这里突出linking model的重要性。linking model --&gt; user-defined class loader --&gt; load and dynamically link to classes and interfaces</span>
+            </p>
+            <p>
+                <span class="text-underline">The engine that drives Java's <b>linking model</b> is the process of <b>resolution</b>.</span><br/>
+                The previous chapter described all the various stages in the lifetime of a class,<br/>
+                but didn't dive into the details of <b>loading</b> and <b>resolution</b>.<br/>
+                This chapter looks at <b>loading</b> and <b>resolution</b> in depth,<br/>
+                and shows how the process of <b>resolution</b> fits in with <b>dynamic extension</b>.<br/>
+                It gives an overview of the <b>linking model</b>,<br/>
+                explains <b>constant pool resolution</b>,<br/>
+                describes <b>method tables</b>,<br/>
+                shows <span class="text-underline">how to write and use class loaders</span>,<br/>
+                and gives several examples.<br/>
+                <span class="note">note：这里接着说resolution是linking model的“引擎”。</span>
+            </p>
+            <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+                <p>这里说明一下ClassLoader、Linking Model和Resolution三者之间的关系。</p>
+                <p>ClassLoader主要有3个作用：Loading、Linking和Intializing</p>
+                <p>Linking Model就是描述“Loading、Linking和Intializing”中的Linking部分，而Linking本身又分为Verfication、Preparation和Resolution</p>
+                <p>Resolution是“Verfication、Preparation和Resolution”的最后一部分。</p>
+                <p>Resolution是对什么进行解析呢？其实，就是对constant pool中的symbolic references进行解析，</p>
+                <p>
+                    具体来说，Resolution，就是对于Class的解析（array class，non-array class和interfaces）、对Method的解析（method tables），对Field的解析，还有其它内容的解析。
+                </p>
+            </div>
+
+            <h2 id="dynamic-linking-and-resolution">Dynamic Linking and Resolution</h2>
+            <p>
+                When you compile a Java program,<span class="note">当compile的时候，不同的class是通过symbolic reference来相互连接。</span><br/>
+                you get a separate class file for each class or interface in your program.<br/>
+                Although the individual class files may appear to be independent,<br/>
+                they actually harbor symbolic connections to one another and to the class files of the Java API.<br/>
+                When you run your program,<span class="note">当run的时候，JVM会将不同的class是进行dynamic linking。</span><br/>
+                the Java virtual machine loads your program's classes and interfaces and hooks them together in a process of <b>dynamic linking</b>.<br/>
+                As your program runs, the Java virtual machine builds an internal web of interconnected classes and interfaces.<br/>
+                <span class="note">JVM在运行的时候，会对不同的class进行dynamic linking</span>
+            </p>
+            <p>
+                A class file keeps all its symbolic references in one place, the <b>constant pool</b>.<br/>
+                Each class file has a <b>constant pool</b>,<br/>
+                and each class or interface loaded by the Java virtual machine has an internal version of its constant pool called the <b>runtime constant pool</b>.<br/>
+                The <b>runtime constant pool</b> is an implementation-specific data structure that maps to the <b>constant pool</b> in the class file.<br/>
+                Thus, after a type is initially <b>loaded</b>, all the <b>symbolic references</b> from the type reside in the type's <b>runtime constant pool</b>.<br/>
+                <span class="note">这里介绍constant pool和runtime constant pool两个概念。</span>
+            </p>
+            <p>
+                At some point during the running of a program,<br/>
+                if a particular <b>symbolic reference</b> is to be used, it must be resolved.<br/>
+                <b>Resolution</b> is the process of finding the entity identified by the <b>symbolic reference</b> and replacing the <b>symbolic reference</b> with a <b>direct reference</b>.<br/>
+                Because all <b>symbolic references</b> reside in the <b>constant pool</b>, this process is often called <b>constant pool resolution</b>.<br/>
+                <span class="note">constant pool resolution --&gt; symbolic reference(存在于constant pool中) --&gt; direct reference(存在于runtime constant pool中)</span>
+            </p>
+            <p>
+                As described in Chapter 6, "The Java Class File," the <b>constant pool</b> is organized as a sequence of items.<br/>
+                Each item has a unique index, much like an array element.<br/>
+                A <b>symbolic reference</b> is one kind of item that may appear in the <b>constant pool</b>.<br/>
+                Java virtual machine <b>instructions</b> that use a <b>symbolic reference</b> specify the index in the <b>constant pool</b> where the <b>symbolic reference</b> resides.<br/>
+                For example, the <code>getstatic</code> opcode, which pushes the value of a static field onto the stack,<br/>
+                is followed in the bytecode stream by an index into the <b>constant pool</b>.<br/>
+                The <b>constant pool entry</b> at the specified index, a <code>CONSTANT_Fieldref_info</code> entry,<br/>
+                reveals <b>the fully qualified name of the class</b> in which the field resides, and <b>the name and type</b> of the field.<br/>
+                <span class="note">这里围绕着constant pool来讲</span>
+            </p>
+            <p>
+                Keep in mind that the Java virtual machine contains a separate <b>runtime constant pool</b> for each class and interface it loads.<br/>
+                When an instruction refers to the fifth item in the <b>constant pool</b>,<br/>
+                it is referring to the fifth item in the <b>constant pool</b> for the current class,<br/>
+                the class that defined the method the Java virtual machine is currently executing.<br/>
+                <span class="note">这里提醒大家，不要忘记runtime constant pool</span>
+            </p>
+            <p>
+                Several instructions, from the same or different methods, may refer to the same constant pool entry,<br/>
+                but <span class="text-underline">each constant pool entry is resolved only once</span>.<br/>
+                After a <b>symbolic reference</b> has been resolved for one instruction,<br/>
+                subsequent attempts to resolve it by other instructions take advantage of the hard work already done,<br/>
+                and use the same <b>direct reference</b> resulting from the original resolution.<br/>
+                <span class="note">resolution只进行一次。</span>
+            </p>
+            <p>
+                <b>Linking</b> involves not only the replacement of <b>symbolic references</b> with <b>direct ones</b>,<br/>
+                it also involves <b>checking for correctness and permission</b>.<br/>
+                As mentioned in Chapter 7, "The Lifetime of a Class,"<br/>
+                the checking of <b>symbolic references</b> for <b>existence</b> and <b>access permission</b> (one aspect of the full verification phase) is performed during <b>resolution</b>.<br/>
+                For example, when a Java virtual machine resolves a <code>getstatic</code> instruction to a field of another class, the Java virtual machine checks to make sure that:<br/>
+                <span class="note">resolution，除了要将symbolic reference替换为direct reference，还要保证correctness和permission</span>
+            </p>
+            <ul>
+                <li>The other class exists.</li>
+                <li>This class has permission to access the other class.</li>
+                <li>The named field exists in the other class.</li>
+                <li>The field has the expected type (symbolic references to fields include the field type).</li>
+                <li>This class has permission to access the field.</li>
+                <li>That the field is really static--a class variable and not an instance variable.</li>
+            </ul>
+            <p>
+                If any of these <b>checks</b> fail, an error is thrown and <b>resolution</b> fails.<br/>
+                Otherwise, the <b>symbolic reference</b> is replaced by the <b>direct reference</b> and <b>resolution</b> succeeds.<br/>
+            </p>
+            <p>
+                As described in Chapter 7, "The Lifetime of a Class,"<br/>
+                different implementations of the Java virtual machine are permitted to perform <b>resolution</b> at different times during the execution of a program.<br/>
+                An implementation may choose to link everything up front by following all <b>symbolic references</b> from the initial class,<br/>
+                then all <b>symbolic references</b> from subsequent classes, until every <b>symbolic reference</b> has been resolved.<br/>
+                In this case, the application would be completely linked before its <code>main()</code> method was ever invoked.<br/>
+                This approach is called <b>early resolution</b>.<br/>
+                Alternatively, an implementation may choose to wait until the very last minute to resolve each <b>symbolic reference</b>.<br/>
+                In this case, the Java virtual machine would resolve a <b>symbolic reference</b> only when it is first used by the running program.<br/>
+                This approach is called <b>late resolution</b>.<br/>
+                Implementations may also use a resolution strategy in-between these two extremes.<br/>
+                <span class="note">这里围绕着resolution的触发时机展开</span>
+            </p>
+            <p>
+                Although a Java virtual machine implementation has some freedom in choosing when to resolve <b>symbolic references</b>,<br/>
+                <span class="text-underline">every Java virtual machine must give the outward impression that it uses <b>late resolution</b>.</span><br/>
+                No matter when a particular Java virtual machine performs its <b>resolution</b>,<br/>
+                it will always throw any error that results from attempting to resolve a symbolic reference at the point<br/>
+                in the execution of the program where the <b>symbolic reference</b> was actually used for the first time.<br/>
+                In this way, it will always appear to the user as if the <b>resolution</b> were late.<br/>
+                If a Java virtual machine does <b>early resolution</b>,<br/>
+                and during <b>early resolution</b> discovers that a class file is missing,<br/>
+                it won't report the class file missing by throwing the appropriate error<br/>
+                until later in the program when something in that class file is actually used.<br/>
+                If the class is never used by the program, the error will never be thrown.<br/>
+                <span class="note">JVM在进行resolution的时候，给外界的印象是late resolution</span>
+            </p>
+
+            <h2 id="resolution－and－dynamic－extension">Resolution and Dynamic Extension</h2>
+            <p>
+                In addition to simply <b>linking types</b> at run-time,<br/>
+                Java applications can decide at run-time <b>which types to link</b>.<br/>
+                Java's architecture allows Java programs to be <b>dynamically extended</b>,<br/>
+                the process of deciding at run-time other types to use, loading them, and using them.<br/>
+                You can dynamically extend a Java application by passing the name of a type to load to<br/>
+                either the <code>forName()</code> method of class <code>java.lang.Class</code> or<br/>
+                the <code>loadClass()</code> method of an instance of a <b>user-defined class loader</b>,<br/>
+                which can be created from any subclass of <code>java.lang.ClassLoader</code>.<br/>
+                Either of these approaches enable your running application to load types<br/>
+                whose names are not mentioned in the source code of your application,<br/>
+                but rather, are determined by your application as it runs.<br/>
+                An example of <b>dynamic extension</b> is a Java-capable web browser,<br/>
+                which loads class files for applets from across a network.<br/>
+                When the browser starts, it doesn't know what class files it will be loading across the network.<br/>
+                The browser learns the names of the classes and interfaces required by each applet<br/>
+                as it encounters the web pages that contain those applets.<br/>
+                <span class="note">这里就是讲link(resolution)能够实现Dynamic Extension。</span>
+            </p>
+            <p>
+                The most straightforward way to dynamically extend a Java application is with the <code>forName()</code> method of class <code>java.lang.Class</code>, which has two overloaded forms:
+            </p>
+            <pre class="pre-block">
+// A method declared in class java.lang.Class:
+public static Class forName(String className) throws ClassNotFoundException;
+public static Class forName(String className, boolean initialize, ClassLoader loader) throws ClassNotFoundException;
+            </pre>
+            <p>
+                The three parameter form of <code>forName()</code>, which was added in version 1.2,<br/>
+                takes the fully qualified name of the type to load in the <code>String className</code> parameter.<span class="note">第1个参数</span><br/>
+                If the <code>boolean initialize</code> parameter is <code>true</code>,<span class="note">第2个参数为true的情况</span><br/>
+                the type will be <b>linked</b> and <b>initialized</b> as well as <b>loaded</b> before the <code>forName()</code> method returns.<br/>
+                Otherwise, if the <code>boolean initialize</code> parameter is <code>false</code>,<span class="note">第2个参数为false的情况</span><br/>
+                the type will be <b>loaded</b> and possibly <b>linked</b> but not explicitly <b>initialized</b> by the <code>forName()</code> method.<br/>
+                Nevertheless, if the type had already been <b>initialized</b> prior to the <code>forName()</code> invocation,<span class="note">如果已经initialized的情况</span><br/>
+                the type returned will have been <b>initialized</b> even though you pass <code>false</code> as the second parameter to <code>forName()</code>.<br/>
+                In the third parameter, <code>ClassLoader loader</code>,<span class="note">第3个参数</span><br/>
+                you pass a reference to the <b>user-defined class loader</b> from which you want <code>forName()</code> to request the type.<br/>
+                You can also indicate that you want <code>forName()</code> to request the type from the <b>bootstrap class loader</b> by passing <code>null</code> in the <code>ClassLoader loader</code> parameter.<br/>
+                The version of <code>forName()</code> that takes one parameter, the fully qualified name of the type to load,<span class="note">接收1个参数的版本</span><br/>
+                always requests the type from the <b>current class loader</b> (the loader that loaded the class making the <code>forName()</code> request) and<br/>
+                always <b>initializes</b> the type.<br/>
+                Both versions of <code>forName()</code> return a reference to the <code>Class</code> instance that represents the loaded type,<br/>
+                or if the type can't be loaded, throws <code>ClassNotFoundException</code>.<span class="note">如果失败，抛出异常</span><br/>
+                <span class="note">这里主要是对Class.forName()方法的“参数”和“作用”进行介绍。</span>
+            </p>
+            <p>
+                The other way to dynamically extend a Java application is to load classes via the <code>loadClass()</code> method of a <b>user-defined class loader</b>.<br/>
+                To request a type from a <b>user-defined class loader</b>, you invoke <code>loadClass()</code> on that class loader.<br/>
+                Class <code>ClassLoader</code> contains two overloaded methods named <code>loadClass()</code>, which look like this:<br/>
+            </p>
+            <pre class="pre-block">
+// A method declared in class java.lang.ClassLoader:
+protected Class loadClass(String name) throws ClassNotFoundException;
+protected Class loadClass(String name, boolean resolve) throws ClassNotFoundException;
+            </pre>
+            <p>
+                Both <code>loadClass()</code> methods accept the fully qualified name to load in their <code>String name</code> parameter.<span class="note">介绍第1个参数</span><br/>
+                The semantics of <code>loadClass()</code> are similar to those of <code>forName()</code>.<span class="note">两个方法在semantics方面是相同的</span><br/>
+                If the <code>loadClass()</code> method has already <b>loaded</b> a type with the fully qualified name passed in the <code>String name</code> parameter,<br/>
+                it should return the <code>Class</code> instance representing that already loaded type.<span class="note">如果已经加载，则使用已经加载好的</span><br/>
+                Otherwise, it should attempt to <b>load</b> the requested type in some custom way decided upon by the author of the <b>user-defined class loader</b>.<span class="note">如果未加载，则进行加载</span><br/>
+                If the class loader is successful loading the type in its custom way,<br/>
+                <code>loadClass()</code> should return the <code>Class</code> instance representing the newly loaded type.<span class="note">加载成功</span><br/>
+                Otherwise, it should throw <code>ClassNotFoundException</code>.<span class="note">加载失败，抛出异常</span><br/>
+                The details on writing your own user-defined class loader are given later in this chapter.<br/>
+                <span class="note">这里介绍ClassLoader.loadClass()的作用。</span>
+            </p>
+            <p>
+                The <code>boolean resolve</code> parameter of the two-parameter version of <code>loadClass()</code><br/>
+                indicates whether or not the type should be <b>linked</b> as well as <b>loaded</b>.<span class="note">第2个参数的作用</span><br/>
+                As mentioned in previous chapters, the process of <b>linking</b> involves three steps:<span class="note">linking包含3个步骤</span><br/>
+                <b>verification</b> of the loaded type,<br/>
+                <b>preparation</b>, which involves allocating memory for the type,<br/>
+                and optionally, <b>resolution</b> of <b>symbolic references</b> contained in the type.<br/>
+                If <code>resolve</code> is <code>true</code>,<span class="note">如果resolve为true</span><br/>
+                the <code>loadClass()</code> method should ensure that the type has been <b>linked</b> as well as <b>loaded</b><br/>
+                before it returns the <code>Class</code> instance for that type.<br/>
+                If <code>resolve</code> is <code>false</code>,<span class="note">如果resolve为false</span><br/>
+                the <code>loadClass()</code> method will merely attempt to <b>load</b> the requested type and<br/>
+                not concern itself with whether or not the type is <b>linked</b>.<br/>
+                Because the Java virtual machine specification gives implementations some flexibility in the timing of <b>linking</b>,<span class="note">JVM在实现上有灵活性</span><br/>
+                when you pass <code>false</code> in the <code>resolve</code> parameter,<br/>
+                the type you get back from <code>loadClass()</code> may or may not have already been <b>linked</b>.<br/>
+                The two parameter version of <code>loadClass()</code> is a legacy method<span class="note">这个还有待于进一步考证的，因为我查看Java 8，该方法并没有Deprecated注解</span><br/>
+                whose <code>resolve</code> parameter has, since Java version 1.1, really served no useful purpose.<br/>
+                In general, you should invoke the one-parameter version of <code>loadClass()</code>,<span class="note">推荐使用1个参数的版本</span><br/>
+                which is equivalent to invoking the two-parameter version with <code>resolve</code> set to <code>false</code>.<br/>
+                When you invoke the one-parameter version of <code>loadClass()</code>,<br/>
+                it will attempt to <b>load</b> and return the type,<br/>
+                but will leave the timing of <b>linking</b> and <b>initializing</b> the type to the virtual machine.<br/>
+                <span class="note">这里说明ClassLoader.loadClass()的resolve参数。</span>
+            </p>
+            <p>
+                Whether you should use <code>forName()</code> or invoke <code>loadClass()</code> on a <b>user-defined class loader</b> instance depends on your needs.<br/>
+                If you have no special needs that require a class loader, you should probably use <code>forName()</code>,<span class="note">如果没有特殊需求，推荐使用forName()</span><br/>
+                because <code>forName()</code> is the most straightforward approach to <b>dynamic extension</b>.<br/>
+                In addition, if you need the requested type to be <b>initialized</b> as well as <b>loaded</b> (and <b>linked</b>),<br/>
+                you'll have to use <code>forName()</code>.<span class="note">如果你需要initialized，那么使用forName()</span><br/>
+                When the <code>loadClass()</code> method returns a type, that type may or may not be <b>linked</b>.<span class="note">如果使用loadClass()，可能还没有link</span><br/>
+                When you invoke the single parameter version of <code>forName()</code>,<br/>
+                or invoke the three-parameter version and pass <code>true</code> in the <code>initialize</code> parameter,<br/>
+                the returned type will definitely have been already <b>linked</b> and <b>initialized</b>.<br/>
+                <span class="note">应该使用forName()，还是应该使用loadClass()？</span>
+            </p>
+            <p>
+                Initialization is the reason, for example, that JDBC drivers are usually loaded with a call to <code>forName()</code>.<br/>
+                Because the <b>static initializers</b> of each JDBC driver class registers the driver with a <code>DriverManager</code>,<br/>
+                thereby making the driver available to the application,<br/>
+                the driver class must be <b>initialized</b>, not just <b>loaded</b>.<br/>
+                Were a driver class <b>loaded</b> but not <b>initialized</b>,<br/>
+                the <b>static initializers</b> of the class would not be executed,<br/>
+                the driver would not become registered with the <code>DriverManager</code>,<br/>
+                and the driver would therefore not be available to the application.<br/>
+                Loading a driver with <code>forName()</code> ensures that the class will be <b>initialized</b>,<br/>
+                which ensures the driver will be available for use by the application after <code>forName()</code> returns.<br/>
+                <span class="note">这里讲述了一个使用Class.forName()的场景。</span>
+            </p>
+            <p>
+                Class loaders, on the other hand, can help you meet needs that <code>forName()</code> can't.<br/>
+                If you have some custom way of loading types,<br/>
+                such as by downloading them across a network,<span class="note">几种加载类的方式</span><br/>
+                retrieving them from a database,<br/>
+                extracting them from encrypted files,<br/>
+                or even generating them on the fly,<br/>
+                you'll need a class loader.<br/>
+                One of the primary reasons to create a <b>user-defined class loader</b> is to customize the way<span class="note">能够自定义类的加载方式</span><br/>
+                in which a fully qualified type name is transformed into an array of bytes in the Java class file format that define the named type.<br/>
+                Other reasons you may want to use a class loader rather than <code>forName()</code> involve <b>security</b>.<span class="note">出于security考虑</span><br/>
+                As mentioned in Chapter 3, "Security," the <b>separate namespaces</b> awarded to each class loader enable you to in effect<br/>
+                place a shield between the types loaded into different namespaces.<br/>
+                You can write a Java application such that types cannot see any types that aren't loaded into the same namespace.<br/>
+                Also, as mentioned in Chapter 3, class loaders are responsible for placing loaded code into <b>protection domains</b>.<br/>
+                Thus, if your security needs include a custom way to place loaded types into <b>protection domains</b>,<br/>
+                you'll need to use class loaders rather than <code>forName()</code>.<br/>
+                <span class="note">这里讲述了使用ClassLoader.loadClass()的场景。</span>
+            </p>
+            <p>
+                Both the general process of <b>dynamic extension</b> and the <b>separate namespaces</b> awarded to <b>individual class loaders</b><br/>
+                are supported by one aspect of <b>resolution</b>:<br/>
+                <span class="text-underline">the way a virtual machine chooses a class loader</span> when it resolves a <b>symbolic reference</b> to a type.
+                <span class="note">resolution的过程，也是JVM选择classloader的过程</span><br/>
+                When the resolution of a constant pool entry requires loading a type,<br/>
+                <span class="text-underline">the virtual machine uses the same class loader that loaded the <b>referencing type</b> to load the <b>referenced type</b>.</span><span class="note">本段精髓</span><br/>
+                For example, imagine a <code>Cat</code> class refers via a <b>symbolic reference</b> in its constant pool to a type named <code>Mouse</code>.<span class="note">举例说明</span><br/>
+                Assume <code>Cat</code> was loaded by a <b>user-defined class loader</b>.<br/>
+                When the virtual machine resolves the reference to <code>Mouse</code>,<br/>
+                it checks to see if <code>Mouse</code> has been loaded into the namespace to which <code>Cat</code> belongs.<span class="note">首先，查看是否已经加载过</span><br/>
+                (It checks to see if the class loader that loaded <code>Cat</code> has previously loaded a type named <code>Mouse</code>.)<br/>
+                If not, the virtual machine requests <code>Mouse</code> from the same class loader that loaded <code>Cat</code>.<span class="note">如果没有，则进行加载</span><br/>
+                This is true even if a class named <code>Mouse</code> had previously been loaded into a different namespace.<span class="note">如果没有在同一个namespace当中，也要进行加载</span><br/>
+                When a <b>symbolic reference</b> from a type loaded by the <b>bootstrap class loader</b> is resolved,<span class="note">这里讲boostrap class loader的情况</span><br/>
+                the Java virtual machine uses the <b>bootstrap class loader</b> to load the <b>referenced type</b>.<br/>
+                When a <b>symbolic reference</b> from a type loaded by a <b>user-defined class loader</b> is resolved,<span class="note">这里讲user-defined class loader的情况</span><br/>
+                the Java virtual machine uses the same <b>user-defined class loader</b> to load the <b>referenced type</b>.<br/>
+                <span class="note">JVM要实现resolution这个“抽象概念”，就要通过具体的classloader来进行实现；JVM选择classloader的机制就是“use the same class loader”。</span>
+            </p>
+
+
+            <h2 id="class-loader-and-parent-delegation-model">Class Loaders and the Parent-Delegation Model</h2>
+            <p>
+                As mentioned in Chapter 3, "Security," version 1.2 introduced a formal <b>parent-delegation model</b> for <b>class loaders</b>.<br/>
+                Although legacy class loaders written prior to 1.2 that don't take advantage of the <b>parent-delegation model</b> will still work in 1.2,<br/>
+                the recommended way to create class loaders from 1.2 on is to use the <b>parent-delegation model</b>.<br/>
+                Each <b>user-defined class loader</b> created in 1.2 is assigned a <b>"parent" class loader</b> when it is created.<span class="note">要有parent class loader</span><br/>
+                If the <b>parent class loader</b> is not passed explicitly to the constructor of the <b>user-defined class loader</b>,<br/>
+                the <b>system class loader</b> is assigned to be the parent by default.<span class="note">如果没有指明parent，对应于无参构造函数，那就是system class loader</span><br/>
+                Alternatively, a <b>parent loader</b> can be explicitly passed to the constructor of a new <b>user-defined class loader</b>.<span class="note">可能通过构造器传入parent</span><br/>
+                If a reference to an existing <b>user-defined class loader</b> is passed to the constructor,<br/>
+                that <b>user-defined class loader</b> is assigned to be the parent.<br/>
+                If <code>null</code> is passed to the constructor, the <b>bootstrap class loader</b> is assigned to be the parent.<span class="note">如果传入null，那就是bootstrap class loader</span><br/>
+                <span class="note">每一个user-defined class loader都会有一个parent class loader。</span>
+            </p>
+            <p>
+                To better visualize the parent-delegation model,<br/>
+                imagine a Java application creates a <b>user-defined class loader</b> named "Grandma."<br/>
+                Because the application passes <code>null</code> to Grandma's constructor,<br/>
+                Grandma's parent is set to the <b>bootstrap class loader</b>.<br/>
+                Time passes.<br/>
+                Sometime later, the application creates another class loader named "Mom."<br/>
+                Because the application passes to Mom's constructor a reference to Grandma,<br/>
+                Mom's parent is set to the <b>user-defined class loader</b> referred to affectionately as Grandma.<br/>
+                More time passes.<br/>
+                At some later time, the application creates a class loader named, "Cindy."<br/>
+                Because the application passes to Cindy's constructor a reference to Mom,<br/>
+                Cindy's parent is set to the <b>user-defined class loader</b> referred to as Mom.<br/>
+                <span class="note">bootstrap class loader --&gt; Grandma --&gt; Mom --&gt; Cindy</span>
+            </p>
+            <p>
+                Now imagine the application asks Cindy to load a type named <code>java.io.FileReader</code>.<br/>
+                When a class that follows the <b>parent delegation model</b> loads a type,<br/>
+                it first delegates to its parent -- it asks its parent to try and load the type.<br/>
+                Its parent, in turn, asks its parent, which first asks its parent, and so on.<br/>
+                The delegation continues all the way up to the end-point of the parent-delegation chain,<br/>
+                which is usually the <b>bootstrap class loader</b>.<br/>
+                Thus, the first thing Cindy does is ask Mom to load the type.<br/>
+                The first thing Mom does is ask Grandma to load the type.<br/>
+                And the first thing Grandma does is ask the <b>bootstrap class loader</b> to load the type.<br/>
+                In this case, the <b>bootstrap class loader</b> is able to load (or already has loaded) the type,<br/>
+                and returns the <code>Class</code> instance representing <code>java.io.FileReader</code> to Grandma.<br/>
+                Grandma passes this <code>Class</code> reference back to Mom,<br/>
+                who passes it back to Cindy, who returns it to the application.<br/>
+                <span class="note">举个例子，来说明parent delegation model是如何工作的。</span>
+            </p>
+            <p>
+                Note that given delegation between class loaders,
+                <span class="text-underline">the class loader that initiates loading</span> is not necessarily <span class="text-underline">the class loader that actually defines the type</span>.<br/>
+                In the previous example, the application initially asked Cindy to load the type,<br/>
+                but ultimately, <b>the bootstrap class loader</b> defined the type.<br/>
+                In Java terminology, a class loader that is asked to load a type, but returns a type loaded by some other class loader, is called an <b>initiating class loader</b> of that type.<br/>
+                The class loader that actually defines the type is called the <b>defining class loader</b> for the type.<br/>
+                In the previous example, therefore, the <b>defining class loader</b> for <code>java.io.FileReader</code> is the <b>bootstrap class loader</b>.<br/>
+                Class Cindy is an <b>initiating class loader</b>, but so are Mom, Grandma, and even the <b>bootstrap class loader</b>.<br/>
+                Any class loader that is asked to load a type and is able to return a reference to the <code>Class</code> instance representing the type is an <b>initiating loader</b> of that type.<br/>
+                <span class="note">这里讲述initiating class loader和defining class loader这两个概念。</span>
+            </p>
+            <p>
+                For another example, imagine the application asks Cindy to load a type named <code>com.artima.knitting.QuiltPattern</code>.<br/>
+                Cindy delegates to Mom, who delegates to Grandma, who delegates to the <b>bootstrap class loader</b>.<br/>
+                In this case, however, the <b>bootstrap class loader</b> is unable to load the type.<br/>
+                So control returns back to Grandma, who attempts to load the type in her custom way.<br/>
+                Because Grandma is responsible for loading standard extensions,<br/>
+                and the <code>com.artima.knitting</code> package is wisely installed in a JAR file in the standard extensions directory,<br/>
+                Grandma is able to load the type.<br/>
+                Grandma defines the type and returns the <code>Class</code> instance representing <code>com.artima.knitting.QuiltPattern</code> to Mom.<br/>
+                Mom passes this <code>Class</code> reference back to Cindy, who returns it to the application.<br/>
+                In this example, Grandma is the <b>defining loader</b> of the <code>com.artima.knitting.QuiltPattern</code> type.<br/>
+                Cindy, Mom, and Grandma -- but not the <b>bootstrap class loader</b> -- are initiating class loaders for the type.<br/>
+                <span class="note">进一步举例说明initiating class loader和defining class loader两者的区别。</span>
+            </p>
+
+            <h2 id="constant-pool-resolution">Constant Pool Resolution</h2>
+            <p>
+                This section describes the details of resolving <b>each type of constant pool entry</b>, including the <b>errors</b> that may be thrown during <b>resolution</b>.<span class="note">解析各种常量池内容的细节和可能的Error</span><br/>
+                If an <b>error</b> is thrown during <b>resolution</b>, the <b>error</b> is seen as being thrown by the <b>instruction</b><span class="note">从外界看起来，像是instruction触发的</span><br/>
+                that refers to the constant pool entry being resolved.<br/>
+                Besides the <b>errors</b> described here, individual <b>instructions</b> that trigger the <b>resolution</b> of a constant pool entry<br/>
+                may cause other errors to be thrown.<span class="note">还可能有其它的Error</span><br/>
+                For example, <code>getstatic</code> causes a <code>CONSTANT_Fieldref_info</code> entry to be resolved.<span class="note">这里举个例子</span><br/>
+                If the entry is resolved successfully, the virtual machine performs one additional check:<br/>
+                it makes sure the field is actually static (a class variable and not an instance variable).<br/>
+                If the field is not static, the virtual machine throws an error.<br/>
+                Any extra errors that may be thrown during <b>resolution</b> besides those described in this section are described for each individual instruction in Appendix A.<br/>
+                <span class="note">这一部分主要就是介绍如何解析各种Constant Pool Entry</span>
+            </p>
+            <p>
+                In the following sections, the term <b>current class loader</b> refers to the <b>defining class loader</b>,<br/>
+                whether it be a <b>user-defined class loader</b> or the <b>bootstrap class loader</b>,<br/>
+                for the type whose <b>constant pool</b> contains the <b>symbolic reference</b> being resolved.<br/>
+                The term <b>current namespace</b> refers to the namespace of the <b>current class loader</b>,<br/>
+                the set of all type names for which the <b>current class loader</b> has been marked as an <b>initiating loader</b>.<br/>
+                <span class="note">这里介绍current class loader和current namespace两个概念。</span>
+            </p>
+
+            <h3 id="resolution-of-class-info">CONSTANT_Class_info</h3>
+            <p>
+                Of all the types of constant pool entries, the most complicated to resolve is <code>CONSTANT_Class_info</code>.<br/>
+                This type of entry is used to represent <b>symbolic references</b> to classes (including array classes) and interfaces.<br/>
+                Several <b>instructions</b>, such as <code>new</code> and <code>anewarray</code>, refer directly to <code>CONSTANT_Class_info</code> entries.<br/>
+                Other <b>instructions</b>, such as <code>putfield</code> or <code>invokevirtual</code>,<br/>
+                refer indirectly to <code>CONSTANT_Class_info</code> entries through other types of entry.<br/>
+                For example, the <code>putfield</code> instruction refers to a <code>CONSTANT_Fieldref_info</code> entry.<br/>
+                The <code>class_index</code> item of a <code>CONSTANT_Fieldref_info</code> gives the constant pool index of a <code>CONSTANT_Class_info</code> entry.<br/>
+                <span class="note">解析CONSTANT_Class_info是最复杂的</span>
+            </p>
+            <p>
+                The details of resolving a <code>CONSTANT_Class_info</code> entry vary depending on<br/>
+                <span class="text-underline">whether or not the type is an array</span> and<br/>
+                <span class="text-underline">whether the referencing type</span><br/>
+                (the one that contains in its <b>constant pool</b> the <code>CONSTANT_Class_info</code> entry being resolved)<br/>
+                <span class="text-underline">was loaded</span> via the <b>bootstrap class loader</b> or a <b>user-defined class loader</b>.<br/>
+                <span class="note">解析过程，有两个重要因素，一个要判断是否为array class，另一个要判断class loader的类型。</span>
+            </p>
+
+
+            <h4 id="array-classes">Array Classes</h4>
+            <p>
+                A <code>CONSTANT_Class_info</code> entry refers to an <b>array class</b>判断是否是array class<br/>
+                if its <code>name_index</code> refers to a <code>CONSTANT_Utf8_info</code> string that begins with a left bracket, as in "[I."<br/>
+                As described in Chapter 6, "The Java Class File," internal array names contain one left bracket for each dimension, followed by a component type.<br/>
+                If the <b>component type</b> begins with an "L," as in "Ljava.lang.Integer;," the array is an <b>array of references</b>.<span class="note">判断是否是array of references</span><br/>
+                Otherwise, the <b>component type</b> is a <b>primitive type</b>, such as "I" for <code>int</code> or "D" for <code>double</code>,
+                and the array is an <b>array of primitive types</b>.<span class="note">判断是否为array of primitive types</span><br/>
+            </p>
+            <p>
+                The end product of the <b>resolution</b> of a <b>symbolic reference</b> to an <b>array class</b>
+                is a <code>Class</code> instance that represents the <b>array class</b>.<span class="note">解析的结果就是生成一个Class实例</span><br/>
+                If the <b>current class loader</b> has already been recorded as an <b>initiating loader</b> for the <b>array class</b> being resolved, that same class is used.
+                <span class="note">如果已经存在，则使用已有的。</span><br/>
+                Otherwise, the virtual machine performs the following steps:<br/>
+                If the <b>component type</b> of the array is a <b>reference type</b> (the array is an <b>array of references</b>),<span class="note">如果是array of reference的情况</span><br/>
+                the virtual machine resolves the <b>component type</b> using the <b>current class loader</b>.<br/>
+                For example, if resolving an array class with the name "[[Ljava.lang.Integer;,"<br/>
+                the virtual machine would make certain class <code>java.lang.Integer</code> is loaded into the <b>namespace</b> of the <b>current class loader</b>.<br/>
+                After resolving the <b>component type</b> if the array is an <b>array of references</b>,<span class="note">解析component type成功之后，就要生成Class实例了</span><br/>
+                or immediately, if the array is an <b>array of primitive types</b>,<br/>
+                the virtual machine creates a <b>new array class</b> of the indicated <b>component type</b> and <b>number of dimensions</b> and instantiates a <code>Class</code> instance to represent the type.<br/>
+                For an <b>array of references</b>, the <b>array class</b> is marked as having been defined by the <b>defining class loader</b> of the <b>component type</b>.<span class="note">很重要</span><br/>
+                For an <b>array of primitive types</b>, the <b>array class</b> is marked as having been defined by the <b>bootstrap class loader</b>.<span class="note">很重要</span><br/>
+            </p>
+
+
+            <h4 id="non-array-classes-and-interfaces">Non-Array Classes and Interfaces</h4>
+            <p>
+                A <code>CONSTANT_Class_info</code> entry whose <code>name_index</code> refers to a <code>CONSTANT_Utf8_info</code> string<br/>
+                that doesn't begin with a left bracket is a <b>symbolic reference</b> to a <b>non-array class</b> or an <b>interface</b>.<br/>
+                <b>Resolution</b> of this kind of <b>symbolic reference</b> is a multiple step process.<br/>
+                <span class="note">解析non-array class和interface，需要经历multiple step process</span>
+            </p>
+            <p>
+                The Java virtual machine performs the same basic steps,<br/>
+                described below as Steps 1a and 1b,<br/>
+                to resolve any <b>symbolic reference</b> (any <code>CONSTANT_Class_info</code> entry) to a <b>non-array class</b> or <b>interface</b>.<br/>
+                In Step 1a, the type is <b>loaded</b>.<br/>
+                In Step 1b, <b>access permission</b> to the type is checked.<br/>
+                The precise way in which the virtual machine performs Step 1a depends on<br/>
+                whether the <b>referencing type</b> was loaded via the <b>bootstrap class loader</b> or a <b>user-defined class loader</b>.<br/>
+                <span class="note">这里讲了两个步骤，一个是进行load，另一个是检查access permission</span>
+            </p>
+            <p>
+                Also described in this section are Steps 2a through 2d,<br/>
+                which describe the <b>linking</b> and <b>initialization</b> of the newly resolved type.<br/>
+                These steps are not part of the <b>resolution</b> of the <b>symbolic reference</b> to the type that becomes <b>linked</b> and <b>initialized</b>.
+                <span class="note">已经link和initialize的类，不再重复进行</span><br/>
+                <b>Resolution</b> of a <b>symbolic reference</b> to a <b>non-array class</b> or <b>interface</b> involves only Steps 1a and 1b,<br/>
+                the (potential) loading of the type and the checking of its access permission.<span class="note">resolution = loading + checking，resolution并不会触发linking和initialization</span><br/>
+                However, whenever the <b>resolution process</b> of a <b>symbolic reference</b> to a type is being triggered by the first <b>active use</b> of the type,<br/>
+                <b>linking</b> and <b>initialization</b> of the type will immediately follow the <b>resolution</b> of the <b>symbolic reference</b> to that type.
+                <span class="note">只有active use的情况下，才会触发linking和initialization</span><br/>
+                Because Java virtual machine implementations are allowed to perform <b>early resolution</b>,<br/>
+                however, <b>resolution of references</b> to types may occur much earlier than the <b>linking</b> and <b>initialization</b> of those types.<br/>
+                As mentioned in Chapter 7, the "Lifetime of a Type," <b>initialization</b> (here, Step 2d) occurs on the first <b>active use</b> of the type.<br/>
+                Before a type can be <b>initialized</b>, it must be <b>linked</b> (Steps 2a through 2c),<br/>
+                and before it can be <b>linked</b>, it must be <b>loaded</b> (Step 1a).<br/>
+                <span class="note">这里讲述4个步骤，2a~2c都是在linking，2d是在讲initialization</span>
+            </p>
+
+
+            <p>
+                <span class="text-emphasize">Step 1a. Load the Type and any Supertypes</span>
+            </p>
+            <p>
+                The fundamental activity required by the <b>resolution</b> of a <b>non-array class or interface</b> is making sure the type is loaded into the <b>current namespace</b>.<br/>
+                As a first step, the virtual machine must determine<br/>
+                whether or not the <b>referenced type</b> has already been loaded into the <b>current namespace</b>.<br/>
+                To make that determination, the virtual machine must find out<br/>
+                whether the <b>current class loader</b> has been marked as an <b>initiating loader</b> for a type<br/>
+                with the desired fully qualified name (the type name given in the <b>symbolic reference</b> being resolved).<br/>
+                For each <b>class loader</b>,<br/>
+                the Java virtual machine maintains <b>a list of the names</b> of all the types<br/>
+                for which the class loader has served as an <b>initiating class loader</b>.<br/>
+                Each of these lists forms a <b>namespace</b> inside the Java virtual machine.<br/>
+                The virtual machine uses these lists during <b>resolution</b> to determine<br/>
+                whether a class has already been <b>loaded</b> by a particular <b>class loader</b>.<br/>
+                If the virtual machine discovers the desired fully qualified name is already mentioned in the <b>current namespace</b>,<br/>
+                it will just use the already-loaded type, which is defined by a chunk of type data in the <b>method area</b> and<br/>
+                represented by an associated <code>Class</code> instance on the heap.<br/>
+                By first checking whether the <b>current namespace</b> already includes the desired fully qualified name,<br/>
+                the virtual machine helps ensure that only one type with a given name is loaded by any single class loader.<br/>
+                <span class="note">这里说了一大堆，就是表达“查看是否已经加载了某个类”</span>
+            </p>
+            <p>
+                If a type with the desired <b>fully qualified name</b> hasn't yet been loaded into the <b>current namespace</b>,<br/>
+                the virtual machine passes the <b>fully qualified name</b> to the <b>current class loader</b>.<br/>
+                The Java virtual machine always asks the <b>current class loader</b>, the <b>defining loader</b> of the <b>referencing type</b><br/>
+                whose <b>runtime constant pool</b> contains the <code>CONSTANT_Class_info</code> entry being resolved,<br/>
+                to attempt to load the <b>referenced type</b>.<br/>
+                If the <b>referencing type</b> was defined by the <b>bootstrap class loader</b>,<br/>
+                the virtual machine asks the <b>bootstrap class loader</b> to load the <b>referenced type</b>.<br/>
+                Otherwise, the <b>referencing</b> type was defined by a <b>user-defined class loader</b>,<br/>
+                and the virtual machine asks the same <b>user-defined class loader</b> to load the <b>referenced type</b>.<br/>
+                <span class="note">JVM使用相同的class loader去加载被解析的类。</span>
+            </p>
+            <p>
+                If the <b>current class loader</b> is the <b>bootstrap class loader</b>,<span class="note">处理bootstrap class loader的情况</span><br/>
+                the virtual machine asks it in an implementation dependent way to load the type.<br/>
+                If the <b>current class loader</b> is a <b>user-defined class loader</b>,<span class="note">处理user-defined class loader的情况，要调用loadClass()方法</span><br/>
+                the Java virtual machine makes the load request by invoking the <b>user-defined class loader</b>'s <code>loadClass()</code> method,<br/>
+                passing in parameter <code>name</code> the <b>fully qualified name</b> of the desired type.<br/>
+            </p>
+            <p>
+                When either the <b>bootstrap class loader</b> or a <b>user-defined class loader</b> is asked to load a type, the class loader has two choices:<br/>
+                It can attempt to load the type by itself, or it can delegate the job to some other class loader.<br/>
+                A <b>user-defined class loader</b> can ask either another <b>user-defined class loader</b> or the <b>bootstrap class loader</b> to attempt to load the type.<br/>
+                The <b>bootstrap class loader</b> can ask a <b>user-defined class loader</b> to attempt to load the type.<br/>
+                <span class="note">class loader加载类的两种方式：要么自己加载，要么让别人帮助加载</span>
+            </p>
+            <p>
+                To delegate to a <b>user-defined class loader</b>,<br/>
+                a class loader (whether bootstrap or user-defined) invokes <code>loadClass()</code> on that class loader, passing in the fully qualified name of the desired type.<br/>
+                To delegate to the <b>bootstrap class loader</b>,<br/>
+                a <b>user-defined class loader</b> invokes <code>findSystemClass()</code>, a static method from <code>java.lang.ClassLoader</code>,<br/>
+                passing in the fully qualified name of the desired type.<br/>
+                A class loader that has been delegated to can also decide<br/>
+                whether or not to attempt to load the type itself,<br/>
+                or to delegate the job to yet another class loader.<br/>
+                Eventually, some class loader will decide that the buck stops with it, and rather than delegate, attempt to actually load the type itself.<br/>
+                If this class loader is successful at loading the type, it will be marked as the <b>defining class loader</b> for the type.<br/>
+                All of the class loaders involved in the process-- the <b>defining class loader</b> and all the class loaders that delegated -- will be marked as <b>initiating loaders</b> of the type.<br/>
+            </p>
+            <p>
+                Given the existence of the <b>parent-delegation model</b> described earlier in this chapter,<br/>
+                if a <b>user-defined class loader</b> delegates, the class loader to which it delegates will often be its parent in the <b>parent-delegation model</b>.<br/>
+                The parent will, in-turn, delegate to its parent, which will delegate to its parent, and so on.<br/>
+                The delegation process continues all the way up to the end-point of the delegation process,<br/>
+                which is the class loader that, rather than delegating, decides to try and load the type itself.<br/>
+                Most often, this end-point class loader will be the <b>bootstrap class loader</b>.<br/>
+                When a parent class loader attempts to load the type but fails, control returns to the child class loader.<br/>
+                In the <b>parent-delegation model</b>, the child class loader,<br/>
+                upon learning that its parent (and grandparent, great grandparent, and so on) was unable to load the type,<br/>
+                attempts to load the type itself.<br/>
+                If a class loader in the middle of the delegation chain is the class loader that first has success loading the type,<br/>
+                that class loader will be marked as the <b>defining class loader</b>.<br/>
+                The <b>defining class loader</b> and all the class loaders before it in the parent-delegation chain will be marked as <b>initiating class loaders</b>.<br/>
+                However, its parent, grandparent, great grandparent, and so on, none of whom were successful in their attempts to load the type,<br/>
+                will not be marked as <b>initiating class loaders</b> of the type.<br/>
+                <span class="note">我觉得，这里主要是对defining class loader和initiating class loader进行区分。</span>
+            </p>
+            <p>
+                If the <code>loadClass()</code> method of a <b>user-defined class loader</b><br/>
+                is able to locate or produce an array of bytes that purportedly defines the type in the Java class file format,<br/>
+                <code>loadClass()</code> must invoke <code>defineClass()</code>,<br/>
+                passing the fully qualified name of the desired type and a reference to the byte array.<br/>
+                Invoking <code>defineClass()</code> will cause the virtual machine to attempt to parse the binary data into internal data structures in the <b>method area</b>.<br/>
+                At this point the virtual machine will perform pass one of <b>verification</b>,<br/>
+                as described in Chapter 3, "Security," which ensures the passed array of bytes adhere to the basic structure of the Java class file format.<br/>
+                The Java virtual machine uses the passed <b>fully qualified name</b> to verify that the desired type name is actually declared as the name of the type in the passed array of bytes.<br/>
+                <span class="note">loadClass() --&gt; defineClass() --&gt; method area</span>
+            </p>
+            <p>
+                Once the <b>referenced type</b> is loaded in, the virtual machine peers into its binary data.<br/>
+                If the type is a class and not <code>java.lang.Object</code>,<br/>
+                the virtual machine determines from the class's data the fully qualified name of the class's direct <b>superclass</b>.<br/>
+                The virtual machine then checks to see if the <code>superclass</code> has been loaded into the <code>current namespace</code>.<br/>
+                If not, it loads the <b>superclass</b>.<br/>
+                Once that class comes in, the virtual machine can again peer into its binary data to find its <b>superclass</b>.<br/>
+                This process repeats all the way up to <code>Object</code>.<br/>
+                <span class="note">不断查找，并加载父类，直到Object类。</span>
+            </p>
+            <p>
+                When the virtual machine loads a <b>superclass</b>, it is really just resolving yet another <b>symbolic reference</b>.<br/>
+                To determine what the fully qualified name of a class's superclass is,<br/>
+                the virtual machine looks at the <code>super_class</code> field of the class file.<br/>
+                This field gives a constant pool index of a <code>CONSTANT_Class_info</code> entry that serves as a <b>symbolic reference</b> to the class's <b>superclass</b>.<br/>
+                When the virtual machine load the <b>superclass</b>,<br/>
+                it does so as <b>Step 1a</b> of the process of resolving the <b>symbolic reference</b> to the <b>superclass</b>.<br/>
+                Thus, as part of <b>Step 1a</b> of the <b>resolution process</b> for <code>CONSTANT_Class_info</code> entries,<br/>
+                the virtual machine recursively applies the <b>resolution process</b> for <code>CONSTANT_Class_info</code> entries on each <b>superclass</b> all the way up to <code>Object</code>.<br/>
+                <span class="note">与上段意思相同，只是增加了细节。</span>
+            </p>
+            <p>
+                On the way back down from <code>Object</code>,<br/>
+                the virtual machine will again peer into the type data for each type it loaded to see if the type directly implements any <b>interfaces</b>.<br/>
+                If so, it will make sure those <b>interfaces</b> are also loaded.<br/>
+                For each <b>interface</b> the virtual machine loads,<br/>
+                the virtual machine peers into its type data to see if it directly extends any other <b>interfaces</b>.<br/>
+                If so, the virtual machine makes sure those <b>superinterfaces</b> are loaded.<br/>
+                <span class="note">加载所有的interface</span>
+            </p>
+            <p>
+                When the virtual machine loads <b>superinterfaces</b>,<br/>
+                it is once again resolving more <code>CONSTANT_Class_info</code> entries.<br/>
+                The indexes of all the constant pool entries that serve as <b>symbolic references</b> to the <b>interfaces</b><br/>
+                directly implemented or extended by the type being loaded are stored in the <b>interfaces</b> component of the class file.<br/>
+                When the virtual machine loads <b>superinterfaces</b>,<br/>
+                it is resolving the <code>CONSTANT_Class_info</code> entries specified in the <b>interfaces</b> component,<br/>
+                applying the <b>resolution process</b> for <code>CONSTANT_Class_info</code> entries recursively.<br/>
+                <span class="note">与上段意思相同，只是增加了细节。</span>
+            </p>
+            <p>
+                When the virtual machine applies the <b>recursive resolution process</b> to <b>superclasses</b> and <b>superinterfaces</b>,<br/>
+                it uses the <b>defining class loader</b> of the <b>referencing subtype</b>.<br/>
+                The virtual machine makes its request in the usual way,<br/>
+                by invoking <code>loadClass()</code> on the referencing subtype's <b>defining class loader</b>,<br/>
+                passing in the fully qualified name of the desired direct <b>superclass</b> or direct <b>superinterface</b>.<br/>
+                <span class="note">这里是一个小的总结，就是说明加载superclass和superinterface的细节</span>
+            </p>
+            <p>
+                Once a type has been loaded into the <b>current namespace</b>, and by recursion,<br/>
+                all the type's <b>superclasses</b> and <b>superinterfaces</b> have also been successfully loaded,<br/>
+                the virtual machine instantiates the new <code>Class</code> instance to represent the type.<br/>
+                If the bytes defining the type were located or produced by a <b>user-defined class loader</b> and passed to <code>defineClass()</code>,<br/>
+                <code>defineClass()</code> will at that point return the new <code>Class</code> instance.<br/>
+                Alternatively, if a <b>user-defined class loader</b> delegated to the <b>bootstrap class loader</b> with a <code>findSystemClass()</code> invocation,<br/>
+                <code>findSystemClass()</code> will at that point return the <code>Class</code> instance.<br/>
+                Upon receiving the <code>Class</code> instance from either <code>defineClass()</code> or <code>findSystemClass()</code>,<br/>
+                the <code>loadClass()</code> method returns the <code>Class</code> instance to its caller.<br/>
+                If a <b>user-defined class loader</b> delegates to another <b>user-defined class loader</b>,<br/>
+                therefore, it receives the <code>Class</code> instance from the delegated-to <b>user-defined class</b> loader when its <code>loadClass()</code> method returns.<br/>
+                Upon receiving the <code>Class</code> instance from the delegated-to class loader, the delegated-from class loader returns it from its own <code>loadClass()</code> method.<br/>
+            </p>
+            <p>
+                Through <b>Step 1a</b>, the Java virtual machine makes sure a type is <b>loaded</b>,<br/>
+                and if the type is a class, that all its <b>superclasses</b> are <b>loaded</b>,<br/>
+                and whether the type is a class or an interface, that all of its <b>superinterfaces</b> are <b>loaded</b>.<br/>
+                During this step, these types are not <b>linked</b> and <b>initialized</b>--just <b>loaded</b>.<br/>
+                <span class="note">只是load，而没有link和initialize</span>
+            </p>
+            <p>
+                During <b>Step 1a</b>, the virtual machine may throw the following errors:
+            </p>
+            <ul>
+                <li>
+                    If the <b>bootstrap class loader</b> is invoked directly by the virtual machine
+                    (not because of a <code>findSystemClass()</code> invocation) and
+                    it is unable to locate or produce the binary data for the requested type,
+                    the virtual machine throws <code>NoClassDefFoundError</code>.
+                </li>
+                <li>
+                    If a <b>user-defined class loader</b> delegates to the <b>bootstrap class</b> loader
+                    via a <code>findSystemClass()</code> invocation and the <b>bootstrap class loader</b>
+                    it is unable to locate or produce the binary data for the requested type,
+                    the <code>findSystemClass()</code> method completes abruptly with a <code>ClassNotFoundError</code>.
+                    Similarly, if a <b>user-defined class loader</b> delegates to another <b>user-defined class loader</b>
+                    via a <code>loadClass()</code> invocation and the <b>user-defined class loader</b>
+                    it is unable to locate or produce the binary data for the requested type,
+                    its <code>loadClass()</code> method should complete abruptly with a <code>ClassNotFoundError</code>.
+                </li>
+                <li>
+                    If the binary data is located or produced by the <b>bootstrap class loader</b>,
+                    but isn't of the proper structure, the virtual machine throws <code>ClassFormatError</code>.
+                    Likewise, if a <b>user-defined class loader</b> is able to locate or produce the binary data and invoke the <code>defineClass()</code> method,
+                    but the <code>defineClass()</code> method discovers the binary data isn't of the proper structure,
+                    <code>defineClass()</code> will complete abruptly with a <code>ClassFormatError</code>.
+                </li>
+                <li>
+                    If the binary data is produced, but isn't of a recognized version
+                    (such as if the minor or major version number of a Java class file is too high),
+                    the virtual machine throws <code>UnsupportedClassVersionError</code>.
+                </li>
+                <li>
+                    If the binary data is produced and well formed,
+                    but doesn't contain the sought after class or interface
+                    (such as if file <code>CuteKitty.class</code> is discovered to contain class <code>HungryTiger</code> instead of <code>CuteKitty</code>),
+                    the virtual machine throws <code>NoClassDefFoundError</code>.
+                </li>
+                <li>
+                    If well formed binary data is passed to <code>defineClass()</code>,
+                    but contains a class or interface whose name already appears in the <b>current class loader's namespace</b>,
+                    the <code>defineClass()</code> method completes abruptly with a <code>LinkageError</code>.
+                </li>
+                <li>
+                    If the class doesn't contain a <b>superclass</b> and isn't class <code>Object</code> itself,
+                    the virtual machine throws a <code>ClassFormatError</code>.
+                    (Note that this check has to be done here, during the loading step,
+                    because that one piece of information--the symbolic reference to the superclass--is needed by the virtual machine during this step.
+                    During Step 1, the virtual machine must load in all the superclasses recursively.)
+                </li>
+                <li>
+                    If a class appears as its own superclass, or an interface as its own superinterface,
+                    the virtual machine throws <code>ClassCircularityError</code>.
+                </li>
+                <li>
+                    If the type referenced as a superclass is actually an interface,
+                    or type referenced as a superinterface is actually a class,
+                    the virtual machine throws <code>IncompatibleClassChangeError</code>.
+                </li>
+            </ul>
+
+
+            <p class="text-emphasize">
+                Step 1b. Check Access Permission
+            </p>
+            <p>
+                After <b>loading</b> is complete, the virtual machine checks for <b>access permission</b>.<br/>
+                If the <b>referencing type</b> does not have permission to access the <b>referenced type</b>,<br/>
+                the virtual machine throws an <code>IllegalAccessError</code>.<br/>
+                <b>Step 1b</b> is another activity that is logically part of <b>verification</b>,<br/>
+                but that is performed at some other time than the official <b>verification</b> phase.<br/>
+                The check for <b>access permission</b> will always take place after <b>Step 1a</b>,<br/>
+                ensuring a type referenced from a <b>symbolic reference</b> is loaded into the <b>current namespace</b>,<br/>
+                as part of resolving that <b>symbolic reference</b>.<br/>
+                Once this check is complete, Step 1b--and the entire process of resolving the <code>CONSTANT_Class_info</code> entry--is complete.<br/>
+                <span class="note">检查权限</span>
+            </p>
+            <p>
+                If an error occurred in Steps 1a or 1b,<br/>
+                the <b>resolution</b> of the <b>symbolic reference</b> to the type fails.<br/>
+                But if all went well up until the access permission check of Step 1b, the type is still usable in general, just not usable by the referencing type.<br/>
+                If an error occurred before the access permission check, however, the type is unusable and must be marked as such or discarded.<br/>
+                <span class="note">这里讲解析失败的情况</span>
+            </p>
+
+
+            <p class="text-emphasize">
+                Step 2. Link and Initialize the Type and any Superclasses
+            </p>
+            <p>
+                At this point, the type being referred to by the <code>CONSTANT_Class_info</code> entry being resolved has been <b>loaded</b>,<br/>
+                but not necessarily <b>linked</b> or <b>initialized</b>.<br/>
+                In addition, all the type's <b>superclasses</b> and <b>superinterfaces</b> have been <b>loaded</b>,<br/>
+                but not necessarily <b>linked</b> or <b>initialized</b>.<br/>
+                Some of the <b>supertypes</b> may be <b>initialized</b> at this point,<br/>
+                because they may have been <b>initialized</b> during earlier <b>resolutions</b>.<br/>
+                <span class="note">类已经load，还没有link和initialize。</span>
+            </p>
+            <p>
+                As described in Chapter 7, "The Lifetime of a Class," <b>superclasses</b> must be <b>initialized</b> before <b>subclasses</b>.<br/>
+                If the virtual machine is resolving a reference to a class (not an interface) because of an <b>active use</b> of that class,<br/>
+                it must make sure that the <b>superclasses</b> have been <b>initialized</b>,<br/>
+                starting with <code>Object</code> and proceeding down the inheritance hierarchy to the referenced class.<br/>
+                (Note that this is the opposite order in which they were loaded in Step 1a.)<br/>
+                If a type hasn't yet been <b>linked</b>, it must be <b>linked</b> before it is <b>initialized</b>.<br/>
+                Note that only <b>superclasses</b> must be <b>initialized</b>, not <b>superinterfaces</b>.<br/>
+                <span class="note">superclasses要先进行initialize，而subclasses要后进行initialize。</span>
+            </p>
+
+
+            <p class="text-emphasize">
+                Step 2a. Verify the Type
+            </p>
+            <p>
+                Step 2 begins with the official <b>verification</b> phase of <b>linking</b>, described in Chapter 7, "The Lifetime of a Class."<br/>
+                As mentioned in Chapter 7, the process of <b>verification</b> may require that<br/>
+                <span class="text-underline">the virtual machine load new types to ensure the bytecodes are adhering to the <b>semantics of the Java language</b>.</span><br/>
+                For example, if a reference to an instance of a particular class is assigned to a variable with a declared type of a different class,<br/>
+                the virtual machine would have to load both types to make sure one is a subclass of the other.<br/>
+                These classes would at this point be <b>loaded</b> and possibly <b>linked</b>, but definitely not <b>initialized</b>.<br/>
+                <span class="note">要检查bytecode的语义的正确性</span>
+            </p>
+            <p>
+                If during the <b>verification</b> process the Java virtual machine uncovers trouble, it throws <code>VerifyError</code>.
+            </p>
+
+
+            <p class="text-emphasize">
+                Step 2b. Prepare the Type
+            </p>
+            <p>
+                After the official <b>verification</b> phase is complete, the type must be <b>prepared</b>.<br/>
+                As described in Chapter 7, "The Lifetime of a Class," during <b>preparation</b><br/>
+                the virtual machine allocates memory for <b>class variables</b> and <b>implementation-dependent data structures</b> such as <b>method tables</b>.<br/>
+                <span class="note">这个阶段要为class variables分配内存空间，还有其他的一些事情，例如method tables</span>
+            </p>
+
+
+            <p class="text-emphasize">
+                Optional Step 2c. Resolve the Type
+            </p>
+            <p>
+                At this point, the type has been <b>loaded</b>, <b>verified</b> and <b>prepared</b>.<br/>
+                As described in Chapter 7, "The Lifetime of a Class,"<br/>
+                a Java virtual machine implementation may optionally <b>resolve the type</b> at this point.<br/>
+                Keep in mind that at this stage in the <b>resolution process</b>,<br/>
+                <b>Steps 1a, 2a, and 2b</b> have been performed on a <b>referenced type</b> to resolve<br/>
+                a <code>CONSTANT_Class_info</code> entry in the <b>constant pool</b> of a <b>referencing type</b>.<br/>
+                <b>Step 2c</b> is the <b>resolution</b> of <b>symbolic references</b> contained in the <b>referenced type</b>, not the <b>referencing type</b>.<br/>
+                (And by the way, <b>Step 2b</b> is not mentioned in the previous discussion<br/>
+                because <b>Step 2b</b> has nothing to do with the <b>referenced type</b>'s <b>loading</b>, <b>linking</b>, and <b>initialization</b> process.<br/>
+                <b>Step 2b</b> is actually part of pass four of the <b>verification</b> step of the <b>linking</b> phase of the <b>referencing type</b>,<br/>
+                the type that contains the <b>symbolic reference</b> to the <b>referenced type</b>.)<br/>
+                <span class="note">这里是对referenced type里的symbolic references进行解析。</span>
+            </p>
+            <p>
+                For example, if the virtual machine is resolving a <b>symbolic reference</b> from class <code>Cat</code> to class <code>Mouse</code>,<br/>
+                the virtual machine performs <b>Steps 1a, 2a, and 2b</b> on class <code>Mouse</code>.<br/>
+                At this stage of resolving the <b>symbolic reference</b> to <code>Mouse</code> contained in the <b>constant pool</b> of <code>Cat</code>,<br/>
+                the virtual machine could optionally (as <b>Step 2c</b>) resolve all the <b>symbolic references</b> contained in the <b>constant pool</b> for <code>Mouse</code>.<br/>
+                If <code>Mouse</code>'s <b>constant pool</b> contains a <b>symbolic reference</b> to class <code>Cheese</code>, for example,<br/>
+                the virtual machine could <b>load</b> and optionally <b>link</b> (but not <b>initialize</b>) <code>Cheese</code> at this time.<br/>
+                The virtual machine mustn't attempt to <b>initialize</b> <code>Cheese</code> here because <code>Cheese</code> is not being <b>actively used</b>.<br/>
+                (Of course, <code>Cheese</code> may in fact have already been <b>actively used</b> elsewhere,<br/>
+                so it could have been already be <b>loaded</b> into this namespace, <b>linked</b>, and <b>initialized</b>.)<br/>
+                <span class="note">这里是举例说明</span>
+            </p>
+            <p>
+                As mentioned earlier in this chapter,<br/>
+                if an implementation does perform <b>Step 2c</b> at this point in the <b>resolution process</b> (<b>early resolution</b>),<br/>
+                it must not report any errors until the <b>symbolic references</b> are <b>actually used</b> by the running program.<br/>
+                For example, if during the <b>resolution</b> of <code>Mouse</code>'s <b>constant pool</b>,<br/>
+                the virtual machine can't find class <code>Cheese</code>,<br/>
+                it won't throw a <code>NoClassDefFound</code> error until (and unless) <code>Cheese</code> is actually used by the program.<br/>
+            </p>
+
+
+            <p class="text-emphasize">
+                Step 2d. Initialize the Type
+            </p>
+            <p>
+                At this point, the type has been <b>loaded</b>, <b>verified</b>, <b>prepared</b> and optionally <b>resolved</b>.<br/>
+                At long last, the type is ready for <b>initialization</b>.<br/>
+                As defined in Chapter 7, "The Lifetime of a Class," <b>initialization</b> consists of <b>two steps</b>.<br/>
+                The <b>initialization</b> of the type's <b>superclasses</b> in top down order, if the type has any <b>superclasses</b>,<br/>
+                and the execution of the type's <b>class initialization method</b>, if it has one.<br/>
+                <b>Step 2d</b> just consists of executing the <b>class initialization method</b>, if one exists.<br/>
+                Because <b>Steps 2d</b> is performed for all the <b>referenced type's superclasses</b>, from the top down,<br/>
+                <b>Step 2d</b> will occur for <b>superclasses</b> before it occurs for <b>subclasses</b>.<br/>
+                <span class="note">这一步要执行class initialization method，先执行superclasses，后执行subclasses</span>
+            </p>
+            <p>
+                If the <b>class initialization method</b> completes abruptly by throwing some exception that isn't a subclass of <code>Error</code>,<span class="note">出错的第1种情况</span><br/>
+                the virtual machine throws <code>ExceptionInInitializerError</code> with the thrown exception as a parameter to the constructor.<br/>
+                Otherwise, if the thrown exception is already a subclass of <code>Error</code>, that error is thrown.<span class="note">出错的第2种情况</span><br/>
+                If the virtual machine can't create a new <code>ExceptionInInitializerError</code> because there isn't enough memory, it throws an <code>OutOfMemoryError</code>.<span class="note">出错的第3种情况</span><br/>
+            </p>
+
+            <h3 id="resolution-of-field-ref">CONSTANT_Fieldref_info</h3>
+            <p>
+                To resolve a constant pool entry of type <code>CONSTANT_Fieldref_info</code>,<br/>
+                the virtual machine must first resolve the <code>CONSTANT_Class_info</code> entry specified in the <code>class_index</code> item.<span class="note">首先要解析CONSTANT_Class_info</span><br/>
+                Therefore, any error that can be thrown because of the resolution of a <code>CONSTANT_Class_info</code><span class="note">如果CONSTANT_Class_info解析出错</span><br/>
+                can be thrown during the resolution of a <code>CONSTANT_Fieldref_info</code>.<br/>
+                If resolution of the <code>CONSTANT_Class_info</code> entry succeeds,<span class="note">如果CONSTANT_Class_info解析成功</span><br/>
+                the virtual machine searches for the indicated field in the <b>type</b> and <b>its supertypes</b>.<span class="note">从当前类型或父类中查找字段</span><br/>
+                If it finds the indicated field, the virtual machine checks to make sure the current class has <b>permission</b> to access the field.<span class="note">检查字段权限</span><br/>
+                <span class="note"></span>
+            </p>
+            <pre class="pre-block">
+CONSTANT_Fieldref_info {
+    u1 tag;
+    u2 class_index;
+    u2 name_and_type_index;
+}
+            </pre>
+            <p>
+                If resolution to the <code>CONSTANT_Class_info</code> completes successfully,<br/>
+                the virtual machine performs the field lookup process using these steps:<br/>
+                <span class="note">查找field的过程</span>
+            </p>
+            <ol>
+                <li>
+                    The virtual machine checks the <b>referenced type</b> for a field of the specified name and type.
+                    If the virtual machine discovers such a field, that field is the result of the successful field lookup.
+                    <span class="note">从当前类查找</span>
+                </li>
+                <li>
+                    Otherwise, the virtual machine checks any <b>interfaces</b> directly implemented or extended by the type,
+                    and recursively, any <b>superinterfaces</b> of interfaces directly implemented or extended by the type,
+                    for a field of the specified name and type.
+                    If the virtual machine discovers such a field, that field is the result of the successful field lookup.
+                    <span class="note">从接口中查找</span>
+                </li>
+                <li>
+                    Otherwise, if the type has a direct <b>superclass</b>,
+                    the virtual machine checks the type's direct <b>superclass</b>,
+                    and recursively all the <b>superclasses</b> of the type, for a field of the specified name and type.
+                    If the virtual machine discovers such a field, that field is the result of the successful field lookup.
+                    <span class="note">从父类中查找</span>
+                </li>
+                <li>
+                    Otherwise, field lookup fails.
+                    <span class="note">如果以上情况都找不到，则失败了。</span>
+                </li>
+            </ol>
+            <p>
+                If the virtual machine discovers there is no field with the proper name and type<br/>
+                in the referenced class or any of its supertypes (if field lookup failed),<br/>
+                the virtual machine throws <code>NoSuchFieldError</code>.<span class="note">如果字段不存在</span><br/>
+                Otherwise, if the field lookup succeeds,<br/>
+                but the current class doesn't have permission to access the field,<br/>
+                the virtual machine throws <code>IllegalAccessError</code>.<span class="note">如果字段存在，但权限不够。</span><br/>
+            </p>
+            <p>
+                Otherwise, the virtual machine marks the entry as resolved and places a <b>direct reference</b> to the field in the data for the constant pool entry.
+                <span class="note">解析成功</span>
+            </p>
+
+
+            <h3 id="resolution-of-method-ref">CONSTANT_Methodref_info</h3>
+            <p>
+                To resolve a constant pool entry of type <code>CONSTANT_Methodref_info</code>,<br/>
+                the virtual machine must first resolve the <code>CONSTANT_Class_info</code> entry specified in the <code>class_index</code> item.<span class="note">先解析CONSTANT_Class_info</span><br/>
+                Therefore, any error that can be thrown because of the resolution of a <code>CONSTANT_Class_info</code><br/>
+                can be thrown during the resolution of a <code>CONSTANT_Methodref_info</code>.<span class="note">解析CONSTANT_Class_info失败</span><br/>
+                If the resolution of the <code>CONSTANT_Class_info</code> entry succeeds,<span class="note">解析CONSTANT_Class_info成功之后</span><br/>
+                the virtual machine searches for the indicated method in the <b>type</b> and <b>its supertypes</b>.<span class="note">从当前类和父类中查找</span><br/>
+                If it finds the indicated method, the virtual machine checks to make sure the current class has <b>permission</b> to access the method.<span class="note">检查权限</span><br/>
+            </p>
+            <pre class="pre-block">
+CONSTANT_Methodref_info {
+    u1 tag;
+    u2 class_index;
+    u2 name_and_type_index;
+}
+            </pre>
+            <p>
+                If resolution to the <code>CONSTANT_Class_info</code> completes successfully,<br/>
+                the virtual machine performs <b>method resolution</b> using these steps:<br/>
+                <span class="note">方法的解析过程</span>
+            </p>
+            <ol>
+                <li>
+                    If the resolved type is an interface, not a class, the virtual machine throws <code>IncompatibleClassChangeError</code>.
+                    <span class="note">不能是接口</span>
+                </li>
+                <li>
+                    Otherwise, the resolved type is a class.
+                    The virtual machine checks the <b>referenced class</b> for a method of the specified name and descriptor.
+                    If the virtual machine discovers such a method, that method is the result of the successful method lookup.
+                    <span class="note">从当前类进行查找</span>
+                </li>
+                <li>
+                    Otherwise, if the class has a direct <b>superclass</b>,
+                    the virtual machine checks the class's <b>direct superclass</b>,
+                    and recursively all the <b>superclasses</b> of the class, for a method of the specified name and descriptor.
+                    If the virtual machine discovers such a method, that method is the result of the successful method lookup.
+                    <span class="note">从父类当中查找</span>
+                </li>
+                <li>
+                    Otherwise, the virtual machine checks any <b>interfaces</b> directly implemented by the class,
+                    and recursively, any <b>superinterfaces</b> of interfaces directly implemented by the type,
+                    for a method of the specified name and descriptor.
+                    If the virtual machine discovers such a method, that method is the result of the successful method lookup.
+                    <span class="note">从接口当中查找</span>
+                </li>
+                <li>
+                    Otherwise, method lookup fails.<span class="note">查找失败</span>
+                </li>
+            </ol>
+            <p>
+                If the virtual machine discovers there is no method with the proper name, return type, and number and types of parameters<br/>
+                in the referenced class or any of its supertypes (if method lookup fails),<br/>
+                the virtual machine throws <code>NoSuchMethodError</code>.<span class="note">方法不存在</span><br/>
+                Otherwise, if the method exists, but the method is abstract, the virtual machine throws <code>AbstractMethodError</code>.<span class="note">方法是抽象方法</span><br/>
+                Otherwise, if the method exists, but the current class doesn't have <b>permission</b> to access the method,<span class="note">权限不够</span><br/>
+                the virtual machine throws <code>IllegalAccessError</code>.<br/>
+            </p>
+            <p>
+                Otherwise, the virtual machine marks the entry as resolved and places a <b>direct reference</b> to the method in the data for the constant pool entry.<span class="note">解析成功</span>
+            </p>
+
+            <h3 id="resolution-of-interface-ref">CONSTANT_InterfaceMethodref_info</h3>
+            <p>
+                To resolve a constant pool entry of type <code>CONSTANT_InterfaceMethodref_info</code>,<br/>
+                the virtual machine must first resolve the <code>CONSTANT_Class_info</code> entry specified in the <code>class_index</code> item.<span class="note">要先解析CONSTANT_Class_info</span><br/>
+                Therefore, any error that can be thrown because of the resolution of a <code>CONSTANT_Class_info</code><br/>
+                can be thrown during the resolution of a <code>CONSTANT_InterfaceMethodref_info</code>.<span class="note">如果CONSTANT_Class_info解析失败</span><br/>
+                If the resolution of the <code>CONSTANT_Class_info</code> entry succeeds,<span class="note">如果CONSTANT_Class_info解析成功</span><br/>
+                the virtual machine searches for the indicated method in the interface and its supertypes.<span class="note">从接口和父类型中查找</span><br/>
+                (The virtual machine need not check to make sure the current class has <code>permission</code> to access the method,<span class="note">不需要检查权限</span><br/>
+                because all methods declared in interfaces are implicitly <code>public</code>.)<br/>
+            </p>
+            <pre class="pre-block">
+CONSTANT_InterfaceMethodref_info {
+    u1 tag;
+    u2 class_index;
+    u2 name_and_type_index;
+}
+            </pre>
+            <p>
+                If resolution to the <code>CONSTANT_Class_info</code> completes successfully,<br/>
+                the virtual machine performs <b>interface method resolution</b> using these steps:<br/>
+                <span class="note">解析过程</span>
+            </p>
+            <ol>
+                <li>
+                    If the resolved type is an class, not an interface, the virtual machine throws <code>IncompatibleClassChangeError</code>.
+                    <span class="note">如果不是接口，抛出异常</span>
+                </li>
+                <li>
+                    Otherwise, the resolved type is an interface.
+                    The virtual machine checks the referenced interface for a method of the specified name and descriptor.
+                    If the virtual machine discovers such a method, that method is the result of the successful interface method lookup.
+                    <span class="note">从当前接口查找</span>
+                </li>
+                <li>
+                    Otherwise, the virtual machine checks the class's direct <b>superinterfaces</b>,
+                    recursively all the superinterfaces of the interface,
+                    and class <code>java.lang.Object</code> for a method of the specified name and descriptor.
+                    If the virtual machine discovers such a method, that method is the result of the successful interface method lookup.
+                    <span class="note">从父接口中查找，从Object类中查找</span>
+                </li>
+            </ol>
+            <p>
+                If the virtual machine discovers there is no method with the proper name, return type, and number and types of parameters<br/>
+                in the referenced interface or any of its supertypes,<br/>
+                the virtual machine throws <code>NoSuchMethodError</code>.<br/>
+                <span class="note">查找失败</span>
+            </p>
+            <p>
+                Otherwise, the virtual machine marks the entry as resolved and places a <b>direct reference</b> to the method in the data for the constant pool entry.
+                <span class="note">解析成功</span>
+            </p>
+
+
+            <h3 id="resolution-of-string">CONSTANT_String_info</h3>
+            <p>
+                To resolve an entry of type <code>CONSTANT_String_info</code>,<br/>
+                the virtual machine must place a reference to an <b>interned</b> <code>String</code> object in the data for the constant pool entry being resolved.<br/>
+                The <code>String</code> object (an instance of class <code>java.lang.String</code>)<br/>
+                must have the character sequence specified by the <code>CONSTANT_Utf8_info</code> entry<br/>
+                identified by the <code>string_index</code> item of the <code>CONSTANT_String_info</code>.<br/>
+            </p>
+            <pre>
+CONSTANT_String_info {
+    u1 tag;
+    u2 string_index;
+}
+            </pre>
+            <p>
+                Each Java virtual machine must maintain an internal list of references to <code>String</code> objects<br/>
+                that have been "interned" during the course of running the application.<br/>
+                Basically, a <code>String</code> object is said to be <b>interned</b> simply<br/>
+                if it appears in the virtual machine's internal list of interned <code>String</code> objects.<br/>
+                The point of maintaining this list is that<br/>
+                <span class="text-underline">any particular sequence of characters is guaranteed to appear in the list no more than once.</span><span class="note">只能出现一次</span><br/>
+                <span class="note">JVM会维护一个an internal list of references to String objects，这应该就是String Pool吧。</span>
+            </p>
+            <p>
+                To intern a sequence of characters represented by a <code>CONSTANT_String_info</code> entry,<br/>
+                the virtual machine checks to see if the sequence of characters is already in the list of interned strings.<span class="note">首先，检查是否存在</span><br/>
+                If so, the virtual machine uses the reference to the existing, previously-interned <code>String</code> object.<span class="note">如果存在，直接返回</span><br/>
+                Otherwise, the virtual machine creates a new <code>String</code> object with the proper character sequence and<span class="note">如果不存在，就添加一个进去</span><br/>
+                adds a reference to that <code>String</code> object to the list.<br/>
+                To complete the resolution process for a <code>CONSTANT_String_info</code> entry,<span class="note">将结果添加到constant pool当中</span><br/>
+                the virtual machine places the reference to the interned <code>String</code> object in the data of the <b>constant pool</b> entry being resolved.<br/>
+            </p>
+            <p>
+                In your Java programs, you can intern a string by invoking the <code>intern()</code> method of class <code>String</code>.
+                <span class="note">上面是讲JVM会自动将CONSTANT_String_info进行intern操作，这里是讲在自己写的程序当中，可以调用String.intern()方法</span><br/>
+                All <b>literal strings</b> are interned via the process of resolving <code>CONSTANT_String_info</code> entries.<span class="note">JVM会自动将literal strings进行intern操作</span><br/>
+                If a string with the same sequence of Unicode characters has been previously interned,<span class="note">如果字符串已经进行了intern操作</span><br/>
+                the <code>intern()</code> method returns a reference to the matching already-interned <code>String</code> object.<br/>
+                If the <code>intern()</code> method is invoked on a <code>String</code> object<span class="note">如果字符串还没有被intern</span><br/>
+                that contains a sequence of characters that has not yet been <b>interned</b>,<br/>
+                that object itself will be <b>interned</b>.<br/>
+                The <b>intern()</b> method will return a reference to the same <code>String</code> object upon which it was invoked.<span class="note">我感觉，这里像是JDK 7的操作。</span><br/>
+            </p>
+            <p>
+                Here's an example:
+            </p>
+            <pre class="pre-block">
+// On CD-ROM in file linking/ex1/Example1.java
+class Example1 {
+
+    // Assume this application is invoked with one command-line
+    // argument, the string "Hi!".
+    public static void main(String[] args) {
+
+        // argZero, because it is assigned a String from the command
+        // line, does not reference a string literal. This string
+        // is not interned.
+        String argZero = args[0];
+
+        // literalString, however, does reference a string literal.
+        // It will be assigned a reference to a String with the value
+        // "Hi!" by an instruction that references a
+        // CONSTANT_String_info entry in the constant pool. The
+        // "Hi!" string will be interned by this process.
+        String literalString = "Hi!";
+
+        // At this point, there are two String objects on the heap
+        // that have the value "Hi!". The one from arg[0], which
+        // isn't interned, and the one from the literal, which
+        // is interned.
+        System.out.print("Before interning argZero: ");
+        if (argZero == literalString) {
+            System.out.println("they're the same string object!");
+        }
+        else {
+            System.out.println("they're different string objects.");
+        }
+
+        // argZero.intern() returns the reference to the literal
+        // string "Hi!" that is already interned. Now both argZero
+        // and literalString have the same value. The non-interned
+        // version of "Hi!" is now available for garbage collection.
+        argZero = argZero.intern();
+        System.out.print("After interning argZero: ");
+        if (argZero == literalString) {
+            System.out.println("they're the same string object!");
+        }
+        else {
+            System.out.println("they're different string objects.");
+        }
+    }
+}
+            </pre>
+            <p>
+                When executed with the string "Hi!" as the first command-line argument, the Example1 application prints the following:
+            </p>
+            <pre class="pre-block">
+Before interning argZero: they're different string objects.
+After interning argZero: they're the same string object!
+            </pre>
+
+            <h3 id="resolution-of-other-types">Other Types</h3>
+            <p>
+                The <code>CONSTANT_Integer_info</code>, <code>CONSTANT_Long_info</code>, <code>CONSTANT_Float_info</code>, <code>CONSTANT_Double_info</code> entries<br/>
+                contain the constant values they represent within the entry itself.<br/>
+                These are straightforward to resolve.<span class="note">这些比较简单</span><br/>
+                To resolve this kind of entry, many virtual machine implementations may not have to do anything but use the value as is.<br/>
+                Other implementations, however, may choose to do some processing on it.<br/>
+                For example, a virtual machine on a little-endian machine could choose to swap the byte order of the value at resolve time.<br/>
+            </p>
+            <p>
+                Entries of type <code>CONSTANT_Utf8_info</code> and <code>CONSTANT_NameAndType_info</code> are never referred to directly by <b>instructions</b>.
+                <span class="note">这两种类型不会被instructions直接使用，会被间接使用</span><br/>
+                They are only referred to via other types of entries, and resolved when those referring entries are resolved.<br/>
+            </p>
+
+
+            <h2 id="loading-constraints">Loading Constraints</h2>
+            <p>
+                A Java type can refer symbolically to another type in the <b>constant pool</b> in ways that require special attention<br/>
+                when performing resolution to ensure <b>type safety</b> in the presence of <b>multiple class loaders</b>.<span class="note">如果有多个class loader，就需要特别注意</span><br/>
+                When one type contains a <b>symbolic reference</b> to a field in another type,<br/>
+                the <b>symbolic reference</b> includes a descriptor that specifies the type of the field.<br/>
+                When one type contains a <b>symbolic reference</b> to a method in another type,<br/>
+                the <b>symbolic reference</b> includes a descriptor that specifies the types of the return value and parameters, if any.<br/>
+                If the <b>referenced</b> and <b>referencing types</b> do not have the same <b>initiating loader</b>,<span class="note">如果说initiating class loader不同</span><br/>
+                the virtual machine must make sure the types mentioned in the field and method descriptors are consistent across the namespaces.<span class="note">在不同的namespace当中，应该保持consistent</span><br/>
+                For example, imagine class <code>Cat</code> contains symbolic references to fields and methods declared in class <code>Mouse</code>,<span class="note">举例说明</span><br/>
+                and that two different class loaders initiated the loading of <code>Cat</code> and <code>Mouse</code>.<br/>
+                To preserve <b>type safety</b> in the presence of <b>multiple class loaders</b>,<br/>
+                it is essential that the fully qualified type names mentioned in field and method descriptors contained in <code>Cat</code><br/>
+                refer to the same type data (in the method area) as those same names in class <code>Mouse</code>.<br/>
+            </p>
+            <p>
+                To ensure that Java virtual machine implementations enforce this <b>type consistency</b> across <b>namespaces</b>,<span class="note">为了保证一致性</span><br/>
+                the second edition of the Java virtual machine specification defined <b>several loading constraints</b>.<span class="note">JVM规范增加了一些约束</span><br/>
+                Each Java virtual machine must maintain <b>an internal list of these constraints</b>, each of which basically states that<br/>
+                <span class="text-underline">a name in one namespace must refer to the same type data in the method area as the same name in another namespace.</span><br/>
+                As a Java virtual machine encounters <b>symbolic references</b> to fields and methods of <b>referenced types</b><br/>
+                whose loading wasn't initiated by the same class loader that initiated loading of the <b>referencing type</b>,<br/>
+                the virtual machine may add constraints to the list.<br/>
+                The virtual machine must check that <b>all current loading constraints</b> are met when it resolves <b>symbolic references</b>.<span class="note">JVM要保证所有的约束</span><br/>
+                <span class="note">JVM Specification增加了一些约束，具体的JVM实现要检查这些约束。</span>
+            </p>
+            <p>
+                To describe the loading constraints, the notation <code>Li</code> will be used to represent types.<span class="note">用一些符号来描述这些约束</span><br/>
+                <code>C</code> denotes the fully qualified name of the type.<br/>
+                <code>Ld</code> denotes the <b>defining class loader</b> of the type.<br/>
+                <code>Li</code> denotes the class loader that <b>initiated loading</b> of the type.<br/>
+                When the <b>defining class loader</b> is irrelevant,<br/>
+                the simplified notation <code>CLi</code> will be used to denote the <b>type</b> and its <b>initiating class loader</b>.<br/>
+                When the <b>initiating loader</b> is irrelevant,<br/>
+                the simplified notation <code>CLd</code> will be used to denote the <b>type</b> and its <b>defining class loader</b>.<br/>
+                An <b>equals sign</b> between two types denotes that both types are actually the exact same type, represented by the same <b>type data</b> in the <b>method area</b>.<br/>
+            </p>
+            <p>
+                Given this notation, the rules for generating loading constraints are:
+            </p>
+            <ul>
+                <li>
+                    When resolving a <b>symbolic reference</b> contained in to a field of type <code>T</code> declared in class,<br/>
+                    the virtual machine must generate the loading constraint:<br/>
+                    T<sup>L1</sup> = T<sup>L2</sup>
+                </li>
+                <li>
+                    When resolving a <b>symbolic reference</b> contained in to a method with return type <code>T<sub>0</sub></code> and<br/>
+                    parameter types <code>(T<sub>1</sub>, ..., T<sub>n</sub>)</code> declared in class,<br/>
+                    the virtual machine must generate the loading constraint:<br/>
+                    T<sub>0</sub><sup>L1</sup> = T<sub>0</sub><sup>L2</sup>, ..., T<sub>n</sub><sup>L1</sup> = T<sub>n</sub><sup>L2</sup>
+                </li>
+                <li>
+                    When overrides a method with return type <code>T<sub>0</sub></code> and<br/>
+                    parameter types <code>(T<sub>1</sub>, ..., T<sub>n</sub>)</code> declared in class,<br/>
+                    the virtual machine must generate the loading constraint:<br/>
+                    T<sub>0</sub><sup>L1</sup> = T<sub>0</sub><sup>L2</sup>, ..., T<sub>n</sub><sup>L1</sup> = T<sub>n</sub><sup>L2</sup>
+                </li>
+            </ul>
+            <p>
+                If the virtual machine's internal list of constraints contains the two constraints T<sup>L1</sup> = T<sup>L2</sup> and T<sup>L2</sup> = T<sup>L3</sup>,<br/>
+                this implies that T<sup>L1</sup> = T<sup>L2</sup>.<br/>
+                Even if type T is never loaded by L<sup>L2</sup> during the execution of the virtual machine instance,<br/>
+                the types named T loaded by L1 and L3 must still be the same exact type.
+            </p>
+            <p>
+                For a less mathematical look at loading constraints, refer to the last example in this chapter.<br/>
+                This example, which is presented in the section titled "Example: Type Safety and Loading Constraints,"<br/>
+                shows how the lack of loading constraints can enable an industrious cracker to thwart the Java virtual machine's guarantee of type safety.
+            </p>
+
+
+            <h2 id="compile-time-resolution-of-constants">Compile-Time Resolution of Constants</h2>
+            <p>
+                As mentioned in Chapter 7, "The Lifetime of a Class," <b>references</b> to <b>static final variables</b> initialized to a <b>compile-time constant</b><br/>
+                are resolved at <b>compile-time</b> to a local copy of the constant value.<span class="note">复制一份</span><br/>
+                This is true for constants of all the <b>primitive types</b> and of type <code>java.lang.String</code>.<span class="note">针对primitive type和String类型</span><br/>
+            </p>
+            <p>
+                This special treatment of constants facilitates two features of the Java language.<br/>
+                First, <b>local copies of constant values</b> enable <b>static final variables</b> to be used as <b>case expressions</b> in <b>switch statements</b>.<br/>
+                The two virtual machine instructions that implement <code>switch</code> statements in bytecodes, <code>tableswitch</code> and <code>lookupswitch</code>,<br/>
+                require the <b>case values</b> in-line in the bytecode stream.<br/>
+                These instructions do not support <b>run-time resolution of case values</b>.<br/>
+                See Chapter 16, "Control Flow," for more information about these instructions.<br/>
+                <span class="note">在switch-case当中的应用</span>
+            </p>
+            <p>
+                The other motivation behind the special treatment of constants is <b>conditional compilation</b>.<br/>
+                Java supports <b>conditional compilation</b> via <b>if statements</b> whose expressions resolve to a <b>compile-time constant</b>.<br/>
+                Here's an example:<br/>
+                <span class="note">在conditional compilation当中的应用</span>
+            </p>
+            <pre class="pre-block">
+// On CD-ROM in file linking/ex2/AntHill.java
+class AntHill {
+
+    static final boolean debug = true;
+}
+
+// On CD-ROM in file linking/ex2/Example2.java
+class Example2 {
+
+    public static void main(String[] args) {
+        if (AntHill.debug) {
+            System.out.println("Debug is true!");
+        }
+    }
+}
+            </pre>
+            <p>
+                Because of the special treatment of <b>primitive constants</b>,<br/>
+                the Java compiler can decide whether or not to include the body of the <b>if statement</b> in <code>Example2.main()</code> depending upon the value of <code>AntHill.debug</code>.<br/>
+                Because <code>AntHill.debug</code> is <code>true</code> in this case,<br/>
+                javac generates bytecodes for Example2's <code>main()</code> method that include the body of the <b>if statement</b>,<br/>
+                but not a check of <code>AntHill.debug</code>'s value.<br/>
+                The constant pool of <code>Example2</code> has no symbolic reference to class <code>AntHill</code>.<br/>
+                Here are the bytecodes for main():<br/>
+            </p>
+            <pre class="pre-block">
+              // Push objref from System.out
+0 getstatic #8
+              // Push objref to literal string "Debug is true!"
+3 ldc #1
+              // Pop objref (to a String), pop objref(to
+              // System.out), invoke println() on System.out
+              // passing the string as the only parameter:
+              // System.out.println("Debug is true!");
+5 invokevirtual #9
+8 return      // return void
+            </pre>
+            <p>
+                If the reference to <code>AntHill.debug</code> were resolved at run-time,<br/>
+                the compiler would always need to include a check of <code>AntHill.debug</code>'s value and<br/>
+                the body of the <b>if statement</b> just in case value of <code>AntHill.debug</code> ever changed.<br/>
+                The value of <code>AntHill.debug</code> can't change after it is compiled, of course, because it is declared as <code>final</code>.<br/>
+                Still, you could change the source code of <code>AntHill</code> and recompile <code>AntHill</code>, but not recompile <code>Example2</code>.<br/>
+            </p>
+            <p>
+                Because the reference to <code>AntHill.debug</code> is resolved at <b>compile-time</b><br/>
+                the compiler can conditionally compile out the body of the <b>if statement</b><br/>
+                if <code>AntHill.debug</code> is discovered to be <code>false</code>.<br/>
+                Note that this means you can't change the behavior of the <code>Example2</code> application<br/>
+                just be setting <code>AntHill</code> to <code>false</code> and recompiling only <code>AntHill</code>.<br/>
+                You have to recompile <code>Example2</code> as well.<br/>
+            </p>
+            <p>
+                <code>Example3</code>, shown below, is <code>Example2</code> with its name changed to <code>Example3</code> and<br/>
+                compiled with an <code>AntHill</code> that has <code>debug</code> set to <code>false</code>:
+            </p>
+            <pre class="pre-block">
+// On CD-ROM in file linking/ex3/AntHill.java
+class AntHill {
+
+    static final boolean debug = false;
+}
+
+// On CD-ROM in file linking/ex3/Example3.java
+class Example3 {
+
+    public static void main(String[] args) {
+        if (AntHill.debug) {
+            System.out.println("Debug is true!");
+        }
+    }
+}
+            </pre>
+            <p>
+                Here are the bytecodes generated by javac for Example3's <code>main()</code> method:
+            </p>
+            <pre class="pre-block">
+0 return     // return void
+            </pre>
+            <p>
+                As you can see, the Java compiler has brazenly eliminated the entire <b>if statement</b> found in <code>Example3.main()</code>.<br/>
+                There is not even a hint of the <code>println()</code> invocation in this very short bytecode sequence.<br/>
+            </p>
+
+
+            <h2 id="direct-references">Direct References</h2>
+            <p>
+                The ultimate goal of <b>constant pool resolution</b> is to replace a <b>symbolic reference</b> with a <b>direct reference</b>.<br/>
+                The form of <b>symbolic references</b> is well-defined in Chapter 6, "The Java Class File," but what form do <b>direct references</b> take?<br/>
+                As you might expect, the form of <b>direct references</b> is yet another decision of the designers of individual Java virtual machine implementations.<span class="note">具体存在形式有差异</span><br/>
+                Nevertheless, there are some characteristics likely to be common among most implementations.<span class="note">但有一些共性</span><br/>
+                <span class="note">常量池解析就是要将symbolic references替换为direct reference</span>
+            </p>
+            <p>
+                <b>Direct references</b> to <b>types</b>, <b>class variables</b>, and <b>class methods</b> are likely native pointers into the <b>method area</b>.<br/>
+                A <b>direct reference</b> to a <b>type</b> can simply point to the implementation-specific data structure in the <b>method area</b> that holds the <b>type data</b>.<br/>
+                A <b>direct reference</b> to a <b>class variable</b> can point to the <b>class variable's value</b> stored in the <b>method area</b>.<br/>
+                A <b>direct reference</b> to a <b>class method</b> can point to a <b>data structure</b> in the <b>method area</b> that contains the data needed to invoke the method.<br/>
+                For example, the data structure for a class method could include information such as whether or not the method is native.<br/>
+                If the method is native, the data structure could include a function pointer to the dynamically linked native method implementation.<br/>
+                If the method is not native, the data structure could include the method's bytecodes, max_stack, max_locals, and so on.<br/>
+                If there is a just-in-time-compiled version of the method, the data structure could include a pointer to that just-in-time-compiled native code.<br/>
+                <span class="note">这里是讲type、class variables、class method的direct reference</span>
+            </p>
+            <p>
+                <b>Direct references</b> to <b>instance variables</b> and <b>instance methods</b> are <b>offsets</b>.<br/>
+                A <b>direct reference</b> to an <b>instance variable</b> is likely the <b>offset</b> from the start of the <b>object's image</b> to the location of the <b>instance variable</b>.<br/>
+                A <b>direct reference</b> to an <b>instance method</b> is likely an <b>offset</b> into a <b>method table</b>.<br/>
+                <span class="note">这里讲instance variables和instance methods的direct reference</span>
+            </p>
+            <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+                <p>
+                    As nouns the difference between <b>object</b> and <b>image</b> is that<br/>
+                    <b>object</b> is a thing that has physical existence<br/>
+                    while <b>image</b> is an optical or other representation of a real object; a graphic; a picture.<br/>
+                </p>
+            </div>
+            <p>
+                Using <b>offsets</b> to represent <b>direct references</b> to <b>instance variables</b> and <b>instance methods</b><br/>
+                depends on a <b>predictable ordering</b> of the fields in a <b>class's object image</b> and the methods in a <b>class's method table</b>.<br/>
+                Although implementation designers may choose any way of placing <b>instance variables</b> into an <b>object image</b> or <b>methods</b> into a <b>method table</b>,<br/>
+                they will almost certainly use the same way for all types.<br/>
+                Therefore, in any one implementation, the ordering of fields in an object and methods in a <b>method table</b> is defined and predictable.<br/>
+                <span class="note">使用offset来表示instance variable和instance method的direct reference，依赖于非常重要的一点：字段和方法是顺序是可预测的。</span>
+            </p>
+            <p>
+                As an example, consider this hierarchy of three classes and one interface:
+            </p>
+            <pre class="pre-block">
+// On CD-ROM in file linking/ex4/Friendly.java
+interface Friendly {
+
+    void sayHello();
+    void sayGoodbye();
+}
+
+// On CD-ROM in file linking/ex4/Dog.java
+class Dog {
+
+    // How many times this dog wags its tail when
+    // saying hello.
+    private int wagCount = ((int) (Math.random() * 5.0)) + 1;
+
+    void sayHello() {
+
+        System.out.print("Wag");
+        for (int i = 0; i < wagCount; ++i) {
+            System.out.print(", wag");
+        }
+        System.out.println(".");
+    }
+
+    public String toString() {
+
+        return "Woof!";
+    }
+}
+
+// On CD-ROM in file linking/ex4/CockerSpaniel.java
+class CockerSpaniel extends Dog implements Friendly {
+
+    // How many times this Cocker Spaniel woofs when saying hello.
+    private int woofCount = ((int) (Math.random() * 4.0)) + 1;
+
+    // How many times this Cocker Spaniel wimpers when saying
+    // goodbye.
+    private int wimperCount = ((int) (Math.random() * 3.0)) + 1;
+
+    public void sayHello() {
+
+        // Wag that tail a few times.
+        super.sayHello();
+
+        System.out.print("Woof");
+        for (int i = 0; i < woofCount; ++i) {
+            System.out.print(", woof");
+        }
+        System.out.println("!");
+    }
+
+    public void sayGoodbye() {
+
+        System.out.print("Wimper");
+        for (int i = 0; i < wimperCount; ++i) {
+            System.out.print(", wimper");
+        }
+        System.out.println(".");
+    }
+}
+
+// On CD-ROM in file linking/ex4/Cat.java
+class Cat implements Friendly {
+
+
+    public void eat() {
+
+        System.out.println("Chomp, chomp, chomp.");
+    }
+
+    public void sayHello() {
+
+        System.out.println("Rub, rub, rub.");
+    }
+
+    public void sayGoodbye() {
+
+        System.out.println("Scamper.");
+    }
+
+    protected void finalize() {
+
+        System.out.println("Meow!");
+    }
+}
+            </pre>
+            <p>
+                Assume these types are loaded into a Java virtual machine that organizes objects by<br/>
+                placing the <b>instance variables</b> declared in <b>superclasses</b> into the <b>object image</b> before those declared in <b>subclasses</b>,<br/>
+                and by placing the <b>instance variables</b> for each individual class in their order of appearance in the class file.<br/>
+                Assuming there are no <b>instance variables</b> in class <code>Object</code>,<br/>
+                the object images for <code>Dog</code>, <code>CockerSpaniel</code>, and <code>Cat</code> would appear as shown in Figure 8-1.<br/>
+                <span class="note">这里做了一个假设，就是对字段存放顺序的假设</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig8-1.gif" alt="figure 8-1"/>
+            </div>
+            <p>
+                In this figure, the object image for <code>CockerSpaniel</code> best illustrates this particular virtual machine's approach to laying out objects.<br/>
+                The <b>instance variable</b> for <code>Dog</code>, the superclass, appears before the <b>instance variables</b> for <code>CockerSpaniel</code>, the subclass.<br/>
+                The <b>instance variables</b> of <code>CockerSpaniel</code> appear in order of declaration: <code>woofCount</code> first, then <code>wimperCount</code>.<br/>
+                <span class="note">对上图进行解释</span>
+            </p>
+            <p>
+                Note that the <code>wagCount</code> instance variable appears at offset one in both <code>Dog</code> and <code>CockerSpaniel</code>.<br/>
+                In this implementation of the Java virtual machine,<br/>
+                a <b>symbolic reference</b> to the <code>wagCount</code> field of class <code>Dog</code> would be resolved to <b>direct reference</b> that is an <b>offset</b> of one.<br/>
+                Regardless of whether the actual object being referred to was a <code>Dog</code>, a <code>CockerSpaniel</code>, or any other subclass of <code>Dog</code>,<br/>
+                the <code>wagCount</code> instance variable would always appear at <b>offset</b> one in the object image.<br/>
+                <span class="note">这里讲offset的“稳定性”</span>
+            </p>
+            <p>
+                A similar pattern emerges in <b>method tables</b>.<br/>
+                A <b>method table entry</b> is associated in some way with data structures in the <b>method area</b><br/>
+                that contain sufficient data to enable the virtual machine to invoke the method.<br/>
+                Assume that in the Java virtual machine implementation being described here,<br/>
+                <b>method tables</b> are arrays of native pointers into the <b>method area</b>.<span class="note">这句是精髓</span><br/>
+                The data structures that the <b>method table</b> entries point to are similar to the data structures described above for <b>class methods</b>.<br/>
+                Assume that the particular Java virtual machine implementation that loads these types organizes its <b>method tables</b><br/>
+                by <span class="text-underline">placing methods for superclasses into the method table before those for subclasses,</span><span class="note">父类的方法放在子类的方法之前</span><br/>
+                and by <span class="text-underline">placing pointers for each class in the order the methods appear in the class file.</span><span class="note">同一个类中方法，按声明顺序排列</span><br/>
+                The exception to the ordering is that<span class="note">例外之处，就是override父类的方法</span><br/>
+                <span class="text-underline">methods overridden by a subclass appear in the slot where the overridden method first appears in a superclass.</span><br/>
+                <span class="note">method tables也遵循类似的方式</span>
+            </p>
+            <p>
+                The way this virtual machine would organize the <b>method table</b> for class <code>Dog</code> is shown in Figure 8-2.<br/>
+                In this figure, the <b>method table entries</b> that point to methods defined in class <code>Object</code> are shown in dark gray.<br/>
+                Entries that point to methods defined in <code>Dog</code> are shown in light gray.<br/>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig8-2.gif" alt="figure 8-2"/>
+            </div>
+            <p>
+                Note that only <b>non-private instance methods</b> appear in this <b>method table</b>.<span class="note">只包含non-private方法</span><br/>
+                <b>Class methods</b>, which are invoked via the <code>invokestatic</code> instruction, need not appear here,<span class="note">不包含static方法</span><br/>
+                because they are statically bound and don't need the extra indirection of a <b>method table</b>.<br/>
+                <b>Private methods</b> and <b>instance initialization methods</b> need not appear here<span class="note">不包含private方法和Constructor方法</span><br/>
+                because they are invoked via the <code>invokespecial</code> instruction and are therefore statically bound.<br/>
+                Only methods that are invoked with <code>invokevirtual</code> or <code>invokeinterface</code> appear in this <b>method table</b>.<span class="note">只包含这两种</span><br/>
+                See Chapter 19, "Method Invocation and Return," for a discussion of the different invocation instructions.<br/>
+                <span class="note">method table当中只包含non-private方法</span>
+            </p>
+            <p>
+                By looking at the source code, you can see that <code>Dog</code> overrides the <code>toString()</code> method defined in class <code>Object</code>.<br/>
+                In Dog's method table, the <code>toString()</code> method appears only once,<br/>
+                in the same slot (offset 7) in which it appears in the method table for <code>Object</code>.<br/>
+                The pointer residing at offset 7 in Dog's method table points to the data for Dog's implementation of <code>toString()</code>.<br/>
+                In this implementation of the Java virtual machine,<br/>
+                the pointer to the method data for <code>toString()</code> will appear at offset 7 for every method table of every class.<br/>
+                (Actually, you could write your own version of <code>java.lang.Object</code> and load it in through a <b>user-defined class loader</b>.<br/>
+                In this manner you could create a namespace<br/>
+                in which the pointer to <code>toString()</code> occupies a method table offset other than 7 in the same Java virtual machine implementation.)<br/>
+                <span class="note">对上图进行说明，这里是讲toString()方法offset的“稳定性”</span>
+            </p>
+            <p>
+                Below the methods declared in <code>Object</code>, which appear first in this method table,<br/>
+                come the methods declared in <code>Dog</code> that don't override any method in <code>Object</code>.<br/>
+                There is only one such method, <code>sayHello()</code>, which has the method table offset 11.<br/>
+                All of Dog's subclasses will either inherit or override this implementation of <code>sayHello()</code>,<br/>
+                and some version of <code>sayHello()</code> will always appear at offset 11 of any subclass of <code>Dog</code>.<br/>
+                <span class="note">对上图进行说明，sayHello()方法稳定出现在offset为11的位置。</span>
+            </p>
+            <p>
+                Figure 8-3 shows the method table for <code>CockerSpaniel</code>.<br/>
+                Note that because <code>CockerSpaniel</code> declares <code>sayHello()</code> and <code>sayGoodbye()</code>,<br/>
+                the pointers for those methods point to the data for <code>CockerSpaniel</code>'s implementation of those methods.<br/>
+                Because <code>CockerSpaniel</code> inherits <code>Dog</code>'s implementation of <code>toString()</code>,<br/>
+                the pointer for that method (which is still at offset 7) points the data for <code>Dog</code>'s implementation of that method.<br/>
+                <code>CockerSpaniel</code> inherits all other methods from <code>Object</code>,<br/>
+                so the pointers for those methods point directly into <code>Object</code>'s type data.<br/>
+                Note also that <code>sayHello()</code> is sitting at offset 11, the same offset it has in <code>Dog</code>'s method table.<br/>
+                <span class="note">这里也是说offset的稳定性。</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig8-3.gif" alt="figure 8-3"/>
+            </div>
+            <p>
+                When the virtual machine resolves a <b>symbolic reference</b> (a <code>CONSTANT_Methodref_info</code> entry) to the <code>toString()</code> method of any class,<br/>
+                the <b>direct reference</b> is method table offset 7.<br/>
+                When the virtual machine resolves a <b>symbolic reference</b> to the <code>sayHello()</code> method of <code>Dog</code> or any of its subclasses,<br/>
+                the <b>direct reference</b> is method table offset 11.<br/>
+                When the virtual machine resolves a <b>symbolic reference</b> to the <code>sayGoodbye()</code> method of <code>CockerSpaniel</code> or any of its subclasses,<br/>
+                the <b>direct reference</b> is the method table offset twelve.<br/>
+                <span class="note">这3个方法的offset没有发生变化。</span>
+            </p>
+            <p>
+                Once a <b>symbolic reference</b> to an <b>instance method</b> is resolved to a <b>method table offset</b>,<span class="note">这是第1步，将symbolic reference解析成method table中的offset</span><br/>
+                the virtual machine must still actually invoke the method.<br/>
+                To invoke an <b>instance method</b>,<br/>
+                the virtual machine goes through <b>the object</b> to get at the <b>method table</b> for the <b>object's class</b>.<br/>
+                As mentioned in Chapter 5, "The Java Virtual Machine," given <b>a reference to an object</b>,<br/>
+                every virtual machine implementation must have some way to get at the <b>type data</b> for that <b>object's class</b>.<br/>
+                In addition, given <b>a reference to an object</b>,<span class="note">第2步，根据object对象找到真正的method table，很可能子类override了父类的方法</span><br/>
+                the <b>method table</b> (a part of the <b>type data</b> for the <b>object's class</b>) is usually very quickly accessible.<br/>
+                (One potential scheme is shown in Figure 5-7.)<br/>
+                Once the virtual machine has the <b>method table</b> for the <b>object's class</b>,<br/>
+                it uses the <b>offset</b> to find the <b>actual method</b> to invoke. Voila!<br/>
+                <span class="note">这里分成两个步骤，第一个步骤就是将symbolic reference转换成method table中的offset，这里的method table是父类的method table，而offset在父类和子类中是保持一致的；第二个步骤，就是通过具体的object实例来找到它对应的method table，虽然offset没有变化，但是子类可以override父类的方法，这样具体的方法的实现就有差异。</span>
+            </p>
+            <p>
+                The virtual machine can always depend on <b>method table offsets</b> <span class="note">然而，method table offset只是对于Class中定义的方法有效</span><br/>
+                when it has <b>a reference of a class type</b> (a <code>CONSTANT_Methodref_info</code> entry).<br/>
+                If the <code>sayHello()</code> method appears in offset 11 in class <code>Dog</code>,<br/>
+                it will appear in offset 11 in any subclass of <code>Dog</code>.<br/>
+                The same is not true, however, if the reference is of an <b>interface type</b> (a <code>CONSTANT_InterfaceMethodref_info</code> entry).<span class="note">它对于Interface中定义的方法是无效的</span><br/>
+                With <b>direct references</b> to <b>instance methods</b> accessed through an <b>interface reference</b><br/>
+                there is no guaranteed <b>method table offset</b>.<br/>
+                Consider the method table for class <code>Cat</code>, shown in Figure 8-4.<br/>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig8-4.gif" alt="figure 8-4"/>
+            </div>
+            <p>
+                Note that both <code>Cat</code> and <code>CockerSpaniel</code> implement the <code>Friendly</code> interface.<br/>
+                A variable of type <code>Friendly</code> could hold a reference to a <code>Cat</code> object or a <code>CockerSpaniel</code> object.<br/>
+                With that reference, your program could invoke <code>sayHello()</code> or <code>sayGoodbye()</code> on a <code>Cat</code>, a <code>CockerSpaniel</code>,<br/>
+                or any other object whose class implements the <code>Friendly</code> interface.<br/>
+                The <code>Example4</code> application demonstrates this:<br/>
+            </p>
+            <pre class="pre-block">
+// On CD-ROM in file linking/ex4/Example4.java
+class Example4 {
+
+    public static void main(String[] args) {
+
+        Dog dog = new CockerSpaniel();
+
+        dog.sayHello();
+
+        Friendly fr = (Friendly) dog;
+
+        // Invoke sayGoodbye() on a CockerSpaniel object through a
+        // reference of type Friendly.
+        fr.sayGoodbye();
+
+        fr = new Cat();
+
+        // Invoke sayGoodbye() on a Cat object through a reference
+        // of type Friendly.
+        fr.sayGoodbye();
+    }
+}
+            </pre>
+            <p>
+                In <code>Example4</code>, local variable <code>fr</code> invokes <code>sayGoodbye()</code> on both a <code>CockerSpaniel</code> object and a <code>Cat</code> object.<br/>
+                The same constant pool entry, a <code>CONSTANT_InterfaceMethodref_info</code> entry, is used to invoke this method on both objects.<br/>
+                But when the virtual machine resolves the <b>symbolic reference</b> to <code>sayHello()</code>,<br/>
+                it can't just save a <b>method table offset</b> and expect that offset to always work in future uses of the constant pool entry.<br/>
+                <span class="note">在Interaface上调用方法，method table offset就不起作用了</span>
+            </p>
+            <p>
+                The trouble is that classes that implement the <code>Friendly</code> interface<br/>
+                aren't guaranteed to have a common superclass that also implements <code>Friendly</code>.<br/>
+                As a result, the methods declared in <code>Friendly</code> aren't guaranteed to be in the same place in all <b>method tables</b>.<br/>
+                If you compare the <b>method table</b> for <code>CockerSpaniel</code> against the <b>method table</b> for <code>Cat</code>,<br/>
+                for example, you'll see that in <code>CockerSpaniel</code>, <code>sayHello()</code>'s pointer occupies offset 11.<br/>
+                But in <code>Cat</code>, <code>sayHello()</code> occupies offset 12.<br/>
+                Likewise, <code>CockerSpaniel</code>'s <code>sayGoodbye()</code> method pointer resides in offset 12,<br/>
+                but <code>Cat</code>'s <code>sayGoodbye()</code> method pointer resides at offset 13.<br/>
+                <span class="note">这里是具体举例说明，对于interface来说，method table offset是行不通的</span>
+            </p>
+            <p>
+                Thus, whenever the Java virtual machine invokes a method from an <b>interface reference</b>,<span class="note">对interface reference，只能从method table中顺序查找</span><br/>
+                it must search the <b>method table</b> of the <b>object's class</b> until it finds the appropriate method.<br/>
+                This is why invoking <b>instance methods</b> on <b>interface references</b> can be significantly slower than<br/>
+                invoking <b>instance methods</b> on <b>class references</b>.<span class="note">所以，使用interface reference调用方法要比class reference调用方法要慢一些</span><br/>
+                Virtual machine implementations can attempt to be smart, of course, about how they search through a <b>method table</b>.<span class="note">具体的JVM可以做一些改进</span><br/>
+                For example, an implementation could save the last index<span class="note">例如，可以这样做</span><br/>
+                at which they found the method and try there first the next time.<br/>
+                Or an implementation could build data structures during preparation<span class="note">还可以这样</span><br/>
+                that help them search through <b>method tables</b> given an <b>interface reference</b>.<br/>
+                Nevertheless, invoking a method given an <b>interface reference</b> will likely be to some extent slower than invoking a method given a <b>class reference</b>.<br/>
+                <span class="note">由于interface reference不能直接利用method table offset，因此使用interface reference调用方法要比class reference调用方法要慢一些</span>
+            </p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <hr/>
+            <span class="note"></span>
+        </article>
+    </div>
+</div>
+
+<footer class="w3-center w3-light-grey w3-padding-48 w3-large">
+    <p>Powered by <a href="javascript:void(0);" title="W3.CSS" target="_blank" class="w3-hover-text-green">lsieun.cn</a></p>
+</footer>
+<div id="toc_div" class="w3-card" style="position:fixed;padding:7px;bottom:50px;left:0;max-width:450px;z-index:999;display:none;">
+    <span onclick="document.getElementById('toc_div').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+    <div class="at">
+        <!-- at == auto table of content -->
+        <!-- https://www.jqueryscript.net/menu/TOC-Generator-Smooth-Scroll-autoToc.html -->
+    </div>
+    <span onclick="document.getElementById('toc_div').style.display='none'" class="w3-button w3-display-bottomleft" style="font-size: 10px">CLOSE</span>
+</div>
+<div class="w3-clear"></div>
+</body>
+
+</html>

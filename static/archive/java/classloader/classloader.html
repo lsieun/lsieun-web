@@ -1,0 +1,61 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassLoader</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-classloader-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    The class loader takes care of <b>loading</b>, <b>linking</b>, and <b>initializing</b> types.<br/>
+    Admittedly the name <code>ClassLoader</code> might lead you to believe<br/>
+    it is responsible only for <b>loading</b>, and not <b>linking</b> or <b>initialization</b>,<br/>
+    but the name <code>ClassLoaderLinkerAndInitializer</code> is a bit unwieldy.<br/>
+    Also, the purpose of creating your own class loader is to customize the <b>load</b> phase<br/>
+    while still using the primordial <b>link</b> and <b>initialization</b> mechanisms.<br/>
+    Class loaders differ not in how they <b>link</b> or <b>initialize</b> types, but in how they <b>load</b> types.<br/>
+    In other words, class loaders distinguish themselves by the manner<br/>
+    in which they produce a binary form for a type given a fully qualified name.<br/>
+    <span class="note">note：class loader = loading + linking + initializing. Class loaders differ not in how they link or initialize types, but in how they load types.</span>
+</p>
+
+<p>
+    As mentioned in earlier chapters,
+    each class loader--bootstrap class loader or user-defined class loader--is awarded its own name space,
+    which is populated by the names of the types it has loaded.
+    Both the general process of dynamic extension and the separate namespaces awarded to individual class loaders
+    are supported by one aspect of <b>resolution</b>:<br/>
+    the way a virtual machine chooses a class loader when it <b>resolves</b> a symbolic reference to a type.<br/>
+</p>
+
+<p>
+    <span class="text-underline">When the resolution of a constant pool entry requires loading a type,</span><br/>
+    <span class="text-underline">the virtual machine uses the same class loader that loaded the referencing type to load the referenced type.</span><br/>
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        这些内容来自于《Inside the Java 2 Virtual Machine》的第8章The Linking Model。
+    </p>
+</div>
+
+<ul>
+    <li>
+        loading, linking, initializing
+    </li>
+    <li>
+        namespace
+    </li>
+    <li>
+        the virtual machine uses the same class loader that loaded the referencing type to load the referenced type
+    </li>
+    <li>
+        initiating class loader and defining class loader
+    </li>
+    <li>
+        Parent-Delegation Model
+    </li>
+    <li></li>
+    <li></li>
+</ul>

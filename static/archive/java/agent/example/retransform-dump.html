@@ -1,0 +1,195 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Dump Transformed Class</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="application">Application</h2>
+
+<pre title="HelloWorld.java" class="javacode">
+public class HelloWorld {
+    public static int add(int a, int b) {
+        return a + b;
+    }
+
+    public static int sub(int a, int b) {
+        return a - b;
+    }
+}
+</pre>
+
+<pre title="Program.java" class="javacode">
+import java.util.Random;
+
+public class Program {
+    public static void main(String[] args) throws Exception {
+        for (int i = 0; i < 10; i++) {
+            Random rand = new Random();
+            int a = rand.nextInt(100);
+            int b = rand.nextInt(100);
+            int c = HelloWorld.add(a, b);
+            int d = HelloWorld.sub(a, b);
+            int e = c * d;
+            System.out.println("result = " + e);
+            Thread.sleep(5000);
+        }
+    }
+}
+</pre>
+
+<h2 id="java-agent-jar">Java Agent Jar</h2>
+
+<h3 id="agent-class">Agent Class</h3>
+
+<pre title="DynamicAgent.java" class="javacode">
+import lsieun.transformer.ASMTransformer;
+import lsieun.transformer.DumpTransformer;
+
+import java.lang.instrument.Instrumentation;
+
+public class DynamicAgent {
+    public static void agentmain(String agentArgs, Instrumentation inst) {
+        System.out.println("Agent-Class: " + DynamicAgent.class.getName());
+        System.out.println("Can-Redefine-Classes: " + inst.isRedefineClassesSupported());
+        System.out.println("Can-Retransform-Classes: " + inst.isRetransformClassesSupported());
+        System.out.println("Can-Set-Native-Method-Prefix: " + inst.isNativeMethodPrefixSupported());
+        System.out.println("========= ========= =========");
+
+        inst.addTransformer(new ASMTransformer(), true);
+        inst.addTransformer(new DumpTransformer(), true);
+
+        try {
+            Class&lt;?&gt; targetClass = null;
+
+            Class[] allLoadedClasses = inst.getAllLoadedClasses();
+            for (Class&lt;?&gt; clazz : allLoadedClasses) {
+                String className = clazz.getName();
+                boolean isModifiable = inst.isModifiableClass(clazz);
+                // 注意：修改类的名字
+                if ("sample.HelloWorld".equals(className) && isModifiable) {
+                    targetClass = clazz;
+                }
+            }
+
+            if (targetClass != null) {
+                inst.retransformClasses(targetClass);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre>
+
+<h3 id="transformer">Transformer</h3>
+
+<pre title="ASMTransformer.java" class="javacode">
+import lsieun.visitor.modify.PrintMethodParameterVisitor;
+import lsieun.visitor.modify.PrintMethodReturnVisitor;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+
+public class ASMTransformer implements ClassFileTransformer {
+
+    @Override
+    public byte[] transform(ClassLoader loader,
+                            String className,
+                            Class&lt;?&gt; classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer) throws IllegalClassFormatException {
+        if (className == null) return null;
+        if (className.startsWith("java")) return null;
+        if (className.startsWith("javax")) return null;
+        if (className.startsWith("jdk")) return null;
+        if (className.startsWith("sun")) return null;
+        if (className.startsWith("org")) return null;
+        if (className.startsWith("com")) return null;
+        if (className.startsWith("lsieun")) return null;
+
+        System.out.println("candidate className: " + className);
+
+        if (className.equals("sample/HelloWorld")) {
+            System.out.println("transform class: " + className);
+            ClassReader cr = new ClassReader(classfileBuffer);
+            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+            ClassVisitor cv = new PrintMethodParameterVisitor(cw);
+            cv = new PrintMethodReturnVisitor(cv);
+
+            int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+            cr.accept(cv, parsingOptions);
+            byte[] bytes = cw.toByteArray();
+
+            return bytes;
+        }
+
+        return null;
+    }
+}
+</pre>
+
+<pre title="DumpTransformer.java" class="javacode">
+import lsieun.utils.DateUtils;
+import lsieun.utils.DumpUtils;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+
+public class DumpTransformer implements ClassFileTransformer {
+    @Override
+    public byte[] transform(ClassLoader loader,
+                            String className,
+                            Class&lt;?&gt; classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer) throws IllegalClassFormatException {
+        if (className.equals("sample/HelloWorld")) {
+            String timeStamp = DateUtils.getTimeStamp();
+            String filename = className + "." + timeStamp + ".class";
+            DumpUtils.dump(filename, classfileBuffer);
+        }
+        return null;
+    }
+}
+</pre>
+
+<h2 id="run-application">Run Application</h2>
+
+<h3 id="run-without-agent">Run</h3>
+
+<pre title="java sample.Program" class="plaintext">
+$ java sample.Program
+result = 999
+result = -696
+result = -3201
+Agent-Class: lsieun.agent.DynamicAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Can-Set-Native-Method-Prefix: true
+========= ========= =========
+candidate className: sample/HelloWorld
+transform class: sample/HelloWorld
+Method Enter: sample/HelloWorld.add:(II)I
+    11
+    73
+Method Return: sample/HelloWorld.add:(II)I
+    84
+=================================================================================
+Method Enter: sample/HelloWorld.sub:(II)I
+    11
+    73
+Method Return: sample/HelloWorld.sub:(II)I
+    -62
+=================================================================================
+result = -5208
+......
+</pre>
+
+<h2 id="summing-up">Summing Up</h2>

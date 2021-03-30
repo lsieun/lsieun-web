@@ -1,0 +1,127 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">InstrumentationImpl.transform</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-agent-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    前情回顾：在下面的输出结果当中，我们在后几行中看到<code>sun.instrument.InstrumentationImpl</code>类当中的<code>transform</code>方法和<code>sun.instrument.TransformerManager</code>类当中的<code>transform</code>方法。这是我们的第二个关注点。
+</p>
+
+<pre title="java -javaagent:TheAgent.jar sample.Program" class="plaintext">
+ClassName: sun/launcher/LauncherHelper
+    ClassLoader: null
+    ClassBeingRedefined: null
+    ProtectionDomain: null
+
+java.lang.Exception: Exception From lsieun.transformer.InfoTransformer
+	at lsieun.transformer.InfoTransformer.transform(Unknown Source)
+	at sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:428)    "&lt;--这是第2个关注点"
+========= ========= =========
+</pre>
+
+<p>
+    接下来，让我们从源代码中来探究一下。
+</p>
+
+<h2 id="fields">Fields</h2>
+
+<pre title="InstrumentationImpl.java" class="javacode">
+public class InstrumentationImpl implements Instrumentation {
+    private final TransformerManager mTransformerManager;
+    private TransformerManager mRetransfomableTransformerManager;
+}
+</pre>
+
+<h2 id="constructor">Constructor</h2>
+
+<pre title="InstrumentationImpl.java" class="javacode">
+public class InstrumentationImpl implements Instrumentation {
+    private InstrumentationImpl(long nativeAgent,
+                                boolean environmentSupportsRedefineClasses,
+                                boolean environmentSupportsNativeMethodPrefix) {
+        mTransformerManager = new TransformerManager(false);
+        mRetransfomableTransformerManager = null;
+        // ......
+    }
+}
+</pre>
+
+<h2 id="transform-method">InstrumentationImpl.transform</h2>
+
+<pre title="InstrumentationImpl.java" class="javacode">
+public class InstrumentationImpl implements Instrumentation {
+    private byte[] transform(ClassLoader loader,
+                             String classname,
+                             Class classBeingRedefined,
+                             ProtectionDomain protectionDomain,
+                             byte[] classfileBuffer,
+                             boolean isRetransformer) {
+        TransformerManager mgr = isRetransformer ? mRetransfomableTransformerManager : mTransformerManager;
+        if (mgr == null) {
+            return null; // no manager, no transform
+        }
+        else {
+            return mgr.transform(loader, classname, classBeingRedefined, protectionDomain, classfileBuffer);
+        }
+    }
+}
+</pre>
+
+<h2>TransformerManager.transform</h2>
+
+<pre title="TransformerManager.java" class="javacode">
+public class TransformerManager {
+    public byte[] transform(ClassLoader loader,
+                            String classname,
+                            Class classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer) {
+        boolean someoneTouchedTheBytecode = false;
+
+        TransformerInfo[] transformerList = getSnapshotTransformerList();
+
+        byte[] bufferToUse = classfileBuffer;
+
+        // order matters, gotta run 'em in the order they were added
+        for (int x = 0; x < transformerList.length; x++) {
+            TransformerInfo transformerInfo = transformerList[x];
+            ClassFileTransformer transformer = transformerInfo.transformer();
+            byte[] transformedBytes = null;
+
+            try {
+                transformedBytes = transformer.transform(loader,
+                        classname,
+                        classBeingRedefined,
+                        protectionDomain,
+                        bufferToUse);
+            } catch (Throwable t) {
+                // don't let any one transformer mess it up for the others.
+                // This is where we need to put some logging. What should go here? FIXME
+            }
+
+            if (transformedBytes != null) {
+                someoneTouchedTheBytecode = true;
+                bufferToUse = transformedBytes;
+            }
+        }
+
+        // if someone modified it, return the modified buffer.
+        // otherwise return null to mean "no transforms occurred"
+        byte[] result;
+        if (someoneTouchedTheBytecode) {
+            result = bufferToUse;
+        }
+        else {
+            result = null;
+        }
+
+        return result;
+    }
+}
+</pre>
+
