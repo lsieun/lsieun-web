@@ -8,20 +8,49 @@
 
 <ul>
     <li>
-        <span id="dynamic_linking" style="font-weight: bold;">Dynamic linking</span> is the process of resolving <span style="text-decoration: underline;">symbolic references</span> into <span style="text-decoration: underline;">direct references</span>.
+        <span id="garbage-collection" style="font-weight: bold;">Garbage collection</span> is the process of automatically freeing objects that are no longer referenced by the program.
     </li>
     <li>
-        <span id="garbage_collection" style="font-weight: bold;">Garbage collection</span> is the process of automatically freeing objects that are no longer referenced by the program.
+        <span id="loading-constraints" style="font-weight: bold;">Loading constraints</span>
     </li>
     <li>
         <span id="resolution" style="font-weight: bold;">Resolution</span> is the process of locating classes, interfaces, fields, and methods referenced symbolically from a type's constant pool,
         and replacing those <span style="text-decoration: underline;">symbolic references</span> with <span style="text-decoration: underline;">direct references</span>.
+    </li>
+    <li>
+        <span id="type-safety" style="font-weight: bold;">Type safety</span> means that programs are allowed to manipulate the memory
+        occupied by an object's instance variables on the heap only in ways that are defined by that object's class.
+        <ul>
+            <li>
+                In early implementations of the Java virtual machine, it was possible to confuse Java's type system.
+                A Java application could trick the Java virtual machine into using an object of one type as if it were an object of a different type.
+                This capability makes cracker's happy, because they can potentially spoof trusted classes to gain access to non-public data or
+                change the behavior of methods by replacing them with new versions.
+            </li>
+            <li>
+                At compile time, a type is uniquely identifiable by its fully qualified name.
+                At runtime, however, a fully qualified name is not enough to uniquely identify a type that has been loaded into a Java virtual machine.
+                Because a Java application can have multiple class loaders,
+                and each class loader maintains its own namespace,
+                multiple types with the same fully qualified name can be loaded into the same Java virtual machine.
+                Thus, to uniquely identify a type loaded into a Java virtual machine requires the fully qualified name and the defining class loader.
+            </li>
+            <li>
+                The type safety problems made possible by this class loader architecture
+                arose from the Java virtual machine's initial reliance on the compile time notion of a type being uniquely identifiable by only its fully qualified name.
+            </li>
+            <li>
+                To address this problem, the second edition of the Java virtual machine specification introduced the notion of <a href="#loading-constraints">loading constraints</a>.
+                Loading constraints basically enable the Java virtual machine to enforce <b>type safety</b> based not just on <b>fully qualified name</b>,
+                but also on the <b>defining class loader</b>, without forcing eager class loading.
+            </li>
+        </ul>
     </li>
 </ul>
 
 
 <ul>
     <li>
-        <span id="jplis" style="font-weight: bold;">JPLIS</span> stands for Java Programming Language Instrumentation Services.
+        <span id="jplis" style="font-weight: bold;">JPLIS</span> stands for <b>J</b>ava <b>P</b>rogramming <b>L</b>anguage <b>I</b>nstrumentation <b>S</b>ervices.
     </li>
 </ul>

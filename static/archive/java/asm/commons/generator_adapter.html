@@ -266,7 +266,7 @@ public class HelloWorldGenerateCommons {
 
         {
             Method m1 = Method.getMethod("void &lt;init&gt; ()");
-            GeneratorAdapter mg = new GeneratorAdapter(ACC_PUBLIC, m1, null, null, cw);
+            GeneratorAdapter mg = new GeneratorAdapter(ACC_PUBLIC, m1, null, null, cv);
             mg.loadThis();
             mg.invokeConstructor(Type.getType(Object.class), m1);
             mg.returnValue();
@@ -275,7 +275,7 @@ public class HelloWorldGenerateCommons {
 
         {
             Method m2 = Method.getMethod("void main (String[])");
-            GeneratorAdapter mg = new GeneratorAdapter(ACC_PUBLIC + ACC_STATIC, m2, null, null, cw);
+            GeneratorAdapter mg = new GeneratorAdapter(ACC_PUBLIC + ACC_STATIC, m2, null, null, cv);
             mg.getStatic(Type.getType(System.class), "out", Type.getType(PrintStream.class));
             mg.push("Hello world!");
             mg.invokeVirtual(Type.getType(PrintStream.class), Method.getMethod("void println (String)"));
@@ -283,7 +283,7 @@ public class HelloWorldGenerateCommons {
             mg.endMethod();
         }
 
-        cw.visitEnd();
+        cv.visitEnd();
 
         return cw.toByteArray();
     }

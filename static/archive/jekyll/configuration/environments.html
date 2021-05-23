@@ -1,0 +1,71 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Environments</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../configuration.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    In the <code>build</code> (or <code>serve</code>) arguments,
+    you can specify a Jekyll environment and value.<br/>
+    The build will then apply this value in any conditional statements in your content.
+</p>
+
+<p>For example, suppose you set this conditional statement in your code:</p>
+
+<pre title="conditional statement" class="plaintext">
+{% if jekyll.environment == "production" %}
+   {% include disqus.html %}
+{% endif %}
+</pre>
+
+<p>
+    When you build your Jekyll site,<br/>
+    the content inside the <code>if</code> statement won’t be run<br/>
+    unless you also specify a <code>production</code> environment in the build command,<br/>
+    like this:
+</p>
+
+<pre title="specify a production environment" class="plaintext">
+JEKYLL_ENV=production jekyll build
+</pre>
+
+<p>
+    Specifying an <b>environment value</b> allows you to make certain content available only within specific environments.
+</p>
+
+<p>
+    The default value for <code>JEKYLL_ENV</code> is <code>development</code>.<br/>
+    Therefore if you omit <code>JEKYLL_ENV</code> from the build arguments, the default value will be <code>JEKYLL_ENV=development</code>.<br/>
+    Any content inside <code>{% if jekyll.environment == "development" %}</code> tags will automatically appear in the build.
+</p>
+
+<p>
+    Your <b>environment values</b> can be anything you want (not just <code>development</code> or <code>production</code>).<br/>
+    Some elements you might want to hide in development environments include Disqus comment forms or Google Analytics.<br/>
+    Conversely, you might want to expose an “Edit me in GitHub” button in a development environment<br/>
+    but not include it in production environments.
+</p>
+
+<p>
+    By specifying the option in the build command,<br/>
+    you avoid having to change values in your configuration files<br/>
+    when moving from one environment to another.
+</p>
+
+<div class="w3-panel w3-pale-yellow w3-topbar w3-bottombar w3-border-yellow">
+    <p>
+        To switch part of your config settings depending on the environment,
+        use the <a href="options.html/#build-command-options">build command option</a>,<br/>
+        for example <code>--config _config.yml,_config_development.yml</code>.<br/>
+        Settings in later files override settings in earlier files.
+    </p>
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://jekyllrb.com/docs/configuration/environments/" target="_blank">jekyllrb: Environments</a></li>
+</ul>

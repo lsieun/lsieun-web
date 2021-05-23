@@ -1,0 +1,75 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Active Use</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-classloader-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Java程序对类的使用方式分为：主动使用和被动使用。
+</p>
+
+<p>
+    主动使用，又分为7种情况：
+</p>
+
+<ul>
+    <li>
+        创建类的实例
+    </li>
+    <li>
+        调用某个类或接口的静态变量，或者对该静态变量进行赋值
+    </li>
+    <li>
+        调用类的静态方法
+    </li>
+    <li>
+        反射，比如 Class.forname("sample.HelloWorld");
+    </li>
+    <li>
+        初始化一个类的子类。
+    </li>
+    <li>
+        Java虚拟机启动时被标明为启动类的类
+    </li>
+    <li>
+        JDK 7开始提供的动态语言支持：java.lang.invoke.MethodHandle实例的解析结果；REF_getStatic、REF_putStatic、REF_invokeStatic句柄对应的类没有初始化，则初始化。
+    </li>
+</ul>
+
+<ul>
+    <li>
+        A new instance of a class is created (in bytecodes, the execution of a <code>new</code> instruction.
+        Alternatively, via implicit creation, reflection, cloning, or deserialization.)
+    </li>
+    <li>
+        The invocation of a static method declared by a class (in bytecodes, the execution of an <code>invokestatic</code> instruction)
+    </li>
+    <li>
+        The use or assignment of a static field declared by a class or interface,
+        except for static fields that are <code>final</code> and initialized by a compile-time constant expression
+        (in bytecodes, the execution of a <code>getstatic</code> or <code>putstatic</code> instruction)
+    </li>
+    <li>
+        The invocation of certain reflective methods in the Java API,
+        such as methods in class <code>Class</code> or in classes in the <code>java.lang.reflect</code> package
+    </li>
+    <li>
+        The initialization of a subclass of a class
+        (Initialization of a class requires prior initialization of its superclass.)
+    </li>
+    <li>
+        The designation of a class as the initial class
+        (with the <code>main()</code> method) when a Java virtual machine starts up
+    </li>
+</ul>
+
+<p>
+    除了以上七种情况，其它使用Java类的方式都被看作是对类的被动使用，都不会导致类的初始化。
+</p>
+
+<p>
+    TODO: 我应该查一下文档，看看active use的出处是在哪里，这样我才放心。
+</p>

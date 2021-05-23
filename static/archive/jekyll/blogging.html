@@ -1,0 +1,125 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Blogging</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    You might be wondering how you can have a blog without a database.<br/>
+    In true Jekyll style, blogging is powered by text files only.
+</p>
+
+<h2 id="posts">Posts</h2>
+
+<p>
+    Blog posts live in a folder called <code>_posts</code>.<br/>
+    The filename for posts have a special format: <b>the publish date</b>, then <b>a title</b>, followed by <b>an extension</b>.
+</p>
+
+<p>
+    Create your first post at <code>_posts/2018-08-20-bananas.md</code> with the following content:
+</p>
+
+<pre title="2018-08-20-bananas.md" class="plaintext">
+---
+layout: post
+author: jill
+---
+A banana is an edible fruit – botanically a berry – produced by several kinds
+of large herbaceous flowering plants in the genus Musa.
+
+In some countries, bananas used for cooking may be called "plantains",
+distinguishing them from dessert bananas. The fruit is variable in size, color,
+and firmness, but is usually elongated and curved, with soft flesh rich in
+starch covered with a rind, which may be green, yellow, red, purple, or brown
+when ripe.
+</pre>
+
+<h2 id="layout">Layout</h2>
+
+<p>
+    The <code>post</code> layout doesn’t exist so you’ll need to create it at <code>_layouts/post.html</code> with the following content:
+</p>
+
+<pre title="post.html" class="plaintext">
+---
+layout: default
+---
+&lt;h1&gt;{{ page.title }}&lt;/h1&gt;
+&lt;p&gt;{{ page.date | date_to_string }} - {{ page.author }}&lt;/p&gt;
+
+{{ content }}
+</pre>
+
+<p>
+    This is an example of <b>layout inheritance</b>.
+    The post layout outputs the title, date, author and content body which is wrapped by the default layout.
+</p>
+
+<p>
+    Also note the <code>date_to_string</code> filter, this formats a date into a nicer format.
+</p>
+
+<h2 id="list-posts">List posts</h2>
+
+<p>
+    There’s currently no way to navigate to the blog post.<br/>
+    Typically a blog has a page which lists all the posts, let’s do that next.
+</p>
+
+<p>
+    Jekyll makes posts available at <code>site.posts</code>.
+</p>
+
+<p>
+    Create <code>blog.html</code> in your root (<code>/blog.html</code>) with the following content:
+</p>
+
+<pre title="blog.html" class="plaintext">
+---
+layout: default
+title: Blog
+---
+&lt;h1&gt;Latest Posts&lt;/h1&gt;
+
+&lt;ul&gt;
+  {% for post in site.posts %}
+    &lt;li&gt;
+      &lt;h2&gt;&lt;a href="{{ post.url }}"&gt;{{ post.title }}&lt;/a&gt;&lt;/h2&gt;
+      {{ post.excerpt }}
+    &lt;/li&gt;
+  {% endfor %}
+&lt;/ul&gt;
+</pre>
+
+<p>There’s a few things to note with this code:</p>
+
+<ul>
+    <li>
+        <code>post.url</code> is automatically set by Jekyll to the output path of the post
+    </li>
+    <li>
+        <code>post.title</code> is pulled from the post filename and can be overridden by
+        setting <code>title</code> in front matter
+    </li>
+    <li>
+        <code>post.excerpt</code> is the first paragraph of content by default
+    </li>
+</ul>
+
+<p>
+    You also need a way to navigate to this page through the main navigation.<br/>
+    Open <code>_data/navigation.yml</code> and add an entry for the blog page:
+</p>
+
+<pre title="navigation.yml" class="plaintext">
+- name: Home
+  link: /
+- name: About
+  link: /about.html
+- name: Blog
+  link: /blog.html
+</pre>

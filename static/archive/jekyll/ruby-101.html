@@ -1,0 +1,101 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Ruby 101</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Jekyll is written in Ruby.
+</p>
+
+<h2 id="gems">Gems</h2>
+
+<p>
+    Gems are code you can include in Ruby projects.<br/>
+    Gems package specific functionality.<br/>
+    You can share gems across multiple projects or with other people.<br/>
+    Gems can perform actions like:<br/>
+</p>
+
+<ul>
+    <li>Converting a Ruby object to JSON</li>
+    <li>Pagination</li>
+    <li>Interacting with APIs such as GitHub</li>
+</ul>
+
+<p>
+    Jekyll is a gem.<br/>
+    Many Jekyll <a href="/docs/plugins/">plugins</a> are also gems,<br/>
+    including
+    <a href="https://github.com/jekyll/jekyll-feed">jekyll-feed</a>,
+    <a href="https://github.com/jekyll/jekyll-seo-tag">jekyll-seo-tag</a> and
+    <a href="https://github.com/jekyll/jekyll-archives">jekyll-archives</a>.
+</p>
+
+<h2 id="gemfile">Gemfile</h2>
+
+<p>
+    A <code>Gemfile</code> is a list of gems used by your site.<br/>
+    Every Jekyll site has a <code>Gemfile</code> in the main folder.
+</p>
+
+<p>
+    For a simple Jekyll site it might look something like this:
+</p>
+
+<pre title="Gemfile Example" class="plaintext">
+source "https://rubygems.org"
+
+gem "jekyll"
+
+group :jekyll_plugins do
+  gem "jekyll-feed"
+  gem "jekyll-seo-tag"
+end
+</pre>
+
+<h2 id="bundler">Bundler</h2>
+
+<p>
+    <a href="https://rubygems.org/gems/bundler">Bundler</a> is a gem that installs all gems in your <code>Gemfile</code>.
+</p>
+
+<p>
+    While you don’t have to use <code>Gemfile</code> and <code>bundler</code>,<br/>
+    it is highly recommended<br/>
+    as it ensures you’re running the same version of Jekyll and its plugins across different environments.<br/>
+</p>
+
+<p>
+    Install Bundler using <code>gem install bundler</code>.<br/>
+    You only need to install it once, not every time you create a new Jekyll project.<br/>
+</p>
+
+<p>
+    To install gems in your <code>Gemfile</code> using <code>Bundler</code>,<br/>
+    run the following in the directory that has the <code>Gemfile</code>:<br/>
+</p>
+
+<pre title="install gems" class="plaintext">
+bundle install
+bundle exec jekyll serve
+</pre>
+
+<p>
+    To bypass <code>Bundler</code> if you aren’t using a <code>Gemfile</code>,
+    run <code>jekyll serve</code>.
+</p>
+
+<p>
+    See <a href="/tutorials/using-jekyll-with-bundler/">Using Jekyll with Bundler</a>
+    for more information about Bundler in Jekyll and for instructions to get up and running quickly.
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://jekyllrb.com/docs/ruby-101/" target="_blank">Ruby 101</a></li>
+</ul>

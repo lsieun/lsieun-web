@@ -1,0 +1,98 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Assembly language</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="pe-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="machine-language">Machine language</h2>
+
+<p>
+    Every type of CPU understands its own machine language.<br/>
+    Instructions in machine language are numbers stored as bytes in memory.<br/>
+    Each instruction has its own unique numeric code called its <b>operation code</b> or <b>opcode</b> for short.<br/>
+    The 80x86 processor’s instructions vary in size.<br/>
+    The <b>opcode</b> is always at the beginning of the <b>instruction</b>.<br/>
+    Many instructions also include <b>data</b> (e.g., constants or addresses) used by the instruction.<br/>
+</p>
+<p>
+    Machine language is very difficult to program in directly.<br/>
+    Deciphering the meanings of the numerical-coded instructions is tedious for humans.<br/>
+</p>
+
+<h2 id="assembly-language">Assembly language</h2>
+
+<p>
+    An assembly language program is stored as text (just as a higher level language program).<br/>
+    Each <b>assembly instruction</b> represents exactly one <b>machine instruction</b>.<br/>
+</p>
+<p>
+    The general form of an assembly instruction is:
+</p>
+
+<pre title="general form" class="plaintext">
+mnemonic operand(s)
+</pre>
+
+<p>
+    An <b>assembler</b> is a program that reads a text file with assembly instructions<br/>
+    and converts the assembly into machine code.<br/>
+    Compilers are programs that do similar conversions for high-level programming languages.<br/>
+    An assembler is much simpler than a compiler.<br/>
+    Every assembly language statement directly represents a single machine instruction.<br/>
+    High-level language statements are much more complex and may require many machine instructions.<br/>
+    <sub class="my_note" style="color:blue">笔记：这里介绍assembler的概念</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<ul>
+    <li>Netwide Assembler or NASM for short</li>
+    <li>Microsoft’s Assembler (MASM)</li>
+    <li>Borland’s Assembler (TASM)</li>
+</ul>
+
+<p>
+    There are some differences in the assembly syntax for MASM/TASM and NASM.
+</p>
+
+<h2 id="instruction-operands">Instruction operands</h2>
+
+<p>
+    Machine code instructions have varying number and type of operands;<br/>
+    however, in general, each instruction itself will have a fixed number of operands (0 to 3).<br/>
+    Operands can have the following types:<br/>
+</p>
+
+<ul>
+    <li>
+        <b>register</b>: These operands refer directly to the contents of the CPU’s registers.
+    </li>
+    <li>
+        <b>memory</b>: These refer to data in memory.
+        The address of the data may be a constant hardcoded into the instruction or
+        may be computed using values of registers.
+        Address are always offsets from the beginning of a segment.
+    </li>
+    <li>
+        <b>immediate</b>: These are fixed values that are listed in the instruction itself.
+        They are stored in the instruction itself (in the code segment), not in the data segment.
+    </li>
+    <li>
+        <b>implied</b>: These operands are not explicitly shown.
+        For example, the increment instruction adds one to a register or memory.
+        The one is implied.
+    </li>
+</ul>
+
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+

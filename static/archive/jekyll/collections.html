@@ -1,0 +1,454 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Collections</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Collections are a great way to group related content<br/>
+    like members of a team or talks at a conference.
+</p>
+
+<h2 id="setup">Setup</h2>
+
+<p>
+    To use a Collection you first need to define it in your <code>_config.yml</code>.<br/>
+    For example here’s a collection of staff members:
+</p>
+
+<pre title="_config.yml" class="plaintext">
+collections:
+  - staff_members
+</pre>
+
+<p>
+    In this case <code>collections</code> is defined as a <b>sequence</b> (i.e., array)<br/>
+    with <b>no additional metadata</b> defined for each collection.<br/>
+    You can optionally specify <b>metadata</b> for your collection<br/>
+    by defining <code>collections</code> as a <b>mapping</b> (i.e., hashmap)<br/>
+    instead of sequence, and then defining additional fields in it:
+</p>
+
+<pre title="_config.yml" class="plaintext">
+collections:
+  staff_members:
+    people: true
+</pre>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        When defining a collection as a <b>sequence</b>, its pages will not be rendered by default.<br/>
+        To enable this, <code>output: true</code> must be specified on the collection,<br/>
+        which requires defining the collection as a <b>mapping</b>.<br/>
+        For more information, see the section <a href="#output">Output</a>.
+    </p>
+</div>
+
+<div class="w3-panel w3-pale-yellow w3-topbar w3-bottombar w3-border-yellow">
+    <p class="text-emphasize">Gather your collections</p>
+    <p>
+        You can optionally specify a directory to store all your collections in the same place<br/>
+        with <code>collections_dir: my_collections</code>.
+    </p>
+    <p>
+        Then Jekyll will look in <code>my_collections/_books</code> for the <code>books</code> collection,<br/>
+        and in <code>my_collections/_recipes</code> for the <code>recipes</code> collection.
+    </p>
+</div>
+
+<div class="w3-panel w3-pale-red w3-leftbar w3-rightbar w3-border-red">
+    <p class="text-emphasize">Be sure to move drafts and posts into custom collections directory</p>
+    <p>
+        If you specify a directory to store all your collections in the same place<br/>
+        with <code>collections_dir: my_collections</code>,<br/>
+        then you will need to move your <code>_drafts</code> and <code>_posts</code> directory to<br/>
+        <code>my_collections/_drafts</code> and <code>my_collections/_posts</code>.<br/>
+        Note that, the name of your collections directory cannot start with an underscore (<code>_</code>).
+    </p>
+</div>
+
+<h2 id="add-content">Add content</h2>
+
+<p>
+    Create a corresponding folder (e.g. <code>&lt;source&gt;/_staff_members</code>) and add documents.<br/>
+    Front matter is processed if the front matter exists,<br/>
+    and everything after the front matter is pushed into the document’s <code>content</code> attribute.<br/>
+    If no front matter is provided,<br/>
+    Jekyll will consider it to be a <a href="static-files.html">static file</a><br/>
+    and the contents will not undergo further processing.<br/>
+    If front matter is provided,<br/>
+    Jekyll will process the file contents into the expected output.
+</p>
+
+<p>
+    Regardless of whether front matter exists or not,<br/>
+    Jekyll will write to the destination directory (e.g. <code>_site</code>)<br/>
+    only if <code>output: true</code> has been set in the collection’s metadata.
+</p>
+
+<p>
+    For example here’s how you would add a staff member to the collection set above.<br/>
+    The filename is <code>./_staff_members/jane.md</code> with the following content:
+</p>
+
+<pre title="./_staff_members/jane.md" class="plaintext">
+---
+name: Jane Doe
+position: Developer
+---
+Jane has worked on Jekyll for the past *five years*.
+</pre>
+
+<p>
+<b>
+    Do note that in spite of being considered as a collection internally,<br/>
+    the above doesn’t apply to <a href="posts.html">posts</a>.<br/>
+    Posts with a valid filename format will be marked for processing even if they do not contain front matter.
+</b>
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p class="text-emphasize">Be sure to name your directories correctly</p>
+    <p>
+        The folder must be named identically to the collection you defined in your <code>_config.yml</code> file,
+        with the addition of the preceding <code>_</code> character.
+    </p>
+</div>
+
+<h2 id="output">Output</h2>
+
+<p>
+    Now you can iterate over <code>site.staff_members</code> on a page and<br/>
+    output the content for each staff member.<br/>
+    Similar to posts, the body of the document is accessed using the <code>content</code> variable:
+</p>
+
+<pre title="site.staff_members" class="plaintext">
+{% for staff_member in site.staff_members %}
+  &lt;h2&gt;{{ staff_member.name }} - {{ staff_member.position }}&lt;/h2&gt;
+  &lt;p&gt;{{ staff_member.content | markdownify }}&lt;/p&gt;
+{% endfor %}
+</pre>
+
+<p>
+    If you’d like Jekyll to create a rendered page for each document in your collection,<br/>
+    you can set the <code>output</code> key to <code>true</code> in your collection metadata in <code>_config.yml</code>:
+</p>
+
+<pre title="_config.yml" class="plaintext">
+collections:
+  staff_members:
+    output: true
+</pre>
+
+<p>
+    You can link to the generated page using the <code>url</code> attribute:
+</p>
+
+<pre title="link to the generated page" class="plaintext">
+{% for staff_member in site.staff_members %}
+  &lt;h2&gt;
+    &lt;a href="{{ staff_member.url }}"&gt;
+      {{ staff_member.name }} - {{ staff_member.position }}
+    &lt;/a&gt;
+  &lt;/h2&gt;
+  &lt;p&gt;{{ staff_member.content | markdownify }}&lt;/p&gt;
+{% endfor %}
+</pre>
+
+<h2 id="permalinks">Permalinks</h2>
+
+<p>
+    There are special <a href="permalinks.html#collections">permalink variables for collections</a><br/>
+    to help you control the output url for the entire collection.
+</p>
+
+<h2 id="custom-sorting-of-documents">Custom Sorting of Documents</h2>
+
+<p>
+    By default, two documents in a collection are sorted by their <code>date</code> attribute<br/>
+    when both of them have the <code>date</code> key in their front matter.<br/>
+    However, if either or both documents do not have the <code>date</code> key in their front matter,<br/>
+    they are sorted by their respective paths.
+</p>
+
+<p>
+    You can control this sorting via the collection’s metadata.
+</p>
+
+<h3 id="sort-by-front-matter-key">Sort By Front Matter Key</h3>
+
+<p>
+    Documents can be sorted based on a front matter key by setting a <code>sort_by</code> metadata to the front matter key string.<br/>
+    For example, to sort a collection of tutorials based on key <code>lesson</code>, the configuration would be:
+</p>
+
+<pre title="_config.yml" class="plaintext">
+collections:
+  tutorials:
+    sort_by: lesson
+</pre>
+
+<p>
+    The documents are arranged in the increasing order of the key’s value.<br/>
+    If a document does not have the front matter key defined<br/>
+    then that document is placed immediately after sorted documents.<br/>
+    When multiple documents do not have the front matter key defined,<br/>
+    those documents are sorted by their dates or paths and then placed immediately after the sorted documents.
+</p>
+
+<h3 id="manually-ordering-documents">Manually Ordering Documents</h3>
+
+<p>
+    You can also manually order the documents by setting an <code>order</code> metadata<br/>
+    with <strong>the filenames listed</strong> in the desired order.<br/>
+    For example, a collection of tutorials would be configured as:
+</p>
+
+<pre title="_config.yml" class="plaintext">
+collections:
+  tutorials:
+    order:
+      - hello-world.md
+      - introduction.md
+      - basic-concepts.md
+      - advanced-concepts.md
+</pre>
+
+<p>
+    Any documents with filenames that do not match the list entry simply gets placed after the rearranged documents.<br/>
+    If a document is nested under subdirectories, include them in entries as well:
+</p>
+
+<pre title="_config.yml" class="plaintext">
+collections:
+  tutorials:
+    order:
+      - hello-world.md
+      - introduction.md
+      - concepts/basics.md
+      - concepts/advanced.md
+</pre>
+
+<p>
+    If both metadata keys have been defined properly, <code>order</code> list takes precedence.
+</p>
+
+<h2 id="liquid-attributes">Liquid Attributes</h2>
+
+<h3 id="collections">Collections</h3>
+
+<p>
+    Collections are also available under <code>site.collections</code>,<br/>
+    with the metadata you specified in your <code>_config.yml</code> (if present) and the following information:
+</p>
+
+<div class="w3-container">
+    <table class="w3-table-all w3-hoverable w3-left-align">
+        <thead>
+        <tr class="w3-green">
+            <th>Variable</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <p><code>label</code></p>
+            </td>
+            <td>
+                <p>
+                    The name of your collection, e.g. <code>my_collection</code>.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>docs</code></p>
+            </td>
+            <td>
+                <p>
+                    An array of <a href="#documents">documents</a>.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>files</code></p>
+            </td>
+            <td>
+                <p>
+                    An array of static files in the collection.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>relative_directory</code></p>
+            </td>
+            <td>
+                <p>
+                    The path to the collection's source directory, relative to the site source.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>directory</code></p>
+            </td>
+            <td>
+                <p>
+                    The full path to the collections's source directory.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>output</code></p>
+            </td>
+            <td>
+                <p>
+                    Whether the collection's documents will be output as individual files.
+                </p>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p class="text-emphasize">A Hard-Coded Collection</p>
+    <p>
+        In addition to any collections you create yourself,<br/>
+        the <code>posts</code> collection is hard-coded into Jekyll.<br/>
+        It exists whether you have a <code>_posts</code> directory or not.<br/>
+        This is something to note when iterating through <code>site.collections</code>
+        as you may need to filter it out.
+    </p>
+    <p>
+        You may wish to use filters to find your collection:<br/>
+        <code>{{ site.collections | where: "label", "myCollection" | first }}</code>
+    </p>
+</div>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p class="text-emphasize">Collections and Time</p>
+    <p>
+        Except for documents in hard-coded default collection <code>posts</code>,<br/>
+        all documents in collections you create,<br/>
+        are accessible via Liquid irrespective of their assigned date, if any, and therefore renderable.
+    </p>
+    <p>
+        Documents are attempted to be written to disk<br/>
+        only if the concerned collection metadata has <code>output: true</code>.<br/>
+        Additionally, future-dated documents are only written<br/>
+        if <code>site.future</code> <b>is also true</b>.
+    </p>
+    <p>
+        More fine-grained control over documents being written to disk<br/>
+        can be exercised by setting <code>published: false</code> (<em><code>true</code> by default</em>) in the document's front matter.
+    </p>
+</div>
+
+<h3 id="documents">Documents</h3>
+
+<p>
+    In addition to any front matter provided in the document’s corresponding file,<br/>
+    each document has the following attributes:
+</p>
+
+<div class="w3-container">
+    <table class="w3-table-all w3-hoverable w3-left-align">
+        <thead>
+        <tr class="w3-green">
+            <th>Variable</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <p><code>content</code></p>
+            </td>
+            <td>
+                <p>
+                    The (unrendered) content of the document.<br/>
+                    If no front matter is provided, Jekyll will not generate the file in your collection.<br/>
+                    If front matter is used, then this is all the contents of the file<br/>
+                    after the terminating <code>---</code> of the front matter.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>output</code></p>
+            </td>
+            <td>
+                <p>
+                    The rendered output of the document, based on the <code>content</code>.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>path</code></p>
+            </td>
+            <td>
+                <p>
+                    The full path to the document's source file.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>relative_path</code></p>
+            </td>
+            <td>
+                <p>
+                    The path to the document's source file relative to the site source.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>url</code></p>
+            </td>
+            <td>
+                <p>
+                    The URL of the rendered collection.
+                    The file is only written to the destination when the collection to which it belongs has <code>output: true</code> in the site's configuration.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>collection</code></p>
+            </td>
+            <td>
+                <p>
+                    The name of the document's collection.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>date</code></p>
+            </td>
+            <td>
+                <p>
+                    The date of the document's collection.
+                </p>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://jekyllrb.com/docs/collections/" target="_blank">jekyllrb: Collections</a></li>
+</ul>

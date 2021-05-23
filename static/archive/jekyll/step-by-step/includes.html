@@ -1,0 +1,72 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Includes</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="include-tag">Include tag</h2>
+
+<p>
+    The <code>include</code> tag allows you to include content from another file stored in an <code>_includes</code> folder.<br/>
+    Includes are useful for having a single source for source code that repeats around the site or for improving the readability.
+</p>
+
+<h2 id="include-usage">Include usage</h2>
+
+<p>
+    Create a file for the navigation at <code>_includes/navigation.html</code> with the following content:
+</p>
+
+<pre title="navigation.html" class="plaintext">
+&lt;nav&gt;
+  &lt;a href="/"&gt;Home&lt;/a&gt;
+  &lt;a href="/about.html"&gt;About&lt;/a&gt;
+&lt;/nav&gt;
+</pre>
+
+<p>
+    Try using the include tag to add the navigation to <code>_layouts/default.html</code>:
+</p>
+
+<pre title="default.html" class="plaintext">
+&lt;!doctype html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;{{ page.title }}&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    {% include navigation.html %}
+    {{ content }}
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+<h2 id="current-page-highlighting">Current page highlighting</h2>
+
+<p>
+    Let’s take this a step further and highlight the current page in the navigation.
+</p>
+
+<p>
+    <code>_includes/navigation.html</code> needs to know the URL of the page it’s inserted into so it can add styling.<br/>
+    Jekyll has useful <a href="variables.html">variables</a> available, one of which is <code>page.url</code>.
+</p>
+
+<p>
+    Using <code>page.url</code> you can check if each link is the current page and color it red if true:
+</p>
+
+<pre title="navigation.html" class="plaintext">
+&lt;nav&gt;
+  &lt;a href="/" {% if page.url == "/" %}style="color: red;"{% endif %}&gt;
+    Home
+  &lt;/a&gt;
+  &lt;a href="/about.html" {% if page.url == "/about.html" %}style="color: red;"{% endif %}&gt;
+    About
+  &lt;/a&gt;
+&lt;/nav&gt;
+</pre>

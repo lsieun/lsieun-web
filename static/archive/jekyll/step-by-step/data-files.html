@@ -1,0 +1,50 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Data Files</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Jekyll supports loading data from YAML, JSON, and CSV files located in a <code>_data</code> directory.<br/>
+    Data files are a great way to separate content from source code to make the site easier to maintain.
+</p>
+
+<p>
+    In this step you’ll store the contents of the navigation in a data file and then iterate over it in the navigation include.
+</p>
+
+<h2 id="data-file-usage">Data file usage</h2>
+
+<p>
+    <a href="http://yaml.org/">YAML</a> is a format that's common in the Ruby ecosystem.<br/>
+    You’ll use it to store an array of navigation items each with a name and link.
+</p>
+
+<p>
+    Create a data file for the navigation at <code>_data/navigation.yml</code> with the following:
+</p>
+
+<pre title="navigation.yml" class="plaintext">
+- name: Home
+  link: /
+- name: About
+  link: /about.html
+</pre>
+
+<p>
+    Jekyll makes this data file available to you at <code>site.data.navigation</code>.<br/>
+    Instead of outputting each link in <code>_includes/navigation.html</code>, now you can iterate over the data file instead:
+</p>
+
+<pre title="navigation.html" class="plaintext">
+&lt;nav&gt;
+  {% for item in site.data.navigation %}
+    &lt;a href="{{ item.link }}" {% if page.url == item.link %}style="color: red;"{% endif %}&gt;
+      {{ item.name }}
+    &lt;/a&gt;
+  {% endfor %}
+&lt;/nav&gt;
+</pre>

@@ -1,0 +1,29 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Unique Class</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-classloader-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    在JVM中表示两个Class对象是否为同一个类存在两个必要条件：
+</p>
+
+<ul>
+    <li>
+        类的完整类名必须一致，包括包名
+    </li>
+    <li>
+        加载这个类的ClassLoader（指ClassLoader实例对象）必须相同
+    </li>
+</ul>
+
+<p>
+    换句话说，在JVM中，即使这两个类对象（Class对象）来源于同一个<code>.class</code>文件，被同一个虚拟机所加载，但只要加载它们的ClassLoader实例对象不同，那么这两个类对象也是不相等的。
+</p>
+
+<p>
+    JVM必须知道一个类型是由bootstrap class loader加载，还是由user-defined class loader加载的。如果一个类型是由user-defined class loader加载的，那JVM会将这个类型器的一个引用作为类型信息的一部分保存在方法区中。当解析一个类型到另一个类型的引用的时候，JVM需要保证这两个类型的类加载器是相同的。
+</p>

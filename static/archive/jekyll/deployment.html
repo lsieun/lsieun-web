@@ -1,0 +1,188 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Deployment</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="gemfile">Gemfile</h2>
+
+<p>
+    It’s good practice to have a <a href="ruby-101.html/#gemfile">Gemfile</a> for your site.<br/>
+    This ensures the version of Jekyll and other gems remains consistent across different environments.
+</p>
+
+<p>
+    Create a <code>Gemfile</code> in the root.<br/>
+    The file should be called ‘Gemfile’ and should <em>not</em> have any extension.<br/>
+    You can create a Gemfile with Bundler and then add the <code>jekyll</code> gem:
+</p>
+
+<pre title="create a Gemfile and add the jekyll gem" class="plaintext">
+bundle init
+bundle add jekyll
+</pre>
+
+<p>Your file should look something like:</p>
+
+<pre title="Gemfile" class="plaintext">
+# frozen_string_literal: true
+source "https://rubygems.org"
+
+gem "jekyll"
+</pre>
+
+<p>
+    Bundler installs the gems and creates a <code>Gemfile.lock</code><br/>
+    which locks the current gem versions for a future <code>bundle install</code>.<br/>
+    If you ever want to update your gem versions you can run <code>bundle update</code>.
+</p>
+
+<p>
+    When using a <code>Gemfile</code>,<br/>
+    you’ll run commands like <code>jekyll serve</code> with <code>bundle exec</code> prefixed.<br/>
+    So the full command is:
+</p>
+
+<pre title="jekyll serve" class="plaintext">
+bundle exec jekyll serve
+</pre>
+
+<p>
+    This restricts your Ruby environment to only use gems set in your <code>Gemfile</code>.
+</p>
+
+<h2 id="plugins">Plugins</h2>
+
+<p>
+    Jekyll plugins allow you to create custom generated content specific to your site.<br/>
+    There’s many <a href="plugins.html">plugins</a> available or you can even write your own.
+</p>
+
+<p>There are three official plugins which are useful on almost any Jekyll site:</p>
+
+<ul>
+    <li>
+        <a href="https://github.com/jekyll/jekyll-sitemap">jekyll-sitemap</a> - Creates a sitemap
+        file to help search engines index content
+    </li>
+    <li>
+        <a href="https://github.com/jekyll/jekyll-feed">jekyll-feed</a> - Creates an RSS feed for your posts
+    </li>
+    <li>
+        <a href="https://github.com/jekyll/jekyll-seo-tag">jekyll-seo-tag</a> - Adds meta tags to help with SEO
+    </li>
+</ul>
+
+<p>
+    To use these first you need to add them to your <code>Gemfile</code>.<br/>
+    If you put them in a <code>jekyll_plugins</code> group they’ll automatically be required into Jekyll:
+</p>
+
+<pre title="Gemfile" class="plaintext">
+source 'https://rubygems.org'
+
+gem 'jekyll'
+
+group :jekyll_plugins do
+  gem 'jekyll-sitemap'
+  gem 'jekyll-feed'
+  gem 'jekyll-seo-tag'
+end
+</pre>
+
+<p>
+    Then add these lines to your <code>_config.yml</code>:
+</p>
+
+<pre title="_config.yml" class="plaintext">
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+</pre>
+
+<p>
+    Now install them by running a <code>bundle update</code>.
+</p>
+
+<p>
+    <code>jekyll-sitemap</code> doesn’t need any setup, it will create your sitemap on build.
+</p>
+
+<p>
+    For <code>jekyll-feed</code> and <code>jekyll-seo-tag</code> you need to add tags to <code>_layouts/default.html</code>:
+</p>
+
+<pre title="_layouts/default.html" class="plaintext">
+&lt;!doctype html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;{{ page.title }}&lt;/title&gt;
+    &lt;link rel="stylesheet" href="/assets/css/styles.css"&gt;
+    {% feed_meta %}
+    {% seo %}
+  &lt;/head&gt;
+  &lt;body&gt;
+    {% include navigation.html %}
+    {{ content }}
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+<p>
+    Restart your Jekyll server and check these tags are added to the <code>&lt;head&gt;</code>.
+</p>
+
+<h2 id="environments">Environments</h2>
+
+<p>
+    Sometimes you might want to output something in production but not in development.<br/>
+    Analytics scripts are the most common example of this.
+</p>
+
+<p>
+    To do this you can use <a href="configuration/environments.html">environments</a>.<br/>
+    You can set the environment by using the <code>JEKYLL_ENV</code> environment variable when running a command.<br/>
+    For example:
+</p>
+
+<pre title="use environments" class="plaintext">
+JEKYLL_ENV=production bundle exec jekyll build
+</pre>
+
+<p>
+    By default <code>JEKYLL_ENV</code> is <code>development</code>.<br/>
+    The <code>JEKYLL_ENV</code> is available to you in liquid using <code>jekyll.environment</code>.<br/>
+    So to only output the analytics script on production you would do the following:
+</p>
+
+<pre title="output the analytics script on production" class="plaintext">
+{% if jekyll.environment == "production" %}
+  &lt;script src="my-analytics-script.js"&gt;&lt;/script&gt;
+{% endif %}
+</pre>
+
+<h2 id="deployment">Deployment</h2>
+
+<p>
+    The final step is to get the site onto a production server.<br/>
+    The most basic way to do this is to run a production build:
+</p>
+
+<pre title="run a production build" class="plaintext">
+JEKYLL_ENV=production bundle exec jekyll build
+</pre>
+
+<p>
+    And copy the contents of <code>_site</code> to your server.
+</p>
+
+<p>
+    A better way is to automate this process using a <a href="deployment/automated.html">CI</a>
+    or <a href="deployment/third-party.html">3rd party</a>.
+</p>
+

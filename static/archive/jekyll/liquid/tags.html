@@ -1,0 +1,233 @@
+<!-- 标题 -->
+<link rel="stylesheet" href="../../../../../../tmp/myblog/assets/css/styles.scss"><h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Liquid Tags</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../liquid.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    All of the standard Liquid
+    <a href="https://shopify.github.io/liquid/tags/control-flow/">tags</a> are supported.<br/>
+    Jekyll has a few built in tags to help you build your site.<br/>
+    You can also create your own tags using <a href="../plugins.html">plugins</a>.
+</p>
+
+<h2 id="includes">Includes</h2>
+
+<p>
+    If you have page snippets that you use repeatedly across your site,<br/>
+    an <a href="../includes.html">include</a> is the perfect way to make this more maintainable.
+</p>
+
+<h2 id="code-snippet-highlighting">Code snippet highlighting</h2>
+
+<p>
+    Jekyll has built in support for syntax highlighting of over 100 languages thanks to <a href="http://rouge.jneen.net">Rouge</a>.<br/>
+    Rouge is the default highlighter in Jekyll 3 and above.
+</p>
+
+<div class="w3-panel w3-pale-red w3-leftbar w3-rightbar w3-border-red">
+    <p>
+        Using Pygments has been deprecated and is not supported in Jekyll 4;<br/>
+        the configuration setting <code>highlighter: pygments</code>
+        now automatically falls back to using <b>Rouge</b><br/>
+        which is written in Ruby and 100% compatible with stylesheets for Pygments.
+    </p>
+</div>
+
+<p>
+    To render a code block with syntax highlighting, surround your code as follows:
+</p>
+
+<pre title="syntax highlighting" class="plaintext">
+{% highlight ruby %}
+def foo
+  puts 'foo'
+end
+{% endhighlight %}
+</pre>
+
+<p>
+    The argument to the <code>highlight</code> tag (<code>ruby</code> in the example above) is the language identifier.<br/>
+    To find the appropriate identifier to use for the language you want to highlight,<br/>
+    look for the “short name” on the <a href="https://github.com/jayferd/rouge/wiki/List-of-supported-languages-and-lexers">Rouge wiki</a>.
+</p>
+
+<div class="w3-panel w3-pale-yellow w3-topbar w3-bottombar w3-border-yellow">
+    <p class="text-emphasize">Jekyll processes all Liquid filters in code blocks</p>
+    <p>
+        If you are using a language that contains curly braces,<br/>
+        you will likely need to place <code>{% raw %}</code> and <code>{% endraw %}</code> tags around your code.<br/>
+        Since Jekyll 4.0,<br/>
+        you can add <code>render_with_liquid: false</code> in your front matter to disable Liquid entirely for a particular document.
+    </p>
+</div>
+
+<h3 id="line-numbers">Line numbers</h3>
+
+<p>
+    There is a second argument to <code>highlight</code> called <code>linenos</code> that is optional.<br/>
+    Including the <code>linenos</code> argument will force the highlighted code to include line numbers.<br/>
+    For instance, the following code block would include line numbers next to each line:
+</p>
+
+<pre title="linenos" class="plaintext">
+{% highlight ruby linenos %}
+def foo
+  puts 'foo'
+end
+{% endhighlight %}
+</pre>
+
+<h3 id="stylesheets-for-syntax-highlighting">Stylesheets for syntax highlighting</h3>
+
+<p>
+    In order for the highlighting to show up, you’ll need to include a highlighting stylesheet.<br/>
+    For Pygments or Rouge you can use a stylesheet for Pygments,<br/>
+    you can find an example gallery
+    <a href="https://jwarby.github.io/jekyll-pygments-themes/languages/ruby.html">here</a>
+    or from <a href="https://github.com/jwarby/jekyll-pygments-themes">its repository</a>.
+</p>
+
+<p>
+    Copy the CSS file (<code>native.css</code> for example) into your css directory and<br/>
+    import the syntax highlighter styles into your <code>main.css</code>:
+</p>
+
+<pre title="main.css" class="plaintext">
+@import "native.css";
+</pre>
+
+<h2 id="links">Links</h2>
+
+<div class="w3-panel w3-pale-yellow w3-topbar w3-bottombar w3-border-yellow">
+    <p>
+        Since Jekyll 4.0, you don’t need to prepend <code>link</code> and <code>post_url</code> tags with <code>site.baseurl</code>.
+    </p>
+</div>
+
+<h3 id="link">Linking to pages</h3>
+
+<p>
+    To link to a post, a page, collection item, or file,<br/>
+    the <code>link</code> tag will generate the correct permalink URL for the path you specify.<br/>
+    For example, if you use the <code>link</code> tag to link to <code>mypage.html</code>,<br/>
+    even if you change your permalink style to include the file extension or omit it,<br/>
+    the URL formed by the <code>link</code> tag will always be valid.
+</p>
+
+<p>
+    You must include the file’s original extension when using the <code>link</code> tag.<br/>
+    Here are some examples:
+</p>
+
+<pre title="some examples" class="plaintext">
+{% link _collection/name-of-document.md %}
+{% link _posts/2016-07-26-name-of-post.md %}
+{% link news/index.html %}
+{% link /assets/files/doc.pdf %}
+</pre>
+
+<p>
+    You can also use the <code>link</code> tag to create a link in Markdown as follows:
+</p>
+
+<pre title="create a link in Markdown" class="plaintext">
+[Link to a document]({% link _collection/name-of-document.md %})
+[Link to a post]({% link _posts/2016-07-26-name-of-post.md %})
+[Link to a page]({% link news/index.html %})
+[Link to a file]({% link /assets/files/doc.pdf %})
+</pre>
+
+<p>
+    The path to the post, page, or collection is defined as the path relative to the root directory (where your config file is) to the file,
+    not the path from your existing page to the other page.
+</p>
+
+<p>
+    For example, suppose you’re creating a link in <code>page_a.md</code>
+    (stored in <code>pages/folder1/folder2</code>) to <code>page_b.md</code>
+    (stored in <code>pages/folder1</code>).
+    Your path in the link would not be <code>../page_b.html</code>.
+    Instead, it would be <code>/pages/folder1/page_b.md</code>.
+</p>
+
+<p>
+    If you’re unsure of the path, add <code>{{ page.path }}</code> to the page and it will display the path.
+</p>
+
+<p>
+    One major benefit of using the <code>link</code> or <code>post_url</code> tag is link validation.<br/>
+    If the link doesn’t exist, Jekyll won’t build your site.<br/>
+    This is a good thing, as it will alert you to a broken link so you can fix it<br/>
+    (rather than allowing you to build and deploy a site with broken links).
+</p>
+
+<p>
+    Note you cannot add filters to <code>link</code> tags.<br/>
+    For example, you cannot append a string using Liquid filters, such as <code>{% link mypage.html | append: "#section1" %}</code>.<br/>
+    To link to sections on a page, you will need to use regular HTML or Markdown linking techniques.
+</p>
+
+<p>
+    The name of the file you want to link can be specified as a variable instead of an actual file name.<br/>
+    For example, suppose you defined a variable in your page’s front matter like this:
+</p>
+
+<pre title="defined a variable in your page’s front matter" class="plaintext">
+---
+title: My page
+my_variable: footer_company_a.html
+---
+</pre>
+
+<p>
+    You could then reference that variable in your link:
+</p>
+
+<pre title="reference variable" class="plaintext">
+{% link {{ page.my_variable }} %}
+</pre>
+
+<p>
+    In this example, the <code>link</code> tag would render a link to the file <code>footer_company_a.html</code>.
+</p>
+
+<h3 id="linking-to-posts">Linking to posts</h3>
+
+<p>
+    If you want to include a link to a post on your site,<br/>
+    the <code>post_url</code> tag will generate the correct permalink URL for the post you specify.
+</p>
+
+<pre title="" class="plaintext">
+{% post_url 2010-07-21-name-of-post %}
+</pre>
+
+<p>
+    If you organize your posts in subdirectories, you need to include subdirectory path to the post:
+</p>
+
+<pre title="" class="plaintext">
+{% post_url /subdir/2010-07-21-name-of-post %}
+</pre>
+
+<p>
+    There is no need to include the file extension when using the <code>post_url</code> tag.
+</p>
+
+<p>
+    You can also use this tag to create a link to a post in Markdown as follows:
+</p>
+
+<pre title="" class="plaintext">
+[Name of Link]({% post_url 2010-07-21-name-of-post %})
+</pre>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://jekyllrb.com/docs/liquid/tags/" target="_blank">jekyllrb: Tags Filters</a></li>
+</ul>

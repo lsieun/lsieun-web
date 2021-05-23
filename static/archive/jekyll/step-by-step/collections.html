@@ -1,0 +1,269 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Collections</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Collections are similar to posts
+    except the content doesn’t have to be grouped by date.
+</p>
+
+<h2 id="configuration">Configuration</h2>
+
+<p>
+    To set up a collection you need to tell Jekyll about it.<br/>
+    Jekyll configuration happens in a file called <code>_config.yml</code> (by default).
+</p>
+
+<p>
+    Create <code>_config.yml</code> in the root with the following:
+</p>
+
+<pre title="_config.yml" class="plaintext">
+collections:
+  authors:
+</pre>
+
+<p>
+    To (re)load the configuration, restart the jekyll server.<br/>
+    Press <code>Ctrl</code>+<code>C</code> in your terminal to stop the server, and then <code>jekyll serve</code> to restart it.
+</p>
+
+<h2 id="add-authors">Add authors</h2>
+
+<p>
+    Documents (the items in a collection) live in a folder in the root of the site named <code>_*collection_name*</code>.<br/>
+    In this case, <code>_authors</code>.
+</p>
+
+<p>Create a document for each author:</p>
+
+<pre title="_authors/jill.md" class="plaintext">
+---
+short_name: jill
+name: Jill Smith
+position: Chief Editor
+---
+Jill is an avid fruit grower based in the south of France.
+</pre>
+
+<pre title="_authors/ted.md" class="plaintext">
+---
+short_name: ted
+name: Ted Doe
+position: Writer
+---
+Ted has been eating fruit since he was baby.
+</pre>
+
+<h2 id="staff-page">Staff page</h2>
+
+<p>
+    Let’s add a page which lists all the authors on the site.<br/>
+    Jekyll makes the collection available at <code>site.authors</code>.
+</p>
+
+<p>
+    Create <code>staff.html</code> and iterate over <code>site.authors</code> to output all the staff:
+</p>
+
+<pre title="staff.html" class="plaintext">
+---
+layout: default
+title: Staff
+---
+&lt;h1&gt;Staff&lt;/h1&gt;
+
+&lt;ul&gt;
+  {% for author in site.authors %}
+    &lt;li&gt;
+      &lt;h2&gt;{{ author.name }}&lt;/h2&gt;
+      &lt;h3&gt;{{ author.position }}&lt;/h3&gt;
+      &lt;p&gt;{{ author.content | markdownify }}&lt;/p&gt;
+    &lt;/li&gt;
+  {% endfor %}
+&lt;/ul&gt;
+</pre>
+
+<p>
+    Since the content is markdown, you need to run it through the <code>markdownify</code> filter.<br/>
+    This happens automatically when outputting using <code>{{ content }}</code> in a layout.
+</p>
+
+<p>
+    You also need a way to navigate to this page through the main navigation.<br/>
+    Open <code>_data/navigation.yml</code> and add an entry for the staff page:
+</p>
+
+<pre title="_data/navigation.yml" class="plaintext">
+- name: Home
+  link: /
+- name: About
+  link: /about.html
+- name: Blog
+  link: /blog.html
+- name: Staff
+  link: /staff.html
+</pre>
+
+<h2 id="output-a-page">Output a page</h2>
+
+<p>
+    By default, collections do not output a page for documents.<br/>
+    In this case we want each author to have their own page so let’s tweak the collection configuration.
+</p>
+
+<p>
+    Open <code>_config.yml</code> and add <code>output: true</code> to the author collection configuration:
+</p>
+
+<pre title="_config.yml" class="plaintext">
+collections:
+  authors:
+    output: true
+</pre>
+
+<p>Restart the jekyll server once more for the configuration changes to take effect.</p>
+
+<p>You can link to the output page using <code>author.url</code>.</p>
+
+<p>Add the link to the <code>staff.html</code> page:</p>
+
+<pre title="staff.html" class="plaintext">
+---
+layout: default
+title: Staff
+---
+&lt;h1&gt;Staff&lt;/h1&gt;
+
+&lt;ul&gt;
+  {% for author in site.authors %}
+    &lt;li&gt;
+      &lt;h2&gt;&lt;a href="{{ author.url }}"&gt;{{ author.name }}&lt;/a&gt;&lt;/h2&gt;
+      &lt;h3&gt;{{ author.position }}&lt;/h3&gt;
+      &lt;p&gt;{{ author.content | markdownify }}&lt;/p&gt;
+    &lt;/li&gt;
+  {% endfor %}
+&lt;/ul&gt;
+</pre>
+
+<p>Just like posts you’ll need to create a layout for authors.</p>
+
+<p>Create <code>_layouts/author.html</code> with the following content:</p>
+
+<pre title="_layouts/author.html" class="plaintext">
+---
+layout: default
+---
+&lt;h1&gt;{{ page.name }}&lt;/h1&gt;
+&lt;h2&gt;{{ page.position }}&lt;/h2&gt;
+
+{{ content }}
+</pre>
+
+<h2 id="front-matter-defaults">Front matter defaults</h2>
+
+<p>
+    Now you need to configure the author documents to use the <code>author</code> layout.<br/>
+    You could do this in the front matter like we have previously but that’s getting repetitive.
+</p>
+
+<p>
+    What you really want is all posts to automatically have the post layout,<br/>
+    authors to have author and everything else to use the default.
+</p>
+
+<p>
+    You can achieve this by using <a href="../configuration/front-matter-defaults.html">front matter defaults</a> in <code>_config.yml</code>.<br/>
+    You set a scope of what the default applies to, then the default front matter you’d like.
+</p>
+
+<p>
+    Add defaults for layouts to your <code>_config.yml</code>,
+</p>
+
+<pre title="_config.yml" class="plaintext">
+collections:
+  authors:
+    output: true
+
+defaults:
+  - scope:
+      path: ""
+      type: "authors"
+    values:
+      layout: "author"
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+</pre>
+
+<p>
+    Now you can remove layout from the front matter of all pages and posts.<br/>
+    Note that any time you update <code>_config.yml</code> you’ll need to restart Jekyll for the changes to take effect.
+</p>
+
+<h2 id="list-authors-posts">List author’s posts</h2>
+
+<p>
+    Let’s list the posts an author has published on their page.<br/>
+    To do this you need to match the author <code>short_name</code> to the post <code>author</code>.<br/>
+    You use this to filter the posts by author.
+</p>
+
+<p>
+    Iterate over this filtered list in <code>_layouts/author.html</code> to output the author’s posts:
+</p>
+
+<pre title="_layouts/author.html" class="plaintext">
+---
+layout: default
+---
+&lt;h1&gt;{{ page.name }}&lt;/h1&gt;
+&lt;h2&gt;{{ page.position }}&lt;/h2&gt;
+
+{{ content }}
+
+&lt;h2&gt;Posts&lt;/h2&gt;
+&lt;ul&gt;
+  {% assign filtered_posts = site.posts | where: 'author', page.short_name %}
+  {% for post in filtered_posts %}
+    &lt;li&gt;&lt;a href="{{ post.url }}"&gt;{{ post.title }}&lt;/a&gt;&lt;/li&gt;
+  {% endfor %}
+&lt;/ul&gt;
+</pre>
+
+<h2 id="link-to-authors-page">Link to authors page</h2>
+
+<p>
+    The posts have a reference to the author so let’s link it to the author’s page.<br/>
+    You can do this using a similar filtering technique in <code>_layouts/post.html</code>:
+</p>
+
+<pre title="_layouts/post.html" class="plaintext">
+---
+layout: default
+---
+&lt;h1&gt;{{ page.title }}&lt;/h1&gt;
+
+&lt;p&gt;
+  {{ page.date | date_to_string }}
+  {% assign author = site.authors | where: 'short_name', page.author | first %}
+  {% if author %}
+    - &lt;a href="{{ author.url }}"&gt;{{ author.name }}&lt;/a&gt;
+  {% endif %}
+&lt;/p&gt;
+
+{{ content }}
+</pre>
+

@@ -1,0 +1,43 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Quickstart</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2 id="instructions">Instructions</h2>
+
+<ol>
+    <li>
+        Install all <a href="jekyll-installation.html">prerequisites</a>.
+    </li>
+    <li>
+        Install the jekyll and bundler <a href="ruby-101.html#gems">gems</a>.
+        <div><code>gem install jekyll bundler</code></div>
+    </li>
+    <li>
+        Create a new Jekyll site at <code>./myblog</code>.
+        <div><code>jekyll new myblog</code></div>
+    </li>
+    <li>
+        Change into your new directory.
+        <div><code>cd myblog</code></div>
+    </li>
+    <li>
+        Build the site and make it available on a local server.
+        <div><code>bundle exec jekyll serve</code></div>
+    </li>
+    <li>
+        Browse to <a href="http://localhost:4000" target="_blank">http://localhost:4000</a>
+    </li>
+</ol>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        Pass the <code>--livereload</code> option to <code>serve</code> to
+        automatically refresh the page with each change you make to the source files:
+        <code>bundle exec jekyll serve --livereload</code>
+    </p>
+</div>

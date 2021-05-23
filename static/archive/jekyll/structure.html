@@ -1,0 +1,235 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Directory Structure</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    A basic Jekyll site usually looks something like this:
+</p>
+
+<pre title="Directory Structure" class="plaintext">
+.
+├── _config.yml
+├── _data
+│   └── members.yml
+├── _drafts
+│   ├── begin-with-the-crazy-ideas.md
+│   └── on-simplicity-in-technology.md
+├── _includes
+│   ├── footer.html
+│   └── header.html
+├── _layouts
+│   ├── default.html
+│   └── post.html
+├── _posts
+│   ├── 2007-10-29-why-every-programmer-should-play-nethack.md
+│   └── 2009-04-26-barcamp-boston-4-roundup.md
+├── _sass
+│   ├── _base.scss
+│   └── _layout.scss
+├── _site
+├── .jekyll-metadata
+└── index.html # can also be an 'index.md' with valid front matter
+</pre>
+
+<div class="w3-panel w3-pale-yellow w3-topbar w3-bottombar w3-border-yellow">
+    <p class="text-emphasize">Directory structure of Jekyll sites using gem-based themes</p>
+    <p>
+        Since version 3.2, a new Jekyll project bootstrapped with <code>jekyll new</code> uses <a href="themes.html">gem-based themes</a> to define the look of the site. This results in a lighter default directory structure: <code>_layouts</code>, <code>_includes</code> and <code>_sass</code> are stored in the theme-gem, by default.
+    </p>
+    <p>
+        <a href="https://github.com/jekyll/minima">minima</a> is the current default theme, and <code>bundle info minima</code> will show you where minima theme's files are stored on your computer.
+    </p>
+</div>
+
+<p>
+    An overview of what each of these does:
+</p>
+
+<div class="w3-table-all w3-hoverable w3-left-align">
+    <table>
+        <thead>
+        <tr class="w3-green">
+            <th>File / Directory</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <p><code>_config.yml</code></p>
+            </td>
+            <td>
+                <p>
+                    Stores <a href="configuration.html">configuration</a> data.<br/>
+                    Many of these options can be specified from the command line executable<br/>
+                    but it’s easier to specify them here so you don’t have to remember them.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>_drafts</code></p>
+            </td>
+            <td>
+                <p>
+                    Drafts are unpublished posts.<br/>
+                    The format of these files is without a date: <code>title.MARKUP</code>.<br/>
+                    Learn how to <a href="posts.html#drafts">work with drafts</a>.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>_includes</code></p>
+            </td>
+            <td>
+                <p>
+                    These are the partials that can be mixed and matched<br/>
+                    by your layouts and posts to facilitate reuse.<br/>
+                    The liquid tag <code>{% include file.ext %}</code> can be used to include the partial in <code>_includes/file.ext</code>.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>_layouts</code></p>
+            </td>
+            <td>
+                <p>
+                    These are the templates that wrap posts.<br/>
+                    Layouts are chosen on a post-by-post basis in the <a href="front-matter.html">front matter</a>,<br/>
+                    which is described in the next section.<br/>
+                    The liquid tag <code>{{ content }}</code> is used to inject content into the web page.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>_posts</code></p>
+            </td>
+            <td>
+                <p>
+                    Your dynamic content, so to speak.<br/>
+                    The naming convention of these files is important, and must follow the format:<br/>
+                    <code>YEAR-MONTH-DAY-title.MARKUP</code>.<br/>
+                    The <a href="permalinks.html">permalinks</a> can be customized for each post,<br/>
+                    but the date and markup language are determined solely by the file name.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>_data</code></p>
+            </td>
+            <td>
+                <p>
+                    Well-formatted site data should be placed here.<br/>
+                    The Jekyll engine will autoload all data files<br/>
+                    (using either the <code>.yml</code>,
+                    <code>.yaml</code>, <code>.json</code>, <code>.csv</code> or
+                    <code>.tsv</code> formats and extensions)<br/>
+                    in this directory,<br/>
+                    and they will be accessible via <code>site.data</code>.<br/>
+                    If there's a file <code>members.yml</code> under the directory,<br/>
+                    then you can access contents of the file through <code>site.data.members</code>.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>_sass</code></p>
+            </td>
+            <td>
+                <p>
+                    These are sass partials that can be imported into your <code>main.scss</code><br/>
+                    which will then be processed into a single stylesheet <code>main.css</code><br/>
+                    that defines the styles to be used by your site.<br/>
+                    Learn <a href="assets.html">how to work with assets</a>.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>_site</code></p>
+            </td>
+            <td>
+                <p>
+                    This is where the generated site will be placed (by default)<br/>
+                    once Jekyll is done transforming it.<br/>
+                    It’s probably a good idea to add this to your <code>.gitignore</code> file.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><code>.jekyll-metadata</code></p>
+            </td>
+            <td>
+                <p>
+                    This helps Jekyll keep track of<br/>
+                    which files have not been modified since the site was last built,<br/>
+                    and which files will need to be regenerated on the next build.<br/>
+                    This file will not be included in the generated site.<br/>
+                    It’s probably a good idea to add this to your <code>.gitignore</code> file.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>
+                    <code>index.html</code> or <code>index.md</code> and other HTML, Markdown files
+                </p>
+            </td>
+            <td>
+                <p>
+                    Provided that the file has a <a href="front-matter.html">front matter</a> section, it will be transformed by Jekyll.<br/>
+                    The same will happen for any <code>.html</code>, <code>.markdown</code>,
+                    <code>.md</code>, or <code>.textile</code> file in your site’s root
+                    directory or directories not listed above.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>Other Files/Folders</p>
+            </td>
+            <td>
+                <p>
+                    Except for the special cases listed above,<br/>
+                    every other directory and file<br/>
+                    —such as <code>css</code> and <code>images</code> folders,
+                    <code>favicon.ico</code> files, and so forth—<br/>
+                    will be copied verbatim to the generated site.<br/>
+                    There are plenty of <a class="external" href="https://jekyllrb.com/showcase/" target="_blank">sites already using Jekyll</a><br/>
+                    if you’re curious to see how they’re laid out.
+                </p>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<p>
+    Every file or directory beginning with the following characters:
+    <code>.</code>, <code>_</code>, <code>#</code> or <code>~</code> in the <code>source</code> directory
+    will not be included in the <code>destination</code> folder.
+    Such paths will have to be explicitly specified via the config file
+    in the <code>include</code> directive to make sure they’re copied over:
+</p>
+
+<pre title="_config.yml" class="plaintext">
+include:
+ - _pages
+ - .htaccess
+</pre>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://jekyllrb.com/docs/structure/" target="_blank">jekyllrb: Directory Structure</a></li>
+</ul>

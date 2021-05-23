@@ -1,0 +1,96 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Default Configuration</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../configuration.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Jekyll runs with the following configuration options by default.<br/>
+    Alternative settings for these options can be explicitly specified<br/>
+    in the configuration file or on the command-line.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p class="text-emphasize">Be aware of directory paths</p>
+    <p>
+        Make directory path values in configuration keys like <code>plugins_dir</code> relative to the current working directory, not the site source.
+    </p>
+</div>
+
+<pre title="Default Configuration" class="plaintext">
+# Where things are
+source              : .
+destination         : ./_site
+collections_dir     : .
+plugins_dir         : _plugins # takes an array of strings and loads plugins in that order
+layouts_dir         : _layouts
+data_dir            : _data
+includes_dir        : _includes
+sass:
+  sass_dir: _sass
+collections:
+  posts:
+    output          : true
+
+# Handling Reading
+safe                : false
+include             : [".htaccess"]
+exclude             : ["Gemfile", "Gemfile.lock", "node_modules", "vendor/bundle/", "vendor/cache/", "vendor/gems/", "vendor/ruby/"]
+keep_files          : [".git", ".svn"]
+encoding            : "utf-8"
+markdown_ext        : "markdown,mkdown,mkdn,mkd,md"
+strict_front_matter : false
+
+# Filtering Content
+show_drafts         : null
+limit_posts         : 0
+future              : false
+unpublished         : false
+
+# Plugins
+whitelist           : []
+plugins             : []
+
+# Conversion
+markdown            : kramdown
+highlighter         : rouge
+lsi                 : false
+excerpt_separator   : "\n\n"
+incremental         : false
+
+# Serving
+detach              : false
+port                : 4000
+host                : 127.0.0.1
+baseurl             : "" # does not include hostname
+show_dir_listing    : false
+
+# Outputting
+permalink           : date
+paginate_path       : /page:num
+timezone            : null
+
+quiet               : false
+verbose             : false
+defaults            : []
+
+liquid:
+  error_mode        : warn
+  strict_filters    : false
+  strict_variables  : false
+
+# Markdown Processors
+kramdown:
+  auto_ids          : true
+  entity_output     : as_char
+  toc_levels        : [1, 2, 3, 4, 5, 6]
+  smart_quotes      : lsquo,rsquo,ldquo,rdquo
+  input             : GFM
+  hard_wrap         : false
+  footnote_nr       : 1
+  show_warnings     : false
+</pre>
+

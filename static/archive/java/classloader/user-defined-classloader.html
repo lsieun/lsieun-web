@@ -1,0 +1,127 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">User-Defined ClassLoader</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-classloader-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    为什么要自定义类加载器？
+</p>
+
+<ul>
+    <li>
+        隔离加载类
+    </li>
+    <li>
+        修改类加载的方式
+    </li>
+    <li>
+        扩展加载源
+    </li>
+    <li>
+        防止源码泄漏
+    </li>
+</ul>
+
+<p>
+    用户自定义类加载器实现步骤：
+</p>
+
+<ul>
+    <li>
+        开发人员可以通过继承抽象类java.lang.ClassLoader类的方式，实现自己的类加载器，以满足一些特殊需求
+    </li>
+    <li>
+        在JDK1.2之前，在自定义类加载器时，总会去继承ClassLoader类并重写loadClass()方法，从而实现自定义的类加载器；但是在JDK1.2之后，已经不再建议用户去覆盖loadClass()方法，而是建议把自定义的类加载逻辑写在findClass()方法中
+    </li>
+    <li>
+        在编写自定义类加载器时，如果没有太过于复杂的需求，可以直接继承URLClassLoader类，这样就可以避免自己去编写findClass()方法及其获取字节流的方式，使自定义类加载器编写更加简洁。
+    </li>
+</ul>
+
+<h2 id="dynamic-generation">Dynamic Generation</h2>
+
+<pre title="GenerateClass.java" class="javacode">
+import jdk.internal.org.objectweb.asm.ClassWriter;
+import jdk.internal.org.objectweb.asm.MethodVisitor;
+
+import static jdk.internal.org.objectweb.asm.Opcodes.*;
+
+public class GenerateClass {
+    public static byte[] dump(String className) {
+        String internalName = className.replace('.', '/');
+        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        classWriter.visit(V1_8, ACC_PUBLIC | ACC_SUPER, internalName, null, "java/lang/Object", null);
+
+        {
+            MethodVisitor mv1 = classWriter.visitMethod(ACC_PUBLIC, "&lt;init&gt;", "()V", null, null);
+            mv1.visitCode();
+            mv1.visitVarInsn(ALOAD, 0);
+            mv1.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "&lt;init&gt;", "()V", false);
+            mv1.visitInsn(RETURN);
+            mv1.visitMaxs(1, 1);
+            mv1.visitEnd();
+        }
+        {
+            MethodVisitor mv2 = classWriter.visitMethod(ACC_PUBLIC, "toString", "()Ljava/lang/String;", null, null);
+            mv2.visitCode();
+            mv2.visitLdcInsn("Hello, " + className);
+            mv2.visitInsn(ARETURN);
+            mv2.visitMaxs(1, 1);
+            mv2.visitEnd();
+        }
+        classWriter.visitEnd();
+
+        return classWriter.toByteArray();
+    }
+}
+</pre>
+
+<pre title="CustomClassLoader.java" class="javacode">
+import lsieun.asm.GenerateClass;
+
+import java.io.FileNotFoundException;
+
+public class CustomClassLoader extends ClassLoader {
+    @Override
+    protected Class&lt;?&gt; findClass(String name) throws ClassNotFoundException {
+        try {
+            byte[] result = getClassFromCustomPath(name);
+            if (result == null) {
+                throw new FileNotFoundException();
+            }
+            else {
+                return defineClass(name, result, 0, result.length);
+            }
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        throw new ClassNotFoundException(name);
+    }
+
+    private byte[] getClassFromCustomPath(String name) {
+        return GenerateClass.dump(name);
+    }
+}
+</pre>
+
+<pre title="Program.java" class="javacode">
+public class Program {
+    public static void main(String[] args) throws Exception {
+        CustomClassLoader customClassLoader = new CustomClassLoader();
+        Class&lt;?&gt; clazz = Class.forName("sample.GoodChild", true, customClassLoader);
+        Object obj = clazz.newInstance();
+        System.out.println(obj);
+        System.out.println(obj.getClass().getClassLoader());
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+Hello, sample.GoodChild
+sample.CustomClassLoader@4554617c
+</pre>

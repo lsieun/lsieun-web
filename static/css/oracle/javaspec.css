@@ -18,6 +18,10 @@ body {
   margin: 10px;
 }
 
+.mynote {
+  font-family: "Microsoft JhengHei","courier new", sans-serif;
+  color: green;
+}
 
 /*************** BOOK-LEVEL ***************/
 

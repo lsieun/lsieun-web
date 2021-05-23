@@ -1,0 +1,186 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Parent Delegation Model</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-classloader-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    TODO:
+</p>
+
+<ul>
+    <li>
+        首先，说明parent delegation model是怎么回事
+    </li>
+    <li>
+        接着，引入initiating class loader和defining class loader这两个概念
+    </li>
+</ul>
+
+<p>
+    双亲委派机制的优势：
+</p>
+
+<ul>
+    <li>
+        避免类的重复加载
+    </li>
+    <li>
+        保护程序安全，防止核心API被随意篡改
+        <ul>
+            <li>自定义类：java.lang.String</li>
+        </ul>
+    </li>
+</ul>
+
+<h2 id="parent-delegation-model">Parent Delegation Model</h2>
+
+<p>
+    说明这个概念，从四个角度入手：文字描述、图示、源代码、详细示例。
+</p>
+
+<p>
+    工作原理：
+</p>
+
+<ul>
+    <li>
+        第一，如果一个类加载器收到类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行。
+    </li>
+    <li>
+        第二，如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器。
+    </li>
+    <li>
+        第三，如果父类加载器可以完成类加载任务，就成功返回；如果父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模型。
+    </li>
+</ul>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classloader/parent-delegation-model.jpg" alt=""/>
+</div>
+
+<h3 id="source-code">Source Code Perspective</h3>
+
+<p>
+    <code>ClassLoader</code>类当中定义的<code>parent</code>字段，就是连接Bootstrap ClassLoader、Extension ClassLoader、Application ClassLoader的桥梁。
+</p>
+
+<pre title="ClassLoader.java" class="javacode">
+public abstract class ClassLoader {
+    private final ClassLoader parent;
+
+    public final ClassLoader getParent() {
+        if (parent == null)
+            return null;
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            // Check access to the parent class loader
+            // If the caller's class loader is same as this class loader,
+            // permission check is performed.
+            checkClassLoaderPermission(parent, Reflection.getCallerClass());
+        }
+        return parent;
+    }
+
+    protected Class&lt;?&gt; loadClass(String name, boolean resolve)
+        throws ClassNotFoundException
+    {
+        synchronized (getClassLoadingLock(name)) {
+            // First, check if the class has already been loaded
+            Class&lt;?&gt; c = findLoadedClass(name);
+            if (c == null) {
+                long t0 = System.nanoTime();
+                try {
+                    if (parent != null) {
+                        c = parent.loadClass(name, false);
+                    } else {
+                        c = findBootstrapClassOrNull(name);
+                    }
+                } catch (ClassNotFoundException e) {
+                    // ClassNotFoundException thrown if class not found
+                    // from the non-null parent class loader
+                }
+
+                if (c == null) {
+                    // If still not found, then invoke findClass in order
+                    // to find the class.
+                    long t1 = System.nanoTime();
+                    c = findClass(name);
+
+                    // this is the defining class loader; record the stats
+                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
+                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
+                    sun.misc.PerfCounter.getFindClasses().increment();
+                }
+            }
+            if (resolve) {
+                resolveClass(c);
+            }
+            return c;
+        }
+    }
+}
+</pre>
+
+<h2 id="initiating-class-loader">initiating class loader</h2>
+
+<p>
+    To better visualize the parent-delegation model,<br/>
+    imagine a Java application creates a <b>user-defined class loader</b> named "Grandma."<br/>
+    Because the application passes <code>null</code> to Grandma's constructor,<br/>
+    Grandma's parent is set to the <b>bootstrap class loader</b>.<br/>
+    Time passes.<br/>
+    Sometime later, the application creates another class loader named "Mom."<br/>
+    Because the application passes to Mom's constructor a reference to Grandma,<br/>
+    Mom's parent is set to the <b>user-defined class loader</b> referred to affectionately as Grandma.<br/>
+    More time passes.<br/>
+    At some later time, the application creates a class loader named, "Cindy."<br/>
+    Because the application passes to Cindy's constructor a reference to Mom,<br/>
+    Cindy's parent is set to the <b>user-defined class loader</b> referred to as Mom.<br/>
+    <span class="note">bootstrap class loader --&gt; Grandma --&gt; Mom --&gt; Cindy</span>
+</p>
+<p>
+    Now imagine the application asks Cindy to load a type named <code>java.io.FileReader</code>.<br/>
+    When a class that follows the <b>parent delegation model</b> loads a type,<br/>
+    it first delegates to its parent -- it asks its parent to try and load the type.<br/>
+    Its parent, in turn, asks its parent, which first asks its parent, and so on.<br/>
+    The delegation continues all the way up to the end-point of the parent-delegation chain,<br/>
+    which is usually the <b>bootstrap class loader</b>.<br/>
+    Thus, the first thing Cindy does is ask Mom to load the type.<br/>
+    The first thing Mom does is ask Grandma to load the type.<br/>
+    And the first thing Grandma does is ask the <b>bootstrap class loader</b> to load the type.<br/>
+    In this case, the <b>bootstrap class loader</b> is able to load (or already has loaded) the type,<br/>
+    and returns the <code>Class</code> instance representing <code>java.io.FileReader</code> to Grandma.<br/>
+    Grandma passes this <code>Class</code> reference back to Mom,<br/>
+    who passes it back to Cindy, who returns it to the application.<br/>
+    <span class="note">举个例子，来说明parent delegation model是如何工作的。</span>
+</p>
+<p>
+    Note that given delegation between class loaders,
+    <span class="text-underline">the class loader that initiates loading</span> is not necessarily <span class="text-underline">the class loader that actually defines the type</span>.<br/>
+    In the previous example, the application initially asked Cindy to load the type,<br/>
+    but ultimately, <b>the bootstrap class loader</b> defined the type.<br/>
+    In Java terminology, a class loader that is asked to load a type, but returns a type loaded by some other class loader, is called an <b>initiating class loader</b> of that type.<br/>
+    The class loader that actually defines the type is called the <b>defining class loader</b> for the type.<br/>
+    In the previous example, therefore, the <b>defining class loader</b> for <code>java.io.FileReader</code> is the <b>bootstrap class loader</b>.<br/>
+    Class Cindy is an <b>initiating class loader</b>, but so are Mom, Grandma, and even the <b>bootstrap class loader</b>.<br/>
+    Any class loader that is asked to load a type and is able to return a reference to the <code>Class</code> instance representing the type is an <b>initiating loader</b> of that type.<br/>
+    <span class="note">这里讲述initiating class loader和defining class loader这两个概念。</span>
+</p>
+<p>
+    For another example, imagine the application asks Cindy to load a type named <code>com.artima.knitting.QuiltPattern</code>.<br/>
+    Cindy delegates to Mom, who delegates to Grandma, who delegates to the <b>bootstrap class loader</b>.<br/>
+    In this case, however, the <b>bootstrap class loader</b> is unable to load the type.<br/>
+    So control returns back to Grandma, who attempts to load the type in her custom way.<br/>
+    Because Grandma is responsible for loading standard extensions,<br/>
+    and the <code>com.artima.knitting</code> package is wisely installed in a JAR file in the standard extensions directory,<br/>
+    Grandma is able to load the type.<br/>
+    Grandma defines the type and returns the <code>Class</code> instance representing <code>com.artima.knitting.QuiltPattern</code> to Mom.<br/>
+    Mom passes this <code>Class</code> reference back to Cindy, who returns it to the application.<br/>
+    In this example, Grandma is the <b>defining loader</b> of the <code>com.artima.knitting.QuiltPattern</code> type.<br/>
+    Cindy, Mom, and Grandma -- but not the <b>bootstrap class loader</b> -- are initiating class loaders for the type.<br/>
+    <span class="note">进一步举例说明initiating class loader和defining class loader两者的区别。</span>
+</p>

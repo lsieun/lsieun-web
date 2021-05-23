@@ -1,0 +1,181 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">java.lang.ClassLoader</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-classloader-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    ClassLoader类，是一个抽象类，其后所有的类加载器都继承自ClassLoader（不包括Bootstrap ClassLoader）。
+</p>
+
+<ul>
+    <li>getParent()</li>
+    <li>loadClass(String name)</li>
+    <li>findLoadedClass(String name)</li>
+    <li>defineClass(String name, byte[] b, int off, int len)</li>
+    <li>resolveClass(Class&lt;?&gt; c)</li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+</ul>
+
+<h2 id="class-info">Class Info</h2>
+
+<p>
+    <code>java.lang.ClassLoader</code>是一个抽象类（abstract class）。
+</p>
+
+<pre title="ClassLoader.java" class="javacode">
+public abstract class ClassLoader {
+}
+</pre>
+
+<h2 id="fields">Fields</h2>
+
+<pre title="ClassLoader.java" class="javacode">
+public abstract class ClassLoader {
+    private final ClassLoader parent;
+}
+</pre>
+
+<h2 id="constructors">Constructors</h2>
+
+<pre title="ClassLoader.java" class="javacode">
+public abstract class ClassLoader {
+    protected ClassLoader(ClassLoader parent) {
+        this(checkCreateClassLoader(), parent);
+    }
+}
+</pre>
+
+<h2 id="methods">Methods</h2>
+
+<h3 id="loadClass">loadClass</h3>
+
+<pre title="ClassLoader.java" class="javacode">
+public abstract class ClassLoader {
+    public Class&lt;?&gt; loadClass(String name) throws ClassNotFoundException {
+        return loadClass(name, false);
+    }
+
+    protected Class&lt;?&gt; loadClass(String name, boolean resolve) throws ClassNotFoundException
+    {
+        synchronized (getClassLoadingLock(name)) {
+            // First, check if the class has already been loaded
+            Class&lt;?&gt; c = findLoadedClass(name);
+            if (c == null) {
+                long t0 = System.nanoTime();
+                try {
+                    if (parent != null) {
+                        c = parent.loadClass(name, false);
+                    } else {
+                        c = findBootstrapClassOrNull(name);
+                    }
+                } catch (ClassNotFoundException e) {
+                    // ClassNotFoundException thrown if class not found
+                    // from the non-null parent class loader
+                }
+
+                if (c == null) {
+                    // If still not found, then invoke findClass in order
+                    // to find the class.
+                    long t1 = System.nanoTime();
+                    c = findClass(name);
+
+                    // this is the defining class loader; record the stats
+                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
+                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
+                    sun.misc.PerfCounter.getFindClasses().increment();
+                }
+            }
+            if (resolve) {
+                resolveClass(c);
+            }
+            return c;
+        }
+    }
+
+    protected Class&lt;?&gt; findClass(String name) throws ClassNotFoundException {
+        throw new ClassNotFoundException(name);
+    }
+
+
+
+    protected final void resolveClass(Class&lt;?&gt; c) {
+        resolveClass0(c);
+    }
+}
+</pre>
+
+<h3 id="defineClass">defineClass</h3>
+
+<p>
+    If the <code>loadClass()</code> method of a <b>user-defined class loader</b> is able to locate or produce an array of bytes,
+    <code>loadClass()</code> must invoke <code>defineClass()</code>,
+    passing the fully qualified name of the desired type(<code>String name</code>) and
+    a reference to the byte array(<code>byte[] b</code>).<br/>
+    <span class="note">loadClass() --&gt; defineClass()</span>
+</p>
+
+<pre title="ClassLoader.java" class="javacode">
+public abstract class ClassLoader {
+    protected final Class&lt;?&gt; defineClass(String name, byte[] b, int off, int len) throws ClassFormatError {
+        return defineClass(name, b, off, len, null);
+    }
+}
+</pre>
+
+<p>
+    The <code>defineClass()</code> method makes sure all the type's <b>supertypes</b> are loaded.
+    It does this by invoking <code>loadClass()</code> on this <b>user-defined class loader</b> for each <b>direct superclass</b> and <b>superinterface</b>,
+    and recursively applies the resolution process on all <b>supertypes</b> in the hierarchy.
+    <span class="note">defineClass() --&gt; make sure all the type's supertypes are loaded</span>
+</p>
+
+<p>
+    Invoking <code>defineClass()</code> will cause the virtual machine to
+    attempt to parse the binary data(<code>byte[] b</code>) into <b>internal data structures</b> in the <b>method area</b>.
+    At this point the virtual machine will perform pass one of <b>verification</b>,
+    which ensures the passed array of bytes(<code>byte[] b</code>) adhere to the basic structure of the Java class file format.
+    The Java virtual machine uses the passed <b>fully qualified name</b>(<code>String name</code>) to verify that
+    the desired type name is actually declared as the name of the type in the passed array of bytes(<code>byte[] b</code>).<br/>
+    <span class="note">defineClass() --&gt; method area --&gt; verification</span>
+</p>
+
+<p>
+    The <code>defineClass()</code> method does not <b>link</b> and <b>initialize</b> the type.
+</p>
+
+<h3 id="findSystemClass">findSystemClass</h3>
+
+<pre title="ClassLoader.java" class="javacode">
+public abstract class ClassLoader {
+    protected final Class&lt;?&gt; findSystemClass(String name)
+        throws ClassNotFoundException
+    {
+        ClassLoader system = getSystemClassLoader();
+        if (system == null) {
+            if (!checkName(name))
+                throw new ClassNotFoundException(name);
+            Class&lt;?&gt; cls = findBootstrapClass(name);
+            if (cls == null) {
+                throw new ClassNotFoundException(name);
+            }
+            return cls;
+        }
+        return system.loadClass(name);
+    }
+
+    protected final Class&lt;?&gt; findLoadedClass(String name) {
+        if (!checkName(name))
+            return null;
+        return findLoadedClass0(name);
+    }
+}
+</pre>

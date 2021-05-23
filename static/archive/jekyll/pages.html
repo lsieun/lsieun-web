@@ -1,0 +1,66 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Pages</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Pages are the most basic building block for content.<br/>
+    They’re useful for standalone content<br/>
+    (content which is not date based or is not a group of content such as staff members or recipes).
+</p>
+
+<p>
+    The simplest way of adding a page is to add an HTML file in the root directory with a suitable filename.<br/>
+    You can also write a page in Markdown using a <code>.md</code> extension which converts to HTML on build.<br/>
+    For a site with a homepage, an about page, and a contact page,<br/>
+    here’s what the root directory and associated URLs might look like:
+</p>
+
+<pre title="root directory" class="plaintext">
+.
+├── about.md    # => http://example.com/about.html
+├── index.html    # => http://example.com/
+└── contact.html  # => http://example.com/contact.html
+</pre>
+
+<p>
+    If you have a lot of pages, you can organize them into subfolders.<br/>
+    The same subfolders<br/>
+    that are used to group your pages in your project’s source<br/>
+    will then exist in the <code>_site</code> folder when your site builds.<br/>
+    However, when a page has a <b>different</b> permalink set in the front matter,<br/>
+    the subfolder at <code>_site</code> changes accordingly.
+</p>
+
+<pre title="root directory" class="plaintext">
+.
+├── about.md          # => http://example.com/about.html
+├── documentation     # folder containing pages
+│   └── doc1.md       # => http://example.com/documentation/doc1.html
+├── design            # folder containing pages
+│   └── draft.md      # => http://example.com/design/draft.html
+</pre>
+
+<h2 id="changing-the-output-url">Changing the output URL</h2>
+
+<p>
+    You might want to have a particular folder structure for your source files that changes for the built site.<br/>
+    With <a href="permalinks.html">permalinks</a> you have full control of the output URL.
+</p>
+
+<h2 id="excerpts-for-pages">Excerpts for pages</h2>
+
+<p>
+    From Jekyll 4.1.1 onwards, one can <b>choose</b> to generate excerpts for their pages by setting <code>page_excerpts</code> to <code>true</code> in their
+    config file.
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://jekyllrb.com/docs/pages/" target="_blank">jekyllrb: Pages</a></li>
+</ul>

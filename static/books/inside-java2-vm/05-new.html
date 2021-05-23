@@ -1,0 +1,2626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>05. The Java Virtual Machine | Inside the Java 2 Virtual Machine</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/w3.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="text/javascript" src="/js/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="/js/auto-toc.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".at").autoToc();
+        });
+    </script>
+</head>
+
+<body>
+
+<div class="w3-margin-bottom w3-center">
+    <h1 class="w3-jumbo">05. The Java Virtual Machine</h1>
+</div>
+
+<div class="w3-row-padding w3-content" style="max-width:1400px">
+    <div id="main" class="w3-container w3-justify">
+        <article>
+            <p>
+                原文地址：<a class="external" href="https://www.artima.com/insidejvm/ed2/jvmP.html" target="_blank">Chapter 5 of Inside the Java Virtual Machine</a>
+            </p>
+            <p>
+                The previous four chapters of this book gave a broad overview of Java's architecture.<br/>
+                They showed how the Java virtual machine fits into the overall architecture relative to other components such as the language and API.<br/>
+                The remainder of this book will focus more narrowly on the Java virtual machine.<br/>
+                This chapter gives an overview of the Java virtual machine's <b>internal architecture</b>.<br/>
+                <span class="note">本篇文章关注于JVM的内部。</span>
+            </p>
+            <p>
+                The Java virtual machine is called "virtual" because it is an abstract computer defined by a specification.<br/>
+                To run a Java program, you need a concrete implementation of the abstract specification.<br/>
+                This chapter describes primarily the abstract specification of the Java virtual machine.<br/>
+                To illustrate the abstract definition of certain features, however,<br/>
+                this chapter also discusses various ways in which those features could be implemented.<br/>
+                <span class="note">要探讨的是JVM的抽象规范。</span>
+            </p>
+
+
+
+            <h2 id="what-is-a-jvm">What is a Java Virtual Machine?</h2>
+            <p>
+                To understand the Java virtual machine you must first be aware that<br/>
+                you may be talking about any of three different things when you say "Java virtual machine."<br/>
+                You may be speaking of:<br/>
+                <span class="note">对于JVM有3种不同的解读</span>
+            </p>
+            <ul>
+                <li>
+                    the abstract specification,
+                </li>
+                <li>
+                    a concrete implementation, or
+                </li>
+                <li>
+                    a runtime instance.
+                </li>
+            </ul>
+            <p>
+                <b>The abstract specification</b> is a concept, described in detail in the book: The Java Virtual Machine Specification, by Tim Lindholm and Frank Yellin.<br/>
+                <b>Concrete implementations</b>, which exist on many platforms and come from many vendors, are either all software or a combination of hardware and software.<br/>
+                <b>A runtime instance</b> hosts a single running Java application.<br/>
+                <span class="note">3种JVM的详细说明</span>
+            </p>
+            <p>
+                Each Java application runs inside a runtime instance of some concrete implementation of the abstract specification of the Java virtual machine.<br/>
+                In this book, the term "Java virtual machine" is used in all three of these senses.<br/>
+                Where the intended sense is not clear from the context, one of the terms "specification," "implementation," or "instance" is added to the term "Java virtual machine".<br/>
+                <span class="note">使用特定的单词来区分不同的JVM理解</span>
+            </p>
+
+
+
+            <h2 id="lifetime-of-a-jvm">The Lifetime of a Java Virtual Machine</h2>
+            <p>
+                A runtime instance of the Java virtual machine has a clear mission in life: to run one Java application.<br/>
+                When a Java application starts, a runtime instance is born.<br/>
+                When the application completes, the instance dies.<br/>
+                If you start three Java applications at the same time, on the same computer, using the same concrete implementation,<br/>
+                you'll get three Java virtual machine instances.<br/>
+                Each Java application runs inside its own Java virtual machine.<br/>
+                <span class="note">JVM runtime instance和application之间的关系。</span>
+            </p>
+            <p>
+                A Java virtual machine instance starts running its solitary application by invoking the <code>main()</code> method of some initial class.<br/>
+                The <code>main()</code> method must be public, static, return <code>void</code>, and accept one parameter: a <code>String</code> array.<br/>
+                Any class with such a <code>main()</code> method can be used as the starting point for a Java application.<br/>
+                <span class="note">这里讲application的main()方法。</span>
+            </p>
+            <p>
+                For example, consider an application that prints out its command line arguments:
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file jvm/ex1/Echo.java
+class Echo {
+    public static void main(String[] args) {
+        int len = args.length;
+        for (int i = 0; i &lt; len; ++i) {
+            System.out.print(args[i] + " ");
+        }
+        System.out.println();
+    }
+}
+</pre>
+            <p>
+                You must in some implementation-dependent way give a Java virtual machine the name of the initial class<br/>
+                that has the <code>main()</code> method that will start the entire application.<br/>
+                One real world example of a Java virtual machine implementation is the <code>java</code> program from Sun's Java 2 SDK.<br/>
+                If you wanted to run the <code>Echo</code> application using Sun's <code>java</code> on Window98,<br/>
+                for example, you would type in a command such as:<br/>
+                <span class="note">这里讲application的启动类（initial class）</span>
+            </p>
+<pre class="pre-block">
+java Echo Greetings, Planet.
+</pre>
+            <p>
+                The first word in the command, "<code>java</code>," indicates that the Java virtual machine from Sun's Java 2 SDK should be run by the operating system.<br/>
+                The second word, "<code>Echo</code>," is the name of the initial class.<br/>
+                <code>Echo</code> must have a public static method named <code>main()</code> that returns <code>void</code> and takes a <code>String</code> array as its only parameter.<br/>
+                The subsequent words, "<code>Greetings, Planet.</code>," are the command line arguments for the application.<br/>
+                These are passed to the <code>main()</code> method in the <code>String</code> array in the order in which they appear on the command line.<br/>
+                So, for the previous example, the contents of the <code>String</code> array passed to main in <code>Echo</code> are:<br/>
+                <code>arg[0]</code> is <code>"Greetings,"</code><br/>
+                <code>arg[1]</code> is <code>"Planet."</code><br/>
+                <span class="note">对上面的命令行进行解释。</span>
+            </p>
+            <p>
+                The <code>main()</code> method of an application's initial class serves as the starting point for that application's initial thread.<br/>
+                The initial thread can in turn fire off other threads.<br/>
+                <span class="note">这里讲到了initial thread的概念。</span>
+            </p>
+            <p>
+                Inside the Java virtual machine, threads come in two flavors: <b>daemon</b> and <b>non-daemon</b>.<br/>
+                A daemon thread is ordinarily a thread used by the virtual machine itself, such as a thread that performs garbage collection.<br/>
+                The application, however, can mark any threads it creates as daemon threads.<br/>
+                The initial thread of an application--the one that begins at <code>main()</code>--is a non-daemon thread.<br/>
+                <span class="note">这里对thread进行分类</span>
+            </p>
+            <p>
+                A Java application continues to execute (the virtual machine instance continues to live) as long as any non-daemon threads are still running.<br/>
+                When all non-daemon threads of a Java application terminate, the virtual machine instance will exit.<br/>
+                If permitted by the security manager, the application can also cause its own demise<br/>
+                by invoking the <code>exit()</code> method of class <code>Runtime</code> or <code>System</code>.<br/>
+                <span class="note">这里讲了application的退出和thread之间的关系。</span>
+            </p>
+            <p>
+                In the <code>Echo</code> application previous, the <code>main()</code> method doesn't invoke any other threads.<br/>
+                After it prints out the command line arguments, <code>main()</code> returns.<br/>
+                This terminates the application's only non-daemon thread, which causes the virtual machine instance to exit.<br/>
+                <span class="note">application中唯一的non-daemon thread结束后，JVM也就退出了。</span>
+            </p>
+
+
+
+            <h2 id="architecture-of-jvm">The Architecture of the Java Virtual Machine</h2>
+            <p>
+                In the Java virtual machine specification, the behavior of a virtual machine instance is described in terms of<br/>
+                <b>subsystems</b>, <b>memory areas</b>, <b>data types</b>, and <b>instructions</b>.<br/>
+                These components describe an abstract inner architecture for the abstract Java virtual machine.<br/>
+                <span class="text-underline">The purpose of these components is not so much to dictate an inner architecture for implementations.</span><br/>
+                <span class="text-underline">It is more to provide a way to strictly define the external behavior of implementations.</span><br/>
+                The specification defines the required behavior of any Java virtual machine implementation<br/>
+                in terms of these abstract components and their interactions.<br/>
+                <span class="note">这段值得一读。JVM specification并不侧重于实现过程中的具体architecture，而是侧重于外在的表现行为。</span>
+            </p>
+            <p>
+                Figure 5-1 shows a block diagram of the Java virtual machine that includes the <b>major subsystems</b> and <b>memory areas</b> described in the specification.<br/>
+                As mentioned in previous chapters, each Java virtual machine has a <b>class loader subsystem</b>:<br/>
+                a mechanism for loading types (classes and interfaces) given fully qualified names.<br/>
+                Each Java virtual machine also has an <b>execution engine</b>:<br/>
+                a mechanism responsible for executing the instructions contained in the methods of loaded classes.<br/>
+                <span class="note">对下图进行解释。</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-1-new.gif" alt="figure 5-1"/><br/>
+                <span class="text-emphasize">Figure 5-1. The internal architecture of the Java virtual machine.</span>
+            </div>
+            <p>
+                When a Java virtual machine runs a program, it needs memory to store many things,<br/>
+                including bytecodes and other information it extracts from loaded class files,<br/>
+                objects the program instantiates, parameters to methods, return values, local variables, and intermediate results of computations.<br/>
+                The Java virtual machine organizes the memory it needs to execute a program into several <b>runtime data areas</b>.<br/>
+                <span class="note">JVM的内存分成了不同的区域。</span>
+            </p>
+            <p>
+                Although the same runtime data areas exist in some form in every Java virtual machine implementation,<br/>
+                their specification is quite abstract.<br/>
+                Many decisions about the structural details of the runtime data areas are left to the designers of individual implementations.<br/>
+                <span class="note">JVM的runtime data areas是抽象的描述，具体的实现细节由设计者来完成。</span>
+            </p>
+            <p>
+                Different implementations of the virtual machine can have very different memory constraints.<br/>
+                Some implementations may have a lot of memory in which to work, others may have very little.<br/>
+                Some implementations may be able to take advantage of virtual memory, others may not.<br/>
+                The abstract nature of the specification of the runtime data areas<br/>
+                helps make it easier to implement the Java virtual machine on a wide variety of computers and devices.<br/>
+                <span class="note">不同的JVM实现有不同的限制条件，runtime data area的抽象描述是为了适应不同的硬件条件。</span>
+            </p>
+            <p>
+                Some runtime data areas are shared among all of an application's threads and others are unique to individual threads.<br/>
+                Each instance of the Java virtual machine has one <b>method area</b> and one <em>heap</em>.<br/>
+                These areas are shared by all threads running inside the virtual machine.<br/>
+                When the virtual machine loads a class file, it parses information about a type from the binary data contained in the class file.<br/>
+                It places this type information into the method area.<br/>
+                As the program runs, the virtual machine places all objects the program instantiates onto the heap.<br/>
+                See Figure 5-2 for a graphical depiction of these memory areas.<br/>
+                <span class="note">这里从thread的角度来看待runtime data area</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-2-new.gif" alt="figure 5-2"/><br/>
+                <span class="text-emphasize">Figure 5-2. Runtime data areas shared among all threads.</span>
+            </div>
+            <p>
+                As each new thread comes into existence, it gets its own <b>pc register</b> (program counter) and <b>Java stack</b>.<br/>
+                If the thread is executing a Java method (not a native method), the value of the <b>pc register</b> indicates the next instruction to execute.<br/>
+                A thread's <b>Java stack</b> stores the state of Java (not native) method invocations for the thread.<br/>
+                The state of a Java method invocation includes its local variables, the parameters with which it was invoked, its return value (if any), and intermediate calculations.<br/>
+                The state of native method invocations is stored in an implementation-dependent way in <b>native method stacks</b>,<br/>
+                as well as possibly in registers or other implementation-dependent memory areas.<br/>
+                <span class="note">这里讲每一个thread都会拥有的runtime data area区域。</span>
+            </p>
+            <p>
+                The <b>Java stack</b> is composed of <b>stack frames</b> (or <b>frames</b>).<br/>
+                A <b>stack frame</b> contains the state of one Java method invocation.<br/>
+                When a thread invokes a method, the Java virtual machine pushes a new frame onto that thread's Java stack.<br/>
+                When the method completes, the virtual machine pops and discards the frame for that method.<br/>
+                <span class="note">这里讲Java Stack上的stack frame；而stack frame与具体的方法对应。</span>
+            </p>
+            <p>
+                The Java virtual machine has no registers to hold intermediate data values.<br/>
+                The instruction set uses the Java stack for storage of intermediate data values.<br/>
+                This approach was taken by Java's designers to keep the Java virtual machine's instruction set compact and<br/>
+                to facilitate implementation on architectures with few or irregular general purpose registers.<br/>
+                In addition, the stack-based architecture of the Java virtual machine's instruction set<br/>
+                facilitates the code optimization work done by just-in-time and dynamic compilers<br/>
+                that operate at run-time in some virtual machine implementations.<br/>
+                <span class="note">JVM是基于stack-base architecture</span>
+            </p>
+            <p>
+                See Figure 5-3 for a graphical depiction of the memory areas the Java virtual machine creates for each thread.<br/>
+                These areas are private to the owning thread.<br/>
+                No thread can access the pc register or Java stack of another thread.<br/>
+                <span class="note">下图解释线程独享的内存区域。</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-3-new.gif" alt="figure 5-3"/><br/>
+                <span class="text-emphasize">Figure 5-3. Runtime data areas exclusive to each thread.</span>
+            </div>
+            <p>
+                Figure 5-3 shows a snapshot of a virtual machine instance in which three threads are executing.<br/>
+                At the instant of the snapshot, threads one and two are executing Java methods.<br/>
+                Thread three is executing a native method.<br/>
+                <span class="note">对上图进行解释。</span>
+            </p>
+            <p>
+                In Figure 5-3, as in all graphical depictions of the Java stack in this book, the stacks are shown growing downwards.<br/>
+                The "top" of each stack is shown at the bottom of the figure.<br/>
+                Stack frames for currently executing methods are shown in a lighter shade.<br/>
+                For threads that are currently executing a Java method, the pc register indicates the next instruction to execute.<br/>
+                In Figure 5-3, such pc registers (the ones for threads one and two) are shown in a lighter shade.<br/>
+                Because thread three is currently executing a native method,<br/>
+                the contents of its pc register--the one shown in dark gray--is undefined.<br/>
+                <span class="note">对上图进行解释。</span>
+            </p>
+
+
+            <h3 id="data-types">Data Types</h3>
+            <p>
+                The Java virtual machine computes by performing operations on certain types of data.<br/>
+                Both the <b>data types</b> and <b>operations</b> are strictly defined by the Java virtual machine specification.<br/>
+                The data types can be divided into a set of <b>primitive types</b> and a <b>reference type</b>.<br/>
+                Variables of the <b>primitive types</b> hold <b>primitive values</b>,<br/>
+                and variables of the <b>reference type</b> hold <b>reference values</b>.<br/>
+                Reference values refer to objects, but are not objects themselves.<br/>
+                Primitive values, by contrast, do not refer to anything. They are the actual data themselves.<br/>
+                You can see a graphical depiction of the Java virtual machine's families of data types in Figure 5-4.<br/>
+                <span class="note">这段值得一读。</span><br/>
+                <span class="note">我觉得，不同类型（int, double）的出现，其本质就是对于内存空间进行“小片分割”，比直接操作一个一个的byte空间更方便。</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-4-new.gif" alt="figure 5-4"/><br/>
+                <span class="text-emphasize">Figure 5-4. Data types of the Java virtual machine.</span>
+            </div>
+            <p>
+                All the primitive types of the Java programming language are primitive types of the Java virtual machine.<br/>
+                Although <code>boolean</code> qualifies as a primitive type of the Java virtual machine,<br/>
+                the instruction set has very limited support for it.<br/>
+                When a compiler translates Java source code into bytecodes,<br/>
+                it uses <code>int</code>s or <code>byte</code>s to represent <code>boolean</code>s.<br/>
+                In the Java virtual machine, <code>false</code> is represented by integer zero and <code>true</code> by any non-zero integer.<br/>
+                Operations involving <code>boolean</code> values use <code>int</code>s.<br/>
+                Arrays of <code>boolean</code> are accessed as arrays of <code>byte</code>,<br/>
+                though they may be represented on the heap as arrays of <code>byte</code> or as bit fields.<br/>
+                <span class="note">这里介绍primitive types中的boolean类型。这里对boolean类型进行了特殊说明。更进一步说，是因为JVM对boolean类型的支持不到位。</span>
+            </p>
+            <p>
+                The primitive types of the Java programming language other than <code>boolean</code> form the <b>numeric types</b>of the Java virtual machine.<br/>
+                The numeric types are divided between the <b>integral types</b>: <code>byte</code>, <code>short</code>, <code>int</code>, <code>long</code>, and <code>char</code>,<br/>
+                and the <b>floating-point types</b>: <code>float</code> and <code>double</code>.<br/>
+                As with the Java programming language, the primitive types of the Java virtual machine have the same range everywhere.<br/>
+                A <code>long</code> in the Java virtual machine always acts like a 64-bit signed twos complement number, independent of the underlying host platform.<br/>
+                <span class="note">这里介绍primitive types中的numeric types。numeric types = integral types + floating-point types</span>
+            </p>
+            <p>
+                The Java virtual machine works with one other primitive type that is unavailable to the Java programmer: the <code>returnAddress</code> type.<br/>
+                This primitive type is used to implement <code>finally</code> clauses of Java programs.<br/>
+                The use of the <code>returnAddress</code> type is described in detail in Chapter 18, "Finally Clauses."<br/>
+                <span class="note">这里介绍primitive types中的returnAddress类型。</span>
+            </p>
+            <p>
+                The reference type of the Java virtual machine is cleverly named <code>reference</code>.<br/>
+                Values of type <code>reference</code> come in three flavors:<br/>
+                the <b>class type</b>, the <b>interface type</b>, and the <b>array type</b>.<br/>
+                All three types have values that are references to dynamically created objects.<br/>
+                The class type's values are references to class instances.<br/>
+                The array type's values are references to arrays, which are full-fledged objects in the Java virtual machine.<br/>
+                The interface type's values are references to class instances that implement an interface.<br/>
+                One other reference value is the <code>null</code> value, which indicates the <code>reference</code> variable doesn't refer to any object.<br/>
+                <span class="note">这里介绍reference type</span>
+            </p>
+            <p>
+                The Java virtual machine specification defines <b>the range of values</b> for each of the data types, but does not define their sizes.<br/>
+                The number of bits used to store each data type value is a decision of the designers of individual implementations.<br/>
+                The ranges of the Java virtual machines data type's are shown in Table 5-1.<br/>
+                More information on the floating point ranges is given in Chapter 14, "Floating Point Arithmetic."<br/>
+                <span class="note">JVM specification规定的是data type的值的范围，而不是它们所占的空间大小。</span>
+            </p>
+            <div style="text-align: center;">
+                <table style="margin: auto;" cellpadding="2" border="1">
+                    <tbody>
+                    <tr bgcolor="#0066CC">
+                        <th>Type</th>
+                        <th>Range</th>
+                    </tr>
+                    <tr>
+                        <td><code>byte</code></td>
+                        <td>8-bit signed two's complement integer (-2<sup>7</sup> to 2<sup>7</sup> - 1, inclusive)</td>
+                    </tr>
+                    <tr>
+                        <td><code>short</code></td>
+                        <td>16-bit signed two's complement integer (-2<sup>15</sup> to 2<sup>15</sup> - 1, inclusive)</td>
+                    </tr>
+                    <tr>
+                        <td><code>int</code></td>
+                        <td>32-bit signed two's complement integer (-2<sup>31</sup> to 2<sup>31</sup> - 1, inclusive)</td>
+                    </tr>
+                    <tr>
+                        <td><code>long</code></td>
+                        <td>64-bit signed two's complement integer (-2<sup>63</sup> to 2<sup>63</sup> - 1, inclusive)</td>
+                    </tr>
+                    <tr>
+                        <td><code>char</code></td>
+                        <td>16-bit unsigned Unicode character (0 to 2<sup>16</sup> - 1, inclusive)</td>
+                    </tr>
+                    <tr>
+                        <td><code>float</code></td>
+                        <td>32-bit IEEE 754 single-precision float</td>
+                    </tr>
+                    <tr>
+                        <td><code>double</code></td>
+                        <td>64-bit IEEE 754 double-precision float</td>
+                    </tr>
+                    <tr>
+                        <td><code>returnAddress</code></td>
+                        <td>address of an opcode within the same method</td>
+                    </tr>
+                    <tr>
+                        <td><code>reference</code></td>
+                        <td>reference to an object on the heap, or <code>null</code></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p class="text-emphasize">
+                    Table 5-1. Ranges of the Java virtual machine's data types
+                </p>
+            </div>
+
+
+
+            <h3 id="word-size">Word Size</h3>
+            <p>
+                The basic unit of size for <b>data values</b> in the Java virtual machine is the <b>word</b>--<br/>
+                a fixed size chosen by the designer of each Java virtual machine implementation.<br/>
+                The word size must be large enough to hold a value of type <code>byte</code>, <code>short</code>, <code>int</code>,
+                <code>char</code>, <code>float</code>, <code>returnAddress</code>, or <code>reference</code>.<br/>
+                Two words must be large enough to hold a value of type <code>long</code> or <code>double</code>.<br/>
+                An implementation designer must therefore choose a word size that is at least 32 bits,<br/>
+                but otherwise can pick whatever word size will yield the most efficient implementation.<br/>
+                The word size is often chosen to be the size of a native pointer on the host platform.<br/>
+                <span class="note">这里对word这个概念进行介绍，值得一读。</span>
+            </p>
+            <p>
+                The specification of many of the Java virtual machine's <b>runtime data areas</b> are based upon this abstract concept of a <b>word</b>.<br/>
+                For example, two sections of a Java stack frame--the local variables and operand stack--are defined in terms of words.<br/>
+                These areas can contain values of any of the virtual machine's data types.<br/>
+                When placed into the local variables or operand stack, a value occupies either one or two words.<br/>
+                <span class="note">runtime data areas是基于word来计算的。</span>
+            </p>
+            <p>
+                As they run, Java programs cannot determine the word size of their host virtual machine implementation.<br/>
+                The word size does not affect the behavior of a program.<br/>
+                It is only an internal attribute of a virtual machine implementation.<br/>
+                <span class="note">word的大小是由JVM实现者来决定的。</span>
+            </p>
+
+
+
+            <h3 id="class-loader-subsystem">The Class Loader Subsystem</h3>
+            <p>
+                The part of a Java virtual machine implementation that takes care of finding and loading types is the <b>class loader subsystem</b>.<br/>
+                Chapter 1, "Introduction to Java's Architecture," gives an overview of this subsystem.<br/>
+                Chapter 3, "Security," shows how the subsystem fits into Java's security model.<br/>
+                This chapter describes the class loader subsystem in more detail and<br/>
+                show how it relates to the other components of the virtual machine's internal architecture.<br/>
+                <span class="note">这里来介绍Class Loader Subsystem</span>
+            </p>
+            <p>
+                As mentioned in Chapter 1, the Java virtual machine contains two kinds of class loaders:<br/>
+                a <b>bootstrap class loader</b> and <b>user-defined class loaders</b>.<br/>
+                The <b>bootstrap class loader</b> is a part of the virtual machine implementation,<br/>
+                and <b>user-defined class loaders</b> are part of the running Java application.<br/>
+                Classes loaded by different class loaders are placed into separate <b>name spaces</b> inside the Java virtual machine.<br/>
+                <span class="note">两种类型的class loader：bootstrap class loader和user-defined class loader</span>
+            </p>
+            <p>
+                The class loader subsystem involves many other parts of the Java virtual machine and several classes from the <code>java.lang</code> library.<br/>
+                For example, user-defined class loaders are regular Java objects whose class descends from <code>java.lang.ClassLoader</code>.<br/>
+                The methods of class <code>ClassLoader</code> allow Java applications to access the virtual machine's class loading machinery.<br/>
+                Also, for every type a Java virtual machine loads, it creates an instance of class <code>java.lang.Class</code> to represent that type.<br/>
+                Like all objects, <b>user-defined class loaders</b> and instances of class <code>Class</code> reside on the <b>heap</b>.<br/>
+                <b>Data for loaded types</b> resides in the <b>method area</b>.<br/>
+                <span class="note">这段值得一读，只是不好总结内容。</span>
+            </p>
+
+
+            <h4 id="loading-linking-initialization">Loading, Linking and Initialization</h4>
+            <p>
+                The class loader subsystem is responsible for more than just locating and importing the binary data for classes.<br/>
+                It must also verify the correctness of imported classes,<br/>
+                allocate and initialize memory for class variables,<br/>
+                and assist in the resolution of symbolic references.<br/>
+                These activities are performed in a strict order:<br/>
+                <span class="note">这里讲class loader subsystem的作用</span>
+            </p>
+            <ol>
+                <li>
+                    Loading: finding and importing the binary data for a type
+                </li>
+                <li>
+                    Linking: performing verification, preparation, and (optionally) resolution
+                    <ol type="a">
+                        <li>
+                            Verification: ensuring the correctness of the imported type
+                        </li>
+                        <li>
+                            Preparation: allocating memory for class variables and initializing the memory to default values
+                        </li>
+                        <li>
+                            Resolution: transforming symbolic references from the type into direct references.
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    Initialization: invoking Java code that initializes class variables to their proper starting values.
+                </li>
+            </ol>
+            <p>
+                The details of these processes are given Chapter 7, "The Lifetime of a Type."
+            </p>
+
+
+            <h4 id="bootstrap-class-loader">The Bootstrap Class Loader</h4>
+            <p>
+                Java virtual machine implementations must be able to recognize and load classes and interfaces stored in binary files that conform to the Java class file format.<br/>
+                An implementation is free to recognize other binary forms besides class files, but it must recognize class files.<br/>
+                <span class="note">必须能够读取java class file format格式的文件</span>
+            </p>
+            <p>
+                Every Java virtual machine implementation has a bootstrap class loader,<br/>
+                which knows how to load trusted classes, including the classes of the Java API.<br/>
+                The Java virtual machine specification doesn't define how the bootstrap loader should locate classes.<br/>
+                That is another decision the specification leaves to implementation designers.<br/>
+                <span class="note">介绍bootstrap class laoder</span>
+            </p>
+            <p>
+                Given a fully qualified type name, the bootstrap class loader must <b>in some way</b> attempt to produce the data that defines the type.<br/>
+                One common approach is demonstrated by the Java virtual machine implementation in Sun's 1.1 JDK on Windows98.<br/>
+                This implementation searches a user-defined directory path stored in an environment variable named <code>CLASSPATH</code>.<br/>
+                The bootstrap loader looks in each directory, in the order the directories appear in the <code>CLASSPATH</code>,<br/>
+                until it finds a file with the appropriate name: the type's simple name plus "<code>.class</code>".<br/>
+                Unless the type is part of the unnamed package, the bootstrap loader expects the file to be in a subdirectory of one the directories in the <code>CLASSPATH</code>.<br/>
+                The path name of the subdirectory is built from the package name of the type.<br/>
+                For example, if the bootstrap class loader is searching for class <code>java.lang.Object</code>,<br/>
+                it will look for <code>Object.class</code> in the <code>java\lang</code> subdirectory of each <code>CLASSPATH</code> directory.<br/>
+                <span class="note">这段说明boostrap class loader如何加载.class文件</span>
+            </p>
+            <p>
+                In 1.2, the bootstrap class loader of Sun's Java 2 SDK only looks in the directory<br/>
+                in which the system classes (the class files of the Java API) were installed.<br/>
+                The bootstrap class loader of the implementation of the Java virtual machine from Sun's Java 2 SDK does not look on the <code>CLASSPATH</code>.<br/>
+                In Sun's Java 2 SDK virtual machine, searching the class path is the job of the <b>system class loader</b>,<br/>
+                a user-defined class loader that is created automatically when the virtual machine starts up.<br/>
+                More information on the class loading scheme of Sun's Java 2 SDK is given in Chapter 8, "The Linking Model."<br/>
+                <span class="note">从Java 2开始，带给bootstrap class loader的变化。</span>
+            </p>
+
+
+            <h4 id="user-defined-class-loader">User-Defined Class Loaders</h4>
+            <p>
+                Although user-defined class loaders themselves are part of the Java application,<br/>
+                four of the methods in class <code>ClassLoader</code> are gateways into the Java virtual machine:<br/>
+                <span class="note">这里讲ClassLoader当中的4个方法非常重要。</span>
+            </p>
+<pre class="pre-block">
+// Four of the methods declared in class java.lang.ClassLoader:
+protected final Class defineClass(String name, byte data[], int offset, int length);
+protected final Class defineClass(String name, byte data[], int offset, int length, ProtectionDomain protectionDomain);
+protected final Class findSystemClass(String name);
+protected final void resolveClass(Class c);
+</pre>
+            <p>
+                Any Java virtual machine implementation must take care to connect these methods of class <code>ClassLoader</code> to the internal class loader subsystem.
+                <span class="note">这4个方法与class loader subsystem密切相关。</span>
+            </p>
+            <p>
+                The two overloaded <code>defineClass()</code> methods accept a <code>byte</code> array, <code>data[]</code>, as input.<br/>
+                Starting at position <code>offset</code> in the array and continuing for <code>length</code> bytes,<br/>
+                class <code>ClassLoader</code> expects binary data conforming to the Java class file format--<br/>
+                binary data that represents a new type for the running application --<br/>
+                with the fully qualified name specified in <code>name</code>.<br/>
+                The type is assigned to either a default protection domain, if the first version of <code>defineClass()</code> is used,<br/>
+                or to the protection domain object referenced by the <code>protectionDomain</code> parameter.<br/>
+                Every Java virtual machine implementation must make sure<br/>
+                the <code>defineClass()</code> method of class <code>ClassLoader</code> can cause a new type to be imported into the method area.<br/>
+                <span class="note">这里介绍defineClass()方法的参数</span>
+            </p>
+            <p>
+                The <code>findSystemClass()</code> method accepts a <code>String</code> representing a fully qualified name of a type.<br/>
+                When a user-defined class loader invokes this method in version 1.0 and 1.1,<span class="note">在Java 1.1的情况</span><br/>
+                it is requesting that the virtual machine attempt to load the named type via its bootstrap class loader.<br/>
+                If the bootstrap class loader has already loaded or successfully loads the type,<br/>
+                it returns a reference to the <code>Class</code> object representing the type.<br/>
+                If it can't locate the binary data for the type, it throws <code>ClassNotFoundException</code>.<br/>
+                In version 1.2, the <code>findSystemClass()</code> method attempts to load the requested type from the system class loader.<span class="note">在Java 1.2的情况</span><br/>
+                Every Java virtual machine implementation must make sure<br/>
+                the <code>findSystemClass()</code> method can invoke the bootstrap (if version 1.0 or 1.1) or system (if version 1.2 or later) class loader in this way.<br/>
+                <span class="note">这里介绍findSystemClass()方法</span>
+            </p>
+            <p>
+                The <code>resolveClass()</code> method accepts a reference to a <code>Class</code> instance.<br/>
+                This method causes the type represented by the <code>Class</code> instance to be linked (if it hasn't already been linked).<br/>
+                The <code>defineClass()</code> method, described previous, only takes care of loading.<br/>
+                (See the previous section, "Loading, Linking, and Initialization" for definitions of these terms.)<br/>
+                When <code>defineClass()</code> returns a <code>Class</code> instance,<br/>
+                the binary file for the type has definitely been located and imported into the method area, but not necessarily linked and initialized.<br/>
+                Java virtual machine implementations make sure<br/>
+                the <code>resolveClass()</code> method of class <code>ClassLoader</code> can cause the class loader subsystem to perform linking.<br/>
+                <span class="note">这里介绍resolveClass()方法</span>
+            </p>
+            <p>
+                The details of how a Java virtual machine performs class loading, linking, and initialization,<br/>
+                with user-defined class loaders is given in Chapter 8, "The Linking Model."
+            </p>
+
+
+            <h4 id="name-space">Name Spaces</h4>
+            <p>
+                As mentioned in Chapter 3, "Security," each class loader maintains its own name space populated by the types it has loaded.<br/>
+                Because each class loader has its own name space, a single Java application can load multiple types with the same fully qualified name.<br/>
+                A type's fully qualified name, therefore, is not always enough to uniquely identify it inside a Java virtual machine instance.<br/>
+                If multiple types of that same name have been loaded into different name spaces,<br/>
+                the identity of the class loader that loaded the type (the identity of the name space it is in) will also be needed to uniquely identify that type.<br/>
+                <span class="note">这里讲name space的概念。</span>
+            </p>
+            <p>
+                Name spaces arise inside a Java virtual machine instance as a result of the process of resolution.<br/>
+                As part of the data for each loaded type, the Java virtual machine keeps track of the class loader that imported the type.<br/>
+                When the virtual machine needs to resolve a symbolic reference from one class to another,<br/>
+                it requests the referenced class from the same class loader that loaded the referencing class.<br/>
+                This process is described in detail in Chapter 8, "The Linking Model."<br/>
+                <span class="note">使用相同的class loader去加载新的类型。</span>
+            </p>
+
+
+
+            <h3 id="method-area">The Method Area</h3>
+            <p>
+                Inside a Java virtual machine instance, information about loaded types is stored in a logical area of memory called the <b>method area.</b><br/>
+                When the Java virtual machine loads a type, it uses a class loader to locate the appropriate class file.<br/>
+                The class loader reads in the class file--a linear stream of binary data--and passes it to the virtual machine.<br/>
+                The virtual machine extracts information about the type from the binary data and stores the information in the method area.<br/>
+                Memory for class (static) variables declared in the class is also taken from the method area.<br/>
+                <span class="note">加载的类放在了method area内存空间上。</span>
+            </p>
+            <p>
+                The manner in which a Java virtual machine implementation represents type information internally is a decision of the implementation designer.<br/>
+                For example, multi-byte quantities in class files are stored in big-endian (most significant byte first) order.<br/>
+                When the data is imported into the method area, however, a virtual machine can store the data in any manner.<br/>
+                If an implementation sits on top of a little-endian processor,<br/>
+                the designers may decide to store multi-byte values in the method area in little-endian order.<br/>
+                <span class="note">JVM对于method area的实现是由具体设计者来决定的。</span>
+            </p>
+            <p>
+                The virtual machine will search through and use the type information stored in the method area as it executes the application it is hosting.<br/>
+                Designers must attempt to devise data structures that will facilitate speedy execution of the Java application, but must also think of compactness.<br/>
+                If designing an implementation that will operate under low memory constraints, designers may decide to trade off some execution speed in favor of compactness.<br/>
+                If designing an implementation that will run on a virtual memory system, on the other hand,<br/>
+                designers may decide to store redundant information in the method area to facilitate execution speed.<br/>
+                (If the underlying host doesn't offer virtual memory, but does offer a hard disk, designers could create their own virtual memory system as part of their implementation.)<br/>
+                Designers can choose whatever data structures and organization they feel optimize their implementations performance, in the context of its requirements.<br/>
+                <span class="note">JVM的实现者可以选择适合自己的内存结构。</span>
+            </p>
+            <p>
+                All threads share the same method area, so access to the method area's data structures must be designed to be thread-safe.<br/>
+                If two threads are attempting to find a class named <code>Lava</code>, for example, and <code>Lava</code> has not yet been loaded,<br/>
+                only one thread should be allowed to load it while the other one waits.<br/>
+                <span class="note">从thread的角度来看待method area：method area是所有thread共享的区域，要保证只有一个thread在加载某一个具体的类。</span>
+            </p>
+            <p>
+                The size of the method area need not be fixed.<br/>
+                As the Java application runs, the virtual machine can expand and contract the method area to fit the application's needs.<br/>
+                Also, the memory of the method area need not be contiguous.<br/>
+                It could be allocated on a heap--even on the virtual machine's own heap.<br/>
+                Implementations may allow users or programmers to specify an initial size for the method area, as well as a maximum or minimum size.<br/>
+                <span class="note">这里探讨method area这个内存空间大小、是否连续的问题。</span>
+            </p>
+            <p>
+                The method area can also be garbage collected.<br/>
+                Because Java programs can be dynamically extended via user-defined class loaders, classes can become "unreferenced" by the application.<br/>
+                If a class becomes unreferenced, a Java virtual machine can unload the class (garbage collect it) to keep the memory occupied by the method area at a minimum.<br/>
+                The unloading of classes--including the conditions under which a class can become "unreferenced"--is described in Chapter 7, "The Lifetime of a Type."<br/>
+                <span class="note">这里从GC的角度来看method area。</span>
+            </p>
+
+
+            <h4 id="type-information">Type Information</h4>
+            <p>
+                For each type it loads, a Java virtual machine must store the following kinds of information in the method area:<br/>
+                <span class="note">下面这些内容就是类名的信息，例如自己的类名、父类的类名、实现的接口的名称</span>
+            </p>
+            <ul>
+                <li>
+                    The fully qualified name of the type
+                </li>
+                <li>
+                    The fully qualified name of the type's direct superclass
+                    (unless the type is an interface or class <code>java.lang.Object</code>, neither of which have a superclass)
+                </li>
+                <li>
+                    Whether or not the type is a class or an interface
+                </li>
+                <li>
+                    The type's modifiers (some subset of` <code>public</code>, <code>abstract</code>, <code>final</code>)
+                </li>
+                <li>
+                    An ordered list of the fully qualified names of any direct superinterfaces
+                </li>
+            </ul>
+            <p>
+                Inside the Java class file and Java virtual machine, type names are always stored as <b>fully qualified names</b>.<br/>
+                In Java source code, a fully qualified name is the name of a type's package, plus a dot, plus the type's <b>simple name</b>.<br/>
+                For example, the fully qualified name of class <code>Object</code> in package <code>java.lang</code> is <code>java.lang.Object</code>.<br/>
+                In class files, the dots are replaced by slashes, as in <code>java/lang/Object</code>.<br/>
+                In the method area, fully qualified names can be represented in whatever form and data structures a designer chooses.<br/>
+                <span class="note">这里比较Java File和Class File当中类名之间的差异。</span>
+            </p>
+            <p>
+                In addition to the basic type information listed previously, the virtual machine must also store for each loaded type:<br/>
+                <span class="note">后面的3个信息才是重要的。</span>
+            </p>
+            <ul>
+                <li>
+                    The constant pool for the type
+                </li>
+                <li>
+                    Field information
+                </li>
+                <li>
+                    Method information
+                </li>
+                <li>
+                    All class (static) variables declared in the type, except constants
+                </li>
+                <li>
+                    A reference to class <code>ClassLoader</code>
+                </li>
+                <li>
+                    A reference to class <code>Class</code>
+                </li>
+            </ul>
+            <p>
+                This data is described in the following sections.
+            </p>
+
+
+            <h4 id="constant-pool">The Constant Pool</h4>
+            <p>
+                For each type it loads, a Java virtual machine must store a <b>constant pool</b>.<br/>
+                A constant pool is an ordered set of constants used by the type,<br/>
+                including literals (string, integer, and floating point constants) and symbolic references to types, fields, and methods.<br/>
+                Entries in the constant pool are referenced by index, much like the elements of an array.<br/>
+                Because it holds symbolic references to all types, fields, and methods used by a type,<br/>
+                the constant pool plays a central role in the dynamic linking of Java programs.<br/>
+                The constant pool is described in more detail later in this chapter and in Chapter 6, "The Java Class File."<br/>
+                <span class="note">介绍constant pool</span>
+            </p>
+
+
+            <h4 id="field-information">Field Information</h4>
+            <p>
+                For each field declared in the type, the following information must be stored in the method area.<br/>
+                In addition to the information for each field, the order in which the fields are declared by the class or interface must also be recorded.<br/>
+                Here's the list for fields:<br/>
+            </p>
+            <ul>
+                <li>
+                    The field's name
+                </li>
+                <li>
+                    The field's type
+                </li>
+                <li>
+                    The field's modifiers (some subset of <code>public</code>,
+                    <code>private</code>, <code>protected</code>, <code>static</code>,
+                    <code>final</code>, <code>volatile</code>, <code>transient</code>)
+                </li>
+            </ul>
+
+
+            <h4 id="method-information">Method Information</h4>
+            <p>
+                For each method declared in the type, the following information must be stored in the method area.<br/>
+                As with fields, the order in which the methods are declared by the class or interface must be recorded as well as the data.<br/>
+                Here's the list:<br/>
+            </p>
+            <ul>
+                <li>
+                    The method's name
+                </li>
+                <li>
+                    The method's return type (or <code>void</code>)
+                </li>
+                <li>
+                    The number and types (in order) of the method's parameters
+                </li>
+                <li>
+                    The method's modifiers (some subset of <code>public</code>,
+                    <code>private</code>, <code>protected</code>, <code>static</code>,
+                    <code>final</code>, <code>synchronized</code>, <code>native</code>,
+                    <code>abstract</code>)
+                </li>
+            </ul>
+            <p>
+                In addition to the items listed previously, the following information must also be stored with each method that is not abstract or native:
+            </p>
+            <ul>
+                <li>
+                    The method's bytecodes
+                </li>
+                <li>
+                    The sizes of the operand stack and local variables sections of the method's stack frame
+                    (these are described in a later section of this chapter)
+                </li>
+                <li>
+                    An exception table (this is described in Chapter 17, "Exceptions")
+                </li>
+            </ul>
+
+
+            <h4 id="class-variable">Class Variables</h4>
+            <p>
+                Class variables are shared among all instances of a class and can be accessed even in the absence of any instance.<br/>
+                These variables are associated with the class--not with instances of the class--<br/>
+                so they are logically part of the class data in the method area.<br/>
+                Before a Java virtual machine uses a class,<br/>
+                it must allocate memory from the method area for each non-final class variable declared in the class.<br/>
+                <span class="note">class variable是放在method area区域。</span>
+            </p>
+            <p>
+                Constants (class variables declared final) are not treated in the same way as non-final class variables.<br/>
+                Every type that uses a final class variable gets a copy of the constant value in its own constant pool.<br/>
+                As part of the constant pool, final class variables are stored in the method area--just like non-final class variables.<br/>
+                But whereas non-final class variables are stored as part of the data for the type that <b>declares</b> them,<br/>
+                final class variables are stored as part of the data for any type that <b>uses</b> them.<br/>
+                This special treatment of constants is explained in more detail in Chapter 6, "The Java Class File."<br/>
+                <span class="note">这里对class variable和constant value进行对比。</span>
+            </p>
+
+
+            <h4 id="ref-to-class-loader">A Reference to Class <code>ClassLoader</code></h4>
+            <p>
+                For each type it loads, a Java virtual machine must keep track of whether or not the type was loaded via the bootstrap class loader or a user-defined class loader.<br/>
+                For those types loaded via a user-defined class loader, the virtual machine must store a reference to the user-defined class loader that loaded the type.<br/>
+                This information is stored as part of the type's data in the method area.<br/>
+                <span class="note">method area会记录type的class loader信息。</span>
+            </p>
+            <p>
+                The virtual machine uses this information during dynamic linking.
+                When one type refers to another type, the virtual machine requests the referenced type from the same class loader that loaded the referencing type.<br/>
+                This process of dynamic linking is also central to the way the virtual machine forms separate name spaces.<br/>
+                To be able to properly perform dynamic linking and maintain multiple name spaces,<br/>
+                the virtual machine needs to know what class loader loaded each type in its method area.<br/>
+                The details of dynamic linking and name spaces are given in Chapter 8, "The Linking Model."<br/>
+                <span class="note">这段值得一读。这个class loader信息与dynamic linking、name space密切相关。</span>
+            </p>
+
+
+            <h4 id="ref-to-class">A Reference to Class <code>Class</code></h4>
+            <p>
+                An instance of class <code>java.lang.Class</code> is created by the Java virtual machine for every type it loads.<br/>
+                The virtual machine must in some way associate a reference to the <code>Class</code> instance for a type with the type's data in the method area.<br/>
+                <span class="note">method area会记录type的Class信息。</span>
+            </p>
+            <p>
+                Your Java programs can obtain and use references to <code>Class</code> objects.<br/>
+                One static method in class <code>Class</code>,<br/>
+                allows you to get a reference to the <code>Class</code> instance for any loaded class:<br/>
+                <span class="note">介绍Class.forName()方法。</span>
+            </p>
+<pre class="pre-block">
+// A method declared in class java.lang.Class:
+public static Class forName(String className);
+</pre>
+            <p>
+                If you invoke <code>forName("java.lang.Object")</code>, for example,<br/>
+                you will get a reference to the <code>Class</code> object that represents <code>java.lang.Object</code>.<br/>
+                If you invoke <code>forName("java.util.Enumeration")</code>,<br/>
+                you will get a reference to the <code>Class</code> object that represents the <code>Enumeration</code> interface from the <code>java.util</code> package.<br/>
+                You can use <code>forName()</code> to get a <code>Class</code> reference for any loaded type from any package,<br/>
+                so long as the type can be (or already has been) loaded into the current name space.<br/>
+                If the virtual machine is unable to load the requested type into the current name space,<br/>
+                <code>forName()</code> will throw <code>ClassNotFoundException</code>.<br/>
+                <span class="note">继续对Class.forName()进行介绍。</span>
+            </p>
+            <p>
+                An alternative way to get a <code>Class</code> reference is to invoke <code>getClass()</code> on any object reference.<br/>
+                This method is inherited by every object from class <code>Object</code> itself:<br/>
+                <span class="note">这里介绍obj.getClass()方法</span>
+            </p>
+<pre class="pre-block">
+// A method declared in class java.lang.Object:
+public final Class getClass();
+</pre>
+            <p>
+                If you have a reference to an object of class <code>java.lang.Integer</code>, for example,<br/>
+                you could get the <code>Class</code> object for <code>java.lang.Integer</code><br/>
+                simply by invoking <code>getClass()</code> on your reference to the <code>Integer</code> object.<br/>
+                <span class="note">举个例子。</span>
+            </p>
+            <p>
+                Given a reference to a <code>Class</code> object,<br/>
+                you can find out information about the type by invoking methods declared in class <code>Class</code>.<br/>
+                If you look at these methods,<br/>
+                you will quickly realize that class <code>Class</code> gives the running application access to the information stored in the method area.<br/>
+                Here are some of the methods declared in class <code>Class</code>:<br/>
+                <span class="note">这里介绍Class定义了哪些方法</span>
+            </p>
+<pre class="pre-block">
+// Some of the methods declared in class java.lang.Class:
+public String getName();
+public Class getSuperClass();
+public boolean isInterface();
+public Class[] getInterfaces();
+public ClassLoader getClassLoader();
+</pre>
+            <p>
+                These methods just return information about a loaded type.<br/>
+                <code>getName()</code> returns the fully qualified name of the type.<br/>
+                <code>getSuperClass()</code> returns the <code>Class</code> instance for the type's direct superclass.<br/>
+                If the type is class <code>java.lang.Object</code> or an interface, none of which have a superclass,<br/>
+                <code>getSuperClass()</code> returns <code>null</code>.<br/>
+                <code>isInterface()</code> returns <code>true</code> if the <code>Class</code> object describes an interface, <code>false</code> if it describes a class.<br/>
+                <code>getInterfaces()</code> returns an array of <code>Class</code> objects, one for each direct superinterface.<br/>
+                The superinterfaces appear in the array in the order they are declared as superinterfaces by the type.<br/>
+                If the type has no direct superinterfaces, <code>getInterfaces()</code> returns an array of length zero.<br/>
+                <code>getClassLoader()</code> returns a reference to the <code>ClassLoader</code> object that loaded this type,<br/>
+                or <code>null</code> if the type was loaded by the bootstrap class loader.<br/>
+                All this information comes straight out of the method area.<br/>
+                <span class="note">对上面几个方法进行介绍</span>
+            </p>
+
+
+            <h4 id="method-tables">Method Tables</h4>
+            <p>
+                The type information stored in the method area must be organized to be quickly accessible.<br/>
+                In addition to the raw type information listed previously,<br/>
+                implementations may include other data structures that speed up access to the raw data.<br/>
+                One example of such a data structure is a <b>method table</b>.<br/>
+                For each non-abstract class a Java virtual machine loads,<br/>
+                it could generate a method table and include it as part of the class information it stores in the method area.<br/>
+                A method table is an array of direct references to all the instance methods that may be invoked on a class instance,<br/>
+                including instance methods inherited from superclasses.<br/>
+                (A method table isn't helpful in the case of abstract classes or interfaces, because the program will never instantiate these.)<br/>
+                A method table allows a virtual machine to quickly locate an instance method invoked on an object.<br/>
+                Method tables are described in detail in Chapter 8, "The Linking Model."<br/>
+                <span class="note">method table的目的是为了让JVM运行的更快。</span>
+            </p>
+
+
+
+            <h4 id="example-of-method-area-use">An Example of Method Area Use</h4>
+            <p>
+                As an example of how the Java virtual machine uses the information it stores in the method area, consider these classes:
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file jvm/ex2/Lava.java
+class Lava {
+
+    private int speed = 5; // 5 kilometers per hour
+
+    void flow() {
+    }
+}
+
+// On CD-ROM in file jvm/ex2/Volcano.java
+class Volcano {
+
+    public static void main(String[] args) {
+        Lava lava = new Lava();
+        lava.flow();
+    }
+}
+</pre>
+            <p>
+                The following paragraphs describe how an implementation might execute the first instruction<br/>
+                in the bytecodes for the <code>main()</code> method of the <code>Volcano</code> application.<br/>
+                Different implementations of the Java virtual machine can operate in very different ways.<br/>
+                The following description illustrates one way--but not the only way--<br/>
+                a Java virtual machine could execute the first instruction of <code>Volcano</code>'s <code>main()</code> method.<br/>
+                <span class="note">接下来要对上面的代码进行解释</span>
+            </p>
+            <p>
+                To run the <code>Volcano</code> application, you give the name "<code>Volcano</code>" to a Java virtual machine in an implementation-dependent manner.<br/>
+                Given the name <code>Volcano</code>, the virtual machine finds and reads in file <code>Volcano.class</code>.<br/>
+                It extracts the definition of class <code>Volcano</code> from the binary data in the imported class file and places the information into the method area.<br/>
+                The virtual machine then invokes the <code>main()</code> method, by interpreting the bytecodes stored in the method area.<br/>
+                As the virtual machine executes <code>main()</code>,<br/>
+                it maintains a pointer to the constant pool (a data structure in the method area) for the current class (class <code>Volcano</code>).<br/>
+                <span class="note">解释JVM执行main()方法的细节。</span>
+            </p>
+            <p>
+                Note that this Java virtual machine has already begun to execute the bytecodes for <code>main()</code> in class <code>Volcano</code><br/>
+                even though it hasn't yet loaded class <code>Lava</code>.<br/>
+                Like many (probably most) implementations of the Java virtual machine,<br/>
+                this implementation doesn't wait until all classes used by the application are loaded before it begins executing <code>main()</code>.<br/>
+                It loads classes only as it needs them.<br/>
+                <span class="note">开始谈到Lava类</span>
+            </p>
+            <p>
+                <code>main()</code>'s first instruction tells the Java virtual machine to allocate enough memory for the class listed in constant pool entry one.<br/>
+                The virtual machine uses its pointer into <code>Volcano</code>'s constant pool to look up entry one and finds a symbolic reference to class <code>Lava</code>.<br/>
+                It checks the method area to see if <code>Lava</code> has already been loaded.<br/>
+                <span class="note">查看Lava类是否已经被加载。</span>
+            </p>
+            <p>
+                The symbolic reference is just a string giving the class's fully qualified name: <code>"Lava"</code>.<br/>
+                Here you can see that the method area must be organized so a class can be located--as quickly as possible--given only the class's fully qualified name.<br/>
+                Implementation designers can choose whatever algorithm and data structures best fit their needs--a hash table, a search tree, anything.<br/>
+                This same mechanism can be used by the static <code>forName()</code> method of class <code>Class</code>,<br/>
+                which returns a <code>Class</code> reference given a fully qualified name.<br/>
+                <span class="note">通过fully qualified class找到Lava类</span>
+            </p>
+            <p>
+                When the virtual machine discovers that it hasn't yet loaded a class named "<code>Lava</code>," it proceeds to find and read in file <code>Lava.class</code>.<br/>
+                It extracts the definition of class <code>Lava</code> from the imported binary data and places the information into the method area.<br/>
+                <span class="note">将Lava类加载到method area区域</span>
+            </p>
+            <p>
+                The Java virtual machine then replaces the symbolic reference in <code>Volcano</code>'s constant pool entry one,<br/>
+                which is just the string <code>"Lava"</code>, with a pointer to the class data for <code>Lava</code>.<br/>
+                If the virtual machine ever has to use <code>Volcano</code>'s constant pool entry one again,<br/>
+                it won't have to go through the relatively slow process of searching through the method area<br/>
+                for class <code>Lava</code> given only a symbolic reference, the string <code>"Lava"</code>.<br/>
+                It can just use the pointer to more quickly access the class data for <code>Lava</code>.<br/>
+                This process of replacing symbolic references with direct references (in this case, a native pointer) is called <b>constant pool resolution</b>.<br/>
+                The symbolic reference is <b>resolved</b> into a direct reference by searching through the method area<br/>
+                until the referenced entity is found, loading new classes if necessary.<br/>
+                <span class="note">这里讲constant pool resolution的过程</span>
+            </p>
+            <p>
+                Finally, the virtual machine is ready to actually allocate memory for a new <code>Lava</code> object.<br/>
+                Once again, the virtual machine consults the information stored in the method area.<br/>
+                It uses the pointer (which was just put into <code>Volcano</code>'s constant pool entry one) to the <code>Lava</code> data<br/>
+                (which was just imported into the method area) to find out how much heap space is required by a <code>Lava</code> object.<br/>
+                <span class="note">为Lava对象分配内存空间。</span>
+            </p>
+            <p>
+                A Java virtual machine can always determine the amount of memory required to represent an object by looking into the class data stored in the method area.<br/>
+                The actual amount of heap space required by a particular object, however, is implementation-dependent.<br/>
+                The internal representation of objects inside a Java virtual machine is another decision of implementation designers.<br/>
+                Object representation is discussed in more detail later in this chapter.<br/>
+                <span class="note">JVM可以计算出一个object要占用多少内存空间。</span>
+            </p>
+            <p>
+                Once the Java virtual machine has determined the amount of heap space required by a <code>Lava</code> object,<br/>
+                it allocates that space on the heap and initializes the instance variable <code>speed</code> to zero, its default initial value.<br/>
+                If class <code>Lava</code>'s superclass, <code>Object</code>, has any instance variables, those are also initialized to default initial values.<br/>
+                (The details of initialization of both classes and objects are given in Chapter 7, "The Lifetime of a Type.")<br/>
+                <span class="note">JVM为object分配内存空间，并给字段赋予default initial value。</span>
+            </p>
+            <p>
+                The first instruction of <code>main()</code> completes by pushing a reference to the new <code>Lava</code> object onto the stack.<br/>
+                A later instruction will use the reference to invoke Java code that initializes the <code>speed</code> variable to its proper initial value, five.<br/>
+                Another instruction will use the reference to invoke the <code>flow()</code> method on the referenced <code>Lava</code> object.<br/>
+                <span class="note">解释后续的instruction</span>
+            </p>
+
+
+            <h3 id="heap">The Heap</h3>
+            <p>
+                Whenever a class instance or array is created in a running Java application, the memory for the new object is allocated from a single heap.<br/>
+                As there is only one heap inside a Java virtual machine instance, all threads share it.<br/>
+                Because a Java application runs inside its "own" exclusive Java virtual machine instance,<br/>
+                there is a separate heap for every individual running application.<br/>
+                There is no way two different Java applications could trample on each other's heap data.<br/>
+                Two different threads of the same application, however, could trample on each other's heap data.<br/>
+                This is why you must be concerned about proper synchronization of multi-threaded access to objects (heap data) in your Java programs.<br/>
+                <span class="note">heap区域是所有thread共享的。</span>
+            </p>
+            <p>
+                The Java virtual machine has an instruction that allocates memory on the heap for a new object, but has no instruction for freeing that memory.<br/>
+                Just as you can't explicitly free an object in Java source code, you can't explicitly free an object in Java bytecodes.<br/>
+                The virtual machine itself is responsible for deciding whether and when to free memory occupied by objects that are no longer referenced by the running application.<br/>
+                Usually, a Java virtual machine implementation uses a <b>garbage collector</b> to manage the heap.<br/>
+                <span class="note">这里介绍GC，值得一读。因为它从instruction的角度来说明，让人耳目一新。</span>
+            </p>
+
+
+            <h4 id="garbage-collection">Garbage Collection</h4>
+            <p>
+                A garbage collector's primary function is to automatically reclaim the memory used by objects that are no longer referenced by the running application.<br/>
+                It may also move objects as the application runs to reduce heap fragmentation.<br/>
+                <span class="note">说明GC的主要作用</span>
+            </p>
+            <p>
+                A garbage collector is not strictly required by the Java virtual machine specification.<br/>
+                The specification only requires that an implementation manage its own heap <b>in some manner</b>.<br/>
+                For example, an implementation could simply have a fixed amount of heap space available and<br/>
+                throw an <code>OutOfMemoryError</code> when that space fills up.<br/>
+                While this implementation may not win many prizes, it does qualify as a Java virtual machine.<br/>
+                The Java virtual machine specification does not say how much memory an implementation must make available to running programs.<br/>
+                It does not say how an implementation must manage its heap.<br/>
+                It says to implementation designers only that the program will be allocating memory from the heap, but not freeing it.<br/>
+                It is up to designers to figure out how they want to deal with that fact.<br/>
+                <span class="note">JVM specification并没有对GC提出约束条件，需要JVM的设计者自己决定。值得一读。</span>
+            </p>
+            <p>
+                No garbage collection technique is dictated by the Java virtual machine specification.<br/>
+                Designers can use whatever techniques seem most appropriate given their goals, constraints, and talents.<br/>
+                Because references to objects can exist in many places--Java Stacks, the heap, the method area, native method stacks--<br/>
+                the choice of garbage collection technique heavily influences the design of an implementation's runtime data areas.<br/>
+                Various garbage collection techniques are described in Chapter 9, "Garbage Collection."<br/>
+                <span class="note">值得一读</span>
+            </p>
+            <p>
+                As with the method area, the memory that makes up the heap need not be contiguous,<span class="note">内存空间，不需要连续</span><br/>
+                and may be expanded and contracted as the running program progresses.<span class="note">内存空间，大小也可以变化</span><br/>
+                An implementation's method area could, in fact, be implemented on top of its heap.<span class="note">method area可以在heap的基础上实现</span><br/>
+                In other words, when a virtual machine needs memory for a freshly loaded class,<br/>
+                it could take that memory from the same heap on which objects reside.<br/>
+                The same garbage collector that frees memory occupied by unreferenced objects could take care of finding and freeing (unloading) unreferenced classes.<br/>
+                Implementations may allow users or programmers to specify an initial size for the heap, as well as a maximum and minimum size.<br/>
+                <span class="note">值得一读</span>
+            </p>
+
+
+            <h4 id="object-representation">Object Representation</h4>
+            <p>
+                The Java virtual machine specification is silent on how objects should be represented on the heap.<br/>
+                Object representation--an integral aspect of the overall design of the heap and garbage collector--is a decision of implementation designers.<br/>
+                <span class="note">JVM并没有对于object representation进行约束。</span>
+            </p>
+            <p>
+                The primary data that must in some way be represented for each object<br/>
+                is the instance variables declared in the object's class and all its superclasses.<span class="note">第1部分，存储字段信息</span><br/>
+                Given an object reference, the virtual machine must be able to quickly locate the instance data for the object.<br/>
+                In addition, there must be some way to access an object's class data (stored in the method area) given a reference to the object.<span class="note">第2部分，存储class data信息</span><br/>
+                For this reason, the memory allocated for an object usually includes some kind of pointer into the method area.<br/>
+                <span class="note">在object中，应该存储哪些信息。</span>
+            </p>
+            <p>
+                One possible heap design divides the heap into two parts: a handle pool and an object pool.<br/>
+                An object reference is a native pointer to a handle pool entry.<br/>
+                A handle pool entry has two components: a pointer to instance data in the object pool and a pointer to class data in the method area.<br/>
+                The advantage of this scheme is that it makes it easy for the virtual machine to combat heap fragmentation.<br/>
+                When the virtual machine moves an object in the object pool,<br/>
+                it need only update one pointer with the object's new address: the relevant pointer in the handle pool.<br/>
+                The disadvantage of this approach is that every access to an object's instance data requires dereferencing two pointers.<br/>
+                This approach to object representation is shown graphically in Figure 5-5.<br/>
+                This kind of heap is demonstrated interactively by the HeapOfFish applet, described in Chapter 9, "Garbage Collection."<br/>
+                <span class="note">第1种heap design。对下图进行解释，值得一读。</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-5-new.gif" alt="figure 5-5"/><br/>
+                <span class="text-emphasize">Figure 5-5. Splitting an object across a handle pool and object pool.</span>
+            </div>
+            <p>
+                Another design makes an object reference a native pointer to a bundle of data<br/>
+                that contains the object's instance data and a pointer to the object's class data.<br/>
+                This approach requires dereferencing only one pointer to access an object's instance data, but makes moving objects more complicated.<br/>
+                When the virtual machine moves an object to combat fragmentation of this kind of heap,<br/>
+                it must update every reference to that object anywhere in the runtime data areas.<br/>
+                This approach to object representation is shown graphically in Figure 5-6.<br/>
+                <span class="note">第2种heap design。对下图进行解释，值得一读。</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-6-new.gif" alt="figure 5-6"/><br/>
+                <span class="text-emphasize">Figure 5-6. Keeping object data all in one place.</span>
+            </div>
+            <p>
+                The virtual machine needs to get from an object reference to that object's class data for several reasons.<br/>
+                When a running program attempts to cast an object reference to another type,<span class="note">第1个原因，判断类型是否兼容</span><br/>
+                the virtual machine must check to see if the type being cast to is the actual class of the referenced object or one of its supertypes.<br/>
+                It must perform the same kind of check when a program performs an <code>instanceof</code> operation.<br/>
+                In either case, the virtual machine must look into the class data of the referenced object.<br/>
+                When a program invokes an instance method, the virtual machine must perform dynamic binding:<span class="note">第2个原因，进行方法的dynamic binding</span><br/>
+                it must choose the method to invoke based not on the type of the reference but on the class of the object.<br/>
+                To do this, it must once again have access to the class data given only a reference to the object.<br/>
+                <span class="note">这里解释了为什么object当中要存着指向class data的reference信息。</span>
+            </p>
+            <p>
+                No matter what object representation an implementation uses, it is likely that a method table is close at hand for each object.<br/>
+                Method tables, because they speed up the invocation of instance methods,<br/>
+                can play an important role in achieving good overall performance for a virtual machine implementation.<br/>
+                Method tables are not required by the Java virtual machine specification and may not exist in all implementations.<br/>
+                Implementations that have extremely low memory requirements, for instance,<br/>
+                may not be able to afford the extra memory space method tables occupy.<br/>
+                If an implementation does use method tables, however,<br/>
+                an object's method table will likely be quickly accessible given just a reference to the object.<br/>
+                <span class="note">建立object reference和method table之间的关系。</span>
+            </p>
+            <p>
+                One way an implementation could connect a <b>method table</b> to an <b>object reference</b> is shown graphically in Figure 5-7.<br/>
+                This figure shows that the pointer kept with the <b>instance data</b> for each object points to a <b>special structure</b>.<br/>
+                The <b>special structure</b> has two components:<br/>
+            </p>
+            <ul>
+                <li>
+                    A pointer to the full the class data for the object
+                </li>
+                <li>
+                    The method table for the object
+                </li>
+            </ul>
+            <p>
+                The method table is an array of pointers to the data for each instance method that can be invoked on objects of that class.<br/>
+                The <b>method data</b> pointed to by <b>method table</b> includes:<br/>
+            </p>
+            <ul>
+                <li>
+                    The sizes of the operand stack and local variables sections of the method's stack
+                </li>
+                <li>
+                    The method's bytecodes
+                </li>
+                <li>
+                    An exception table
+                </li>
+            </ul>
+            <p>
+                This gives the virtual machine enough information to invoke the method.<br/>
+                The <b>method table</b> include pointers to data for methods declared explicitly in the object's class or inherited from superclasses.<br/>
+                In other words, the pointers in the <b>method table</b> may point to methods defined in the object's class or any of its superclasses.<br/>
+                More information on method tables is given in Chapter 8, "The Linking Model."<br/>
+                <span class="note">继续解释下图。</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-7-new.gif" alt="figure 5-7"/><br/>
+                <span class="text-emphasize">Figure 5-7. Keeping the method table close at hand.</span>
+            </div>
+            <p>
+                If you are familiar with the inner workings of C++, you may recognize the method table as similar to the VTBL or virtual table of C++ objects.<br/>
+                In C++, objects are represented by their instance data plus an array of pointers to any virtual functions that can be invoked on the object.<br/>
+                This approach could also be taken by a Java virtual machine implementation.<br/>
+                An implementation could include a copy of the method table for a class as part of the heap image for every instance of that class.<br/>
+                This approach would consume more heap space than the approach shown in Figure 5-7,<br/>
+                but might yield slightly better performance on a systems that enjoy large quantities of available memory.<br/>
+                <span class="note">从C++的角度来看一下method table</span>
+            </p>
+            <p>
+                One other kind of data that is not shown in Figures 5-5 and 5-6,<br/>
+                but which is logically part of an object's data on the heap, is the object's <b>lock</b>.<br/>
+                Each object in a Java virtual machine is associated with a lock (or <b>mutex</b>)<br/>
+                that a program can use to coordinate multi-threaded access to the object.<br/>
+                Only one thread at a time can "own" an object's lock.<br/>
+                While a particular thread owns a particular object's lock, only that thread can access that object's instance variables.<br/>
+                All other threads that attempt to access the object's variables have to wait until the owning thread releases the object's lock.<br/>
+                If a thread requests a lock that is already owned by another thread,<br/>
+                the requesting thread has to wait until the owning thread releases the lock.<br/>
+                Once a thread owns a lock, it can request the same lock again multiple times,<br/>
+                but then has to release the lock the same number of times before it is made available to other threads.<br/>
+                If a thread requests a lock three times, for example,<br/>
+                that thread will continue to own the lock until it has released it three times.<br/>
+                <span class="note">这里讲了object中应该包含lock信息</span>
+            </p>
+            <p>
+                Many objects will go through their entire lifetimes without ever being locked by a thread.<br/>
+                The data required to implement an object's lock is not needed unless the lock is actually requested by a thread.<br/>
+                As a result, many implementations, such as the ones shown in Figure 5-5 and 5-6,<br/>
+                may not include a pointer to "lock data" within the object itself.<br/>
+                Such implementations must create the necessary data to represent a lock when the lock is requested for the first time.<br/>
+                In this scheme, the virtual machine must associate the lock with the object in some indirect way,<br/>
+                such as by placing the lock data into a search tree based on the object's address.<br/>
+                <span class="note">具体的lock实现依赖于JVM的设计者</span>
+            </p>
+            <p>
+                Along with data that implements a lock,<br/>
+                every Java object is logically associated with data that implements a <b>wait set</b>.<br/>
+                Whereas locks help threads to work independently on shared data without interfering with one another,<br/>
+                wait sets help threads to cooperate with one another--to work together towards a common goal.<br/>
+                <span class="note">这里介绍另外一个概念wait set</span>
+            </p>
+            <p>
+                Wait sets are used in conjunction with wait and notify methods.<br/>
+                Every class inherits from <code>Object</code> three "wait methods" (overloaded forms of a method named <code>wait()</code>)
+                and two "notify methods" (<code>notify()</code> and <code>notifyAll()</code>).<br/>
+                When a thread invokes a wait method on an object,<br/>
+                the Java virtual machine suspends that thread and adds it to that object's wait set.<br/>
+                When a thread invokes a notify method on an object,<br/>
+                the virtual machine will at some future time wake up one or more threads from that object's wait set.<br/>
+                As with the data that implements an object's lock,<br/>
+                the data that implements an object's wait set is not needed unless a wait or notify method is actually invoked on the object.<br/>
+                As a result, many implementations of the Java virtual machine may keep the wait set data separate from the actual object data.<br/>
+                Such implementations could allocate the data needed to represent an object's wait set<br/>
+                when a wait or notify method is first invoked on that object by the running application.<br/>
+                For more information about locks and wait sets, see Chapter 20, "Thread Synchronization."<br/>
+                <span class="note">从Java API的角度来看wait set</span>
+            </p>
+            <p>
+                One last example of a type of data that may be included as part of the image of an object on the heap<br/>
+                is any data needed by the garbage collector.<br/>
+                The garbage collector must in some way keep track of which objects are referenced by the program.<br/>
+                This task invariably requires data to be kept for each object on the heap.<br/>
+                The kind of data required depends upon the garbage collection technique being used.<br/>
+                For example, if an implementation uses a <b>mark and sweep</b> algorithm,<br/>
+                it must be able to mark an object as referenced or unreferenced.<br/>
+                For each unreferenced object, it may also need to indicate whether or not the object's finalizer has been run.<br/>
+                As with thread locks, this data may be kept separate from the object image.<br/>
+                Some garbage collection techniques only require this extra data while the garbage collector is actually running.<br/>
+                A mark and sweep algorithm, for instance, could potentially use a separate bitmap for marking referenced and unreferenced objects.<br/>
+                More detail on various garbage collection techniques, and the data that is required by each of them, is given in Chapter 9, "Garbage Collection."<br/>
+                <span class="note">这里介绍object应该存储的与GC相关的信息。</span>
+            </p>
+            <p>
+                In addition to data that a garbage collector uses to distinguish between reference and unreferenced objects,<br/>
+                a garbage collector needs data to keep track of which objects on which it has already executed a finalizer.<br/>
+                Garbage collectors must run the finalizer of any object whose class declares one before it reclaims the memory occupied by that object.<br/>
+                The Java language specification states that a garbage collector will only execute an object's finalizer once,<br/>
+                but allows that finalizer to "resurrect" the object: to make the object referenced again.<br/>
+                When the object becomes unreferenced for a second time, the garbage collector must not finalize it again.<br/>
+                Because most objects will likely not have a finalizer, and very few of those will resurrect their objects,<br/>
+                this scenario of garbage collecting the same object twice will probably be extremely rare.<br/>
+                As a result, the data used to keep track of objects that have already been finalized,<br/>
+                though logically part of the data associated with an object, will likely not be part of the object representation on the heap.<br/>
+                In most cases, garbage collectors will keep this information in a separate place.<br/>
+                Chapter 9, "Garbage Collection," gives more information about finalization.<br/>
+                <span class="note">讲述GC和finalizer之间的关系：只能执行一次。</span>
+            </p>
+
+
+            <h4 id="array-representation">Array Representation</h4>
+            <p>
+                In Java, arrays are full-fledged objects.<br/>
+                Like objects, arrays are always stored on the heap.<br/>
+                Also like objects, implementation designers can decide how they want to represent arrays on the heap.<br/>
+                <span class="note">介绍array</span>
+            </p>
+            <p>
+                Arrays have a <code>Class</code> instance associated with their class, just like any other object.<br/>
+                All arrays of the same dimension and type have the same class.<br/>
+                The length of an array (or the lengths of each dimension of a multidimensional array) does not play any role in establishing the array's class.<br/>
+                For example, an array of three <code>int</code>s has the same class as an array of three hundred <code>int</code>s.<br/>
+                The length of an array is considered part of its instance data.<br/>
+                <span class="note">介绍array对象的Class实例。</span>
+            </p>
+            <p>
+                The name of an array's class has one open square bracket for each dimension plus a letter or string representing the array's type.<br/>
+                For example, the class name for an array of <code>int</code>s is <code>"[I"</code>.<br/>
+                The class name for a three-dimensional array of <code>byte</code>s is <code>"[[[B"</code>.<br/>
+                The class name for a two-dimensional array of <code>Object</code>s is <code>"[[Ljava.lang.Object"</code>.<br/>
+                The full details of this naming convention for array classes is given in Chapter 6, "The Java Class File."<br/>
+                <span class="note">这里讲array的internal name</span>
+            </p>
+            <p>
+                Multi-dimensional arrays are represented as arrays of arrays.<br/>
+                A two dimensional array of <code>int</code>s, for example,<br/>
+                would be represented by a one dimensional array of references to several one dimensional arrays of <code>int</code>s.<br/>
+                This is shown graphically in Figure 5-8.<br/>
+                <span class="note">这里讲多维数组</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-8-new.gif" alt="figure 5-8"/><br/>
+                <span class="text-emphasize">Figure 5-8. One possible heap representation for arrays.</span>
+            </div>
+            <p>
+                The data that must be kept on the heap for each array is the array's length, the array data,<br/>
+                and some kind of reference to the array's class data.<br/>
+                Given a reference to an array, the virtual machine must be able to determine the array's length,<br/>
+                to get and set its elements by index (checking to make sure the array bounds are not exceeded),<br/>
+                and to invoke any methods declared by <code>Object</code>, the direct superclass of all arrays.<br/>
+                <span class="note">array对象里包含了哪些信息。</span>
+            </p>
+
+
+            <h3 id="program-counter">The Program Counter</h3>
+            <p>
+                Each thread of a running program has its own pc register, or program counter, which is created when the thread is started.<br/>
+                The pc register is one word in size, so it can hold both a native pointer and a <code>returnAddress</code>.<br/>
+                As a thread executes a Java method, the pc register contains the address of the current instruction being executed by the thread.<br/>
+                An "address" can be a native pointer or an offset from the beginning of a method's bytecodes.<br/>
+                If a thread is executing a native method, the value of the pc register is undefined.<br/>
+                <span class="note">介绍program counter</span>
+            </p>
+
+
+            <h3 id="java-stack">The Java Stack</h3>
+            <p>
+                When a new thread is launched, the Java virtual machine creates a new Java stack for the thread.<br/>
+                As mentioned earlier, a Java stack stores a thread's state in discrete frames.<br/>
+                The Java virtual machine only performs two operations directly on Java Stacks: it pushes and pops frames.<br/>
+                <span class="note">介绍Execution Frame</span>
+            </p>
+            <p>
+                The method that is currently being executed by a thread is the thread's <b>current method</b>.<br/>
+                The stack frame for the current method is the <b>current frame</b>.<br/>
+                The class in which the current method is defined is called the <b>current class</b>,<br/>
+                and the current class's constant pool is the <b>current constant pool</b>.<br/>
+                As it executes a method, the Java virtual machine keeps track of the current class and current constant pool.<br/>
+                When the virtual machine encounters instructions that operate on data stored in the stack frame,<br/>
+                it performs those operations on the current frame.<br/>
+                <span class="note">这里介绍几个current概念</span>
+            </p>
+            <p>
+                When a thread invokes a Java method, the virtual machine creates and pushes a new frame onto the thread's Java stack.<br/>
+                This new frame then becomes the current frame.<br/>
+                As the method executes, it uses the frame to store parameters, local variables, intermediate computations, and other data.<br/>
+                <span class="note">一个方法对应一个Frame</span>
+            </p>
+            <p>
+                A method can complete in either of two ways.<br/>
+                If a method completes by returning, it is said to have <b>normal completion</b>.<br/>
+                If it completes by throwing an exception, it is said to have <b>abrupt completion</b>.<br/>
+                When a method completes, whether normally or abruptly, the Java virtual machine pops and discards the method's stack frame.<br/>
+                The frame for the previous method then becomes the current frame.<br/>
+                <span class="note">方法返回有两种方式，一种是正常return，另一种是抛出异常。无论哪种方式，method对应的frame都要进行出栈操作。</span>
+            </p>
+            <p>
+                All the data on a thread's Java stack is private to that thread.<br/>
+                There is no way for a thread to access or alter the Java stack of another thread.<br/>
+                Because of this, you need never worry about synchronizing multi-threaded access to local variables in your Java programs.<br/>
+                When a thread invokes a method, the method's local variables are stored in a frame on the invoking thread's Java stack.<br/>
+                Only one thread can ever access those local variables: the thread that invoked the method.<br/>
+                <span class="note">frame上的数据只能由当前thread访问到，其它thread无法访问到。</span>
+            </p>
+            <p>
+                Like the method area and heap, the Java stack and stack frames need not be contiguous in memory.<br/>
+                Frames could be allocated on a contiguous stack, or they could be allocated on a heap, or some combination of both.<br/>
+                The actual data structures used to represent the Java stack and stack frames is a decision of implementation designers.<br/>
+                Implementations may allow users or programmers to specify an initial size for Java stacks, as well as a maximum or minimum size.<br/>
+                <span class="note">Excution Frame的内存空间不要求是连续的。</span>
+            </p>
+
+
+            <h3 id="stack-frame">The Stack Frame</h3>
+            <p>
+                The stack frame has three parts: local variables, operand stack, and frame data.<br/>
+                The sizes of the local variables and operand stack, which are measured in words, depend upon the needs of each individual method.<br/>
+                These sizes are determined at compile time and included in the class file data for each method.<br/>
+                The size of the frame data is implementation dependent.<br/>
+                <span class="note">stack frame = local variables + operand stack + frame data.</span>
+            </p>
+            <p>
+                When the Java virtual machine invokes a Java method,<br/>
+                it checks the class data to determine the number of words required by the method in the local variables and operand stack.<br/>
+                It creates a stack frame of the proper size for the method and pushes it onto the Java stack.<br/>
+                <span class="note">local variable和operand stack的大小是从class file当中决定的。</span>
+            </p>
+
+
+            <h4 id="local-variable">Local Variables</h4>
+            <p>
+                The local variables section of the Java stack frame is organized as a zero-based array of words.<br/>
+                Instructions that use a value from the local variables section provide an index into the zero-based array.<br/>
+                Values of type <code>int</code>, <code>float</code>, <code>reference</code>, and
+                <code>returnAddress</code> occupy one entry in the local variables array.<br/>
+                Values of type <code>byte</code>, <code>short</code>, and <code>char</code> are converted to
+                <code>int</code> before being stored into the local variables.<br/>
+                Values of type <code>long</code> and <code>double</code> occupy two consecutive entries in the array.<br/>
+                <span class="note">各种不同的类型所占用的内存空间的大小。</span>
+            </p>
+            <p>
+                To refer to a long or double in the local variables,<br/>
+                instructions provide the index of the first of the two consecutive entries occupied by the value.<br/>
+                For example, if a <code>long</code> occupies array entries three and four,<br/>
+                instructions would refer to that <code>long</code> by index three.<br/>
+                All values in the local variables are word-aligned.<br/>
+                Dual-entry <code>long</code>s and <code>double</code>s can start at any index.<br/>
+                <span class="note">举例来说明long和double在local variable中的索引位置。</span>
+            </p>
+            <p>
+                The local variables section contains a method's parameters and local variables.<br/>
+                Compilers place the parameters into the local variable array first, in the order in which they are declared.<br/>
+                Figure 5-9 shows the local variables section for the following two methods:<br/>
+                <span class="note">local variable section当中存放的内容：method parameters 和 local variables</span>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file jvm/ex3/Example3a.java
+class Example3a {
+
+    public static int runClassMethod(int i, long l, float f, double d, Object o, byte b) {
+
+        return 0;
+    }
+
+    public int runInstanceMethod(char c, double d, short s, boolean b) {
+
+        return 0;
+    }
+}
+</pre>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-9-new.gif" alt="figure 5-9"/><br/>
+                <span class="text-emphasize">Figure 5-9. Method parameters on the local variables section of a Java stack.</span>
+            </div>
+            <p>
+                Note that Figure 5-9 shows that the first parameter in the local variables for <code>runInstanceMethod()</code> is of type <code>reference</code>,<br/>
+                even though no such parameter appears in the source code.<br/>
+                This is the hidden <code>this</code> reference passed to every instance method.<br/>
+                Instance methods use this reference to access the instance data of the object upon which they were invoked.<br/>
+                As you can see by looking at the local variables for <code>runClassMethod()</code> in Figure 5-9,<br/>
+                class methods do not receive a hidden <code>this</code>.<br/>
+                Class methods are not invoked on objects.<br/>
+                You can't directly access a class's instance variables from a class method, because there is no instance associated with the method invocation.<br/>
+                <span class="note">对上图进行解释</span>
+            </p>
+            <p>
+                Note also that types <code>byte</code>, <code>short</code>, <code>char</code>, and <code>boolean</code> in the source code become <code>int</code>s in the local variables.<br/>
+                This is also true of the operand stack.<br/>
+                As mentioned earlier, the <code>boolean</code> type is not supported directly by the Java virtual machine.<br/>
+                The Java compiler always uses <code>int</code>s to represent <code>boolean</code> values in the local variables or operand stack.<br/>
+                Data types <code>byte</code>, <code>short</code>, and <code>char</code>, however, are supported directly by the Java virtual machine.<br/>
+                These can be stored on the heap as instance variables or array elements, or in the method area as class variables.<br/>
+                When placed into local variables or the operand stack, however,<span class="note">此后的两句，值得重点读一下。</span><br/>
+                values of type <code>byte</code>, <code>short</code>, and <code>char</code> are converted into <code>int</code>s.<br/>
+                They are manipulated as <code>int</code>s while on the stack frame,<br/>
+                then converted back into <code>byte</code>, <code>short</code>, or <code>char</code> when stored back into heap or method area.<br/>
+                <span class="note">在local variable和operand stack上，byte、short、char类型会被当成int类型处理。值得一看。</span>
+            </p>
+            <p>
+                Also note that <code>Object o</code> is passed as a reference to <code>runClassMethod()</code>.<br/>
+                In Java, all objects are passed by reference.<br/>
+                As all objects are stored on the heap,<br/>
+                you will never find an image of an object in the local variables or operand stack, only object references.<br/>
+                <span class="note">object以reference传递。</span>
+            </p>
+            <p>
+                Aside from a method's parameters, which compilers must place into the local variables array first and in order of declaration,<br/>
+                Java compilers can arrange the local variables array as they wish.<span class="note">对于local variable的顺序没有严格的要求</span><br/>
+                Compilers can place the method's local variables into the array in any order,<br/>
+                and they can use the same array entry for more than one local variable.<span class="note">local variable中的位置可以重用</span><br/>
+                For example, if two local variables have limited scopes that don't overlap,<br/>
+                such as the <code>i</code> and <code>j</code> local variables in <code>Example3b</code>,<br/>
+                compilers are free to use the same array entry for both variables.<br/>
+                During the first half of the method, before <code>j</code> comes into scope, entry zero could be used for <code>i</code>.<br/>
+                During the second half of the method, after <code>i</code> has gone out of scope, entry zero could be used for <code>j</code>.<br/>
+                <span class="note">local variable中的位置可以重用</span>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file jvm/ex3/Example3b.java
+class Example3b {
+
+    public static void runtwoLoops() {
+
+        for (int i = 0; i &lt; 10; ++i) {
+            System.out.println(i);
+        }
+
+        for (int j = 9; j &gt;= 0; --j) {
+            System.out.println(j);
+        }
+    }
+}
+</pre>
+            <p>
+                As with all the other runtime memory areas,<br/>
+                implementation designers can use whatever data structures they deem most appropriate to represent the local variables.<br/>
+                The Java virtual machine specification does not indicate<br/>
+                how <code>long</code>s and <code>double</code>s should be split across the two array entries they occupy.<br/>
+                Implementations that use a word size of 64 bits could, for example,<br/>
+                store the entire long or double in the lower of the two consecutive entries, leaving the higher entry unused.<br/>
+                <span class="note">JVM specification对于local variable的设计要求是自由的。</span>
+            </p>
+
+
+            <h4 id="operand-stack">Operand Stack</h4>
+            <p>
+                Like the local variables, the operand stack is organized as an array of words.<br/>
+                But unlike the local variables, which are accessed via array indices, the operand stack is accessed by pushing and popping values.<br/>
+                If an instruction pushes a value onto the operand stack, a later instruction can pop and use that value.<br/>
+                <span class="note">operand stack是以word为计算单位。</span>
+            </p>
+            <p>
+                The virtual machine stores the same data types in the operand stack that it stores in the local variables:<br/>
+                <code>int</code>, <code>long</code>, <code>float</code>, <code>double</code>, <code>reference</code>, and <code>returnType</code>.<br/>
+                It converts values of type <code>byte</code>, <code>short</code>, and <code>char</code> to <code>int</code> before pushing them onto the operand stack.<br/>
+                <span class="note">在opearnd stack上对于各种类型的处理。</span>
+            </p>
+            <p>
+                Other than the program counter, which can't be directly accessed by instructions, the Java virtual machine has no registers.<br/>
+                The Java virtual machine is stack-based rather than register-based<br/>
+                because its instructions take their operands from the operand stack rather than from registers.<br/>
+                Instructions can also take operands from other places,<br/>
+                such as immediately following the opcode (the byte representing the instruction) in the bytecode stream, or from the constant pool.<br/>
+                The Java virtual machine instruction set's main focus of attention, however, is the operand stack.<br/>
+                <span class="note">instruction主要是在operand stack上来运行。</span>
+            </p>
+            <p>
+                The Java virtual machine uses the operand stack as a work space.<br/>
+                Many instructions pop values from the operand stack, operate on them, and push the result.<br/>
+                For example, the <code>iadd</code> instruction adds two integers by popping two <code>int</code>s off the top of the operand stack,<br/>
+                adding them, and pushing the <code>int</code> result.<br/>
+                Here is how a Java virtual machine would add two local variables<br/>
+                that contain <code>int</code>s and store the <code>int</code> result in a third local variable:<br/>
+                <span class="note">operand stack是运行instruction的work space。</span>
+            </p>
+<pre class="pre-block">
+iload_0    // push the int in local variable 0
+iload_1    // push the int in local variable 1
+iadd       // pop two ints, add them, push result
+istore_2   // pop int, store into local variable 2
+</pre>
+            <p>
+                In this sequence of bytecodes, the first two instructions, <code>iload_0</code> and <code>iload_1</code>,<br/>
+                push the <code>int</code>s stored in local variable positions zero and one onto the operand stack.<br/>
+                The <code>iadd</code> instruction pops those two <code>int</code> values, adds them, and pushes the <code>int</code> result back onto the operand stack.<br/>
+                The fourth instruction, <code>istore_2</code>, pops the result of the add off the top of the operand stack and stores it into local variable position two.<br/>
+                In Figure 5-10, you can see a graphical depiction of the state of the local variables and operand stack while executing these instructions.<br/>
+                In this figure, unused slots of the local variables and operand stack are left blank.<br/>
+                <span class="note">对上面的代码和下图进行解释</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-10-new.gif" alt="figure 5-10"/><br/>
+                <span class="text-emphasize">Figure 5-10. Adding two local variables.</span>
+            </div>
+
+
+            <h4 id="frame-data">Frame Data</h4>
+            <p>
+                In addition to the local variables and operand stack,<br/>
+                the Java stack frame includes data to support constant pool resolution, normal method return, and exception dispatch.<br/>
+                This data is stored in the <b>frame data</b> portion of the Java stack frame.<br/>
+                <span class="note">开始介绍frame data</span>
+            </p>
+            <p>
+                Many instructions in the Java virtual machine's instruction set refer to entries in the constant pool.<br/>
+                Some instructions merely push constant values of type <code>int</code>, <code>long</code>, <code>float</code>,
+                <code>double</code>, or <code>String</code> from the constant pool onto the operand stack.<br/>
+                Some instructions use constant pool entries to refer to classes or arrays to instantiate, fields to access, or methods to invoke.<br/>
+                Other instructions determine whether a particular object is a descendant of a particular class or interface specified by a constant pool entry.<br/>
+                <span class="note">constant pool resolution</span>
+            </p>
+            <p>
+                Whenever the Java virtual machine encounters any of the instructions that refer to an entry in the constant pool,<br/>
+                it uses the frame data's pointer to the constant pool to access that information.<br/>
+                As mentioned earlier, references to types, fields, and methods in the constant pool are initially symbolic.<br/>
+                When the virtual machine looks up a constant pool entry that refers to a class, interface, field, or method, that reference may still be symbolic.<br/>
+                If so, the virtual machine must resolve the reference at that time.<br/>
+                <span class="note">constant pool resolution</span>
+            </p>
+            <p>
+                Aside from constant pool resolution, the frame data must assist the virtual machine in processing a normal or abrupt method completion.<br/>
+                If a method completes normally (by returning), the virtual machine must restore the stack frame of the invoking method.<br/>
+                It must set the pc register to point to the instruction in the invoking method that follows the instruction that invoked the completing method.<br/>
+                If the completing method returns a value, the virtual machine must push that value onto the operand stack of the invoking method.<br/>
+                <span class="note">normal method return</span>
+            </p>
+            <p>
+                The frame data must also contain some kind of reference to the method's exception table,<br/>
+                which the virtual machine uses to process any exceptions thrown during the course of execution of the method.<br/>
+                An exception table, which is described in detail in Chapter 17, "Exceptions,"<br/>
+                defines ranges within the bytecodes of a method that are protected by catch clauses.<br/>
+                Each entry in an exception table gives a starting and ending position of the range protected by a catch clause,<br/>
+                an index into the constant pool that gives the exception class being caught, and a starting position of the catch clause's code.<br/>
+                <span class="note">exception dispatch</span>
+            </p>
+            <p>
+                When a method throws an exception, the Java virtual machine uses the exception table referred to by the frame data to determine how to handle the exception.<br/>
+                If the virtual machine finds a matching catch clause in the method's exception table, it transfers control to the beginning of that catch clause.<br/>
+                If the virtual machine doesn't find a matching catch clause, the method completes abruptly.<br/>
+                The virtual machine uses the information in the frame data to restore the invoking method's frame.<br/>
+                It then rethrows the same exception in the context of the invoking method.<br/>
+                <span class="note">exception dispatch</span>
+            </p>
+            <p>
+                In addition to data to support constant pool resolution, normal method return, and exception dispatch,<br/>
+                the stack frame may also include other information that is implementation dependent, such as data to support debugging.<br/>
+                <span class="note">other information</span>
+            </p>
+
+
+            <h4 id="impl-of-java-stack">Possible Implementations of the Java Stack</h4>
+            <p>
+                Implementation designers can represent the Java stack in whatever way they wish.<br/>
+                As mentioned earlier, one potential way to implement the stack is by allocating each frame separately from a heap.<br/>
+                As an example of this approach, consider the following class:<br/>
+                <span class="note">第一种情况，frame占用的内存空间是分散的</span>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file jvm/ex3/Example3c.java
+class Example3c {
+
+    public static void addAndPrint() {
+        double result = addTwoTypes(1, 88.88);
+        System.out.println(result);
+    }
+
+    public static double addTwoTypes(int i, double d) {
+        return i + d;
+    }
+}
+</pre>
+            <p>
+                Figure 5-11 shows three snapshots of the Java stack for a thread that invokes the <code>addAndPrint()</code> method.<br/>
+                In the implementation of the Java virtual machine represented in this figure, each frame is allocated separately from a heap.<br/>
+                To invoke the <code>addTwoTypes()</code> method,<br/>
+                the <code>addAndPrint()</code> method first pushes an <code>int</code> one and <code>double</code> 88.88 onto its operand stack.<br/>
+                It then invokes the <code>addTwoTypes()</code> method.<br/>
+                <span class="note">解释下图。</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-11-new.gif" alt="figure 5-11"/><br/>
+                <span class="text-emphasize">Figure 5-11. Allocating frames from a heap.</span>
+            </div>
+            <p>
+                The instruction to invoke <code>addTwoTypes()</code> refers to a constant pool entry.<br/>
+                The Java virtual machine looks up the entry and resolves it if necessary.<br/>
+                <span class="note">解析addTwoTypes()对应的sysmbolic reference</span>
+            </p>
+            <p>
+                Note that the <code>addAndPrint()</code> method uses the constant pool to identify the <code>addTwoTypes()</code> method,<br/>
+                even though it is part of the same class.<br/>
+                Like references to fields and methods of other classes,<br/>
+                references to the fields and methods of the <b>same</b> class are initially symbolic and must be resolved before they are used.<br/>
+                <span class="note">要先解析symbolic reference，才能后续使用。</span>
+            </p>
+            <p>
+                The resolved constant pool entry points to information in the method area about the <code>addTwoTypes()</code> method.<br/>
+                The virtual machine uses this information to determine the sizes required by <code>addTwoTypes()</code> for the local variables and operand stack.<br/>
+                In the class file generated by Sun's <code>javac</code> compiler from the JDK 1.1,<br/>
+                <code>addTwoTypes()</code> requires three words in the local variables and four words in the operand stack.<br/>
+                (As mentioned earlier, the size of the frame data portion is implementation dependent.)<br/>
+                The virtual machine allocates enough memory for the <code>addTwoTypes()</code> frame from a heap.<br/>
+                It then pops the <code>double</code> and <code>int</code> parameters (88.88 and one) from <code>addAndPrint()</code>'s operand stack and<br/>
+                places them into <code>addTwoType()</code>'s local variable slots one and zero.<br/>
+                <span class="note">继续解释上图的内容</span>
+            </p>
+            <p>
+                When <code>addTwoTypes()</code> returns, it first pushes the <code>double</code> return value (in this case, 89.88) onto its operand stack.<br/>
+                The virtual machine uses the information in the frame data to locate the stack frame of the invoking method, <code>addAndPrint()</code>.<br/>
+                It pushes the <code>double</code> return value onto <code>addAndPrint()</code>'s operand stack and frees the memory occupied by <code>addTwoType()</code>'s frame.<br/>
+                It makes <code>addAndPrint()</code>'s frame current and continues executing the <code>addAndPrint()</code> method<br/>
+                at the first instruction past the <code>addTwoType()</code> method invocation.<br/>
+                <span class="note">继续解释上图的内容</span>
+            </p>
+            <p>
+                Figure 5-12 shows snapshots of the Java stack of a different virtual machine implementation executing the same methods.<br/>
+                Instead of allocating each frame separately from a heap, this implementation allocates frames from a contiguous stack.<br/>
+                This approach allows the implementation to overlap the frames of adjacent methods.<br/>
+                The portion of the invoking method's operand stack that contains the parameters to the invoked method become the base of the invoked method's local variables.<br/>
+                In this example, <code>addAndPrint()</code>'s entire operand stack becomes <code>addTwoType()</code>'s entire local variables section.<br/>
+                <span class="note">第二种情况，frame占用的内存空间是连续的</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-12-new.gif" alt="figure 5-12"/><br/>
+                <span class="text-emphasize">Figure 5-12. Allocating frames from a contiguous stack.</span>
+            </div>
+            <p>
+                This approach saves memory space because the same memory is used by the calling method to store the parameters<br/>
+                as is used by the invoked method to access the parameters.<br/>
+                It saves time because the Java virtual machine doesn't have to spend time copying the parameter values from one frame to another.<br/>
+                <span class="note">这种方式的优势：占用内存空间小、节省时间</span>
+            </p>
+            <p>
+                Note that the operand stack of the current frame is always at the "top" of the Java stack.<br/>
+                Although this may be easier to visualize in the contiguous memory implementation of Figure 5-12,<br/>
+                it is true no matter how the Java stack is implemented.<br/>
+                (As mentioned earlier, in all the graphical images of the stack shown in this book, the stack grows downwards.<br/>
+                The "top" of the stack is always shown at the bottom of the picture.)<br/>
+                Instructions that push values onto (or pop values off of) the operand stack always operate on the current frame.<br/>
+                Thus, pushing a value onto the operand stack can be seen as pushing a value onto the top of the entire Java stack.<br/>
+                In the remainder of this book, "pushing a value onto the stack" refers to pushing a value onto the operand stack of the current frame.<br/>
+                <span class="note">无论哪种情况，pushing a value onto the stack都是指放到current frame的operand stack上。</span>
+            </p>
+            <p>
+                One other possible approach to implementing the Java stack is a hybrid of the two approaches shown in Figure 5-11 and Figure 5-12.<br/>
+                A Java virtual machine implementation can allocate a chunk of contiguous memory from a heap when a thread starts.<br/>
+                In this memory, the virtual machine can use the overlapping frames approach shown in Figure 5-12.<br/>
+                If the stack outgrows the contiguous memory, the virtual machine can allocate another chunk of contiguous memory from the heap.<br/>
+                It can use the separate frames approach shown in Figure 5-11 to connect the invoking method's frame sitting in the old chunk with<br/>
+                the invoked method's frame sitting in the new chunk.<br/>
+                Within the new chunk, it can once again use the contiguous memory approach.<br/>
+                <span class="note">可以将两种方式结合使用。</span>
+            </p>
+
+
+            <h3 id="native-method-stack">Native Method Stacks</h3>
+            <p>
+                In addition to all the runtime data areas defined by the Java virtual machine specification and described previously,<br/>
+                a running Java application may use other data areas created by or for native methods.<br/>
+                When a thread invokes a native method, it enters a new world<br/>
+                in which the structures and security restrictions of the Java virtual machine no longer hamper its freedom.<br/>
+                A native method can likely access the runtime data areas of the virtual machine (it depends upon the native method interface), but can also do anything else it wants.<br/>
+                It may use registers inside the native processor, allocate memory on any number of native heaps, or use any kind of stack.<br/>
+                <span class="note">开始介绍native method所占用的内存空间。</span>
+            </p>
+            <p>
+                <span class="text-underline">Native methods are inherently implementation dependent.</span><br/>
+                Implementation designers are free to decide what mechanisms they will use to<br/>
+                enable a Java application running on their implementation to invoke native methods.<br/>
+            </p>
+            <p>
+                Any native method interface will use some kind of native method stack.<br/>
+                When a thread invokes a Java method, the virtual machine creates a new frame and pushes it onto the Java stack.<br/>
+                When a thread invokes a native method, however, that thread leaves the Java stack behind.<br/>
+                Instead of pushing a new frame onto the thread's Java stack, the Java virtual machine will simply dynamically link to and directly invoke the native method.<br/>
+                One way to think of it is that the Java virtual machine is dynamically extending itself with native code.<br/>
+                It is as if the Java virtual machine implementation is just calling another (dynamically linked) method within itself, at the behest of the running Java program.<br/>
+                <span class="note">开始介绍native method stack</span>
+            </p>
+            <p>
+                If an implementation's native method interface uses a C-linkage model, then the native method stacks are C stacks.<br/>
+                When a C program invokes a C function, the stack operates in a certain way.<br/>
+                The arguments to the function are pushed onto the stack in a certain order.<br/>
+                The return value is passed back to the invoking function in a certain way.<br/>
+                This would be the behavior of the of native method stacks in that implementation.<br/>
+                <span class="note">如果native method是C语言实现的。</span>
+            </p>
+            <p>
+                A native method interface will likely (once again, it is up to the designers to decide)<br/>
+                be able to call back into the Java virtual machine and invoke a Java method.<br/>
+                In this case, the thread leaves the native method stack and enters another Java stack.<br/>
+                <span class="note">native method也可以调用Java method</span>
+            </p>
+            <p>
+                Figure 5-13 shows a graphical depiction of a thread<br/>
+                that invokes a native method that calls back into the virtual machine to invoke another Java method.<br/>
+                This figure shows the full picture of what a thread can expect inside the Java virtual machine.<br/>
+                A thread may spend its entire lifetime executing Java methods, working with frames on its Java stack.<br/>
+                Or, it may jump back and forth between the Java stack and native method stacks.<br/>
+                <span class="note">解释下图</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-13-new.gif" alt="figure 5-13"/><br/>
+                <span class="text-emphasize">Figure 5-13. The stack for a thread that invokes Java and native methods.</span>
+            </div>
+            <p>
+                As depicted in Figure 5-13, a thread first invoked two Java methods, the second of which invoked a native method.<br/>
+                This act caused the virtual machine to use a native method stack.<br/>
+                In this figure, the native method stack is shown as a finite amount of contiguous memory space.<br/>
+                Assume it is a C stack. The stack area used by each C-linkage function is shown in gray and bounded by a dashed line.<br/>
+                The first C-linkage function, which was invoked as a native method, invoked another C-linkage function.<br/>
+                The second C-linkage function invoked a Java method through the native method interface.<br/>
+                This Java method invoked another Java method, which is the current method shown in the figure.<br/>
+                <span class="note">解释上图</span>
+            </p>
+            <p>
+                As with the other runtime memory areas, the memory they occupied by native method stacks need not be of a fixed size.<br/>
+                It can expand and contract as needed by the running application.<br/>
+                Implementations may allow users or programmers to specify an initial size for the method area, as well as a maximum or minimum size.<br/>
+                <span class="note">探讨内存空间是否连续、内存大小的问题。</span>
+            </p>
+
+
+            <h3 id="execution-engine">Execution Engine</h3>
+            <p>
+                At the core of any Java virtual machine implementation is its <b>execution engine</b>.<br/>
+                <span class="text-underline">In the Java virtual machine specification, the behavior of the execution engine is defined in terms of an instruction set.</span><br/>
+                For each instruction, the specification describes in detail <b>what</b> an implementation should do<br/>
+                when it encounters the instruction as it executes bytecodes, but says very little about <b>how</b>.<br/>
+                As mentioned in previous chapters, implementation designers are free to decide how their implementations will execute bytecodes.<br/>
+                Their implementations can interpret, just-in-time compile, execute natively in silicon, use a combination of these, or dream up some brand new technique.<br/>
+                <span class="note">值得一读。execution engine的行为是由instruction set定义的。</span>
+            </p>
+            <p>
+                Similar to the three senses of the term "Java virtual machine" described at the beginning of this chapter,<br/>
+                the term "execution engine" can also be used in any of three senses:<br/>
+                an abstract specification, a concrete implementation, or a runtime instance.<br/>
+                <span class="text-underline">The abstract specification defines the behavior of an execution engine in terms of the instruction set.</span><br/>
+                Concrete implementations, which may use a variety of techniques, are either software, hardware, or a combination of both.<br/>
+                <span class="text-underline">A runtime instance of an execution engine is a thread.</span><br/>
+                <span class="note">最后一句说的太好了。execution engine的runtime instance就是thread。</span>
+            </p>
+            <p>
+                Each thread of a running Java application is a distinct instance of the virtual machine's execution engine.<br/>
+                From the beginning of its lifetime to the end, a thread is either executing bytecodes or native methods.<br/>
+                A thread may execute bytecodes directly, by interpreting or executing natively in silicon,<br/>
+                or indirectly, by just-in-time compiling and executing the resulting native code.<br/>
+                A Java virtual machine implementation may use other threads invisible to the running application, such as a thread that performs garbage collection.<br/>
+                <span class="text-underline">Such threads need not be "instances" of the implementation's execution engine.</span><br/>
+                All threads that belong to the running application, however, are execution engines in action.<br/>
+                <span class="note">并不是所有的thread都是execution engine。</span>
+            </p>
+
+
+            <h4 id="instruction-set">The Instruction Set</h4>
+            <p>
+                A method's bytecode stream is a sequence of <b>instructions</b> for the Java virtual machine.<br/>
+                Each <b>instruction</b> consists of a one-byte <b>opcode</b> followed by zero or more <b>operands</b>.<br/>
+                The opcode indicates the operation to be performed.<br/>
+                Operands supply extra information needed by the Java virtual machine to perform the operation specified by the opcode.<br/>
+                The opcode itself indicates whether or not it is followed by operands, and the form the operands (if any) take.<br/>
+                Many Java virtual machine instructions take no operands, and therefore consist only of an opcode.<br/>
+                Depending upon the opcode, the virtual machine may refer to data stored in other areas in addition to (or instead of) operands that trail the opcode.<br/>
+                When it executes an instruction, the virtual machine may use entries in the current constant pool,<br/>
+                entries in the current frame's local variables, or values sitting on the top of the current frame's operand stack.<br/>
+                <span class="note">instruction = opcode + operand</span>
+            </p>
+            <p>
+                The abstract execution engine runs by executing bytecodes one instruction at a time.<br/>
+                This process takes place for each thread (execution engine instance) of the application running in the Java virtual machine.<br/>
+                An execution engine fetches an opcode and, if that opcode has operands, fetches the operands.<br/>
+                It executes the action requested by the opcode and its operands, then fetches another opcode.<br/>
+                Execution of bytecodes continues until a thread completes either by returning from its starting method or by not catching a thrown exception.<br/>
+                <span class="note">execution engine一条一条的执行instruction</span>
+            </p>
+            <p>
+                From time to time, the execution engine may encounter an instruction that requests a native method invocation.<br/>
+                On such occasions, the execution engine will dutifully attempt to invoke that native method.<br/>
+                When the native method returns (if it completes normally, not by throwing an exception),<br/>
+                the execution engine will continue executing the next instruction in the bytecode stream.<br/>
+                <span class="note">当execution engine执行native method的时候</span>
+            </p>
+            <p>
+                One way to think of native methods, therefore, is as programmer-customized extensions to the Java virtual machine's instruction set.<br/>
+                If an instruction requests an invocation of a native method, the execution engine invokes the native method.<br/>
+                Running the native method is how the Java virtual machine executes the instruction.<br/>
+                When the native method returns, the virtual machine moves on to the next instruction.<br/>
+                If the native method completes abruptly (by throwing an exception),<br/>
+                the virtual machine follows the same steps to handle the exception as it does when any instruction throws an exception.<br/>
+                <span class="note">native method可以看成是instruction set的扩展</span>
+            </p>
+            <p>
+                Part of the job of executing an instruction is determining the next instruction to execute.<br/>
+                An execution engine determines the next opcode to fetch in one of three ways.<br/>
+                For many instructions, the next opcode to execute directly follows the current opcode and its operands, if any, in the bytecode stream.<br/>
+                For some instructions, such as <code>goto</code> or <code>return</code>,<br/>
+                the execution engine determines the next opcode as part of its execution of the current instruction.<br/>
+                If an instruction throws an exception, the execution engine determines the next opcode to fetch by searching for an appropriate catch clause.<br/>
+                <span class="note">execution engine选择下一条instruction的要处理三种情况：顺序执行、选择执行、出现异常。</span>
+            </p>
+            <p>
+                Several instructions can throw exceptions.<br/>
+                The <code>athrow</code> instruction, for example, throws an exception explicitly.<br/>
+                This instruction is the compiled form of the <code>throw</code> statement in Java source code.<br/>
+                Every time the <code>athrow</code> instruction is executed, it will throw an exception.<br/>
+                Other instructions throw exceptions only when certain conditions are encountered.<br/>
+                For example, if the Java virtual machine discovers, to its chagrin,<br/>
+                that the program is attempting to perform an integer divide by zero, it will throw an <code>ArithmeticException</code>.<br/>
+                This can occur while executing any of four instructions--<code>idiv</code>, <code>ldiv</code>, <code>irem</code>, and <code>lrem</code>--<br/>
+                which perform divisions or calculate remainders on <code>int</code>s or <code>long</code>s.<br/>
+                <span class="note">这里讲在执行instruction过程中，出现exception的情况</span>
+            </p>
+            <p>
+                Each type of opcode in the Java virtual machine's instruction set has a mnemonic.<br/>
+                In the typical assembly language style, streams of Java bytecodes can be represented by their mnemonics followed by (optional) operand values.<br/>
+                <span class="note">opcode --&gt; mnemonic</span>
+            </p>
+            <p>
+                For an example of method's bytecode stream and mnemonics, consider the <code>doMathForever()</code> method of this class:
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file jvm/ex4/Act.java
+class Act {
+
+    public static void doMathForever() {
+        int i = 0;
+        for (;;) {
+            i += 1;
+            i *= 2;
+        }
+    }
+}
+</pre>
+            <p>
+                The stream of bytecodes for <code>doMathForever()</code> can be disassembled into mnemonics as shown next.<br/>
+                The Java virtual machine specification does not define any official syntax for representing the mnemonics of a method's bytecodes.<br/>
+                The code shown next illustrates the manner in which streams of bytecode mnemonics will be represented in this book.<br/>
+                The left hand column shows the offset in bytes from the beginning of the method's bytecodes to the start of each instruction.<br/>
+                The center column shows the instruction and any operands.<br/>
+                The right hand column contains comments, which are preceded with a double slash, just as in Java source code.<br/>
+                <span class="note">介绍下面的opcode的表示方式</span>
+            </p>
+<pre class="pre-block">
+// Bytecode stream: 03 3b 84 00 01 1a 05 68 3b a7 ff f9
+// Disassembly:
+// Method void doMathForever()
+// Left column: offset of instruction from beginning of method
+// |   Center column: instruction mnemonic and any operands
+// |   |                   Right column: comment
+   0   iconst_0           // 03
+   1   istore_0           // 3b
+   2   iinc 0, 1          // 84 00 01
+   5   iload_0            // 1a
+   6   iconst_2           // 05
+   7   imul               // 68
+   8   istore_0           // 3b
+   9   goto 2             // a7 ff f9
+</pre>
+            <p>
+                This way of representing mnemonics is very similar to the output of the <code>javap</code> program of Sun's Java 2 SDK.<br/>
+                <code>javap</code> allows you to look at the bytecode mnemonics of the methods of any class file.<br/>
+                Note that jump addresses are given as offsets from the beginning of the method.<br/>
+                The <code>goto</code> instruction causes the virtual machine to jump to the instruction at offset two (an <code>iinc</code>).<br/>
+                The actual operand in the stream is minus seven.<br/>
+                To execute this instruction, the virtual machine adds the operand to the current contents of the pc register.<br/>
+                The result is the address of the <code>iinc</code> instruction at offset two.<br/>
+                To make the mnemonics easier to read, the operands for jump instructions are shown as if the addition has already taken place.<br/>
+                Instead of saying "<code>goto -7</code>," the mnemonics say, "<code>goto 2</code>."<br/>
+                <span class="note">对上面的instruction mnemonic进行解释</span>
+            </p>
+            <p>
+                <span class="text-underline">The central focus of the Java virtual machine's instruction set is the operand stack.</span><br/>
+                Values are generally pushed onto the operand stack before they are used.<br/>
+                Although the Java virtual machine has no registers for storing arbitrary values, each method has a set of local variables.<br/>
+                The instruction set treats the local variables, in effect, as a set of registers that are referred to by indexes.<br/>
+                Nevertheless, other than the <code>iinc</code> instruction, which increments a local variable directly,<br/>
+                values stored in the local variables must be moved to the operand stack before being used.<br/>
+                <span class="note">instruction set主要运行的地方位于operand stack</span>
+            </p>
+            <p>
+                For example, to divide one local variable by another, the virtual machine must push both onto the stack,<br/>
+                perform the division, and then store the result back into the local variables.<br/>
+                To move the value of an array element or object field into a local variable,<br/>
+                the virtual machine must first push the value onto the stack, then store it into the local variable.<br/>
+                To set an array element or object field to a value stored in a local variable,<br/>
+                the virtual machine must follow the reverse procedure.<br/>
+                First, it must push the value of the local variable onto the stack,<br/>
+                then pop it off the stack and into the array element or object field on the heap.<br/>
+                <span class="note">举例如何操作</span>
+            </p>
+            <p>
+                Several goals--some conflicting--guided the design of the Java virtual machine's instruction set.<br/>
+                These goals are basically the same as those described in Part I of this book as the motivation behind Java's entire architecture:<br/>
+                platform independence, network mobility, and security.<br/>
+                <span class="note">设计目标：platform independence, network mobility, and security</span>
+            </p>
+            <p>
+                The platform independence goal was a major influence in the design of the instruction set.<br/>
+                The instruction set's stack-centered approach, described previously,<br/>
+                was chosen over a register-centered approach to facilitate efficient implementation on architectures with few or irregular registers,<br/>
+                such as the Intel 80X86.<br/>
+                This feature of the instruction set--the stack-centered design--<br/>
+                make it easier to implement the Java virtual machine on a wide variety of host architectures.<br/>
+                <span class="note">platform independence goal</span>
+            </p>
+            <p>
+                Another motivation for Java's stack-centered instruction set is that<br/>
+                compilers usually use a stack-based architecture to pass an intermediate compiled form or the compiled program to a linker/optimizer.<br/>
+                The Java class file,<br/>
+                which is in many ways similar to the UNIX <code>.o</code> or Windows <code>.obj</code> file emitted by a C compiler,<br/>
+                really represents an intermediate compiled form of a Java program.<br/>
+                In the case of Java, the virtual machine serves as (dynamic) linker and may serve as optimizer.<br/>
+                The stack-centered architecture of the Java virtual machine's instruction set facilitates the optimization<br/>
+                that may be performed at run-time in conjunction with execution engines<br/>
+                that perform just-in-time compiling or adaptive optimization.<br/>
+                <span class="note">stack-centered architecture，能够让JVM在run-time时进行optimization</span>
+            </p>
+            <p>
+                As mentioned in Chapter 4, "Network Mobility," one major design consideration was class file compactness.<br/>
+                Compactness is important because it facilitates speedy transmission of class files across networks.<br/>
+                In the bytecodes stored in class files, all instructions--except two that deal with table jumping--are aligned on byte boundaries.<br/>
+                The total number of opcodes is small enough so that opcodes occupy only one byte.<br/>
+                This design strategy favors class file compactness possibly at the cost of some performance when the program runs.<br/>
+                In some Java virtual machine implementations, especially those executing bytecodes in silicon,<br/>
+                the single-byte opcode may preclude certain optimizations that could improve performance.<br/>
+                Also, better performance may have been possible on some implementations<br/>
+                if the bytecode streams were word-aligned instead of byte-aligned.<br/>
+                (An implementation could always realign bytecode streams,<br/>
+                or translate opcodes into a more efficient form as classes are loaded.<br/>
+                Bytecodes are byte-aligned in the class file and in the specification of the abstract method area and execution engine.<br/>
+                Concrete implementations can store the loaded bytecode streams any way they wish.)<br/>
+                <span class="note">network mobility</span>
+            </p>
+            <p>
+                Another goal that guided the design of the instruction set was the ability to do bytecode verification,<br/>
+                especially all at once by a data flow analyzer.<br/>
+                The verification capability is needed as part of Java's security framework.<br/>
+                The ability to use a data flow analyzer on the bytecodes when they are loaded,<br/>
+                rather than verifying each instruction as it is executed, facilitates execution speed.<br/>
+                One way this design goal manifests itself in the instruction set is that most opcodes indicate the type they operate on.<br/>
+                <span class="note">security</span>
+            </p>
+            <p>
+                For example, instead of simply having one instruction that pops a word from the operand stack and stores it in a local variable,<br/>
+                the Java virtual machine's instruction set has two.<br/>
+                One instruction, <code>istore</code>, pops and stores an <code>int</code>.<br/>
+                The other instruction, <code>fstore</code>, pops and stores a <code>float</code>.<br/>
+                Both of these instructions perform the exact same function when executed: they pop a word and store it.<br/>
+                Distinguishing between popping and storing an <code>int</code> versus a <code>float</code> is important only to the verification process.<br/>
+                <span class="note">security举例：verification process</span>
+            </p>
+            <p>
+                For many instructions, the virtual machine needs to know the types being operated on to know how to perform the operation.<br/>
+                For example, the Java virtual machine supports two ways of adding two words together, yielding a one-word result.<br/>
+                One addition treats the words as <code>int</code>s, the other as <code>float</code>s.<br/>
+                The difference between these two instructions facilitates verification,<br/>
+                but also tells the virtual machine whether it should perform integer or floating point arithmetic.<br/>
+                <span class="note">又举一个例子：opcode中带有类型信息。</span>
+            </p>
+            <p>
+                A few instructions operate on any type.<br/>
+                The <code>dup</code> instruction, for example, duplicates the top word of a stack irrespective of its type.<br/>
+                Some instructions, such as <code>goto</code>, don't operate on typed values.<br/>
+                The majority of the instructions, however, operate on a specific type.<br/>
+                The mnemonics for most of these "typed" instructions indicate their type by a single character prefix that starts their mnemonic.<br/>
+                Table 5-2 shows the prefixes for the various types.<br/>
+                A few instructions, such as <code>arraylength</code> or <code>instanceof</code>, don't include a prefix because their type is obvious.<br/>
+                The <code>arraylength</code> opcode requires an array reference.<br/>
+                The <code>instanceof</code> opcode requires an object reference.<br/>
+                <span class="note">对opcode按type进行分类。</span>
+            </p>
+            <div style="text-align: center;">
+                <table style="margin: auto;" cellpadding="2" border="1">
+                    <tbody>
+                    <tr bgcolor="0066CC">
+                        <th>Type</th>
+                        <th>Code</th>
+                        <th>Example</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>byte</code></td>
+                        <td><code>b</code></td>
+                        <td><code>baload</code></td>
+                        <td>load <code>byte</code> from array</td>
+                    </tr>
+                    <tr>
+                        <td><code>short</code></td>
+                        <td><code>s</code></td>
+                        <td><code>saload</code></td>
+                        <td>load <code>short</code> from array</td>
+                    </tr>
+                    <tr>
+                        <td><code>int</code></td>
+                        <td><code>i</code></td>
+                        <td><code>iaload</code></td>
+                        <td>load <code>int</code> from array</td>
+                    </tr>
+                    <tr>
+                        <td><code>long</code></td>
+                        <td><code>l</code></td>
+                        <td><code>laload</code></td>
+                        <td>load <code>long</code> from array</td>
+                    </tr>
+                    <tr>
+                        <td><code>char</code></td>
+                        <td><code>c</code></td>
+                        <td><code>caload</code></td>
+                        <td>load <code>char</code> from array</td>
+                    </tr>
+                    <tr>
+                        <td><code>float</code></td>
+                        <td><code>f</code></td>
+                        <td><code>faload</code></td>
+                        <td>load <code>float</code> from array</td>
+                    </tr>
+                    <tr>
+                        <td><code>double</code></td>
+                        <td><code>d</code></td>
+                        <td><code>daload</code></td>
+                        <td>load <code>double</code> from array</td>
+                    </tr>
+                    <tr>
+                        <td><code>reference</code></td>
+                        <td><code>a</code></td>
+                        <td><code>aaload</code></td>
+                        <td>load <code>reference</code> from array</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p class="text-emphasize">
+                    Table 5-2. Type prefixes of bytecode mnemonics
+                </p>
+            </div>
+            <p>
+                Values on the operand stack must be used in a manner appropriate to their type.<br/>
+                It is illegal, for example, to push four <code>int</code>s, then add them as if they were two <code>long</code>s.<br/>
+                It is illegal to push a <code>float</code> value onto the operand stack from the local variables,<br/>
+                then store it as an <code>int</code> in an array on the heap.<br/>
+                It is illegal to push a <code>double</code> value from an object field on the heap,<br/>
+                then store the topmost of its two words into the local variables as an value of type <code>reference</code>.<br/>
+                The strict type rules that are enforced by Java compilers must also be enforced by Java virtual machine implementations.<br/>
+                <span class="note">这里列举了几种opcode不合法的使用方式。</span>
+            </p>
+            <p>
+                Implementations must also observe rules when executing instructions that perform generic stack operations independent of type.<br/>
+                As mentioned previously, the <code>dup</code> instruction pushes a copy of the top word of the stack, irrespective of type.<br/>
+                This instruction can be used on any value that occupies one word: an <code>int</code>, <code>float</code>, <code>reference</code>, or <code>returnAddress</code>.<br/>
+                It is illegal, however, to use <code>dup</code> when the top of the stack contains either a <code>long</code> or <code>double</code>,<br/>
+                the data types that occupy two consecutive operand stack locations.<br/>
+                A <code>long</code> or <code>double</code> sitting on the top of the operand stack<br/>
+                can be duplicated in their entirety by the <code>dup2</code> instruction,<br/>
+                which pushes a copy of the top two words onto the operand stack.<br/>
+                The generic instructions cannot be used to split up dual-word values.<br/>
+                <span class="note">又列举了一些opcode不合法的使用，与operand stack相接相关的dup操作</span>
+            </p>
+            <p>
+                To keep the instruction set small enough to enable each opcode to be represented by a single byte,<br/>
+                not all operations are supported on all types.<br/>
+                Most operations are not supported for types <code>byte</code>, <code>short</code>, and <code>char</code>.<br/>
+                These types are converted to <code>int</code> when moved from the heap or method area to the stack frame.<br/>
+                They are operated on as <code>int</code>s, then converted back to <code>byte</code>, <code>short</code>, or <code>char</code><br/>
+                before being stored back into the heap or method area.<br/>
+                <span class="note">值得一读。JVM并不支持所有的类型，有一些类型会被当成int类型来进行处理。</span>
+            </p>
+            <p>
+                Table 5-3 shows the <b>computation types</b> that correspond to each <b>storage type</b> in the Java virtual machine.<br/>
+                As used here, a <b>storage type</b> is the manner in which values of the type are represented on the <b>heap</b>.<br/>
+                The <b>storage type</b> corresponds to the type of the variable in Java source code.<br/>
+                A <b>computation type</b> is the manner in which the type is represented on the <b>Java stack frame</b>.<br/>
+                <span class="note">这里引出storage type和computation type这两个概念</span>
+            </p>
+            <div style="text-align: center;">
+                <table style="margin: auto;" cellpadding="2" border="1">
+                    <tbody>
+                    <tr bgcolor="#0066CC">
+                        <th>Storage Type</th>
+                        <th>Minimum Bits in Heap<br>or Method Area</th>
+                        <th>Computation Type</th>
+                        <th>Words in the<br>Java Stack Frame</th>
+                    </tr>
+                    <tr>
+                        <td><code>byte</code></td>
+                        <td>8</td>
+                        <td><code>int</code></td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td><code>short</code></td>
+                        <td>16</td>
+                        <td><code>int</code></td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td><code>int</code></td>
+                        <td>32</td>
+                        <td><code>int</code></td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td><code>long</code></td>
+                        <td>64</td>
+                        <td><code>long</code></td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td><code>char</code></td>
+                        <td>16</td>
+                        <td><code>int</code></td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td><code>float</code></td>
+                        <td>32</td>
+                        <td><code>float</code></td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td><code>double</code></td>
+                        <td>64</td>
+                        <td><code>double</code></td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td><code>reference</code></td>
+                        <td>32</td>
+                        <td><code>reference</code></td>
+                        <td>1</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p class="text-emphasize">Table 5-3. Storage and computation types inside the Java virtual machine</p>
+            </div>
+            <p>
+                Implementations of the Java virtual machine must in some way ensure that values are operated on by instructions appropriate to their type.<br/>
+                They can verify bytecodes up front as part of the class verification process,<br/>
+                on the fly as the program executes,<br/>
+                or some combination of both.<br/>
+                Bytecode verification is described in more detail in Chapter 7, "The Lifetime of a Type."<br/>
+                The entire instruction set is covered in detail in Chapters 10 through 20.<br/>
+                <span class="note">bytecode verification</span>
+            </p>
+
+
+            <h4 id="execution-technique">Execution Techniques</h4>
+            <p>
+                Various execution techniques that may be used by an implementation--<br/>
+                interpreting,<br/>
+                just-in-time compiling,<br/>
+                adaptive optimization,<br/>
+                native execution in silicon--<br/>
+                were described in Chapter 1, "Introduction to Java's Architecture."<br/>
+                The main point to remember about execution techniques is that<br/>
+                <span class="text-underline">an implementation can use any technique to execute bytecodes</span><br/>
+                <span class="text-underline">so long as it adheres to the semantics of the Java virtual machine instruction set.</span><br/>
+                <span class="note">执行bytecode要符合instruction set的语义。</span>
+            </p>
+            <p>
+                One of the most interesting -- and speedy -- execution techniques is adaptive optimization.<br/>
+                The adaptive optimization technique, which is used by several existing Java virtual machine implementations,<br/>
+                including Sun's Hotspot virtual machine,<br/>
+                borrows from techniques used by earlier virtual machine implementations.<br/>
+                The original JVMs interpreted bytecodes one at a time.<br/>
+                Second-generation JVMs added a JIT compiler,<br/>
+                which compiles each method to native code upon first execution, then executes the native code.<br/>
+                Thereafter, whenever the method is called, the native code is executed.<br/>
+                Adaptive optimizers, taking advantage of information available only at run-time,<br/>
+                attempt to combine bytecode interpretation and compilation to native in the way that will yield optimum performance.<br/>
+                <span class="note">adaptive optimization</span>
+            </p>
+            <p>
+                An adaptive optimizing virtual machine begins by interpreting all code, but it monitors the execution of that code.<br/>
+                Most programs spend 80 to 90 percent of their time executing 10 to 20 percent of the code.<br/>
+                By monitoring the program execution, the virtual machine can figure out which methods represent the program's "hot spot" --<br/>
+                the 10 to 20 percent of the code that is executed 80 to 90 percent of the time.<br/>
+                <span class="note">讲述adaptive optimizing virtual machine是如何找到hotspot的</span>
+            </p>
+            <p>
+                When the adaptive optimizing virtual machine decides that a particular method is in the hot spot,<br/>
+                it fires off a background thread that compiles those bytecodes to native and heavily optimizes the native code.<br/>
+                Meanwhile, the program can still execute that method by interpreting its bytecodes.<br/>
+                Because the program isn't held up and<br/>
+                because the virtual machine is only compiling and optimizing the "hot spot" (perhaps 10 to 20 percent of the code),<br/>
+                the virtual machine has more time than a traditional JIT to perform optimizations.<br/>
+                <span class="note">找到hotspot之后，就开始进行optimization了</span>
+            </p>
+            <p>
+                The adaptive optimization approach yields a program<br/>
+                in which the code that is executed 80 to 90 percent of the time is native code as heavily optimized as statically compiled C++,<br/>
+                with a memory footprint not much bigger than a fully interpreted Java program.<br/>
+                In other words, fast.<br/>
+                An adaptive optimizing virtual machine can keep the old bytecodes around in case a method moves out of the hot spot.<br/>
+                (The hot spot may move somewhat as the program executes.)<br/>
+                If a method moves out of the hot spot, the virtual machine can discard the compiled code and revert back to interpreting that method's bytecodes.<br/>
+                <span class="note">hotspot的机制很“聪明”</span>
+            </p>
+            <p>
+                As you may have noticed, an adaptive optimizer's approach to making Java programs run fast is similar to<br/>
+                the approach programmers should take to improve a program's performance.<br/>
+                An adaptive optimizing virtual machine,<br/>
+                unlike a regular JIT compiling virtual machine,<br/>
+                doesn't do "premature optimization."<br/>
+                The adaptive optimizing virtual machine begins by interpreting bytecodes.<br/>
+                As the program runs, the virtual machine "profiles" the program to find the program's "hot spot,"<br/>
+                that 10 to 20 percent of the code that gets executed 80 to 90 percent of the time.<br/>
+                And like a good programmer, the adaptive optimizing virtual machine just focuses its optimization efforts on that time-critical code.<br/>
+                <span class="note">进一步解释hotspot如何工作。</span>
+            </p>
+            <p>
+                But there is a bit more to the adaptive optimization story.<br/>
+                Adaptive optimizers can be tuned for the run-time characteristics of Java programs -- in particular, of "well- designed" Java programs.<br/>
+                According to David Griswold, Hotspot manager at JavaSoft,<br/>
+                "Java is a lot more object-oriented than C++.<br/>
+                You can measure that; you can look at the rates of method invocations, dynamic dispatches, and such things.<br/>
+                And the rates [for Java] are much higher than they are in C++."<br/>
+                Now this high rate of method invocations and dynamic dispatches is especially true in a well-designed Java program,<br/>
+                because one aspect of a well-designed Java program is highly factored, fine-grained design --<br/>
+                in other words, lots of compact, cohesive methods and compact, cohesive objects.<br/>
+                <span class="note">adaptive optimization story扩展。</span>
+            </p>
+            <p>
+                This run-time characteristic of Java programs,<br/>
+                the high frequency of method invocations and dynamic dispatches,<br/>
+                affects performance in two ways.<br/>
+                First, there is an overhead associated with each dynamic dispatch.<br/>
+                Second, and more significantly, method invocations reduce the effectiveness of compiler optimization.<br/>
+                <span class="note">影响性能</span>
+            </p>
+            <p>
+                Method invocations reduce the effectiveness of optimizers<br/>
+                because optimizers don't perform well across method invocation boundaries.<br/>
+                As a result, optimizers end up focusing on the code between method invocations.<br/>
+                And the greater the method invocation frequency,<br/>
+                the less code the optimizer has to work with between method invocations, and the less effective the optimization becomes.<br/>
+                <span class="note">频繁的方法调用，会降低优化的有效性。</span>
+            </p>
+            <p>
+                The standard solution to this problem is inlining --<br/>
+                the copying of an invoked method's body directly into the body of the invoking method.<br/>
+                Inlining eliminates method calls and gives the optimizer more code to work with.<br/>
+                It makes possible more effective optimization at the cost of increasing the run-time memory footprint of the program.<br/>
+                <span class="note">解决上述问题的方法是method inline</span>
+            </p>
+            <p>
+                The trouble is that inlining is harder with object-oriented languages,<br/>
+                such as Java and C++, than with non-object-oriented languages, such as C,<br/>
+                because object-oriented languages use dynamic dispatching.<br/>
+                And the problem is worse in Java than in C++,<br/>
+                because Java has a greater call frequency and a greater percentage of dynamic dispatches than C++.<br/>
+                <span class="note">method inline也有自己需要解决的问题。</span>
+            </p>
+            <p>
+                A regular optimizing static compiler for a C program can inline straightforwardly<br/>
+                because there is one function implementation for each function call.<br/>
+                The trouble with doing inlining with object-oriented languages is that<br/>
+                dynamic method dispatch means there may be multiple function (or method) implementation for any given function call.<br/>
+                In other words, the JVM may have many different implementations of a method to choose from at run time,<br/>
+                based on the class of the object on which the method is being invoked.<br/>
+                <span class="note">详细说明为什么method inline会困难：dynamic method dispatch</span>
+            </p>
+            <p>
+                One solution to the problem of inlining a dynamically dispatched method call<br/>
+                is to just inline all of the method implementations that may get selected at run-time.<br/>
+                The trouble with this solution is that in cases where there are a lot of method implementations,<br/>
+                the size of the optimized code can grow very large.<br/>
+                <span class="note">提出解决方法，又有新的问题。</span>
+            </p>
+            <p>
+                One advantage adaptive optimization has over static compilation is that,<br/>
+                because it is happening at runtime, it can use information not available to a static compiler.<br/>
+                For example, even though there may be 30 possible implementations that may get called for a particular method invocation,<br/>
+                at run-time perhaps only two of them are ever called.<br/>
+                The adaptive optimization approach enables only those two to be inlined, thereby minimizing the size of the optimized code.<br/>
+                <span class="note">这里讲adaptive optimization的优势。</span>
+            </p>
+
+
+            <h4 id="threads">Threads</h4>
+            <p>
+                The Java virtual machine specification defines a threading model that aims to facilitate implementation on a wide variety of architectures.<br/>
+                One goal of the Java threading model is to enable implementation designers, where possible and appropriate, to use native threads.<br/>
+                Alternatively, designers can implement a thread mechanism as part of their virtual machine implementation.<br/>
+                One advantage to using native threads on a multi-processor host is that<br/>
+                different threads of a Java application could run simultaneously on different processors.<br/>
+                <span class="note">JVM specification对于threading model的约束也是宽松的。</span>
+            </p>
+            <p>
+                One tradeoff of Java's threading model is that the specification of priorities is lowest-common-denominator.<br/>
+                A Java thread can run at any one of ten priorities.<br/>
+                Priority one is the lowest, and priority ten is the highest.<br/>
+                If designers use native threads, they can map the ten Java priorities onto the native priorities however seems most appropriate.<br/>
+                The Java virtual machine specification defines the behavior of threads at different priorities<br/>
+                only by saying that all threads at the highest priority will get some CPU time.<br/>
+                Threads at lower priorities are guaranteed to get CPU time only when all higher priority threads are blocked.<br/>
+                Lower priority threads <b>may</b> get some CPU time when higher priority threads aren't blocked, but there are no guarantees.<br/>
+                <span class="note">JVM的规范对于thread来说，就是找到各个平台的“最大公约数”</span>
+            </p>
+            <p>
+                The specification doesn't assume time-slicing between threads of different priorities, because not all architectures time-slice.<br/>
+                (As used here, <b>time-slicing</b> means that all threads at all priorities will be guaranteed some CPU time, even when no threads are blocked.)<br/>
+                Even among those architectures that do time-slice, the algorithms used to allot time slots to threads at various priorities can differ greatly.<br/>
+                <span class="note">JVM规范没有提出“某种平台所独有的特性”</span>
+            </p>
+            <p>
+                As mentioned in Chapter 2, "Platform Independence," you must not rely on time-slicing for program correctness.<br/>
+                You should use thread priorities only to give the Java virtual machine hints at what it should spend more time on.<br/>
+                To coordinate the activities of multiple threads, you should use synchronization.<br/>
+                <span class="note">不能太依赖于Java提供的thread priorities，因此有些平台可能不支持</span>
+            </p>
+            <p>
+                The thread implementation of any Java virtual machine must support two aspects of <b>synchronization</b>:<br/>
+                <b>object locking</b> and <b>thread wait and notify</b>.<br/>
+                <span class="text-underline">Object locking helps keep threads from interfering with one another while working independently on shared data.</span><br/>
+                <span class="text-underline">Thread wait and notify helps threads to cooperate with one another while working together toward some common goal.</span><br/>
+                Running applications access the Java virtual machine's locking capabilities via the instruction set,<br/>
+                and its wait and notify capabilities via the <code>wait()</code>, <code>notify()</code>, and <code>notifyAll()</code> methods of class <code>Object</code>.<br/>
+                For more details, see Chapter 20, "Thread Synchronization."<br/>
+                <span class="note">这里讲synchronization，很精彩，值得一读。</span>
+            </p>
+            <p>
+                In the Java virtual machine Specification, the behavior of Java threads is defined<br/>
+                in terms of <b>variables</b>, a <b>main memory</b>, and <b>working memories</b>.<br/>
+                Each Java virtual machine instance has a main memory,<br/>
+                which contains all the program's variables: instance variables of objects, components of arrays, and class variables.<br/>
+                Each thread has a working memory, in which the thread stores "working copies" of variables it uses or assigns.<br/>
+                Local variables and parameters, because they are private to individual threads,<br/>
+                can be logically seen as part of either the working memory or main memory.<br/>
+                <span class="note">JVM规范从variable、main memory、working memory的角度来描述thread的外部表现行为。</span>
+            </p>
+            <p>
+                The Java virtual machine specification defines many rules<br/>
+                that govern the low-level interactions of threads with <b>main memory</b>.<br/>
+                For example, one rule states that all operations on primitive types, except in some cases <code>long</code>s and <code>double</code>s, are atomic.<br/>
+                For example, if two threads compete to write two different values to an <code>int</code> variable,<br/>
+                even in the absence of synchronization, the variable will end up with one value or the other.<br/>
+                The variable will not contain a corrupted value.<br/>
+                In other words, one thread will win the competition and write its value to the variable first.<br/>
+                The losing thread need not sulk, however, because it will write its value the variable second, overwriting the "winning" thread's value.<br/>
+                <span class="note">main memory rules</span>
+            </p>
+            <p>
+                The exception to this rule is any <code>long</code> or <code>double</code> variable that is not declared <code>volatile</code>.<br/>
+                Rather than being treated as a single atomic 64-bit value,<br/>
+                such variables may be treated by some implementations as two atomic 32-bit values.<br/>
+                Storing a non-volatile <code>long</code> to memory, for example, could involve two 32-bit write operations.<br/>
+                This non-atomic treatment of <code>long</code>s and <code>double</code>s means that<br/>
+                two threads competing to write two different values to a <code>long</code> or <code>double</code> variable can legally yield a corrupted result.<br/>
+                <span class="note">列举出问题的情况。</span>
+            </p>
+            <p>
+                Although implementation designers are not required to treat operations involving non-volatile <code>long</code>s and <code>double</code>s atomically,<br/>
+                the Java virtual machine specification encourages them to do so anyway.<br/>
+                This non-atomic treatment of <code>long</code>s and <code>double</code>s is an exception to the general rule<br/>
+                that operations on primitive types are atomic.<br/>
+                This exception is intended to facilitate efficient implementation of the threading model on processors<br/>
+                that don't provide efficient ways to transfer 64-bit values to and from memory.<br/>
+                In the future, this exception may be eliminated.<br/>
+                For the time being, however, Java programmers must be sure to synchronize access to shared <code>long</code>s and <code>double</code>s.<br/>
+                <span class="note">继续讨论上面的问题</span>
+            </p>
+            <p>
+                Fundamentally, the rules governing low-level thread behavior specify <b>when a thread may</b> and <b>when it must</b>:
+            </p>
+            <ol>
+                <li>
+                    copy values of variables from the main memory to its working memory, and
+                </li>
+                <li>
+                    write values from its working memory back into the main memory.
+                </li>
+            </ol>
+            <p>
+                For certain conditions, the rules specify a precise and predictable order of memory reads and writes.<br/>
+                For other conditions, however, the rules do not specify any order.<br/>
+                The rules are designed to enable Java programmers to build multi-threaded programs that exhibit predictable behavior,<br/>
+                while giving implementation designers some flexibility.<br/>
+                This flexibility enables designers of Java virtual machine implementations to take advantage of standard hardware and software techniques<br/>
+                that can improve the performance of multi-threaded applications.<br/>
+                <span class="note">JVM规范给设计者提供了灵活性。</span>
+            </p>
+            <p>
+                The fundamental high-level implication of all the low-level rules that govern the behavior of threads is this:<br/>
+                If access to certain variables isn't synchronized, threads are allowed update those variables in main memory in any order.<br/>
+                Without synchronization, your multi-threaded applications may exhibit surprising behavior on some Java virtual machine implementations.<br/>
+                With proper use of synchronization, however, you can create multi-threaded Java applications<br/>
+                that behave in a predictable way on any implementation of the Java virtual machine.<br/>
+                <span class="note">这里对比了有、无synchronization带来的差别。</span>
+            </p>
+
+
+            <h3 id="native-method-interface">Native Method Interface</h3>
+            <p>
+                Java virtual machine implementations aren't required to support any particular native method interface.<br/>
+                Some implementations may support no native method interfaces at all.<br/>
+                Others may support several, each geared towards a different purpose.<br/>
+                <span class="note">具体的JVM实现，可能支持，也可能不支持native method interface。</span>
+            </p>
+            <p>
+                Sun's Java Native Interface, or JNI, is geared towards portability.<br/>
+                JNI is designed so it can be supported by any implementation of the Java virtual machine,<br/>
+                no matter what garbage collection technique or object representation the implementation uses.<br/>
+                This in turn enables developers to link the same (JNI compatible) native method binaries to<br/>
+                any JNI-supporting virtual machine implementation on a particular host platform.<br/>
+                <span class="note">portability</span>
+            </p>
+            <p>
+                Implementation designers can choose to create proprietary native method interfaces in addition to, or instead of, JNI.<br/>
+                To achieve its portability, the JNI uses a lot of indirection through pointers to pointers and pointers to functions.<br/>
+                To obtain the ultimate in performance,<br/>
+                designers of an implementation may decide to offer their own low-level native method interface<br/>
+                that is tied closely to the structure of their particular implementation.<br/>
+                Designers could also decide to offer a higher-level native method interface than JNI,<br/>
+                such as one that brings Java objects into a component software model.<br/>
+                <span class="note">JVM设计者可以提供自己的native method interface</span>
+            </p>
+            <p>
+                To do useful work, a native method must be able to interact to some degree with the internal state of the Java virtual machine instance.<br/>
+                For example, a native method interface may allow native methods to do some or all of the following:<br/>
+                <span class="note">native method interface能够做什么</span>
+            </p>
+            <ul>
+                <li> Pass and return data</li>
+                <li> Access instance variables or invoke methods in objects on the garbage-collected heap</li>
+                <li> Access class variables or invoke class methods</li>
+                <li> Accessing arrays</li>
+                <li> Lock an object on the heap for exclusive use by the current thread</li>
+                <li> Create new objects on the garbage-collected heap</li>
+                <li> Load new classes</li>
+                <li> Throw new exceptions</li>
+                <li> Catch exceptions thrown by Java methods that the native method invoked</li>
+                <li> Catch asynchronous exceptions thrown by the virtual machine</li>
+                <li> Indicate to the garbage collector that it no longer needs to use a particular object</li>
+            </ul>
+            <p>
+                Designing a native method interface that offers these services can be complicated.<br/>
+                The design needs to ensure that the garbage collector doesn't free any objects that are being used by native methods.<br/>
+                If an implementation's garbage collector moves objects to keep heap fragmentation at a minimum,<br/>
+                the native method interface design must make sure that either:<br/>
+                <span class="note">GC和native method interface之间的关系</span>
+            </p>
+            <ol>
+                <li>
+                    an object can be moved after its reference has been passed to a native method, or
+                </li>
+                <li>
+                    any objects whose references have been passed to a native method are pinned
+                    until the native method returns or otherwise indicates it is done with the objects
+                </li>
+            </ol>
+            <p>
+                As you can see, native method interfaces are very intertwined with the inner workings of a Java virtual machine.
+            </p>
+
+
+
+            <h2 id="real-machine">The Real Machine</h2>
+            <p>
+                As mentioned at the beginning of this chapter,<br/>
+                all the subsystems, runtime data areas, and internal behaviors defined by the Java virtual machine specification are abstract.<br/>
+                Designers aren't required to organize their implementations around "real" components<br/>
+                that map closely to the abstract components of the specification.<br/>
+                The abstract internal components and behaviors are merely a vocabulary<br/>
+                with which the specification defines the required external behavior of any Java virtual machine implementation.<br/>
+                <span class="note">JVM规范是抽象，实现是灵活的。讲的很好，值得一读。</span>
+            </p>
+            <p>
+                In other words, an implementation can be anything on the inside, so long as it behaves like a Java virtual machine on the outside.<br/>
+                Implementations must be able to recognize Java class files and must adhere to the semantics of the Java code the class files contain.<br/>
+                But otherwise, anything goes.<br/>
+                How bytecodes are executed,<br/>
+                how the runtime data areas are organized,<br/>
+                how garbage collection is accomplished,<br/>
+                how threads are implemented,<br/>
+                how the bootstrap class loader finds classes,<br/>
+                what native method interfaces are supported--<br/>
+                these are some of the many decisions left to implementation designers.<br/>
+                <span class="note">继续谈，JVM实现是灵活的。</span>
+            </p>
+            <p>
+                The flexibility of the specification gives designers the freedom to tailor their implementations to fit their circumstances.<br/>
+                In some implementations, minimizing usage of resources may be critical.<br/>
+                In other implementations, where resources are plentiful, maximizing performance may be the one and only goal.<br/>
+                <span class="note">不同的场景下，受到的约束不同。</span>
+            </p>
+            <p>
+                By clearly marking the line between the external behavior and the internal implementation of a Java virtual machine,<br/>
+                the specification preserves compatibility among all implementations while promoting innovation.<br/>
+                Designers are encouraged to apply their talents and creativity towards building ever-better Java virtual machines.<br/>
+                <span class="note">JVM实现上是自由的。</span>
+            </p>
+
+
+
+            <h2 id="eternal-math">Eternal Math: A Simulation</h2>
+            <p>
+                The CD-ROM contains several simulation applets that serve as interactive illustrations for the material presented in this book.<br/>
+                The applet shown in Figure 5-14 simulates a Java virtual machine executing a few bytecodes.<br/>
+                You can run this applet by loading <code>applets/EternalMath.html</code> from the CD-ROM into any Java enabled web browser or applet viewer that supports JDK 1.0.<br/>
+                <span class="note">开始讲示例</span>
+            </p>
+            <p>
+                The instructions in the simulation represent the body of the <code>doMathForever()</code> method of class <code>Act</code>,<br/>
+                shown previously in the "Instruction Set" section of this chapter.<br/>
+                This simulation shows the local variables and operand stack of the current frame,<br/>
+                the pc register, and the bytecodes in the method area.<br/>
+                It also shows an optop register,<br/>
+                which you can think of as part of the frame data of this particular implementation of the Java virtual machine.<br/>
+                The optop register always points to one word beyond the top of the operand stack.<br/>
+                <span class="note">对下图进行解释</span>
+            </p>
+            <p>
+                The applet has four buttons: Step, Reset, Run, and Stop.<br/>
+                Each time you press the Step button, the Java virtual machine simulator will execute the instruction pointed to by the pc register.<br/>
+                Initially, the pc register points to an <code>iconst_0</code> instruction.<br/>
+                The first time you press the Step button, therefore, the virtual machine will execute <code>iconst_0</code>.<br/>
+                It will push a zero onto the stack and set the pc register to point to the next instruction to execute.<br/>
+                Subsequent presses of the Step button will execute subsequent instructions and the pc register will lead the way.<br/>
+                If you press the Run button, the simulation will continue with no further coaxing on your part until you press the Stop button.<br/>
+                To start the simulation over, press the Reset button.<br/>
+                <span class="note">解释下图当中按钮的功能</span>
+            </p>
+            <p>
+                The value of each register (pc and optop) is shown two ways.<br/>
+                The contents of each register, an integer offset from the beginning of either the method's bytecodes or the operand stack, is shown in an edit box.<br/>
+                Also, a small arrow (either "pc&gt;" or "optop&gt;") indicates the location contained in the register.<br/>
+                <span class="note">pc和optop的两种表示方式</span>
+            </p>
+            <p>
+                In the simulation the operand stack is shown growing down the panel (up in memory offsets) as words are pushed onto it.<br/>
+                The top of the stack recedes back up the panel as words are popped from it.<br/>
+                <span class="note">operand stack是向下增长。</span>
+            </p>
+            <p>
+                With enough patience and clicks of the Step button (or a long enough run of the Run button), you can get an arithmetic overflow.<br/>
+                When the Java virtual machine encounters such a condition, it just truncates, as is shown by this simulation.<br/>
+                It does not throw any exceptions.<br/>
+                <span class="note">int类型会溢出。</span>
+            </p>
+            <p>
+                For each step of the simulation, a panel at the bottom of the applet contains an explanation of what the next instruction will do. Happy clicking.
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig5-14-new.gif" alt="figure 5-14"/><br/>
+                <span class="text-emphasize">Figure 5-14. The Eternal Math applet.</span>
+            </div>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <span class="note"></span>
+        </article>
+    </div>
+</div>
+
+<footer class="w3-center w3-light-grey w3-padding-48 w3-large">
+    <p>Powered by <a href="javascript:void(0);" title="W3.CSS" target="_blank" class="w3-hover-text-green">lsieun.cn</a></p>
+</footer>
+<div id="toc_div" class="w3-card" style="position:fixed;padding:7px;bottom:50px;left:0;max-width:450px;z-index:999;display:none;">
+    <span onclick="document.getElementById('toc_div').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+    <div class="at">
+        <!-- at == auto table of content -->
+        <!-- https://www.jqueryscript.net/menu/TOC-Generator-Smooth-Scroll-autoToc.html -->
+    </div>
+    <span onclick="document.getElementById('toc_div').style.display='none'" class="w3-button w3-display-bottomleft" style="font-size: 10px">CLOSE</span>
+</div>
+<div class="w3-clear"></div>
+</body>
+
+</html>

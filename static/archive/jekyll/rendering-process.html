@@ -1,0 +1,60 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Rendering Process</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    For any Jekyll site, a <b>build session</b> consists of discrete phases in the following order — <b>setting up plugins,
+    reading source files, running generators, rendering templates</b>, and finally <b>writing files to disk</b>.
+</p>
+
+<p>
+    While the phases above are self-explanatory, the one phase that warrants dissection is <b>the rendering phase</b>.
+</p>
+
+<p>
+    The <b>rendering phase</b> is further divisible into three optional stages.<br/>
+    Every file rendered, passes through one or more of these stages as determined by the file’s content string, front matter and extension.<br/>
+    The stages are akin to an assembly line, with the <b>output</b> from a stage being the <b>input</b> for the succeeding stage:
+</p>
+
+<ul>
+    <li>
+        <strong>Interpreting Liquid expressions in the file</strong><br>
+        This stage evaluates Liquid expressions in the current file.<br/>
+        By default, the interpretation is <b>shallow</b> — in that<br/>
+        any Liquid expression in resulting output is not further interpreted.<br/>
+        Moreover, any Liquid expression in the file’s front matter is left untouched.
+    </li>
+    <li>
+        <strong>Unleashing the converters</strong><br>
+        This stage invokes the converter mapped to the current file’s extension and converts the input string.<br/>
+        This is when Markdown gets converted into HTML and<br/>
+        Sass/Scss into CSS or<br/>
+        CoffeeScript into JavaScript, etc, etc.<br/>
+        Since this stage is determined by the file’s extension,<br/>
+        Markdown or Sass inside a <code>.html</code> file will remain untouched.
+    </li>
+    <li>
+        <strong>Populating the layouts</strong><br>
+        By this stage, <em>the source file</em> is considered rendered and it will not be revisited.<br/>
+        However, based on the file’s extension and consequently based on the front matter,<br/>
+        it is determined whether to take the <b>output</b> string from the preceding stage and place into layouts or not.<br/>
+        Whereas output from Sass files or CoffeeScript files are <b>never</b> placed into a layout,<br/>
+        regular text output can go either ways based on whether a layout has been assigned via the front matter.<br><br>
+        Placement into layouts work similar to how Russian dolls encase the smaller ones within itself or how an oyster
+        generates a pearl — the converted output from the preceding stage forms the core and layout(s) are successively
+        <em>rendered</em> separately onto the core.
+    </li>
+</ul>
+
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://jekyllrb.com/docs/rendering-process/" target="_blank">jekyllrb: Rendering Process</a></li>
+</ul>

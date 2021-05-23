@@ -1,0 +1,47 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Front Matter</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Front matter is a snippet of <a href="http://yaml.org/" class="external">YAML</a><br/>
+    placed between two triple-dashed lines at the start of a file.<br/>
+</p>
+
+
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p>
+        You must include <b>front matter</b> on the page for Jekyll to process any <b>Liquid</b> tags on it.
+    </p>
+</div>
+
+<p>You can use front matter to set variables for the page:</p>
+
+<pre title="set variables" class="plaintext">
+---
+my_number: 5
+---
+</pre>
+
+<p>
+    You can call front matter variables in Liquid using the <code>page</code> variable.<br/>
+    For example, to output the value of the <code>my_number</code> variable above:
+</p>
+
+<pre title="use variables" class="plaintext">
+{{ page.my_number }}
+</pre>
+
+<p>
+    To make Jekyll process a page without defining variables in the front matter, use:
+</p>
+
+<pre title="page without defining variables in the front matter" class="plaintext">
+---
+---
+</pre>

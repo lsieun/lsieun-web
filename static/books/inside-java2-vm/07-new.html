@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>07. The Lifetime of a Type | Inside the Java 2 Virtual Machine</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/w3.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="text/javascript" src="/js/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="/js/auto-toc.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".at").autoToc();
+        });
+    </script>
+</head>
+
+<body>
+
+<div class="w3-margin-bottom w3-center">
+    <h1 class="w3-jumbo">07. The Lifetime of a Type</h1>
+</div>
+
+<div class="w3-row-padding w3-content" style="max-width:1400px">
+    <div id="main" class="w3-container w3-justify">
+        <article>
+            <p>
+                原文地址：<a class="external" href="https://www.artima.com/insidejvm/ed2/lifetypeP.html" target="_blank">Chapter 7 of Inside the Java Virtual Machine</a>
+            </p>
+            <p>
+                The previous chapter described in detail the format of the Java class file, the standard binary form for representing Java types.<br/>
+                This chapter looks at what happens when binary type data is imported into a Java virtual machine.<br/>
+                The chapter follows the lifetime of a type (class or interface) from the type's initial entrance into the virtual machine to its ultimate exit.<br/>
+                It discusses <span class="text-underline">the processes of loading, linking, and initialization</span> that occur at the beginning of a type's lifetime;<br/>
+                the <span class="text-underline">processes of object instantiation, garbage collection, and finalization</span> that can occur in the prime of a type's lifetime;<br/>
+                and <span class="text-underline">the unloading</span> that can occur at the end of a type's lifetime.<br/>
+                <span class="note">本章要讲的内容有哪些</span>
+            </p>
+            <h2 id="loading-linking-initialization">Type Loading, Linking, and Initialization</h2>
+            <p>
+                The Java virtual machine makes types available to the running program through a process of <b>loading</b>, <b>linking</b>, and <b>initialization</b>.<br/>
+                <b>Loading</b> is the process of bringing a binary form for a type into the Java virtual machine.<br/>
+                <b>Linking</b> is the process of incorporating the binary type data into the runtime state of the virtual machine.<br/>
+                <b>Linking</b> is divided into three sub-steps: <b>verification</b>, <b>preparation</b>, and <b>resolution</b>.<br/>
+                <b>Verification</b> ensures the type is properly formed and fit for use by the Java virtual machine.<br/>
+                <b>Preparation</b> involves allocating memory needed by the type, such as memory for any class variables.<br/>
+                <b>Resolution</b> is the process of transforming symbolic references in the constant pool into direct references.<br/>
+                Implementations may delay the resolution step until each symbolic reference is actually used by the running program.<br/>
+                After verification, preparation, and (optionally) resolution are completed, the type is ready for <b>initialization</b>.<br/>
+                During <b>initialization</b>, the class variables are given their proper initial values.<br/>
+                See Figure 7-1 for a graphical depiction of this process.<br/>
+                <span class="note">对loading、linking和initialization进行介绍。</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig7-1-new.gif" alt="figure 7-1"/><br/>
+                <span>Figure 7-1. The beginning of a type's lifetime.</span>
+            </div>
+            <p>
+                As you can see from Figure 7-1, the processes of (1) loading, (2) linking, and (3) initialization must take place in that order.<br/>
+                The only exception to this required ordering is the third phase of linking, resolution,<br/>
+                which may optionally take place after initialization.<br/>
+                <span class="note">触发顺序</span>
+            </p>
+            <p>
+                The Java virtual machine specification gives implementations flexibility<br/>
+                in the timing of class and interface <b>loading</b> and <b>linking</b>, but strictly defines the timing of <b>initialization</b>.<br/>
+                All implementations must initialize each class or interface on its first <b>active use</b>.<br/>
+                The following six situations qualify as active uses:<br/>
+                <span class="note">这里讲了initialization和active use的关系。不管是class，还是interface，只要进行了active use，就要进行initialization</span>
+            </p>
+            <ul>
+                <li>
+                    A new instance of a class is created (in bytecodes, the execution of a <code>new</code> instruction.
+                    Alternatively, via implicit creation, reflection, cloning, or deserialization.)
+                </li>
+                <li>
+                    The invocation of a static method declared by a class (in bytecodes, the execution of an <code>invokestatic</code> instruction)
+                </li>
+                <li>
+                    The use or assignment of a static field declared by a class or interface,
+                    except for static fields that are <code>final</code> and initialized by a compile-time constant expression
+                    (in bytecodes, the execution of a <code>getstatic</code> or <code>putstatic</code> instruction)
+                </li>
+                <li>
+                    The invocation of certain reflective methods in the Java API,
+                    such as methods in class <code>Class</code> or in classes in the <code>java.lang.reflect</code> package
+                </li>
+                <li>
+                    The initialization of a subclass of a class
+                    (Initialization of a class requires prior initialization of its superclass.)
+                </li>
+                <li>
+                    The designation of a class as the initial class
+                    (with the <code>main()</code> method) when a Java virtual machine starts up
+                </li>
+            </ul>
+            <p>
+                All other uses of a type besides the six listed here are <b>passive uses</b>,<br/>
+                which don't trigger an <b>initialization</b> of the type.<br/>
+                Several examples illustrating the difference between active and passive uses are given later in this chapter.<br/>
+                <span class="note">active use + passive use</span>
+            </p>
+            <p>
+                As mentioned in the previous list, <span class="text-underline">initialization of a class requires prior initialization of its superclass</span>.<br/>
+                Applied recursively, this rule means that <span class="text-underline">all of a class's superclasses must be initialized prior to the initialization of the class</span>.<br/>
+                The same is not true, however, of <b>interfaces</b>.<span class="note">这对于接口来说，不成立</span><br/>
+                An interface is initialized only because a non-constant field declared by the interface is used,<br/>
+                never because a subinterface or class that implements the interface needs to be initialized.<br/>
+                Thus, <span class="text-underline">initialization of a class requires prior initialization of all its superclasses, but not its superinterfaces.</span><br/>
+                <span class="text-underline">Initialization of an interface does not require initialization of its superinterfaces.</span><br/>
+                <span class="note">对于class和interface来说，initialization的要求是不一样的。</span>
+            </p>
+            <p>
+                The "<span class="text-underline">initialize on first active use</span>" rule drives the mechanism that loads, links, and initializes classes.<br/>
+                On its first active use, a type must be initialized.<br/>
+                Before it can be initialized, however, it must be linked.<br/>
+                And before it can be linked, it must be loaded.<br/>
+                At their option, implementations may load and link types early.<br/>
+                They need not wait until the type's first active use to load and link the type.<br/>
+                If a type hasn't been loaded and linked before its first active use, however,<br/>
+                it must be loaded and linked at that time, so that it can be initialized.<br/>
+                <span class="note">active use对于loading、linking和initialization的影响。</span>
+            </p>
+
+
+            <h3 id="loading">Loading</h3>
+            <p>
+                The loading process consists of three basic activities. To load a type, the Java virtual machine must:
+            </p>
+            <ul>
+                <li>
+                    given the type's fully qualified name, produce a stream of <b>binary data</b> that represents the type
+                </li>
+                <li>
+                    parse the stream of <b>binary data</b> into <b>internal data structures</b> in the <b>method area</b>
+                </li>
+                <li>
+                    create an instance of class <code>java.lang.Class</code> that represents the type
+                </li>
+            </ul>
+            <p>
+                The stream of binary data may adhere to the Java class file format, but could alternatively follow some other format.<br/>
+                As mentioned in previous chapters, all Java virtual machine implementations must recognize the Java class file format,<br/>
+                but individual implementations may also recognize other binary formats.<br/>
+                <span class="note">binary data要遵循Java class file format</span>
+            </p>
+            <p>
+                The Java virtual machine specification does not say how the binary data for a type must be produced.<br/>
+                Some potential ways to produce binary data for a type are:
+            </p>
+            <ul>
+                <li>
+                    load a Java class file from the local file system
+                </li>
+                <li>
+                    download a Java class file across a network
+                </li>
+                <li>
+                    extract a Java class file from a ZIP, JAR, CAB, or other archive file
+                </li>
+                <li>
+                    extract a Java class file from a proprietary database
+                </li>
+                <li>
+                    compile a Java source file on the fly into the class file format
+                </li>
+                <li>
+                    compute the class file data for a type on the fly
+                </li>
+                <li>
+                    any of the above, but using a binary file format other than the Java class file
+                </li>
+            </ul>
+            <p>
+                Given the binary data for a type, the Java virtual machine must process that data to a great enough extent<br/>
+                that it can create an instance of class <code>java.lang.Class</code>.<br/>
+                The virtual machine must parse the binary data into implementation-dependent internal data structures.<br/>
+                (See Chapter 5, "The Java Virtual Machine," for a discussion of potential internal data structures for storing class data.)<br/>
+                The <code>Class</code> instance, the end product of the <b>loading</b> step,<br/>
+                serves as an interface between the <b>program</b> and the <b>internal data structures</b>.<span class="note">这个想法，我之前没有意识到。</span><br/>
+                To access information about a type that is stored in the internal data structures,<br/>
+                the program invokes methods on the <code>Class</code> instance for that type.<br/>
+                Together, <span class="text-underline">the processes of parsing the <b>binary data</b> for a type into <b>internal data structures</b> in the <b>method area</b></span> and<br/>
+                <span class="text-underline">instantiating a <code>Class</code> object on <b>heap</b></span> are called <b>creating the type</b>.<br/>
+                <span class="note">这段很重要，值得一读。</span>
+            </p>
+            <p>
+                As described in previous chapters, types are loaded either through the bootstrap class loader or through user-defined class loaders.<br/>
+                The bootstrap class loader, a part of the virtual machine implementation, loads types (including the classes and interfaces of the Java API) in an implementation-dependent way.<br/>
+                User-defined class loaders, instances of subclasses of <code>java.lang.ClassLoader</code>, load classes in custom ways.<br/>
+                The inner workings of user-defined class loaders are described in more detail later in Chapter 8, "The Linking Model."<br/>
+                <span class="note">引出class loader</span>
+            </p>
+            <p>
+                Class loaders (bootstrap or user-defined) need not wait until a type's <b>first active use</b> before they load the type.<br/>
+                Class loaders are allowed to cache binary representations of types, load types early in anticipation of eventual use, or load types together in related groups.<br/>
+                If a class loader encounters a problem during early loading, however,<br/>
+                it must report that problem (by throwing a subclass of <code>LinkageError</code>) only upon the type's first active use.<br/>
+                In other words, if a class loader encounters a missing or malformed class file during early loading,<br/>
+                it must wait to report that error until the class's first active use by the program.<br/>
+                If the class is never actively used by the program, the class loader will never report the error.<br/>
+                <span class="note">这套方式，可能只适合于JVM当中使用，不适合于人类社会。</span>
+            </p>
+
+
+            <h3 id="verification">Verification</h3>
+            <p>
+                After a type is loaded, it is ready to be linked.<br/>
+                The first step of the linking process is verification--<br/>
+                ensuring that the type obeys the semantics of the Java language and<br/>
+                that it won't violate the integrity of the virtual machine.<br/>
+                <span class="note">进入linking的verification阶段</span>
+            </p>
+            <p>
+                Verification is another area in which implementations of the Java virtual machine have some flexibility.<br/>
+                Implementation designers can decide how and when to verify types.<br/>
+                The Java virtual machine specification lists all the exceptions that a virtual machine can throw and under what circumstances it must throw them.<br/>
+                No matter what kind of trouble a Java virtual machine might encounter, there is an exception or error it is supposed to throw.<br/>
+                The specification says what exception or error should be thrown in each situation.<br/>
+                In some cases, the specification says exactly when the exception or error should be thrown,<br/>
+                but usually doesn't dictate precisely how or when the error condition should be detected.<br/>
+                <span class="note">检测出错误时机是灵活的，而报告错误的时机是由JVM specification来规定的。</span>
+            </p>
+            <p>
+                Nevertheless, certain kinds of checks are very likely to take place at certain times in most Java virtual machine implementations.<br/>
+                For example, during the loading process, the virtual machine must parse the stream of binary data that represents the type and build internal data structures.<br/>
+                At this point, certain checks will have to be done just to ensure the initial act of parsing the binary data won't crash the virtual machine.<br/>
+                During this parsing, implementations will likely check the binary data to make sure it has the expected overall format.<br/>
+                Parsers of the Java class file format might check the magic number,<br/>
+                make sure each component is in the right place and of the proper length,<br/>
+                verify that the file isn't too short or too long, and so on.<br/>
+                Although these checks take place during loading, before the official verification phase of linking,<br/>
+                they are still logically part of the verification phase.<br/>
+                <span class="text-underline">The entire process of detecting any kind of problem with loaded types is placed under the category of verification.</span><br/>
+                <span class="note">verification是一个“逻辑”上的概念，有些检查是发生在loading阶段。</span>
+            </p>
+            <p>
+                Another check that likely occurs during loading is making sure that every class except <code>Object</code> has a superclass.<br/>
+                This may be done during loading because when the virtual machine loads a class,<br/>
+                it must also make sure all of the class's superclasses are loaded also.<br/>
+                The only way a virtual machine can know the name of a given class's superclass is by peering into the binary data for the class.<br/>
+                Since the virtual machine is looking at every class's superclass data during loading anyway,<br/>
+                it may as well make this check during the loading phase.<br/>
+                <span class="note">verification，有的部分比较早。例如，在loading过程中，检查superclass信息。</span>
+            </p>
+            <p>
+                Another check--one that likely occurs after the official verification phase in most implementations--<br/>
+                is the verification of symbolic references.<br/>
+                As described in earlier chapters, the process of dynamic linking involves locating classes, interfaces, fields, and methods<br/>
+                referred to by symbolic references stored in the constant pool, and replacing the symbolic references with direct references.<br/>
+                When the virtual machine searches for a symbolically referenced entity (type, field, or method), it must first make sure the entity exists.<br/>
+                If the virtual machine finds that the entity exists,<br/>
+                it must further check that the referencing type has permission to access the entity, given the entity's access permissions.<br/>
+                These checks for existence and access permission are logically a part of verification, the first phase of linking,<br/>
+                but most likely happen during resolution, the third phase of linking.<br/>
+                Resolution itself can be delayed until each symbolic reference is first used by the program,<br/>
+                so these checks may even take place after initialization.<br/>
+                <span class="note">verification，有的部分比较晚。例如，在resolution过程中，检查symbolic reference信息。</span>
+            </p>
+            <p>
+                So what gets checked during the official verification phase?<br/>
+                Anything that hasn't already been checked before the official verification phase and that won't get checked after it.<br/>
+                Here are two lists of some of the things that are good candidates for checking during the official verification phase.<br/>
+                This first list is composed of checks that ensure classes are binary compatible with each other:<br/>
+                <span class="note">那么，在official verification阶段，会检查哪些东西呢？</span>
+            </p>
+            <ul>
+                <li>
+                    checking that final classes are not subclassed
+                </li>
+                <li>
+                    checking that final methods are not overridden
+                </li>
+                <li>
+                    making sure no incompatible method declarations
+                    (such as two methods that have the same name, the same number, order, and types of parameters, but different return types)
+                    appear between the type and its supertypes
+                </li>
+            </ul>
+            <p>
+                Note that while these checks require looking at other types, they only require looking at supertypes.<br/>
+                Superclasses need to be initialized before subclasses, so these classes are likely already loaded.<br/>
+                Superinterfaces do not need to be initialized when a class that implements them is initialized.<br/>
+                However, superinterfaces must be loaded when the class that implements them (or the interface that extends them) is loaded.<br/>
+                (They won't be initialized, just loaded and possibly linked at the option of the virtual machine implementation.)<br/>
+                All a class's supertypes will be loaded when the class is loaded.<br/>
+                At verification time, the class and all its supertypes will be to make sure they are all still binary compatible with one another.<br/>
+                <span class="note">这里讲load和initialize的关系</span>
+            </p>
+            <ul>
+                <li>
+                    checking that all constant pool entries are consistent with each other.
+                    (For example, the <code>string_index</code> item of a <code>CONSTANT_String_info</code> entry must be the index of a <code>CONSTANT_Utf8_info</code> entry.)
+                </li>
+                <li>
+                    checking that all special strings contained in the constant pool (class names, field and method names, field and method descriptors) are well-formed
+                </li>
+                <li>
+                    verifying the integrity of the bytecodes
+                </li>
+            </ul>
+            <p>
+                The most complicated task in the above list is the last one: bytecode verification.<br/>
+                All Java virtual machines must in some way verify the integrity of the bytecodes for every method they execute.<br/>
+                For example, implementations are not allowed to crash because a jump instruction sends the virtual machine beyond the end of a method.<br/>
+                They must detect that the jump instruction is invalid through some process of bytecode verification, and throw an error.<br/>
+                <span class="note">在verification阶段，最难的部分是进行bytecode verification</span>
+            </p>
+            <p>
+                Java virtual machine implementations are not required to verify bytecodes during the official verification phase of linking.<span class="note">并没有明确要求，一定在official verification阶段完成</span><br/>
+                Implementations are free, for example, to verify individual instructions as each instruction is executed.<br/>
+                One of the design goals of the Java virtual machine instruction set, however, was that<br/>
+                it yield bytecodes streams that can be verified all at once by a data flow analyzer.<br/>
+                The ability to verify bytecode streams all at once during linking, rather than on the fly as the program runs,<br/>
+                gives a big boost to the potential execution speed of Java programs.<br/>
+                <span class="note">对bytecode verification进一步详细说明。</span>
+            </p>
+            <p>
+                When verifying bytecodes via a data flow analyzer, the virtual machine may have to load other classes to<br/>
+                ensure that the semantics of the Java language are being followed.<br/>
+                For example, imagine a class contained a method<br/>
+                that assigned a reference to an instance of <code>java.lang.Float</code> to a field of type <code>java.lang.Number</code>.<br/>
+                In this case, the virtual machine would have to load class <code>Float</code> during bytecode verification<br/>
+                to make sure it was a subclass of class <code>Number</code>.<br/>
+                It would have to load <code>Number</code> to make sure it wasn't declared final.<br/>
+                The virtual machine must not initialize class <code>Float</code> at this time, just load it.<br/>
+                <code>Float</code> will be initialized only upon its first active use.<br/>
+                <span class="note">这里引出了data flow analyzer</span>
+            </p>
+            <p>
+                For more information on the class verification process, see Chapter 3, "Security."
+            </p>
+
+
+            <h3 id="preparation">Preparation</h3>
+            <p>
+                After a Java virtual machine has loaded a class and performed whatever verification it chooses to do up front,<br/>
+                the class is ready for <b>preparation</b>.<br/>
+                During the <b>preparation</b> phase, the Java virtual machine allocates memory for the <b>class variables</b> and sets them to <b>default initial values</b>.<br/>
+                The <b>class variables</b> are not initialized to their proper initial values until the <b>initialization</b> phase.<br/>
+                (No Java code is executed during the preparation step.)<br/>
+                During preparation, the Java virtual machine sets the newly allocated memory for the class variables to a default value determined by the type of the variable.<br/>
+                The default values for the various types are shown in Table 7-1.<br/>
+                <span class="note">这里开始介绍linking的preparation阶段</span>
+            </p>
+            <div style="text-align: center;">
+                <table style="margin: auto;" cellpadding="2" border="1">
+                    <tbody>
+                    <tr bgcolor="#0066CC" align="LEFT">
+                        <th>Type</th>
+                        <th>Initial Value</th>
+                    </tr>
+                    <tr>
+                        <td><code>int</code></td>
+                        <td><code>0</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>long</code></td>
+                        <td><code>0L</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>short</code></td>
+                        <td><code>(short) 0</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>char</code></td>
+                        <td><code>'\u0000'</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>byte</code></td>
+                        <td><code>(byte) 0</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>boolean</code></td>
+                        <td><code>false</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>reference</code></td>
+                        <td><code>null</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>float</code></td>
+                        <td><code>0.0f</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>double</code></td>
+                        <td><code>0.0d</code></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p>
+                    Table 7-1. Default initial values for the primitive and reference types
+                </p>
+            </div>
+            <p>
+                Although the <code>boolean</code> type appears in Table 7-1, the Java virtual machine itself has very little support for <code>boolean</code>s.<br/>
+                Internally, <code>boolean</code> is usually implemented as an <code>int</code>, which gets set to zero (boolean <code>false</code>) by default.<br/>
+                Therefore, <code>boolean</code> class variables, even if they are implemented internally  as <code>int</code>s, are initialized to <code>false</code>.<br/>
+                <span class="note">这里对boolean类型进行特殊说明</span>
+            </p>
+            <p>
+                During the preparation phase, Java virtual machine implementations may also allocate memory for data structures<br/>
+                that are intended to improve the performance of the running program.<br/>
+                An example of such a data structure is a <b>method table</b>,<br/>
+                which contains a pointer to the data for every method in a class, including those inherited from its superclasses.<br/>
+                A <b>method table</b> enables an inherited method to be invoked on an object without a search of superclasses at the point of invocation.<br/>
+                Method tables are described in more detail in Chapter 8, "The Linking Model."<br/>
+                <span class="note">在preparation阶段，还会为method table分配内存空间。</span>
+            </p>
+
+
+            <h3 id="resolution">Resolution</h3>
+            <p>
+                After a type has been through the first two phases of <b>linking</b>: <b>verification</b> and <b>preparation</b>,<br/>
+                it is ready for the third and final phase of <b>linking</b>: <b>resolution</b>.<br/>
+                <b>Resolution</b> is the process of locating classes, interfaces, fields, and methods referenced symbolically from a type's constant pool,<br/>
+                and replacing those symbolic references with direct references.<br/>
+                As mentioned above, this phase of <b>linking</b> is optional<br/>
+                until (and unless) each <b>symbolic reference</b> is first used by the program.<br/>
+                Resolution is described in detail in Chapter 8, "The Linking Model."<br/>
+                <span class="note">这里讲linking中的resolution阶段</span>
+            </p>
+
+
+            <h3 id="initialization">Initialization</h3>
+            <p>
+                The final step required to ready a class or interface for its <b>first active use</b> is <b>initialization</b>,<br/>
+                the process of setting <b>class variables</b> to their proper initial values.<br/>
+                As used here, a "proper" initial value is the programmer's desired starting value for a <b>class variable</b>.<br/>
+                A <b>proper initial value</b> contrasts with the <b>default initial value</b> given to <b>class variables</b> during <b>preparation</b>.<br/>
+                As described above, the virtual machine assigns <b>default values</b> based only on each variable's type.<br/>
+                <b>Proper initial values</b>, by contrast, are based on some master plan known only to the programmer.<br/>
+                <span class="note">开始介绍initialization，重点说了default initial value和proper initial value的区别。</span>
+            </p>
+            <p>
+                In Java code, a <b>proper initial value</b> is specified via a <b>class variable initializer</b> or <b>static initializer</b>.<br/>
+                A <b>class variable initializer</b> is an equals sign and expression next to a <b>class variable declaration</b>, as in:<br/>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file classlife/ex1/Example1a.java
+class Example1a {
+    // "= 3 * (int) (Math.random() * 5.0)" is the class variable initializer
+    static int size = 3 * (int) (Math.random() * 5.0);
+}
+</pre>
+            <p>
+                A <b>static initializer</b> is a block of code introduced by the <code>static</code> keyword, as in:
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file classlife/ex1/Example1b.java
+class Example1b {
+    static int size;
+
+    // This is the static initializer
+    static {
+        size = 3 * (int) (Math.random() * 5.0);
+    }
+}
+</pre>
+            <p>
+                All the <b>class variable initializers</b> and <b>static initializers</b> of a type are collected by the Java compiler and placed into one special method.<br/>
+                For classes, this method is called the <b>class initialization method</b>;<br/>
+                for interfaces, the <b>interface initialization method</b>.<br/>
+                In Java class files for both classes and interfaces, this method is named "<code>&lt;clinit&gt;</code>".<br/>
+                Regular methods of a Java application cannot invoke a <code>&lt;clinit&gt;</code> method.<br/>
+                This kind of method can only be invoked by the Java virtual machine,<br/>
+                which invokes it to set a type's <b>static variables</b> to their <b>proper initial values</b>.<br/>
+                <span class="note">这里介绍class initialization method。</span>
+            </p>
+            <p>
+                Initialization of a class consists of two steps:
+            </p>
+            <ol>
+                <li>
+                    Initializing the class's direct superclass (if any),
+                    if the direct superclass hasn't already been initialized
+                </li>
+                <li>
+                    Executing the class's class initialization method, if it has one
+                </li>
+            </ol>
+            <p>
+                When initializing a class's direct superclass, the same two steps listed above must be followed.<br/>
+                As a result, the first class that will be initialized will always be <code>Object</code>,<br/>
+                then all the classes on down the inheritance hierarchy to the class being actively used.<br/>
+                <span class="text-underline">Superclasses will be initialized before subclasses.</span><br/>
+                <span class="note">父类要比子类先进行initialization。</span>
+            </p>
+            <p>
+                Initialization of an interface does not require initialization of its superinterfaces.<br/>
+                Initialization of an interface consists of only one step:<br/>
+                <span class="note">这里讲接口的initialization</span>
+            </p>
+            <ul>
+                <li>
+                    Executing the interface's interface initialization method, if it has one
+                </li>
+            </ul>
+            <p>
+                The code of a <code>&lt;clinit&gt;()</code> method does not explicitly invoke a superclass's <code>&lt;clinit&gt;()</code> method.<br/>
+                Before a Java virtual machine invokes the <code>&lt;clinit&gt;()</code> method of a class, therefore,<br/>
+                it must make certain the <code>&lt;clinit&gt;()</code> methods of superclasses have been executed.<br/>
+                <span class="note">由JVM来调用&lt;clinit&gt;()方法。</span>
+            </p>
+            <p>
+                Java virtual machines must also make sure the initialization process is properly synchronized.<br/>
+                If multiple threads need to initialize a class, only one thread should be allowed to perform the initialization while the other threads wait.<br/>
+                After the active thread completes the initialization process, it must notify any waiting threads.<br/>
+                See Chapter 20, "Thread Synchronization," for information about synchronization, wait and notify.<br/>
+                <span class="note">这里讲只能有一个thread来进行initialization操作。</span>
+            </p>
+
+            <h4 id="clinit-method">The &lt;clinit&gt;() Method</h4>
+            <p>
+                As mentioned above, Java compilers place the code for <b>class variable initializers</b> and <b>static initializers</b> into<br/>
+                the <code>&lt;clinit&gt;()</code> method of the class file in the order<br/>
+                in which they appear in the class or interface declaration.<br/>
+                For example, given this class:<br/>
+                <span class="note">&lt;clinit&gt;()方法里instruction出现的顺序与写代码的顺序密切相关。</span>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file classlife/ex1/Example1c.java
+class Example1c {
+    static int width;
+    static int height = (int) (Math.random() * 2.0);
+
+    // This is the static initializer
+    static {
+        width = 3 * (int) (Math.random() * 5.0);
+    }
+}
+</pre>
+            <p>
+                The Java compiler generates the following <code>&lt;clinit&gt;()</code> method:
+            </p>
+<pre class="pre-block">
+                           // The code for height's class variable initializer begins here
+                           // Invoke Math.random(), which will push
+                           // a double return value
+ 0 invokestatic #6 &lt;Method double random()&gt;
+ 3 ldc2_w #8 &lt;Double 2.0&gt;  // Push double constant 2.0
+ 6 dmul                    // Pop two doubles, multiply, push result
+ 7 d2i                     // Pop double, convert to int, push int
+                           // Pop int, store into class variable
+                           // height
+ 8 putstatic #5 &lt;Field int height&gt;
+
+// The code for the static initializer begins here
+11 iconst_3                // Push int constant 3
+                           // Invoke Math.random(), which will push
+                           // a double return value
+12 invokestatic #6 &lt;Method double random()&gt;
+15 ldc2_w #10 &lt;Double 5.0&gt;  // Push double constant 5.0
+18 dmul                    // Pop two doubles, multiply, push result
+19 d2i                     // Pop double, convert to int, push int
+20 imul                    // Pop two ints, multiply, push int result
+                           // Pop int, store into class variable
+                           // width
+21 putstatic #7 &lt;Field int width&gt;
+24 return                  // Return void from &lt;clinit&gt; method
+</pre>
+            <p>
+                This <code>&lt;clinit&gt;()</code> method first executes the code for <code>Example1c</code>'s only <b>class variable initializer</b>,<br/>
+                which initializes <code>height</code>, then executes the code for the <b>static initializer</b>, which initializes <code>width</code>.<br/>
+                The initialization is done in this order because the <b>class variable initializer</b> appears textually before the <b>static initializer</b> in the source code of the <code>Example1c</code> class.<br/>
+            </p>
+            <p>
+                Not all classes will necessarily have a <code>&lt;clinit&gt;()</code> method in their class file.<br/>
+                If a class declares no class variables or static initializers, it won't have a <code>&lt;clinit&gt;()</code> method.<span class="note">第1种情况，不生成</span><br/>
+                If a class declares class variables, but doesn't explicitly initialize them with class variable initializers or static initializers,<br/>
+                it won't have a <code>&lt;clinit&gt;()</code> method.<span class="note">第2种情况，不生成</span><br/>
+                If a class contains only class variable initializers for static final variables,<br/>
+                and those class variable initializers use compile-time constant expressions,<br/>
+                that class won't have a <code>&lt;clinit&gt;()</code> method.<span class="note">第3种情况，不生成</span><br/>
+                Only those classes that actually require Java code to be executed to initialize class variables to proper initial values will have a class initialization method.<br/>
+                <span class="note">这里讲生成&lt;clinit&gt;()方法的情况。</span>
+            </p>
+            <p>
+                Here's an example of a class that won't be awarded a <code>&lt;clinit&gt;()</code> method by the Java compiler:
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file classlife/ex1/Example1d.java
+class Example1d {
+    static final int angle = 35;
+    static final int length = angle * 2;
+}
+</pre>
+            <p>
+                Class <code>Example1d</code> declares two constants, <code>angle</code> and <code>length</code>,<br/>
+                and initializes them with expressions that are compile-time constants.<br/>
+                The compiler knows that <code>angle</code> represents the value 35 and <code>length</code> represents the value 70.<br/>
+                When the <code>Example1d</code> class is loaded by a Java virtual machine,<br/>
+                <code>angle</code> and <code>length</code> are not stored as class variables in the method area.<span class="note">不在method area中占用内存空间。</span><br/>
+                As a result, no <code>&lt;clinit&gt;()</code> method is needed to initialize them.<br/>
+                The <code>angle</code> and <code>length</code> fields are not class variables,<br/>
+                they are constants, which are treated specially by the Java compiler.<br/>
+            </p>
+            <p>
+                Instead of treating <code>Example1d</code>'s <code>angle</code> and <code>length</code> fields as class variables,<br/>
+                the Java compiler places the constant <code>int</code> values they represent into<br/>
+                the constant pool or bytecode streams of any class that uses them.<span class="note">本段重点</span><br/>
+                For example, if a class uses <code>Example1d</code>'s <code>angle</code> field,<br/>
+                that class will not have in its constant pool a symbolic reference to the <code>angle</code> field of class <code>Example1d</code>.<br/>
+                Instead, the class will have operands embedded in its bytecode streams that have the value 35.<br/>
+                If the constant value of <code>angle</code> were outside the range of a <code>short</code> (-32,768 to 32,767), say 35,000,<br/>
+                the class would have a <code>CONSTANT_Integer_info</code> entry in its constant pool with the value of 35,000.<br/>
+            </p>
+            <p>
+                Here's a class that uses both a constant and a class variable from other classes:
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file classlife/ex1/Example1e.java
+class Example1e {
+
+    // The class variable initializer for symbolicRef uses a symbolic
+    // reference to the size class variable of class Example1a
+    static int symbolicRef = Example1a.size;
+
+    // The class variable initializer for localConst doesn't use a
+    // symbolic reference to the length field of class Example1d.
+    // Instead, it just uses a copy of the constant value 70.
+    static int localConst = Example1d.length * (int) (Math.random() * 3.0);
+}
+</pre>
+            <p>
+                The Java compiler generates the following <code>&lt;clinit&gt;()</code> method for class Example1e:
+            </p>
+<pre class="pre-block">
+                           // The code for symbolicRef's class variable initializer begins here:
+                           // Push int value from Example1a.size.
+                           // This getstatic instruction refers to a
+                           // symbolic reference to Example1a.size.
+ 0 getstatic #9 &lt;Field int size&gt;
+                           // Pop int, store into class variable
+                           // symbolicRef
+ 3 putstatic #10 &lt;Field int symbolicRef&gt;
+
+// The code for localConst's class variable intializer begins here:
+                           // Expand byte operand to int, push int
+                           // result. This is the local copy of
+ 6 bipush 70               // Example1d's length constant, 70.
+                           // Invoke Math.random(), which will push
+                           // a double return value
+ 8 invokestatic #8 &lt;Method double random()&gt;
+11 ldc2_w #11 &lt;Double 3.0&gt; // Push double constant 3.0
+14 dmul                    // Pop two doubles, multiply, push result
+15 d2i                     // Pop double, convert to int, push int
+16 imul                    // Pop two ints, multiply, push int result
+                           // Pop int, store into class variable
+                           // localConst
+17 putstatic #7 &lt;Field int localConst&gt;
+20 return                  // Return void from &lt;clinit&gt; method
+</pre>
+            <p>
+                The <code>getstatic</code> instruction at offset 0 uses a symbolic reference (in constant pool entry 9) to the <code>size</code> field of class <code>Example1a</code>.<br/>
+                The <code>bipush</code> instruction at offset 6 is followed by a byte that contains the constant value represented by <code>Example1d.length</code>.<br/>
+                <code>Example1e</code>'s constant pool contains no symbolic reference to anything in class <code>Example1d</code>.<br/>
+            </p>
+            <p>
+                Interfaces may also be awarded a <code>&lt;clinit&gt;()</code> method in the class file.<br/>
+                All fields declared in an interface are implicitly public, static, and final and must be initialized with a field initializer.<br/>
+                If an interface has any field initializers that don't resolve at compile-time to a constant,<br/>
+                that interface will have a <code>&lt;clinit&gt;()</code> method. Here's an example:<br/>
+                <span class="note">这里讲接口当中的&lt;clinit&gt;()方法。</span>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file classlife/ex1/Example1f.java
+interface Example1f {
+
+    int ketchup = 5;
+    int mustard = (int) (Math.random() * 5.0);
+}
+</pre>
+            <p>
+                The Java compiler generates the following <code>&lt;clinit&gt;()</code> method for interface <code>Example1f</code>:
+            </p>
+<pre class="pre-block">
+                          // The code for mustard's class variable initializer begins here
+                          // Invoke Math.random(), which will push
+                          // a double return value
+ 0 invokestatic #6 &lt;Method double random()&gt;
+ 3 ldc2_w #7 &lt;Double 5.0&gt; // Push double constant 2.0
+ 6 dmul                   // Pop two doubles, multiply, push result
+ 7 d2i                    // Pop double, convert to int, push int
+                          // Pop int, store into class variable
+                          // mustard
+ 8 putstatic #5 &lt;Field int mustard&gt;
+11 return                 // Return void from &lt;clinit&gt; method
+</pre>
+            <p>
+                Note that only the <code>mustard</code> field is initialized by this <code>&lt;clinit&gt;()</code> method.<br/>
+                Because the <code>ketchup</code> field is initialized to a compile-time constant, it is treated specially by the compiler.<br/>
+                Although types that use <code>Example1f.mustard</code> will contain a symbolic reference to the field,<br/>
+                types that use <code>Example1f.ketchup</code> will contain a local copy of <code>ketchup</code>'s constant value, 5.<br/>
+            </p>
+
+
+            <h4 id="active-use-vs-passive-use">Active versus Passive Use</h4>
+            <p>
+                As mentioned previously, the Java virtual machine initializes types on their <b>first active use</b>.<br/>
+                Only six activities constitute an active use:<br/>
+                creating a new instance of a class,<br/>
+                invoking a static method declared in a class,<br/>
+                accessing a non-constant static field declared in a class or interface,<br/>
+                the invocation of certain reflective methods in the Java API,<br/>
+                the initialization of a subclass of a class,<br/>
+                and the designation of a class as the initial class when a Java virtual machine starts up.<br/>
+                <span class="note">这里讲active use的6种情况。</span>
+            </p>
+            <p>
+                A use of a non-constant static field is an active use of only the class or interface that actually declares the field.<br/>
+                For example, a field declared in a class may be referred to via a subclass.<br/>
+                A field declared in an interface may be referred to via a subinterface or class that implements the interface.<br/>
+                These are passive uses of the subclass, subinterface, or class that implements the interface--uses that won't trigger their initialization.<br/>
+                They are an active use only of the class or interface in which the field is actually declared.<br/>
+                Here's an example that illustrates this principle:<br/>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file classlife/ex2/NewParent.java
+class NewParent {
+    static int hoursOfSleep = (int) (Math.random() * 3.0);
+
+    static {
+        System.out.println("NewParent was initialized.");
+    }
+}
+
+// On CD-ROM in file classlife/ex2/NewbornBaby.java
+class NewbornBaby extends NewParent {
+    static int hoursOfCrying = 6 + (int) (Math.random() * 2.0);
+
+    static {
+        System.out.println("NewbornBaby was initialized.");
+    }
+}
+
+// On CD-ROM in file classlife/ex2/Example2.java
+class Example2 {
+    // Invoking main() is an active use of Example2
+    public static void main(String[] args) {
+        // Using hoursOfSleep is an active use of NewParent,
+        // but a passive use of NewbornBaby
+        int hours = NewbornBaby.hoursOfSleep;
+        System.out.println(hours);
+    }
+
+    static {
+        System.out.println("Example2 was initialized.");
+    }
+}
+</pre>
+            <p>
+                In the above example, executing <code>main()</code> of <code>Example2</code> causes only <code>Example2</code> and <code>NewParent</code> to be initialized.<br/>
+                <code>NewbornBaby</code> is not initialized and need not be loaded.<br/>
+                The following text is printed to the standard output:<br/>
+            </p>
+<pre class="pre-block">
+Example2 was initialized.
+NewParent was initialized.
+2
+</pre>
+            <p>
+                A use of a field that is both <code>static</code> and <code>final</code>, and initialized by a compile-time constant expression,<br/>
+                is not an active use of the type that declares the field.<span class="note">如果是常量，则不表示active use</span><br/>
+                As mentioned above, the Java compiler resolves references to such fields to a local copy of the constant value<br/>
+                that resides either in the referring class's constant pool, in its bytecode streams, or both.<br/>
+                Here's an example that illustrates this special treatment of static final fields:<br/>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file classlife/ex3/Angry.java
+interface Angry {
+    String greeting = "Grrrr!";
+
+    int angerLevel = Dog.getAngerLevel();
+}
+
+// On CD-ROM in file classlife/ex3/Dog.java
+class Dog {
+    static final String greeting = "Woof, woof, world!";
+
+    static {
+        System.out.println("Dog was initialized.");
+    }
+
+    static int getAngerLevel() {
+        System.out.println("Angry was initialized");
+        return 1;
+    }
+}
+
+// On CD-ROM in file classlife/ex3/Example3.java
+class Example3 {
+
+    // Invoking main() is an active use of Example3
+    public static void main(String[] args) {
+
+        // Using Angry.greeting is a passive use of Angry
+        System.out.println(Angry.greeting);
+
+
+        // Using Dog.greeting is a passive use of Dog
+        System.out.println(Dog.greeting);
+    }
+
+    static {
+        System.out.println("Example3 was initialized.");
+    }
+}
+</pre>
+            <p>
+                Running the <code>Example3</code> application yields the following output:
+            </p>
+<pre class="pre-block">
+Example3 was initialized.
+Grrrr!
+Woof, woof, world!
+</pre>
+            <p>
+                Had <code>Angry</code> been initialized, the string <code>"Angry was initialized."</code> would have been written to the standard output.<br/>
+                Likewise, had <code>Dog</code> been initialized,<br/>
+                the string <code>"Dog was initialized."</code> would have been written to the standard output.<br/>
+                As you can see from the above output, neither interface <code>Angry</code> or class <code>Dog</code> were ever initialized<br/>
+                during the execution of the <code>Example3</code> application.<br/>
+                <span class="note">解释上面的输出结果</span>
+            </p>
+            <p>
+                For more information about this special treatment of static final variables, see Chapter 8, "The Linking Model."
+            </p>
+
+
+
+            <h2 id="life-of-object">The Lifetime of an Object</h2>
+            <p>
+                Once a class has been loaded, linked, and initialized, it is ready for use.<br/>
+                The program can access its static fields, invoke its static methods, or create instances of it.<br/>
+                This section describes <b>class instantiation</b> and <b>initialization</b>, activities that take place at the beginning of an object's lifetime,<br/>
+                and <b>garbage collection</b> and <b>finalization</b>, activities that mark the end of an object's lifetime.<br/>
+            </p>
+
+            <h3 id="class-instantiation">Class Instantiation</h3>
+            <p>
+                In Java programs, classes can be instantiated <b>explicitly</b> or <b>implicitly</b>.<br/>
+                The <b>four ways</b> a class can be instantiated <b>explicitly</b> are with the <code>new</code> operator,<span class="note">第1种</span><br/>
+                by invoking <code>newInstance()</code>on a <code>Class</code> or <code>java.lang.reflect.Constructor</code> object,<span class="note">第2种</span><br/>
+                by invoking <code>clone()</code> on any existing object,<span class="note">第3种</span><br/>
+                or by deserializing an object via the <code>getObject()</code> method of class<code>java.io.ObjectInputStream</code>.<span class="note">第4种</span><br/>
+                Here is an example showing three ways to create a new class instance:<br/>
+                <span class="note">实例化的4种方式。</span>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file classlife/ex4/Example4.java
+class Example4 implements Cloneable {
+    Example4() {
+        System.out.println("Created by invoking newInstance()");
+    }
+
+    Example4(String msg) {
+        System.out.println(msg);
+    }
+
+    public static void main(String[] args)
+        throws ClassNotFoundException, InstantiationException,
+        IllegalAccessException, CloneNotSupportedException {
+
+        // Create a new Example4 object with the new operator
+        Example4 obj1 = new Example4("Created with new.");
+
+        // Get a reference to the Class instance for Example4, then
+        // invoke newInstance() on it to create a new Example4 object
+        Class myClass = Class.forName("Example4");
+        Example4 obj2 = (Example4) myClass.newInstance();
+
+        // Make an identical copy of the the second Example4 object
+        Example4 obj3 = (Example4) obj2.clone();
+    }
+}
+</pre>
+            <p>
+                When executed, the <code>Example4</code> application prints this output:
+            </p>
+<pre class="pre-block">
+Created with new.
+Created by invoking newInstance()
+</pre>
+            <p>
+                Besides the four ways listed previously to explicitly instantiate objects in Java source code,<br/>
+                there are several situations in which objects will be instantiated <b>implicitly</b>--<br/>
+                without an explicit <code>new</code>, <code>newInstance()</code>, <code>clone()</code>, or<br/>
+                <code>ObjectInputStream.readObject()</code> appearing in the source.<br/>
+            </p>
+            <p>
+                Possibly the first implicitly instantiated objects of any Java application are<br/>
+                the <code>String</code> objects that hold the command line arguments.<br/>
+                References to these objects, one for each command-line argument,<br/>
+                are delivered in the <code>String</code> array passed as the sole parameter to the <code>main()</code> method of every application.<br/>
+                <span class="note">从command line输入的参数，会自动生成String对象。</span>
+            </p>
+            <p>
+                Two other ways a class can be instantiated implicitly involve the process of <b>class loading</b>.<br/>
+                First, for every type a Java virtual machine loads, it implicitly instantiates a new <code>Class</code> object to represent that type.<span class="note">第1点，生成Class对象</span><br/>
+                Second, when the Java virtual machine loads a class that contains <code>CONSTANT_String_info</code> entries in its constant pool,<span class="note">第2点，生成String对象</span><br/>
+                it may instantiate new <code>String</code> objects to represent those constant string literals.<br/>
+                The process of transforming a <code>CONSTANT_String_info</code> entry in the <b>method area</b> to a <code>String</code> instance on the <b>heap</b><br/>
+                is part of the process of <b>constant pool resolution</b>.<br/>
+                This process is described in detail in Chapter 8, "The Linking Model."<br/>
+                <span class="note">这里讲了class loading过程中，生成Class和String类型的对象。</span>
+            </p>
+            <p>
+                Another way objects can be created implicitly is through the process of evaluating an expression<br/>
+                that involves the string concatenation operator.<br/>
+                If such an expression is not a compile-time constant,<br/>
+                intermediate <code>String</code> and <code>StringBuffer</code> objects<br/>
+                will be created in the process of evaluating the expression.<br/>
+                Here's an example:<br/>
+                <span class="note">字符串拼接的过程中，会生成StringBuilder对象。</span>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file classlife/ex5/Example5.java
+class Example5 {
+
+    public static void main(String[] args) {
+
+        if (args.length &lt; 2) {
+            System.out.println("Must enter any two args.");
+            return;
+        }
+
+        System.out.println(args[0] + args[1]);
+    }
+}
+</pre>
+            <p>
+                javac generates these bytecodes for <code>Example5</code>'s <code>main()</code> method:
+            </p>
+<pre class="pre-block">
+ 0 aload_0      // Push the objref from loc var 0 (args)
+ 1 arraylength  // Pop arrayref, calc array length, push int length
+ 2 iconst_2     // Push int constant 2
+                // Pop 2 ints, compare, branch if (length &gt;= 2) to
+ 3 if_icmpge 15 // offset 15.
+                // Push objref from System.out
+ 6 getstatic #11 &lt;Field java.io.PrintStream out&gt;
+                // Push objref of string literal
+ 9 ldc #1 &lt;String "Must enter any two args."&gt;
+                // Pop objref to String param, objref to System.out,
+                // invoke println()
+11 invokevirtual #12 &lt;Method void println(java.lang.String)&gt;
+14 return       // Return void from main()
+                // Push objref from System.out
+15 getstatic #11 &lt;Field java.io.PrintStream out&gt;
+
+// The string concatenation operation begins here
+                // Allocate mem for new StringBuffer object, and
+                // initialize mem to default initial values, push
+                // objref to new object
+18 new #6 &lt;Class java.lang.StringBuffer&gt;
+21 dup          // Duplicate objref to StringBuffer object
+22 aload_0      // Push ref from loc var 0 (args)
+23 iconst_0     // Push int constant 0
+                // Pop int, arrayref, push String at arrayref[int],
+24 aaload       // which is args[0]
+                // Pop objref, invoke String's class method
+                // valueOf(), passing it the objref to the args[0]
+                // String object. valueOf() calls toString() on the
+                // ref, and returns (and pushes) the result, which
+                // happens to be the original args[0] String. In this
+                // case, the stack will look precisely the same
+                // before and after this instruction is executed.
+                // Thus here, the 1.1 javac compiler has
+                // over-enthusiastically generated an unnecessary
+                // instruction.
+25 invokestatic #14 &lt;Method java.lang.String valueOf(java.lang.Object)&gt;
+                // Pop objref to args[0] String, objref of the
+                // StringBuffer object, invoke &lt;init&gt;() method on the
+                // StringBuffer object passing the args[0] objref as
+                // the only parameter.
+28 invokespecial #9 &lt;Method java.lang.StringBuffer(java.lang.String)&gt;
+31 aload_0      // Push objref from loc var 0 (args)
+32 iconst_1     // Push int constant 1
+                // Pop int, arrayref, push String at arrayref[int],
+33 aaload       // which is args[1]
+                // Pop objref to args[1] String, objref of the
+                // StringBuffer object (there's still another objref
+                // to this same object on the stack because of the
+                // dup instruction above), invoke append() method on
+                // StringBuffer object, passing args[1] as the only
+                // parameter. append() will return an objref to this
+                // StringBuffer object, which will be pushed back
+                // onto the stack.
+34 invokevirtual #10 &lt;Method java.lang.StringBuffer append(java.lang.String)&gt;
+                // Pop objref to StringBuffer (pushed by append()),
+                // invoke toString() on it, which returns the value
+                // of the StringBuffer as a String object. Push
+                // objref of String object.
+37 invokevirtual #13 &lt;Method java.lang.String toString()&gt;
+// The string concatenation operation is now complete
+
+                // Pop objref of concatenated String, objref of
+                // System.out that was pushed by the getstatic
+                // instruction at offset 15. Invoke println() on
+                // System.out, passing the concatenated String as
+                // the only parameter.
+40 invokevirtual #12 &lt;Method void println(java.lang.String)&gt;
+43 return       // Return void from main()
+</pre>
+            <p>
+                The bytecodes for <code>Example5</code>'s <code>main()</code> method contain<br/>
+                three implicitly generated <code>String</code> objects and one implicitly generated <code>StringBuffer</code> object.<br/>
+                References to two of the <code>String</code> objects appear as arguments passed to <code>main()</code> in the <code>args</code> array,<br/>
+                which are pushed onto the stack by the <code>aaload</code> instructions at offset 24 and 33.<br/>
+                The <code>StringBuffer</code> is created with the <code>new</code> instruction at offset 18<br/>
+                and initialized with the <code>invokespecial</code> instruction at offset 28.<br/>
+                The final <code>String</code>,<br/>
+                which represents the concatenation of <code>args[0]</code> and <code>args[1]</code>,<br/>
+                is created by calling <code>toString()</code> on the <code>StringBuffer</code> object<br/>
+                via the <code>invokevirtual</code> instruction at offset 37.<br/>
+                <span class="note">对上面的bytecode进行解释</span>
+            </p>
+            <p>
+                When the Java virtual machine creates a new instance of a class, either implicitly or explicitly,<br/>
+                it first allocates memory on the <b>heap</b> to hold the object's instance variables.<br/>
+                Memory is allocated for all variables declared in the object's class and in all its superclasses, including instance variables that are hidden.<br/>
+                As described in Chapter 5, "The Java Virtual Machine,"<br/>
+                memory for other implementation-dependent components of an object's image on the heap,<br/>
+                such as a pointer to class data in the <b>method area</b>,<br/>
+                are also likely allocated at this point.<br/>
+                As soon as the virtual machine has set aside the heap memory for a new object,<br/>
+                it immediately initializes the instance variables to default initial values.<br/>
+                These are the same values shown above in Table 7-1 as default initial values for class variables.<br/>
+                <span class="note">这里开始讲在创建对象实例时，heap上的内存是如何分配的。</span>
+            </p>
+            <p>
+                Once the virtual machine has <span class="text-underline">allocated memory for the new object</span> and
+                <span class="text-underline">initialized the instance variables to <b>default values</b></span>,<br/>
+                it is ready to <span class="text-underline">give the instance variables their <b>proper initial values</b></span>.<br/>
+                The Java virtual machine uses one of <b>three techniques</b> to do this, depending upon how the object is being created.<span class="note">有3种情况</span><br/>
+                If the object is being created because of a <code>clone()</code> invocation,<span class="note">第1种情况</span><br/>
+                the virtual machine copies the values of the instance variables of the object being cloned into the new object.<br/>
+                If the object is being deserialized via a <code>readObject()</code> invocation on an <code>ObjectInputStream</code>,<span class="note">第2种情况</span><br/>
+                the virtual machine initializes non-transient instance variables of the object from values read from the input stream.<br/>
+                Otherwise, the virtual machine invokes an <b>instance initialization method</b> on the object.<span class="note">第3种情况</span><br/>
+                The <b>instance initialization method</b> initializes the object's <b>instance variables</b> to their <b>proper initial values</b>.<br/>
+                <span class="note">这段值得一读，主要是讲如何让各个字段获得proper initial value</span>
+            </p>
+            <p>
+                The Java compiler generates at least one <b>instance initialization method</b> for every class it compiles.<br/>
+                In the Java class file, the <b>instance initialization method</b> is named "<code>&lt;init&gt;</code>."<br/>
+                For each constructor in the source code of a class,<br/>
+                the Java compiler generates one <code>&lt;init&gt;()</code> method.<br/>
+                If the class declares no constructors explicitly,<br/>
+                the compiler generates a default no-arg constructor that just invokes the superclass's no-arg constructor.<br/>
+                As with any other constructor, the compiler creates an <code>&lt;init&gt;()</code> method in the class file that corresponds to this default constructor.<br/>
+                <span class="note">这里主要是围绕着&lt;init&gt;()方法展开。</span>
+            </p>
+            <p>
+                An <code>&lt;init&gt;()</code> method can contain three kinds of code:<span class="note">三种类型的代码</span><br/>
+                an invocation of another <code>&lt;init&gt;()</code> method,<span class="note">调用另外一个构造方法</span><br/>
+                code that implements any instance variable initializers,<span class="note">初始化字段</span><br/>
+                and code for the body of the constructor.<span class="note">其它代码</span><br/>
+                If a constructor begins with an explicit invocation of another constructor in the same class<br/>
+                (a <code>this()</code> invocation)<br/>
+                its corresponding <code>&lt;init&gt;()</code> method will be composed of two parts:<br/>
+                <span class="note">这里对&lt;init&gt;()里面的代码进行分类</span>
+            </p>
+            <ul>
+                <li>
+                    an invocation of the same-class <code>&lt;init&gt;()</code> method
+                </li>
+                <li>
+                    the bytecodes that implement the body of the corresponding constructor
+                </li>
+            </ul>
+            <p>
+                If a constructor does not begin with a <code>this()</code> invocation and the class is not <code>Object</code>,<br/>
+                the <code>&lt;init&gt;()</code> method will have three components:
+            </p>
+            <ul>
+                <li>
+                    an invocation of a superclass <code>&lt;init&gt;()</code> method
+                </li>
+                <li>
+                    the bytecodes for any instance variable initializers
+                </li>
+                <li>
+                    the bytecodes that implement the body of the corresponding constructor
+                </li>
+            </ul>
+            <p>
+                If a constructor does not begin with a <code>this()</code> invocation and the class is <code>Object</code>,<br/>
+                the first component in the above list is missing.<br/>
+                Because <code>Object</code> has no superclass,<br/>
+                its <code>&lt;init&gt;()</code> method's can't begin with a superclass <code>&lt;init&gt;()</code> method invocation.<br/>
+                <span class="note">这里讲的是java.lang.Object的情况。</span>
+            </p>
+            <p>
+                If a constructor begins with an explicit invocation of a superclass constructor (a <code>super()</code> invocation),<br/>
+                its <code>&lt;init&gt;()</code> method will invoke the corresponding superclass <code>&lt;init&gt;()</code> method.<br/>
+                For example, if a constructor begins with an explicit invocation of the  "<code>super(int, String)</code> constructor,"<br/>
+                the corresponding <code>&lt;init&gt;()</code> method will begin by invoking the superclass's "<code>&lt;init&gt;(int, String)</code>" method.<br/>
+                If a constructor does not begin with an explicit <code>this()</code> or <code>super()</code> invocation,<br/>
+                the corresponding <code>&lt;init&gt;()</code> method will invoke the superclass's no-arg <code>&lt;init&gt;()</code> method by default.<br/>
+                <span class="note">子类的构造方法，调用父类的构造方法。</span>
+            </p>
+            <p>
+                Here's an example with three constructors, numbered one through three:
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file classlife/ex6/Example6.java
+class Example6 {
+
+    private int width = 3;
+
+    // Constructor one:
+    // This constructor begins with a this() constructor invocation,
+    // which gets compiled to a same-class &lt;init&gt;() method invocation.
+    Example6() {
+        this(1);
+        System.out.println("Example6(), width = " + width);
+    }
+
+    // Constructor two:
+    // This constructor begins with no explicit invocation of another
+    // constructor, so it will get compiled to an &lt;init&gt;() method
+    // that begins with an invocation of the superclass's no-arg &lt;init&gt;() method.
+    Example6(int width) {
+        this.width = width;
+        System.out.println("Example6(int), width = " + width);
+    }
+
+    // Constructor three:
+    // This constructor begins with super(), an explicit invocation
+    // of the superclass's no-arg constructor. Its &lt;init&gt;() method
+    // will begin with an invocation of the superclass's no-arg &lt;init&gt;() method.
+    Example6(String msg) {
+        super();
+        System.out.println("Example6(String), width = " + width);
+        System.out.println(msg);
+    }
+
+    public static void main(String[] args) {
+        String msg = "The Agapanthus is also known as Lily of the Nile.";
+        Example6 one = new Example6();
+        Example6 two = new Example6(2);
+        Example6 three = new Example6(msg);
+    }
+}
+</pre>
+            <p>
+                When executed, the <code>Example6</code> application prints this output:
+            </p>
+<pre class="pre-block">
+Example6(int), width = 1
+Example6(), width = 1
+Example6(int), width = 2
+Example6(String), width = 3
+The Agapanthus is also known as Lily of the Nile.
+</pre>
+            <p>
+                The bytecodes for <code>Example6</code>'s no-arg <code>&lt;init&gt;()</code> method
+                (the <code>&lt;init&gt;()</code> method that corresponds to constructor one) are:
+            </p>
+<pre class="pre-block">
+// The first component, the same-class &lt;init&gt;() invocation, begins
+// here:
+ 0 aload_0      // Push the objref from loc var 0 (this)
+ 1 iconst_1     // Push int constant 1
+                // Pop int and objref, invoke &lt;init&gt;() method on
+                // objref (this), passing the int (a 1) as the
+                // only parameter.
+ 2 invokespecial #12 &lt;Method Example6(int)&gt;
+
+// The second component, the body of the constructor, begins
+// here:
+                // Push objref from System.out
+ 5 getstatic #16 &lt;Field java.io.PrintStream out&gt;
+                // Allocate mem for new StringBuffer object, and
+                // initialize mem to default initial values, push
+                // objref to new object
+ 8 new #8 &lt;Class java.lang.StringBuffer&gt;
+11 dup          // Duplicate objref to StringBuffer object
+                // Push objref to String literal from constant pool
+12 ldc #1 &lt;String "Example6(), width = "&gt;
+                // Pop objref to literal String, pop objref of the
+                // StringBuffer object, invoke &lt;init&gt;() method on the
+                // StringBuffer object passing the args[0] objref as
+                // the only parameter.
+14 invokespecial #14 &lt;Method java.lang.StringBuffer(java.lang.String)&gt;
+17 aload_0      // Push objref from loc var 0 (this)
+                // Pop this reference, Push int value of width field
+18 getfield #19 &lt;Field int width&gt;
+                // Pop int (width), pop objref (StringBuffer object),
+                // invoke append() on StringBuffer object passing the
+                // width int as the only parameter. append() will add
+                // the string representation of the int to the end of
+                // the buffer, and return an objref to the same
+                // StringBuffer object.
+21 invokevirtual #15 &lt;Method java.lang.StringBuffer append(int)&gt;
+                // Pop objref to StringBuffer (pushed by append()),
+                // invoke toString() on it, which returns the value
+                // of the StringBuffer as a String object. Push
+                // objref of String object.
+24 invokevirtual #18 &lt;Method java.lang.String toString()&gt;
+                // Pop objref of String, pop objref of System.out
+                // that was pushed by the getstatic instruction at
+                // offset 5. Invoke println() on System.out,
+                // passing the String as the only parameter:
+                // System.out.println("Example6(), width = "
+                //     + width);
+27 invokevirtual #17 &lt;Method void println(java.lang.String)&gt;
+30 return       // Return void from &lt;init&gt;()
+</pre>
+            <p>
+                Note that the <code>&lt;init&gt;()</code> method for constructor one begins with an invocation of a same-class <code>&lt;init&gt;()</code> method,<br/>
+                then executes the body of the corresponding constructor.<br/>
+                Because the constructor begins with a <code>this()</code> invocation,<br/>
+                its corresponding <code>&lt;init&gt;()</code> method doesn't contain bytecodes for the instance variable initializer.<br/>
+                <span class="note">对上面的bytecode进行解释</span>
+            </p>
+            <p>
+                The bytecodes for <code>Example6</code>'s <code>&lt;init&gt;()</code> method that takes an <code>int</code> parameter<br/>
+                (the <code>&lt;init&gt;()</code> method that corresponds to constructor two) is:<br/>
+            </p>
+<pre class="pre-block">
+// The first component, the superclass &lt;init&gt;() invocation, begins
+// here:
+ 0 aload_0      // Push the objref from loc var 0 (this)
+                // Pop objref (this), invoke the superclass's
+                // no-arg&lt;init&gt;() method on objref.
+ 1 invokespecial #11 &lt;Method java.lang.Object()&gt;
+
+// The second component, the instance variable initializers, begins
+// here:
+ 4 aload_0      // Push the objref from loc var 0 (this)
+ 5 iconst_3     // Push int constant 3
+                // Pop int (3), pop objref (this), store 3 into
+                // width instance variable of this object
+ 6 putfield #19 &lt;Field int width&gt;
+
+// The third component, the body of the constructor, begins
+// here:
+ 9 aload_0      // Push the objref from loc var 0 (this)
+10 iload_1      // Push int from loc var 1 (int param width)
+                // Pop int (param width), pop objref (this), store
+                // int param value into width field of this object:
+                // this.width = width
+11 putfield #19 &lt;Field int width&gt;
+                // Push objref from System.out
+14 getstatic #16 &lt;Field java.io.PrintStream out&gt;
+                // Allocate mem for new StringBuffer object, and
+                // initialize mem to default initial values, push
+                // objref to new object
+17 new #8 &lt;Class java.lang.StringBuffer&gt;
+20 dup          // Duplicate objref to StringBuffer object
+                // Push objref to String literal from constant pool
+21 ldc #3 &lt;String "Example6(int), width = "&gt;
+                // Pop objref to literal String, pop objref of the
+                // StringBuffer object, invoke &lt;init&gt;() method on the
+                // StringBuffer object passing the args[0] objref as
+                // the only parameter.
+23 invokespecial #14 &lt;Method java.lang.StringBuffer(java.lang.String)&gt;
+26 iload_1      // Push int from loc var 1 (int param width)
+                // Pop int (width), pop objref (StringBuffer object),
+                // invoke append() on StringBuffer object passing the
+                // width int as the only parameter. append() will add
+                // the string representation of the int to the end of
+                // the buffer, and return an objref to the same
+                // StringBuffer object.
+27 invokevirtual #15 &lt;Method java.lang.StringBuffer append(int)&gt;
+                // Pop objref to StringBuffer (pushed by append()),
+                // invoke toString() on it, which returns the value
+                // of the StringBuffer as a String object. Push
+                // objref of String object.
+30 invokevirtual #18 &lt;Method java.lang.String toString()&gt;
+                // Pop objref of String, pop objref of System.out
+                // that was pushed by the getstatic instruction at
+                // offset 14. Invoke println() on System.out,
+                // passing the String as the only parameter:
+                // System.out.println("Example6(int), width = "
+                //     + width);
+33 invokevirtual #17 &lt;Method void println(java.lang.String)&gt;
+36 return       // Return void from &lt;init&gt;()
+</pre>
+            <p>
+                The <code>&lt;init&gt;()</code> method for constructor two has three components.<br/>
+                First it has an invocation of the superclass's (<code>Object</code>'s) no-arg <code>&lt;init&gt;()</code> method.<br/>
+                The compiler generated this invocation by default,<br/>
+                because no explicit <code>super()</code> invocation appears as the first statement in the body of constructor two.<br/>
+                Following the superclass <code>&lt;init&gt;()</code> invocation is the second component:<br/>
+                the bytecodes for width's instance variable initializer.<br/>
+                Third, the <code>&lt;init&gt;()</code> method contains the bytecodes for the body of constructor two.<br/>
+                <span class="note">对上面的代码进行解释。</span>
+            </p>
+            <p>
+                The bytecodes for <code>Example6</code>'s <code>&lt;init&gt;()</code> method that takes a <code>String</code> parameter<br/>
+                (the <code>&lt;init&gt;()</code> method that corresponds to constructor three) are:<br/>
+            </p>
+<pre class="pre-block">
+// The first component, the superclass &lt;init&gt;() invocation, begins
+// here:
+ 0 aload_0      // Push the objref from loc var 0 (this)
+                // Pop objref (this), invoke the superclass's
+                // no-arg&lt;init&gt;() method on objref.
+ 1 invokespecial #11 &lt;Method java.lang.Object()&gt;
+
+// The second component, the instance variable initializers, begins
+// here:
+ 4 aload_0      // Push the objref from loc var 0 (this)
+ 5 iconst_3     // Push int constant 3
+                // Pop int (3), pop objref (this), store 3 into
+                // width instance variable of this object
+ 6 putfield #19 &lt;Field int width&gt;
+
+// The third component, the body of the constructor, begins
+// here:
+                // Push objref from System.out
+ 9 getstatic #16 &lt;Field java.io.PrintStream out&gt;
+                // Allocate mem for new StringBuffer object, and
+                // initialize mem to default initial values, push
+                // objref to new object
+12 new #8 &lt;Class java.lang.StringBuffer&gt;
+15 dup          // Duplicate objref to StringBuffer object
+                // Push objref to String literal from constant pool
+16 ldc #2 &lt;String "Example6(String), width = "&gt;
+                // Pop objref to literal String, pop objref of the
+                // StringBuffer object, invoke &lt;init&gt;() method on the
+                // StringBuffer object passing the args[0] objref as
+                // the only parameter.
+18 invokespecial #14 &lt;Method java.lang.StringBuffer(java.lang.String)&gt;
+21 aload_0      // Push objref from loc var 0 (this)
+                // Pop this reference, Push int value of width field
+22 getfield #19 &lt;Field int width&gt;
+                // Pop int (width), pop objref (StringBuffer object),
+                // invoke append() on StringBuffer object passing the
+                // width int as the only parameter. append() will add
+                // the string representation of the int to the end of
+                // the buffer, and return an objref to the same
+                // StringBuffer object.
+25 invokevirtual #15 &lt;Method java.lang.StringBuffer append(int)&gt;
+                // Pop objref to StringBuffer (pushed by append()),
+                // invoke toString() on it, which returns the value
+                // of the StringBuffer as a String object. Push
+                // objref of String object.
+28 invokevirtual #18 &lt;Method java.lang.String toString()&gt;
+                // Pop objref of String, pop objref of System.out
+                // that was pushed by the getstatic instruction at
+                // offset 9. Invoke println() on System.out,
+                // passing the String as the only parameter:
+                // System.out.println("Example6(String), width = "
+                //     + width);
+31 invokevirtual #17 &lt;Method void println(java.lang.String)&gt;
+                // Push objref from System.out
+34 getstatic #16 &lt;Field java.io.PrintStream out&gt;
+37 aload_1      // Push objref from loc var 1 (param msg)
+                // Pop objref of String, pop objref of System.out
+                // that was pushed by the getstatic instruction at
+                // offset 37. Invoke println() on System.out,
+                // passing the String as the only parameter:
+                // System.out.println(msg);
+38 invokevirtual #17 &lt;Method void println(java.lang.String)&gt;
+41 return       // Return void from &lt;init&gt;()
+</pre>
+            <p>
+                The <code>&lt;init&gt;()</code> method for constructor three has the same three components as the <code>&lt;init&gt;()</code> method for constructor two:<br/>
+                a superclass <code>&lt;init&gt;()</code> invocation,<br/>
+                the bytecodes for <code>width</code>'s initializer,<br/>
+                and the bytecodes for the constructor body.<br/>
+                One difference between constructor two and three is that<br/>
+                constructor two does not begin with an explicit <code>this()</code> or <code>super()</code> invocation.<br/>
+                As a result, the compiler places an invocation of the superclass's no-arg <code>&lt;init&gt;()</code> method in constructor two's <code>&lt;init&gt;()</code> method.<br/>
+                By contrast, constructor three begins with an explicit <code>super()</code> invocation,<br/>
+                which the compiler converts into the corresponding superclass <code>&lt;init&gt;()</code> invocation in constructor three's <code>&lt;init&gt;()</code> method.<br/>
+                <span class="note">对上面的代码进行解释</span>
+            </p>
+            <p>
+                For every class except <code>Object</code>,<br/>
+                an <code>&lt;init&gt;()</code> method must begin with an invocation of another <code>&lt;init&gt;()</code> method<br/>
+                belonging either to the same class or to the direct superclass.<br/>
+                <code>&lt;init&gt;()</code> methods are not allowed to catch exceptions thrown by the <code>&lt;init&gt;()</code> method they invoke.<br/>
+                If a subclass <code>&lt;init&gt;()</code> method invokes a superclass <code>&lt;init&gt;()</code> method that completes abruptly,<br/>
+                for example, the subclass <code>&lt;init&gt;()</code> method must also complete abruptly.<br/>
+                <span class="note">这里讲了构造方法中的异常。</span>
+            </p>
+
+
+            <h3 id="garbage-collection-and-finalization">Garbage Collection and Finalization of Objects</h3>
+            <p>
+                As mentioned in earlier chapters,<br/>
+                implementations of the Java virtual machine must have some kind of automatic storage management strategy for the <b>heap</b>,<br/>
+                most likely a garbage collector.<br/>
+                Applications can allocate memory for objects via the explicit and implicit ways described earlier in this chapter,<br/>
+                but cannot explicitly free that memory.<span class="note">不能主动释放object占用的内存</span><br/>
+                When an object becomes unreferenced by the application, the virtual machine may reclaim (garbage collect) that memory.<br/>
+                Implementations can decide when to garbage collect unreferenced objects--even whether to garbage collect them at all.<br/>
+                Java virtual machine implementations are not required to free memory occupied by unreferenced objects.<br/>
+                <span class="note">前面的内容是讲如何在heap为object分配内存空间，现在开始讲如何回收heap上不再使用的内存空间。</span>
+            </p>
+            <p>
+                If a class declares a method named <code>finalize()</code> that returns <code>void</code>,<br/>
+                the garbage collector will execute that method (called a "finalizer") once on an instance of that class,<br/>
+                before it frees the memory space occupied by that instance.<br/>
+                Here's an example of a class that declares a finalizer:<br/>
+                <span class="note">这里介绍finalize()方法。</span>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file classlife/ex7/Finale.java
+class Finale {
+    protected void finalize() {
+        System.out.println("A Finale object was finalized.");
+        //...
+    }
+    //...
+}
+</pre>
+            <p>
+                Because a finalizer is a regular Java method, it may be invoked directly by the application.<br/>
+                Such a direct invocation will not affect the automatic invocation of the finalizer by the garbage collector.<br/>
+                The garbage collector may invoke an object's finalizer at most once,<span class="note">只能执行一次finalize()方法</span><br/>
+                sometime after the object becomes unreferenced and before the memory it occupies is reused.<br/>
+                If the object becomes referenced again (resurrected) as a result of executing the finalizer code,<br/>
+                and then becomes unreferenced again later,<br/>
+                the garbage collector must not automatically invoke the finalizer a second time.<br/>
+                <span class="note">finalize()方法只能被GC调用一次。</span>
+            </p>
+
+
+
+            <h2 id="unloading-of-types">Unloading of Types</h2>
+            <p>
+                In many ways, the <span class="text-underline">lifetime of a class</span> in the Java virtual machine is similar to the <span class="text-underline">lifetime of an object</span>.<br/>
+                The virtual machine creates and initializes objects, allows the program to use the objects,<span class="note">这里是讲object</span><br/>
+                and optionally garbage collects the objects after they are no longer referenced by the program.<br/>
+                Similarly, the virtual machine loads, links, and initializes classes, allows the program to use the classes,<span class="note">这里是讲class</span><br/>
+                and optionally unloads the classes after they are no longer referenced by the program.<br/>
+                <span class="note">开始讲class的unload</span>
+            </p>
+            <p>
+                Garbage collection and unloading of classes is important in the Java virtual machine<br/>
+                because Java programs can be dynamically extended at runtime by loading types through user-defined class loaders.<br/>
+                All loaded types occupy memory space in the method area.<br/>
+                If a Java application continuously loads types through user-defined class loaders, the memory footprint of the method area will continuously grow.<br/>
+                If some of the dynamically loaded types are needed only temporarily,<br/>
+                the memory space occupied by those types can be freed by unloading the types after they are no longer needed.<br/>
+                <span class="note">这里讲对于class进行garbage collection和unload是有必要的。</span>
+            </p>
+            <p>
+                The way in which a Java virtual machine can tell whether a dynamically loaded type is still needed by the application<br/>
+                is similar to the way it tells whether an object is still needed by the program.<br/>
+                If the application has no references to the type, then the type can't affect the future course of computation.<br/>
+                The type is unreachable and can be garbage collected.<br/>
+                <span class="note">这里讲loaded type可以被unload的判断标准。</span>
+            </p>
+            <p>
+                Types loaded through the bootstrap class loader will always be reachable and never be unloaded.<br/>
+                Only types loaded through user-defined class loaders can become unreachable and be unloaded by the virtual machine.<br/>
+                A type is unreachable if its <code>Class</code> instance is found to be unreachable through the normal process of garbage collecting the heap.<br/>
+                <span class="note">从class loader的角度上，来看待loaded type如何被unload。</span>
+            </p>
+            <p>
+                There are two ways a <code>Class</code> instance of a dynamically loaded type can be reachable through the normal process of garbage collection.<span class="note">有两种情况</span><br/>
+                First and most obviously, a <code>Class</code> instance will be reachable if the application holds an explicit reference to it.<span class="note">第1种情况</span><br/>
+                Second, a <code>Class</code> instance will be reachable if there is a reachable object on the heap<span class="note">第2种情况</span><br/>
+                whose type data in the method area refers to the <code>Class</code> instance.<br/>
+                As mentioned in Chapter 5, "The Java Virtual Machine,"<br/>
+                implementations must be able to locate the <b>type data</b> in the <b>method area</b> for an <b>object's class</b>, given only a reference to the object.<br/>
+                For this reason, the image of an object on the heap likely includes some kind of pointer to its type data in the method area.<br/>
+                From the type data, the virtual machine must be able to locate the <code>Class</code> instances for the object's class,<br/>
+                all its superclasses, and all its superinterfaces.<br/>
+                See Figure 7-2 for a graphical depiction of this way of "reaching" <code>Class</code> instances.<br/>
+                <span class="note">这里讲了判断Class是“reachable”状态的两种方法。</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig7-2-new.gif" alt="figure 7-2"/><br/>
+                <span>Figure 7-2. Reaching Class instances through a reachable object.</span>
+            </div>
+            <p>
+                Figure 7-2 shows the paths a garbage collector must<br/>
+                traverse from a reachable object of class <code>MyThread</code> through the type data in the method area to<br/>
+                find reachable <code>Class</code> instances.<br/>
+                In this figure, <b>objects</b> on the <b>heap</b> are shown as <b>clear circles</b>;<br/>
+                <b>type data</b> in the <b>method area</b> is shown as <b>gray rectangles</b>.<br/>
+                The <code>MyThread</code> class has the following declaration:<br/>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file classlife/ex8/MyThread.java
+class MyThread extends Thread implements Cloneable {
+}
+</pre>
+            <p>
+                From the reachable <code>MyThread</code> object (shown in the bottom right hand corner of the figure),<br/>
+                the garbage collector follows a pointer to <code>MyThread</code>'s <b>type data</b>, where it finds:
+            </p>
+            <ul>
+                <li>
+                    A reference to <code>MyThread</code>'s <code>Class</code> instance on the heap
+                </li>
+                <li>
+                    A pointer to the type data for <code>MyThread</code>'s direct superinterface, <code>Cloneable</code>
+                </li>
+                <li>
+                    A pointer to the type data for <code>MyThread</code>'s direct superclass, <code>Thread</code>
+                </li>
+            </ul>
+            <p>
+                From the type data for <code>Cloneable</code>, the garbage collector finds:
+            </p>
+            <ul>
+                <li>
+                    A reference to <code>Cloneable</code>'s <code>Class</code> instance on the heap
+                </li>
+            </ul>
+            <p>
+                From the type data for <code>Thread</code>, the garbage collector finds:
+            </p>
+            <ul>
+                <li>
+                    A reference to <code>Thread</code>'s <code>Class</code> instance on the heap
+                </li>
+                <li>
+                    A pointer to the type data for <code>Thread</code>'s direct superinterface, <code>Runnable</code>
+                </li>
+                <li>
+                    A pointer to the type data for <code>Thread</code>'s direct superclass, <code>Object</code>
+                </li>
+            </ul>
+            <p>
+                From the type data for <code>Runnable</code>, the garbage collector finds:
+            </p>
+            <ul>
+                <li>
+                    A reference to <code>Runnable</code>'s <code>Class</code> instance on the heap
+                </li>
+            </ul>
+            <p>
+                From the type data for <code>Object</code>, the garbage collector finds:
+            </p>
+            <ul>
+                <li>
+                    A reference to <code>Objects</code>'s <code>Class</code> instance on the heap
+                </li>
+            </ul>
+            <p>
+                Thus, given only a reference to a reachable instance of class <code>MyThread</code>,<br/>
+                the garbage collector is able to "reach" the <code>Class</code> instances for <code>MyThread</code> and<br/>
+                all its supertypes: <code>Cloneable</code>, <code>Thread</code>, <code>Runnable</code>, and <code>Object</code>.<br/>
+            </p>
+            <p>
+                An example of dynamically loaded classes becoming unreachable and available for unloading
+                is given at the end of Chapter 8, "The Linking Model."
+            </p>
+            <h2 id="cd-rom">On the CD-ROM</h2>
+            <p>
+                The CD-ROM contains the source code examples from this chapter in the <code>classlife</code> directory.
+            </p>
+            <h2 id="resource-page">The Resources Page</h2>
+            <p>
+                For more information about the material presented in this chapter, visit the resources page:
+                <a href="http://www.artima.com/insidejvm/resources/"><code>http://www.artima.com/insidejvm/resources/</code></a>
+            </p>
+            <p></p>
+            <span class="note"></span>
+        </article>
+    </div>
+</div>
+
+<footer class="w3-center w3-light-grey w3-padding-48 w3-large">
+    <p>Powered by <a href="javascript:void(0);" title="W3.CSS" target="_blank" class="w3-hover-text-green">lsieun.cn</a></p>
+</footer>
+<div id="toc_div" class="w3-card" style="position:fixed;padding:7px;bottom:50px;left:0;max-width:450px;z-index:999;display:none;">
+    <span onclick="document.getElementById('toc_div').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+    <div class="at">
+        <!-- at == auto table of content -->
+        <!-- https://www.jqueryscript.net/menu/TOC-Generator-Smooth-Scroll-autoToc.html -->
+    </div>
+    <span onclick="document.getElementById('toc_div').style.display='none'" class="w3-button w3-display-bottomleft" style="font-size: 10px">CLOSE</span>
+</div>
+<div class="w3-clear"></div>
+</body>
+
+</html>

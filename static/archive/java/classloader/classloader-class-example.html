@@ -1,0 +1,65 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassLoader Load Class Examples</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-classloader-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+
+
+<h2>Array Class</h2>
+
+<p>
+    For an <b>array of references</b>, the <b>array class</b> is marked as having been defined by the <b>defining class loader</b> of the <b>component type</b>.<span class="note">很重要</span><br/>
+    For an <b>array of primitive types</b>, the <b>array class</b> is marked as having been defined by the <b>bootstrap class loader</b>.<span class="note">很重要</span><br/>
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+package sample;
+
+public class HelloWorld {
+}
+</pre>
+
+<pre title="Program.java" class="javacode">
+package sample;
+
+import com.sun.javafx.util.Logging;
+
+public class Program {
+    public static void main(String[] args) {
+        // Bootstrap Class Loader
+        printClassLoader(int.class);
+        printClassLoader(int[].class); // array of primitive types
+        printClassLoader(String.class);
+        printClassLoader(String[].class); // array of references
+
+
+        // Extension Class Loader
+        printClassLoader(Logging.class);
+        printClassLoader(Logging[].class);
+
+        // Application Class Loader
+        printClassLoader(HelloWorld.class);
+        printClassLoader(HelloWorld[].class);
+    }
+
+    private static void printClassLoader(Class<?> clazz) {
+        ClassLoader classLoader = clazz.getClassLoader();
+        System.out.println(classLoader);
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+null
+null
+null
+null
+sun.misc.Launcher$ExtClassLoader@1540e19d
+sun.misc.Launcher$ExtClassLoader@1540e19d
+sun.misc.Launcher$AppClassLoader@18b4aac2
+sun.misc.Launcher$AppClassLoader@18b4aac2
+</pre>

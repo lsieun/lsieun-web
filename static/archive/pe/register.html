@@ -1,0 +1,107 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Registers</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="pe-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<h2>8086 16-bit Registers</h2>
+
+<p>
+    The original 8086 CPU provided four 16-bit <b>general purpose registers</b>: <code>AX</code>, <code>BX</code>, <code>CX</code> and <code>DX</code>.<br/>
+    Each of these registers could be decomposed into two 8-bit registers.<br/>
+    For example, the <code>AX</code> register could be decomposed into the <code>AH</code> and <code>AL</code> registers.<br/>
+    The <code>AH</code> register contains the upper (or high) 8 bits of <code>AX</code> and <code>AL</code> contains the lower 8 bits of <code>AX</code>.<br/>
+    Often <code>AH</code> and <code>AL</code> are used as independent one byte registers;<br/>
+    however, it is important to realize that they are not independent of <code>AX</code>.<br/>
+    Changing <code>AX</code>’s value will change <code>AH</code> and <code>AL</code> and vice versa.<br/>
+    The <b>general purpose registers</b> are used in many of the <b>data movement</b> and <b>arithmetic instructions</b>.<br/>
+    <sub class="my_note" style="color:blue">笔记：这里讲general purpose registers</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/assembly/the-ax-register.png" alt="The AX register"/>
+    <p>The AX register</p>
+</div>
+
+<p>
+    There are two 16-bit <b>index registers</b>: <code>SI</code> and <code>DI</code>.<br/>
+    They are often used as pointers,<br/>
+    but can be used for many of the same purposes as the general registers.<br/>
+    However, they <b>can not</b> be decomposed into 8-bit registers.<br/>
+    <sub class="my_note" style="color:blue">笔记：这里讲index registers</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+<p>
+    The 16-bit <code>BP</code> and <code>SP</code> registers are used to point to data in the machine language stack<br/>
+    and are called the <b>Base Pointer</b> and <b>Stack Pointer</b>, respectively.<br/>
+    <sub class="my_note" style="color:blue">笔记：这里讲Base Pointer和Stack Pointer。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+<p>
+    The 16-bit <code>CS</code>, <code>DS</code>, <code>SS</code> and <code>ES</code> registers are <b>segment registers</b>.<br/>
+    They denote what memory is used for different parts of a program.<br/>
+    <code>CS</code> stands for <b>Code Segment</b>, <code>DS</code> for <b>Data Segment</b>, <code>SS</code> for <b>Stack Segment</b> and <code>ES</code> for <b>Extra Segment</b>.<br/>
+    <code>ES</code> is used as a temporary segment register.<br/>
+    <sub class="my_note" style="color:blue">笔记：这里讲segment registers</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+<p>
+    The <b>Instruction Pointer</b> (<code>IP</code>) register is used with the <code>CS</code> register to<br/>
+    keep track of the address of the next instruction to be executed by the CPU.<br/>
+    Normally, as an instruction is executed, <code>IP</code> is advanced to point to the next instruction in memory.<br/>
+    <sub class="my_note" style="color:blue">笔记：这里讲Instruction Pointer。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+<p>
+    The <b>FLAGS register</b> stores important information about the results of a previous instruction.<br/>
+    These results are stored as individual bits in the register.<br/>
+    For example, the <code>Z</code> bit is 1 if the result of the previous instruction was zero or 0 if not zero.<br/>
+    Not all instructions modify the bits in FLAGS register.<br/>
+    <sub class="my_note" style="color:blue">笔记：这里讲FLAGS register。</sub>
+    <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
+</p>
+
+<h2>80386 32-bit registers</h2>
+
+<p>
+    The 80386 and later processors have <b>extended registers</b>.<br/>
+    For example, the 16-bit <code>AX</code> register is extended to be 32-bits.<br/>
+    To be backward compatible, <code>AX</code> still refers to the 16-bit register and<br/>
+    <code>EAX</code> is used to refer to the extended 32-bit register.<br/>
+    <code>AX</code> is the lower 16-bits of <code>EAX</code> just as <code>AL</code> is the lower 8-bits of <code>AX</code> (and <code>EAX</code>).<br/>
+    There is no way to access the upper 16-bits of <code>EAX</code> directly.<br/>
+    The other extended registers are <code>EBX</code>, <code>ECX</code>, <code>EDX</code>, <code>ESI</code> and <code>EDI</code>.<br/>
+</p>
+<p>
+    Many of the other registers are extended as well.<br/>
+    <code>BP</code> becomes <code>EBP</code>; <code>SP</code> becomes <code>ESP</code>; <code>FLAGS</code> becomes <code>EFLAGS</code> and <code>IP</code> becomes <code>EIP</code>.<br/>
+    However, unlike the index and general purpose registers,<br/>
+    in 32-bit <b>protected mode</b> only the extended versions of these registers are used.<br/>
+</p>
+<p>
+    The <b>segment registers</b> are still 16-bit in the 80386.<br/>
+    There are also two new segment registers: <code>FS</code> and <code>GS</code>.<br/>
+    Their names do not stand for anything.<br/>
+    They are extra temporary segment registers (like <code>ES</code>).<br/>
+</p>
+<p>
+    One of definitions of the term <b>word</b> refers to the size of the data registers of the CPU.<br/>
+    For the 80x86 family, the term is now a little confusing.<br/>
+    In the following Table, one sees that <b>word</b> is defined to be 2 bytes (or 16 bits).<br/>
+    It was given this meaning when the 8086 was first released.<br/>
+    When the 80386 was developed, it was decided to leave the definition of word unchanged,<br/>
+    even though the register size changed.<br/>
+</p>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/assembly/units-of-memory.png" alt="Units of Memory"/>
+    <p>Units of Memory</p>
+</div>
+
+<p></p>
+<p></p>
+<p></p>

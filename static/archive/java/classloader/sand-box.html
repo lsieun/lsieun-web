@@ -1,0 +1,32 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Sand Box</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-classloader-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    沙箱安全机制
+</p>
+
+<p>
+    自定义String类，但是在加载自定义String类的时候，会率先使用Bootstrap ClassLoader进行加载；而Bootstrap ClassLoader在加载的过程中会先加载JDK自带的文件（rt.jar包中的java/lang/String.class），报错信息是说没有main方法，就是因为加载的是rt.jar包中的String类。这样可以保证对java核心源代码的保护，这就是“沙箱安全机制”。
+</p>
+
+<pre title="HelloWorld.java" class="javacode">
+package java.lang;
+
+public class String {
+    public static void main(String[] args) {
+        System.out.println("Hello String");
+    }
+}
+</pre>
+
+<pre title="Run output" class="plaintext">
+错误: 在类 java.lang.String 中找不到 main 方法, 请将 main 方法定义为:
+   public static void main(String[] args)
+否则 JavaFX 应用程序类必须扩展javafx.application.Application
+</pre>

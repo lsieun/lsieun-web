@@ -1,0 +1,68 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Liquid</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Liquid is where Jekyll starts to get more interesting.<br/>
+    It is a templating language which has three main components:<br/>
+</p>
+
+<ul>
+    <li><a href="#objects">objects</a></li>
+    <li><a href="#tags">tags</a></li>
+    <li><a href="#filters">filters</a></li>
+</ul>
+
+<h2 id="objects">Objects</h2>
+
+<p>
+    Objects tell Liquid to output predefined <a href="../variables.html">variables</a> as content on a page.<br/>
+    Use double curly braces for objects: <code>{{</code> and <code>}}</code>.
+</p>
+
+<p>
+    For example, <code>{{ page.title }}</code> displays the <code>page.title</code> variable.
+</p>
+
+<h2 id="tags">Tags</h2>
+
+<p>
+    Tags define the logic and control flow for templates.<br/>
+    Use curly braces and percent signs for objects: <code>{%</code> and <code>%}</code>.<br/>
+</p>
+
+<p>For example:</p>
+
+<pre title="Tags" class="plaintext">
+{% if page.show_sidebar %}
+  &lt;div class="sidebar"&gt;
+    sidebar content
+  &lt;/div&gt;
+{% endif %}
+</pre>
+
+<p>
+    This displays the sidebar if the value of the <code>show_sidebar</code> page variable is true.
+</p>
+
+<h2 id="filters">Filters</h2>
+
+<p>
+    Filters change the output of a Liquid object.<br/>
+    They are used within an output and are separated by a <code>|</code>.
+</p>
+
+<p>For example:</p>
+
+<pre title="Filters" class="plaintext">
+{{ "hi" | capitalize }}
+</pre>
+
+<p>
+    This displays <code>Hi</code> instead of <code>hi</code>.
+</p>

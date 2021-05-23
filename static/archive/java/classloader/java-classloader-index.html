@@ -6,16 +6,88 @@
     <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
 </div>
 
+<p>
+    Loading --&gt; Linking --&gt; Initializing
+</p>
+
 <ul>
+    <li>
+        <a href="loading-linking-initializing.html">Loading, Linking, and Initializing</a>
+    </li>
     <li>
         <a href="classloader.html">ClassLoader</a>
     </li>
+    <li>
+        <a href="three-builtin-classloaders.html">Three Builtin ClassLoaders</a>
+    </li>
+    <li>
+        <a href="parent-delegation-model.html">Parent Delegation Model</a>
+    </li>
+    <li>
+        <a href="classloader-class-example.html">ClassLoader Load Class Examples</a>
+    </li>
+    <li>
+        <a href="user-defined-classloader.html">User-Defined ClassLoader</a>
+    </li>
+    <li>
+        <a href="active-use.html">Active Use</a>
+    </li>
+
+    <li>
+        <a href="sand-box.html">Sand Box</a>
+    </li>
 </ul>
+
+<p>
+    API
+</p>
+
+<h2>JVM Memory</h2>
+
+<ul>
+    <li>
+        <a href="memory/classloader-class-instance.html">ClassLoader + Class + Instance</a>
+    </li>
+    <li>
+        <a href="memory/unique-class.html">Unique Class</a>
+    </li>
+</ul>
+
+<h2 id="api">Java API</h2>
+
+<ul>
+    <li>
+        <a href="api/java-lang-classloader.html">java.lang.ClassLoader</a>
+    </li>
+</ul>
+
+<h2>Unknown</h2>
+
+<p>
+    如果我们自己定义一个<code>java.lang.App</code>类，执行的时候，会报异常“java.lang.SecurityException: Prohibited package name: java.lang”。
+</p>
+
+<pre title="App.java" class="javacode">
+package java.lang;
+
+public class App {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}
+</pre>
+
+<pre title="" class="plaintext">
+
+</pre>
 
 <h2>References</h2>
 
 <ul>
     <li><a class="external" href="/doc/javase/jls/se8/jls-12.html" target="_blank">JLS: Chapter 12. Execution</a></li>
     <li><a class="external" href="/doc/javase/jvms/se8/jvms-5.html" target="_blank">JVMS: Chapter 5. Loading, Linking, and Initializing</a></li>
+    <li><a class="external" href="https://hg.openjdk.java.net/jdk8/jdk8/jdk/file/687fd7c7986d/src/share/classes/sun/misc" target="_blank">OpenJDK: Package sun.misc Source Code</a></li>
+    <li><a class="external" href="https://www.baeldung.com/java-classloaders" target="_blank">Baeldung: Class Loaders in Java</a></li>
+    <li><a class="external" href="https://www.programmersought.com/article/18465298068/" target="_blank">ProgrammerSought: Parent Delegation Model</a> 这个网址的内容方面很多，有价值的点也很多，但是在措词上有许多明显的错误，后面我整理的时候，一定要仔细校对勘正，吸取知识点。要穿越长城才能访问。</li>
 </ul>
 

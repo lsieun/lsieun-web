@@ -22,11 +22,12 @@
 </div>
 
 <div class="w3-row-padding w3-content" style="max-width:1400px">
-    <p class="article">
-        原文地址：<a class="external" href="https://www.artima.com/insidejvm/ed2/linkmodP.html" target="_blank">Chapter 8 of Inside the Java Virtual Machine</a>
-    </p>
+
     <div id="main" class="w3-container w3-justify">
         <article>
+            <p>
+                原文地址：<a class="external" href="https://www.artima.com/insidejvm/ed2/linkmodP.html" target="_blank">Chapter 8 of Inside the Java Virtual Machine</a>
+            </p>
             <p>
                 From the programmer's perspective,<br/>
                 <span class="text-underline">one of the most important aspects of Java's architecture to understand is the <b>linking model</b>.</span><br/>
@@ -48,13 +49,14 @@
                 describes <b>method tables</b>,<br/>
                 shows <span class="text-underline">how to write and use class loaders</span>,<br/>
                 and gives several examples.<br/>
-                <span class="note">note：这里接着说resolution是linking model的“引擎”。</span>
+                <span class="note">note：这里接着说resolution是linking model的“引擎”； linking = verification + prepare + resolution</span>
             </p>
             <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
                 <p>这里说明一下ClassLoader、Linking Model和Resolution三者之间的关系。</p>
-                <p>ClassLoader主要有3个作用：Loading、Linking和Intializing</p>
-                <p>Linking Model就是描述“Loading、Linking和Intializing”中的Linking部分，而Linking本身又分为Verfication、Preparation和Resolution</p>
-                <p>Resolution是“Verfication、Preparation和Resolution”的最后一部分。</p>
+                <p>ClassLoader Subsystem主要有3个作用：Loading、Linking和Initializing</p>
+                <p>对于多个不同的ClassLoader，它们不同的地方只在于loading这一部分，而Linking和Initializing对于所有的ClassLoader都是一样的。</p>
+                <p>Linking Model就是描述“Loading、Linking和Initializing”中的Linking部分，而Linking本身又分为Verification、Preparation和Resolution</p>
+                <p>Resolution是“Verification、Preparation和Resolution”的最后一部分。</p>
                 <p>Resolution是对什么进行解析呢？其实，就是对constant pool中的symbolic references进行解析，</p>
                 <p>
                     具体来说，Resolution，就是对于Class的解析（array class，non-array class和interfaces）、对Method的解析（method tables），对Field的解析，还有其它内容的解析。
@@ -62,6 +64,17 @@
             </div>
 
             <h2 id="dynamic-linking-and-resolution">Dynamic Linking and Resolution</h2>
+            <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+                <p>
+                    这里讲dynamic linking 就是指“Loading、Linking和Initializing”中的“Linking”。
+                </p>
+                <p>
+                    在这里把它称之为“dynamic linking”，有一定的“历史”原因。因为C语言，是在进行编译（compile）的时候，就进行link操作；而Java语言是在运行的时候（runtime），才进行link操作，所以相对而言就是“dynamic linking”。
+                </p>
+                <p>
+                    linking = verification + prepare + resolution。 其中，verification和prepare都比较简单，核心的部分就是resolution部分。
+                </p>
+            </div>
             <p>
                 When you compile a Java program,<span class="note">当compile的时候，不同的class是通过symbolic reference来相互连接。</span><br/>
                 you get a separate class file for each class or interface in your program.<br/>
@@ -73,16 +86,17 @@
                 <span class="note">JVM在运行的时候，会对不同的class进行dynamic linking</span>
             </p>
             <p>
-                A class file keeps all its symbolic references in one place, the <b>constant pool</b>.<br/>
+                A class file keeps all its <b>symbolic references</b> in one place, the <b>constant pool</b>.<br/>
                 Each class file has a <b>constant pool</b>,<br/>
                 and each class or interface loaded by the Java virtual machine has an internal version of its constant pool called the <b>runtime constant pool</b>.<br/>
                 The <b>runtime constant pool</b> is an implementation-specific data structure that maps to the <b>constant pool</b> in the class file.<br/>
                 Thus, after a type is initially <b>loaded</b>, all the <b>symbolic references</b> from the type reside in the type's <b>runtime constant pool</b>.<br/>
-                <span class="note">这里介绍constant pool和runtime constant pool两个概念。</span>
+                <span class="note">这里介绍constant pool和runtime constant pool两个概念。</span><br/>
+                <span class="note">先是symbolic references存在于class file当中的constant pool当中，接着会被加载进JVM当中变成runtime constant pool，而resolution就是在runtime constant pool的基础上展开的。</span>
             </p>
             <p>
                 At some point during the running of a program,<br/>
-                if a particular <b>symbolic reference</b> is to be used, it must be resolved.<br/>
+                if a particular <b>symbolic reference</b> is to be used, it must be <b>resolved</b>.<br/>
                 <b>Resolution</b> is the process of finding the entity identified by the <b>symbolic reference</b> and replacing the <b>symbolic reference</b> with a <b>direct reference</b>.<br/>
                 Because all <b>symbolic references</b> reside in the <b>constant pool</b>, this process is often called <b>constant pool resolution</b>.<br/>
                 <span class="note">constant pool resolution --&gt; symbolic reference(存在于constant pool中) --&gt; direct reference(存在于runtime constant pool中)</span>
@@ -103,7 +117,7 @@
                 When an instruction refers to the fifth item in the <b>constant pool</b>,<br/>
                 it is referring to the fifth item in the <b>constant pool</b> for the current class,<br/>
                 the class that defined the method the Java virtual machine is currently executing.<br/>
-                <span class="note">这里提醒大家，不要忘记runtime constant pool</span>
+                <span class="note">这里提醒大家，不要忘记runtime constant pool，解析的过程应该就是在runtime constant pool当中进行的</span>
             </p>
             <p>
                 Several instructions, from the same or different methods, may refer to the same constant pool entry,<br/>
@@ -135,7 +149,7 @@
             </p>
             <p>
                 As described in Chapter 7, "The Lifetime of a Class,"<br/>
-                different implementations of the Java virtual machine are permitted to perform <b>resolution</b> at different times during the execution of a program.<br/>
+                <span class="text-underline">different implementations of the Java virtual machine are permitted to perform <b>resolution</b> at different times during the execution of a program.</span><br/>
                 An implementation may choose to link everything up front by following all <b>symbolic references</b> from the initial class,<br/>
                 then all <b>symbolic references</b> from subsequent classes, until every <b>symbolic reference</b> has been resolved.<br/>
                 In this case, the application would be completely linked before its <code>main()</code> method was ever invoked.<br/>
@@ -162,14 +176,42 @@
             </p>
 
             <h2 id="resolution－and－dynamic－extension">Resolution and Dynamic Extension</h2>
+            <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+                <p>
+                    我觉得，link这个阶段，是所有程序都要进行的操作，不管C语言程序，还是Java语言程序，都要建立与程序其他部分的联系。
+                </p>
+                <p>
+                    但是，resolution的概念，可能Java程序的link阶段所独有的。C语言写的程序中，link阶段可能直接存储了某个方法的物理内存地址，不需要进行什么解析操作，就能够直接执行，因此执行起来就快。而Java程序，存储的是字符串形式的symbolic reference，等到运行的时候，才进行解析（resolve）操作，才转换成实际的物理内存地址，因此可能执行起来就比较慢。虽然执行起来比较慢，但这种方式也它相应的优势，就是“灵活性”。它的“灵活性”就体现在：只要给它任何一个有效的字符串输入，它就能加载相应的类，并转换成实际的物理内存地址。
+                </p>
+                <p>
+                    当然，resolution的“灵活性”，是一个非常不错的想法。但这个不错的想法，要依托于Java Architecture的整体结构来得以实现的；具体来说，这个想法，就是依赖于ClassLoader这一部分。第一步，resolution拿到的是一个“字符串”，JVM把该“字符串”交给某个ClassLoader；第二步，ClassLoader会根据这个字符串找到相应的byte[]内容，然后加载到JVM当中；第三步，JVM对byte[]的格式进行合法性验证，然后存储到method area区域，生成Class实例，将Class实例的物理内存地址返回。其中，第二步就是ClassLoader发挥作用的地方，也是实现resolution灵活性非常重要的一步。那么，是不是第一步和第三步就不重要呢？不是的。第一步、第二步和第三步，对于JVM的实现者而言，都很重要，缺少了哪一步也不行；但只有第二步，涉及到ClassLoader的这一部分，是Java程序开发人员所能参与的一部分，也是需要了解的一部分。
+                </p>
+                <p>
+                    要理解ClassLoader的整体设计，可以从以下3个方法来把握：
+                </p>
+                <ul>
+                    <li>
+                        首先，Java提供的ClassLoader分成了三种类型：Bootstrap ClassLoader、Extension ClassLoader和System ClassLoader。
+                    </li>
+                    <li>
+                        其次，parent delegation model，这里是讲loading的规则。上面3个ClassLoader遵循parent delegation model，也就是加载一个类，应该先交由parent class loader进行加载；如果parent class loader加载不了，那么再由自己来加载；如果自己也加载不了，那就抛出异常。
+                    </li>
+                    <li>
+                        最后，user-defined class loader。如果已有的ClassLoader不满足实际的应用需求，Java也允许程序开发人员进行自定义ClassLoader。
+                    </li>
+                </ul>
+                <p>
+                    resolution是属于linking阶段，而ClassLoader是属于Loading阶段。resolution，从某种角度上来说，就是从一个类当中（处在resolution阶段），去加载另外一个类（处在loading阶段）。对于某一个具体的类来说，它都是严格的按照loading、linking和initializing的顺序来执行的；但是有多个类的时候，那么有的类在linking，有的类在loading，有的类在initializing。
+                </p>
+            </div>
             <p>
-                In addition to simply <b>linking types</b> at run-time,<br/>
-                Java applications can decide at run-time <b>which types to link</b>.<br/>
+                In addition to simply <b>linking types</b> at run-time, <span class="note">这句话应该是指runtime constant pool当中的symbolic reference，例如Constant_Class_Info，它已经确定要link哪一个类</span><br/>
+                Java applications can decide at run-time <b>which types to link</b>. <span class="note">这句话应该是说，即使某个类并不出现在constant pool当中，它也能加载进入JVM当中</span><br/>
                 Java's architecture allows Java programs to be <b>dynamically extended</b>,<br/>
-                the process of deciding at run-time other types to use, loading them, and using them.<br/>
-                You can dynamically extend a Java application by passing the name of a type to load to<br/>
-                either the <code>forName()</code> method of class <code>java.lang.Class</code> or<br/>
-                the <code>loadClass()</code> method of an instance of a <b>user-defined class loader</b>,<br/>
+                <span class="text-underline">the process of deciding at run-time other types to use, loading them, and using them.</span><br/>
+                You can dynamically extend a Java application by passing the name of a type to load to <span class="note">这里讲了dynamically extend java application的两种方式</span><br/>
+                either the <code>forName()</code> method of class <code>java.lang.Class</code> or <span class="note">第一种是调用Class.forName()方法</span><br/>
+                the <code>loadClass()</code> method of an instance of a <b>user-defined class loader</b>, <span class="note">第二种是调用ClassLoader.loadClass()方法</span><br/>
                 which can be created from any subclass of <code>java.lang.ClassLoader</code>.<br/>
                 Either of these approaches enable your running application to load types<br/>
                 whose names are not mentioned in the source code of your application,<br/>
@@ -181,6 +223,8 @@
                 as it encounters the web pages that contain those applets.<br/>
                 <span class="note">这里就是讲link(resolution)能够实现Dynamic Extension。</span>
             </p>
+
+            <h3 id="class-for-name">Class.forName()</h3>
             <p>
                 The most straightforward way to dynamically extend a Java application is with the <code>forName()</code> method of class <code>java.lang.Class</code>, which has two overloaded forms:
             </p>
@@ -208,6 +252,8 @@ public static Class forName(String className, boolean initialize, ClassLoader lo
                 or if the type can't be loaded, throws <code>ClassNotFoundException</code>.<span class="note">如果失败，抛出异常</span><br/>
                 <span class="note">这里主要是对Class.forName()方法的“参数”和“作用”进行介绍。</span>
             </p>
+
+            <h3 id="class-loader-load-class">ClassLoader.loadClass()</h3>
             <p>
                 The other way to dynamically extend a Java application is to load classes via the <code>loadClass()</code> method of a <b>user-defined class loader</b>.<br/>
                 To request a type from a <b>user-defined class loader</b>, you invoke <code>loadClass()</code> on that class loader.<br/>
@@ -255,6 +301,8 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
                 but will leave the timing of <b>linking</b> and <b>initializing</b> the type to the virtual machine.<br/>
                 <span class="note">这里说明ClassLoader.loadClass()的resolve参数。</span>
             </p>
+
+            <h3 id="for-name-vs-load-class">forName() VS loadClass()</h3>
             <p>
                 Whether you should use <code>forName()</code> or invoke <code>loadClass()</code> on a <b>user-defined class loader</b> instance depends on your needs.<br/>
                 If you have no special needs that require a class loader, you should probably use <code>forName()</code>,<span class="note">如果没有特殊需求，推荐使用forName()</span><br/>
@@ -421,12 +469,17 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
                 Of all the types of constant pool entries, the most complicated to resolve is <code>CONSTANT_Class_info</code>.<br/>
                 This type of entry is used to represent <b>symbolic references</b> to classes (including array classes) and interfaces.<br/>
                 Several <b>instructions</b>, such as <code>new</code> and <code>anewarray</code>, refer directly to <code>CONSTANT_Class_info</code> entries.<br/>
-                Other <b>instructions</b>, such as <code>putfield</code> or <code>invokevirtual</code>,<br/>
-                refer indirectly to <code>CONSTANT_Class_info</code> entries through other types of entry.<br/>
+                Other <b>instructions</b>, such as <code>putfield</code> or <code>invokevirtual</code>, refer indirectly to <code>CONSTANT_Class_info</code> entries through other types of entry.<br/>
                 For example, the <code>putfield</code> instruction refers to a <code>CONSTANT_Fieldref_info</code> entry.<br/>
                 The <code>class_index</code> item of a <code>CONSTANT_Fieldref_info</code> gives the constant pool index of a <code>CONSTANT_Class_info</code> entry.<br/>
                 <span class="note">解析CONSTANT_Class_info是最复杂的</span>
             </p>
+            <pre class="pre-block">
+CONSTANT_Class_info {
+    u1 tag;
+    u2 name_index;
+}
+            </pre>
             <p>
                 The details of resolving a <code>CONSTANT_Class_info</code> entry vary depending on<br/>
                 <span class="text-underline">whether or not the type is an array</span> and<br/>
@@ -439,9 +492,9 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
 
             <h4 id="array-classes">Array Classes</h4>
             <p>
-                A <code>CONSTANT_Class_info</code> entry refers to an <b>array class</b>判断是否是array class<br/>
+                A <code>CONSTANT_Class_info</code> entry refers to an <b>array class</b> <span class="note">判断是否是array class</span><br/>
                 if its <code>name_index</code> refers to a <code>CONSTANT_Utf8_info</code> string that begins with a left bracket, as in "[I."<br/>
-                As described in Chapter 6, "The Java Class File," internal array names contain one left bracket for each dimension, followed by a component type.<br/>
+                As described in Chapter 6, "The Java Class File," internal array names contain one <b>left bracket</b> for each dimension, followed by a <b>component type</b>.<br/>
                 If the <b>component type</b> begins with an "L," as in "Ljava.lang.Integer;," the array is an <b>array of references</b>.<span class="note">判断是否是array of references</span><br/>
                 Otherwise, the <b>component type</b> is a <b>primitive type</b>, such as "I" for <code>int</code> or "D" for <code>double</code>,
                 and the array is an <b>array of primitive types</b>.<span class="note">判断是否为array of primitive types</span><br/>
@@ -506,21 +559,21 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
             <p>
                 The fundamental activity required by the <b>resolution</b> of a <b>non-array class or interface</b> is making sure the type is loaded into the <b>current namespace</b>.<br/>
                 As a first step, the virtual machine must determine<br/>
-                whether or not the <b>referenced type</b> has already been loaded into the <b>current namespace</b>.<br/>
+                <span class="text-underline">whether or not the <b>referenced type</b> has already been loaded into the <b>current namespace</b>.</span><br/>
                 To make that determination, the virtual machine must find out<br/>
-                whether the <b>current class loader</b> has been marked as an <b>initiating loader</b> for a type<br/>
-                with the desired fully qualified name (the type name given in the <b>symbolic reference</b> being resolved).<br/>
-                For each <b>class loader</b>,<br/>
+                <span class="text-underline">whether the <b>current class loader</b> has been marked as an <b>initiating loader</b> for a type</span><br/>
+                <span class="text-underline">with the desired fully qualified name</span> (the type name given in the <b>symbolic reference</b> being resolved).<br/>
+                For each <b>class loader</b>,<span class="note">这里讲了namespace是如何形成的</span><br/>
                 the Java virtual machine maintains <b>a list of the names</b> of all the types<br/>
                 for which the class loader has served as an <b>initiating class loader</b>.<br/>
                 Each of these lists forms a <b>namespace</b> inside the Java virtual machine.<br/>
-                The virtual machine uses these lists during <b>resolution</b> to determine<br/>
+                The virtual machine uses these lists during <b>resolution</b> to determine <span class="note">这里讲JVM使用namespace来确定某个ClassLoader是否已经加载了某个类</span><br/>
                 whether a class has already been <b>loaded</b> by a particular <b>class loader</b>.<br/>
                 If the virtual machine discovers the desired fully qualified name is already mentioned in the <b>current namespace</b>,<br/>
-                it will just use the already-loaded type, which is defined by a chunk of type data in the <b>method area</b> and<br/>
+                it will just use the already-loaded type, which is defined by a chunk of <b>type data</b> in the <b>method area</b> and<br/>
                 represented by an associated <code>Class</code> instance on the heap.<br/>
-                By first checking whether the <b>current namespace</b> already includes the desired fully qualified name,<br/>
-                the virtual machine helps ensure that only one type with a given name is loaded by any single class loader.<br/>
+                <span class="text-underline">By first checking whether the <b>current namespace</b> already includes the desired fully qualified name,</span><br/>
+                <span class="text-underline">the virtual machine helps ensure that only one type with a given name is loaded by any single class loader.</span><br/>
                 <span class="note">这里说了一大堆，就是表达“查看是否已经加载了某个类”</span>
             </p>
             <p>
@@ -531,7 +584,7 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
                 to attempt to load the <b>referenced type</b>.<br/>
                 If the <b>referencing type</b> was defined by the <b>bootstrap class loader</b>,<br/>
                 the virtual machine asks the <b>bootstrap class loader</b> to load the <b>referenced type</b>.<br/>
-                Otherwise, the <b>referencing</b> type was defined by a <b>user-defined class loader</b>,<br/>
+                Otherwise, the <b>referencing type</b> was defined by a <b>user-defined class loader</b>,<br/>
                 and the virtual machine asks the same <b>user-defined class loader</b> to load the <b>referenced type</b>.<br/>
                 <span class="note">JVM使用相同的class loader去加载被解析的类。</span>
             </p>
@@ -553,7 +606,7 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
                 To delegate to a <b>user-defined class loader</b>,<br/>
                 a class loader (whether bootstrap or user-defined) invokes <code>loadClass()</code> on that class loader, passing in the fully qualified name of the desired type.<br/>
                 To delegate to the <b>bootstrap class loader</b>,<br/>
-                a <b>user-defined class loader</b> invokes <code>findSystemClass()</code>, a static method from <code>java.lang.ClassLoader</code>,<br/>
+                a <b>user-defined class loader</b> invokes <code>findSystemClass()</code>, a static method from <code>java.lang.ClassLoader</code>, <span class="note">在JDK 8中，并不是一个static method</span><br/>
                 passing in the fully qualified name of the desired type.<br/>
                 A class loader that has been delegated to can also decide<br/>
                 whether or not to attempt to load the type itself,<br/>
@@ -561,6 +614,7 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
                 Eventually, some class loader will decide that the buck stops with it, and rather than delegate, attempt to actually load the type itself.<br/>
                 If this class loader is successful at loading the type, it will be marked as the <b>defining class loader</b> for the type.<br/>
                 All of the class loaders involved in the process-- the <b>defining class loader</b> and all the class loaders that delegated -- will be marked as <b>initiating loaders</b> of the type.<br/>
+                <span class="note">这里引出了加载类的两个方法，也是来自于ClassLoader的两个方法：loadClass()和findSystemClass()</span>
             </p>
             <p>
                 Given the existence of the <b>parent-delegation model</b> described earlier in this chapter,<br/>
@@ -572,20 +626,20 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
                 When a parent class loader attempts to load the type but fails, control returns to the child class loader.<br/>
                 In the <b>parent-delegation model</b>, the child class loader,<br/>
                 upon learning that its parent (and grandparent, great grandparent, and so on) was unable to load the type,<br/>
-                attempts to load the type itself.<br/>
+                attempts to load the type itself.<span class="note">前半部分是介绍parent delegation model的机制</span><br/>
                 If a class loader in the middle of the delegation chain is the class loader that first has success loading the type,<br/>
                 that class loader will be marked as the <b>defining class loader</b>.<br/>
                 The <b>defining class loader</b> and all the class loaders before it in the parent-delegation chain will be marked as <b>initiating class loaders</b>.<br/>
                 However, its parent, grandparent, great grandparent, and so on, none of whom were successful in their attempts to load the type,<br/>
                 will not be marked as <b>initiating class loaders</b> of the type.<br/>
-                <span class="note">我觉得，这里主要是对defining class loader和initiating class loader进行区分。</span>
+                <span class="note">前半部分是介绍parent delegation model的机制，后半部分是对defining class loader和initiating class loader进行区分。</span>
             </p>
             <p>
                 If the <code>loadClass()</code> method of a <b>user-defined class loader</b><br/>
                 is able to locate or produce an array of bytes that purportedly defines the type in the Java class file format,<br/>
                 <code>loadClass()</code> must invoke <code>defineClass()</code>,<br/>
                 passing the fully qualified name of the desired type and a reference to the byte array.<br/>
-                Invoking <code>defineClass()</code> will cause the virtual machine to attempt to parse the binary data into internal data structures in the <b>method area</b>.<br/>
+                Invoking <code>defineClass()</code> will cause the virtual machine to attempt to parse the binary data into <b>internal data structures</b> in the <b>method area</b>.<br/>
                 At this point the virtual machine will perform pass one of <b>verification</b>,<br/>
                 as described in Chapter 3, "Security," which ensures the passed array of bytes adhere to the basic structure of the Java class file format.<br/>
                 The Java virtual machine uses the passed <b>fully qualified name</b> to verify that the desired type name is actually declared as the name of the type in the passed array of bytes.<br/>
@@ -599,7 +653,7 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
                 If not, it loads the <b>superclass</b>.<br/>
                 Once that class comes in, the virtual machine can again peer into its binary data to find its <b>superclass</b>.<br/>
                 This process repeats all the way up to <code>Object</code>.<br/>
-                <span class="note">不断查找，并加载父类，直到Object类。</span>
+                <span class="note">不断查找，并加载superclass，直到Object类。</span>
             </p>
             <p>
                 When the virtual machine loads a <b>superclass</b>, it is really just resolving yet another <b>symbolic reference</b>.<br/>
@@ -619,7 +673,7 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
                 For each <b>interface</b> the virtual machine loads,<br/>
                 the virtual machine peers into its type data to see if it directly extends any other <b>interfaces</b>.<br/>
                 If so, the virtual machine makes sure those <b>superinterfaces</b> are loaded.<br/>
-                <span class="note">加载所有的interface</span>
+                <span class="note">加载所有的superinterfaces</span>
             </p>
             <p>
                 When the virtual machine loads <b>superinterfaces</b>,<br/>
@@ -637,7 +691,7 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
                 The virtual machine makes its request in the usual way,<br/>
                 by invoking <code>loadClass()</code> on the referencing subtype's <b>defining class loader</b>,<br/>
                 passing in the fully qualified name of the desired direct <b>superclass</b> or direct <b>superinterface</b>.<br/>
-                <span class="note">这里是一个小的总结，就是说明加载superclass和superinterface的细节</span>
+                <span class="note">这里是一个小的总结，就是说明加载superclass和superinterface的细节。supertypes = superclasses + superinterfaces</span>
             </p>
             <p>
                 Once a type has been loaded into the <b>current namespace</b>, and by recursion,<br/>
@@ -652,6 +706,7 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
                 If a <b>user-defined class loader</b> delegates to another <b>user-defined class loader</b>,<br/>
                 therefore, it receives the <code>Class</code> instance from the delegated-to <b>user-defined class</b> loader when its <code>loadClass()</code> method returns.<br/>
                 Upon receiving the <code>Class</code> instance from the delegated-to class loader, the delegated-from class loader returns it from its own <code>loadClass()</code> method.<br/>
+                <span class="note">当所有的superclasses和superinterfaces都加载成功之后，defineClass()方法才会为当前加载的type生成一个Class实例</span>
             </p>
             <p>
                 Through <b>Step 1a</b>, the Java virtual machine makes sure a type is <b>loaded</b>,<br/>
@@ -756,16 +811,16 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
                 but not necessarily <b>linked</b> or <b>initialized</b>.<br/>
                 Some of the <b>supertypes</b> may be <b>initialized</b> at this point,<br/>
                 because they may have been <b>initialized</b> during earlier <b>resolutions</b>.<br/>
-                <span class="note">类已经load，还没有link和initialize。</span>
+                <span class="note">type已经load，还没有link和initialize。</span>
             </p>
             <p>
                 As described in Chapter 7, "The Lifetime of a Class," <b>superclasses</b> must be <b>initialized</b> before <b>subclasses</b>.<br/>
                 If the virtual machine is resolving a reference to a class (not an interface) because of an <b>active use</b> of that class,<br/>
                 it must make sure that the <b>superclasses</b> have been <b>initialized</b>,<br/>
                 starting with <code>Object</code> and proceeding down the inheritance hierarchy to the referenced class.<br/>
-                (Note that this is the opposite order in which they were loaded in Step 1a.)<br/>
+                (Note that this is the opposite order in which they were <b>loaded</b> in Step 1a.)<br/>
                 If a type hasn't yet been <b>linked</b>, it must be <b>linked</b> before it is <b>initialized</b>.<br/>
-                Note that only <b>superclasses</b> must be <b>initialized</b>, not <b>superinterfaces</b>.<br/>
+                Note that only <b>superclasses</b> must be <b>initialized</b>, not <b>superinterfaces</b>.<span class="note">注意，superinterfaces并不需要进行initialize。</span><br/>
                 <span class="note">superclasses要先进行initialize，而subclasses要后进行initialize。</span>
             </p>
 
@@ -865,7 +920,7 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
                 Therefore, any error that can be thrown because of the resolution of a <code>CONSTANT_Class_info</code><span class="note">如果CONSTANT_Class_info解析出错</span><br/>
                 can be thrown during the resolution of a <code>CONSTANT_Fieldref_info</code>.<br/>
                 If resolution of the <code>CONSTANT_Class_info</code> entry succeeds,<span class="note">如果CONSTANT_Class_info解析成功</span><br/>
-                the virtual machine searches for the indicated field in the <b>type</b> and <b>its supertypes</b>.<span class="note">从当前类型或父类中查找字段</span><br/>
+                the virtual machine searches for the indicated field in the <b>type</b> and <b>its supertypes</b>.<span class="note">从当前类型或supertypes中查找字段</span><br/>
                 If it finds the indicated field, the virtual machine checks to make sure the current class has <b>permission</b> to access the field.<span class="note">检查字段权限</span><br/>
                 <span class="note"></span>
             </p>
@@ -927,7 +982,7 @@ CONSTANT_Fieldref_info {
                 Therefore, any error that can be thrown because of the resolution of a <code>CONSTANT_Class_info</code><br/>
                 can be thrown during the resolution of a <code>CONSTANT_Methodref_info</code>.<span class="note">解析CONSTANT_Class_info失败</span><br/>
                 If the resolution of the <code>CONSTANT_Class_info</code> entry succeeds,<span class="note">解析CONSTANT_Class_info成功之后</span><br/>
-                the virtual machine searches for the indicated method in the <b>type</b> and <b>its supertypes</b>.<span class="note">从当前类和父类中查找</span><br/>
+                the virtual machine searches for the indicated method in the <b>type</b> and <b>its supertypes</b>.<span class="note">从当前类和supertypes中查找</span><br/>
                 If it finds the indicated method, the virtual machine checks to make sure the current class has <b>permission</b> to access the method.<span class="note">检查权限</span><br/>
             </p>
             <pre class="pre-block">
@@ -990,7 +1045,7 @@ CONSTANT_Methodref_info {
                 Therefore, any error that can be thrown because of the resolution of a <code>CONSTANT_Class_info</code><br/>
                 can be thrown during the resolution of a <code>CONSTANT_InterfaceMethodref_info</code>.<span class="note">如果CONSTANT_Class_info解析失败</span><br/>
                 If the resolution of the <code>CONSTANT_Class_info</code> entry succeeds,<span class="note">如果CONSTANT_Class_info解析成功</span><br/>
-                the virtual machine searches for the indicated method in the interface and its supertypes.<span class="note">从接口和父类型中查找</span><br/>
+                the virtual machine searches for the indicated method in the interface and its supertypes.<span class="note">从接口和supertypes中查找</span><br/>
                 (The virtual machine need not check to make sure the current class has <code>permission</code> to access the method,<span class="note">不需要检查权限</span><br/>
                 because all methods declared in interfaces are implicitly <code>public</code>.)<br/>
             </p>
@@ -1045,7 +1100,7 @@ CONSTANT_InterfaceMethodref_info {
                 must have the character sequence specified by the <code>CONSTANT_Utf8_info</code> entry<br/>
                 identified by the <code>string_index</code> item of the <code>CONSTANT_String_info</code>.<br/>
             </p>
-            <pre>
+            <pre class="pre-block">
 CONSTANT_String_info {
     u1 tag;
     u2 string_index;
@@ -1168,7 +1223,7 @@ After interning argZero: they're the same string object!
                 and that two different class loaders initiated the loading of <code>Cat</code> and <code>Mouse</code>.<br/>
                 To preserve <b>type safety</b> in the presence of <b>multiple class loaders</b>,<br/>
                 it is essential that the fully qualified type names mentioned in field and method descriptors contained in <code>Cat</code><br/>
-                refer to the same type data (in the method area) as those same names in class <code>Mouse</code>.<br/>
+                refer to the same <b>type data</b> (in the <b>method area</b>) as those same names in class <code>Mouse</code>.<br/>
             </p>
             <p>
                 To ensure that Java virtual machine implementations enforce this <b>type consistency</b> across <b>namespaces</b>,<span class="note">为了保证一致性</span><br/>
@@ -1482,11 +1537,11 @@ class Cat implements Friendly {
                 <span class="note">对上图进行解释</span>
             </p>
             <p>
-                Note that the <code>wagCount</code> instance variable appears at offset one in both <code>Dog</code> and <code>CockerSpaniel</code>.<br/>
+                Note that the <code>wagCount</code> instance variable appears at offset 1 in both <code>Dog</code> and <code>CockerSpaniel</code>.<br/>
                 In this implementation of the Java virtual machine,<br/>
-                a <b>symbolic reference</b> to the <code>wagCount</code> field of class <code>Dog</code> would be resolved to <b>direct reference</b> that is an <b>offset</b> of one.<br/>
+                a <b>symbolic reference</b> to the <code>wagCount</code> field of class <code>Dog</code> would be resolved to <b>direct reference</b> that is an <b>offset</b> of 1.<br/>
                 Regardless of whether the actual object being referred to was a <code>Dog</code>, a <code>CockerSpaniel</code>, or any other subclass of <code>Dog</code>,<br/>
-                the <code>wagCount</code> instance variable would always appear at <b>offset</b> one in the object image.<br/>
+                the <code>wagCount</code> instance variable would always appear at <b>offset</b> 1 in the object image.<br/>
                 <span class="note">这里讲offset的“稳定性”</span>
             </p>
             <p>
@@ -1561,7 +1616,7 @@ class Cat implements Friendly {
                 When the virtual machine resolves a <b>symbolic reference</b> to the <code>sayHello()</code> method of <code>Dog</code> or any of its subclasses,<br/>
                 the <b>direct reference</b> is method table offset 11.<br/>
                 When the virtual machine resolves a <b>symbolic reference</b> to the <code>sayGoodbye()</code> method of <code>CockerSpaniel</code> or any of its subclasses,<br/>
-                the <b>direct reference</b> is the method table offset twelve.<br/>
+                the <b>direct reference</b> is the method table offset 12.<br/>
                 <span class="note">这3个方法的offset没有发生变化。</span>
             </p>
             <p>
@@ -1638,7 +1693,7 @@ class Example4 {
                 But in <code>Cat</code>, <code>sayHello()</code> occupies offset 12.<br/>
                 Likewise, <code>CockerSpaniel</code>'s <code>sayGoodbye()</code> method pointer resides in offset 12,<br/>
                 but <code>Cat</code>'s <code>sayGoodbye()</code> method pointer resides at offset 13.<br/>
-                <span class="note">这里是具体举例说明，对于interface来说，method table offset是行不通的</span>
+                <span class="note">这里具体举例说明，对于interface来说，method table offset是行不通的</span>
             </p>
             <p>
                 Thus, whenever the Java virtual machine invokes a method from an <b>interface reference</b>,<span class="note">对interface reference，只能从method table中顺序查找</span><br/>
@@ -1653,6 +1708,2445 @@ class Example4 {
                 Nevertheless, invoking a method given an <b>interface reference</b> will likely be to some extent slower than invoking a method given a <b>class reference</b>.<br/>
                 <span class="note">由于interface reference不能直接利用method table offset，因此使用interface reference调用方法要比class reference调用方法要慢一些</span>
             </p>
+
+
+            <h2 id="quick_instructions">_quick Instructions</h2>
+            <p>
+                The first edition of the Java virtual machine specification described a technique<br/>
+                used by one of Sun's early implementations of the Java virtual machine to speed up the interpretation of bytecodes.<br/>
+                In this scheme, <b>opcodes</b> that refer to <b>constant pool</b> entries are replaced by a "_quick" opcode<br/>
+                when the constant pool entry is resolved.<br/>
+                When the virtual machine encounters a <b>_quick</b> instruction,<br/>
+                it knows the constant pool entry is already resolved and can therefore execute the instruction faster.<br/>
+                <span class="note">这里介绍_quick opcode的原因，就是想方设法来提高JVM执行的速度。</span>
+            </p>
+            <p>
+                The core instruction set of the Java virtual machine consists of <b>200 single-byte opcodes</b>,<br/>
+                all of which are described in Appendix A, "Instruction Set by Opcode Mnemonic."<br/>
+                These <b>200 opcodes</b> are the only opcodes you will ever see in class files.<br/>
+                Virtual machine implementations that use the "_quick" technique use another <b>25 single-byte opcodes</b> internally, the "_quick" opcodes.<br/>
+                <span class="note">在1 byte空间内，总共256个位置，而真正的opcode占用了200个，_quick opcode占用了25个，还有一些剩余。</span>
+            </p>
+            <p>
+                For example, when a virtual machine that uses the <b>_quick</b> technique<br/>
+                resolves a constant pool entry referred to by an <code>ldc</code> instruction (opcode value <code>0x12</code>),<br/>
+                it replaces the <code>ldc</code> opcode byte in the bytecode stream with an <code>ldc_quick</code> instruction (opcode value <code>0xcb</code>).<br/>
+                This technique is part of the process of replacing a <b>symbolic reference</b> with a <b>direct reference</b> in Sun's early virtual machine.<br/>
+                <span class="note">这里举个例子</span>
+            </p>
+            <p>
+                For some instructions, in addition to overwriting the normal opcode with a <b>_quick</b> opcode,<br/>
+                a virtual machine that uses the <b>_quick</b> technique overwrites the <b>operands of the instruction</b> with data that represents the <b>direct reference</b>.<br/>
+                For example, in addition to replacing an <code>invokevirtual</code> opcode with an <code>invokevirtual_quick</code>,<br/>
+                the virtual machine also puts the <b>method table offset</b> and <b>the number of arguments</b> into the two operand bytes<br/>
+                that follow every <code>invokevirtual</code> instruction.<br/>
+                Placing the <b>method table offset</b> in the bytecode stream following the <code>invokevirtual_quick</code> opcode<br/>
+                saves the virtual machine the time it would take to look up the offset in the resolved constant pool entry.<br/>
+                <span class="note">这里再举个例子</span>
+            </p>
+
+
+            <h2 id="example-of-linking">Example: The Linking of the Salutation Application</h2>
+            <p>
+                As an example of Java's <b>linking model</b>, consider the Salutation application shown below:
+            </p>
+            <pre class="pre-block">
+// On CD-ROM in file linking/ex5/Salutation.java
+class Salutation {
+
+    private static final String hello = "Hello, world!";
+    private static final String greeting = "Greetings, planet!";
+    private static final String salutation = "Salutations, orb!";
+
+    private static int choice = (int) (Math.random() * 2.99);
+
+    public static void main(String[] args) {
+
+        String s = hello;
+        if (choice == 1) {
+            s = greeting;
+        }
+        else if (choice == 2) {
+            s = salutation;
+        }
+
+        System.out.println(s);
+    }
+}
+            </pre>
+            <p>
+                Assume that you have asked a Java virtual machine to run <code>Salutation</code>.<br/>
+                When the virtual machine starts, it attempts to invoke the <code>main()</code> method of <code>Salutation</code>.<br/>
+                It quickly realizes, however, that it can't invoke <code>main()</code>.<br/>
+                The <b>invocation of a method</b> declared in a class is an <b>active use</b> of that class,<span class="note">注意，method invocation代表了active use，因此需要对class进行initialization</span><br/>
+                which is not allowed until the <b>class</b> is <b>initialized</b>.<br/>
+                Thus, before the virtual machine can invoke <code>main()</code>, it must <b>initialize</b> <code>Salutation</code>.<br/>
+                And before it can <b>initialize</b> <code>Salutation</code>,<span class="note">在initialization之前，要先进行load和link</span><br/>
+                it must <b>load</b> and <b>link</b> <code>Salutation</code>.<br/>
+                So, the virtual machine hands the fully qualified name of <code>Salutation</code> to the <b>bootstrap class loader</b>,<br/>
+                which retrieves the binary form of the class, parses the binary data into internal data structures,<br/>
+                and creates an instance of <code>java.lang.Class</code>.<br/>
+                The constant pool for <code>Salutation</code> is shown in Table 8-1.<br/>
+            </p>
+            <div style="text-align: center;">
+                <table style="margin: auto;" cellpadding="2" border="1">
+                    <tbody>
+                    <tr bgcolor="#0066CC">
+                        <th>Index</th>
+                        <th>Type</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td><code>CONSTANT_String_info</code></td>
+                        <td>30</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><code>CONSTANT_String_info</code></td>
+                        <td>31</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><code>CONSTANT_String_info</code></td>
+                        <td>39</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><code>CONSTANT_Class_info</code></td>
+                        <td>37</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><code>CONSTANT_Class_info</code></td>
+                        <td>44</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td><code>CONSTANT_Class_info</code></td>
+                        <td>45</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td><code>CONSTANT_Class_info</code></td>
+                        <td>46</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td><code>CONSTANT_Class_info</code></td>
+                        <td>47</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td><code>CONSTANT_Methodref_info</code></td>
+                        <td>7, 16</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td><code>CONSTANT_Fieldref_info</code></td>
+                        <td>4, 17</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td><code>CONSTANT_Fieldref_info</code></td>
+                        <td>8, 18</td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td><code>CONSTANT_Methodref_info</code></td>
+                        <td>5, 19</td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td><code>CONSTANT_Methodref_info</code></td>
+                        <td>6, 20</td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td><code>CONSTANT_Double_info</code></td>
+                        <td>2.99</td>
+                    </tr>
+                    <tr>
+                        <td>16</td>
+                        <td><code>CONSTANT_NameAndType_info</code></td>
+                        <td>26, 22</td>
+                    </tr>
+                    <tr>
+                        <td>17</td>
+                        <td><code>CONSTANT_NameAndType_info</code></td>
+                        <td>41, 32</td>
+                    </tr>
+                    <tr>
+                        <td>18</td>
+                        <td><code>CONSTANT_NameAndType_info</code></td>
+                        <td>49, 34</td>
+                    </tr>
+                    <tr>
+                        <td>19</td>
+                        <td><code>CONSTANT_NameAndType_info</code></td>
+                        <td>50, 23</td>
+                    </tr>
+                    <tr>
+                        <td>20</td>
+                        <td><code>CONSTANT_NameAndType_info</code></td>
+                        <td>51, 21</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"()D"</code></td>
+                    </tr>
+                    <tr>
+                        <td>22</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"()V"</code></td>
+                    </tr>
+                    <tr>
+                        <td>23</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"(Ljava/lang/String;)V"</code></td>
+                    </tr>
+                    <tr>
+                        <td>24</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"([Ljava/lang/String;)V"</code></td>
+                    </tr>
+                    <tr>
+                        <td>25</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"&lt;clinit&gt;"</code></td>
+                    </tr>
+                    <tr>
+                        <td>26</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"&lt;init&gt;"</code></td>
+                    </tr>
+                    <tr>
+                        <td>27</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"Code"</code></td>
+                    </tr>
+                    <tr>
+                        <td>28</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"ConstantValue"</code></td>
+                    </tr>
+                    <tr>
+                        <td>29</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"Exceptions"</code></td>
+                    </tr>
+                    <tr>
+                        <td>30</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"Greetings, planet!"</code></td>
+                    </tr>
+                    <tr>
+                        <td>31</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"Hello, world!"</code></td>
+                    </tr>
+                    <tr>
+                        <td>32</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"I"</code></td>
+                    </tr>
+                    <tr>
+                        <td>33</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"LineNumberTable"</code></td>
+                    </tr>
+                    <tr>
+                        <td>34</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"Ljava/io/PrintStream;"</code></td>
+                    </tr>
+                    <tr>
+                        <td>35</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"Ljava/lang/String;"</code></td>
+                    </tr>
+                    <tr>
+                        <td>36</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"LocalVariables"</code></td>
+                    </tr>
+                    <tr>
+                        <td>37</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"Salutation"</code></td>
+                    </tr>
+                    <tr>
+                        <td>38</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"Salutation.java"</code></td>
+                    </tr>
+                    <tr>
+                        <td>39</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"Salutations, orb!"</code></td>
+                    </tr>
+                    <tr>
+                        <td>40</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"SourceFile"</code></td>
+                    </tr>
+                    <tr>
+                        <td>41</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"choice"</code></td>
+                    </tr>
+                    <tr>
+                        <td>42</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"greeting"</code></td>
+                    </tr>
+                    <tr>
+                        <td>43</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"hello"</code></td>
+                    </tr>
+                    <tr>
+                        <td>44</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"java/io/PrintStream"</code></td>
+                    </tr>
+                    <tr>
+                        <td>45</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"java/lang/Math"</code></td>
+                    </tr>
+                    <tr>
+                        <td>46</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"java/lang/Object"</code></td>
+                    </tr>
+                    <tr>
+                        <td>47</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"java/lang/System"</code></td>
+                    </tr>
+                    <tr>
+                        <td>48</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"main"</code></td>
+                    </tr>
+                    <tr>
+                        <td>49</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"out"</code></td>
+                    </tr>
+                    <tr>
+                        <td>50</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"println"</code></td>
+                    </tr>
+                    <tr>
+                        <td>51</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"random"</code></td>
+                    </tr>
+                    <tr>
+                        <td>52</td>
+                        <td><code>CONSTANT_Utf8_info</code></td>
+                        <td><code>"salutation"</code></td>
+                    </tr>
+                    </tbody></table>
+                <p><strong> Table 8-1. Class <code>Salutation</code>'s constant pool</strong></p>
+            </div>
+            <p>
+                As part of the <b>loading</b> process for <code>Salutation</code>,<br/>
+                the Java virtual machine must make sure all of <code>Salutation</code>'s <b>superclasses</b> have been <b>loaded</b>.<span class="note">要保证父类加载</span><br/>
+                To start this process, the virtual machine looks into <code>Salutation</code>'s type data at the <b>super_class</b> item, which is a 7.<br/>
+                The virtual machine looks up entry 7 in the constant pool,<br/>
+                and finds a <code>CONSTANT_Class_info</code> entry that serves as a symbolic reference to class <code>java.lang.Object</code>.<br/>
+                See Figure 8-5 for a graphical depiction of this symbolic reference.<br/>
+                The virtual machine resolves this symbolic reference, which causes it to load class <code>Object</code>.<br/>
+                Because <code>Object</code> is the top of <code>Salutation</code>'s inheritance hierarchy,<br/>
+                the virtual machine and <b>links</b> and <b>initializes</b> <code>Object</code> as well.<br/>
+                <span class="note">这里讲了loading阶段，要保证父类的load、link和initialize</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig8-5.gif" alt="figure 8-5"/>
+            </div>
+            <p>
+                Now that the Java virtual machine has <b>loaded</b> the <code>Salutation</code> class and<br/>
+                <b>loaded</b>, <b>linked</b> and <b>initialized</b> all its <b>superclasses</b>,<span class="note">父类已经load, link and initialize</span><br/>
+                the virtual machine is ready to <b>link</b> <code>Salutation</code>.<br/>
+                As the first step in the <b>linking process</b>,<br/>
+                the virtual machine <b>verifies</b> the integrity of the binary representation of class <code>Salutation</code>.<br/>
+                Assume this implementation of the Java virtual machine performs all verification up front,<br/>
+                except for the <b>verification</b> of <b>symbolic references</b>.<br/>
+                So by the time this official <b>verification</b> phase of <b>linking</b> is completed, the virtual machine will have verified:<br/>
+                <span class="note">这里讲了linking阶段内的verification。</span>
+            </p>
+            <ol>
+                <li>
+                    that <code>Salutation</code>'s binary data is structurally correct<span class="note">结构正确，符合Java Class File的规范</span>
+                </li>
+                <li>
+                    that <code>Salutation</code> correctly implements the semantics of the Java language<span class="note">语义正确，符合Java Language的规范</span>
+                </li>
+                <li>
+                    that <code>Salutation</code>'s bytecodes won't crash the virtual machine<span class="note">代码功能正确，不会让JVM崩溃</span>
+                </li>
+            </ol>
+            <p>
+                After the Java virtual machine has <b>verified</b> <code>Salutation</code>,<br/>
+                it must <b>prepare</b> for <code>Salutation</code>'s use by allocating any memory needed by the class.<br/>
+                At this stage, the virtual machine allocates memory for <code>Salutation</code>'s class variable, <code>choice</code>, and gives it a default initial value.<br/>
+                Because the <code>choice</code> class variable is an <code>int</code>, it receives the default initial value of zero.<br/>
+                <span class="note">这里讲linking的prepare阶段</span>
+            </p>
+            <p>
+                The three literal <code>String</code>s--<code>hello</code>, <code>greeting</code>, and <code>salutation</code>--are <b>constants</b>, not <b>class variables</b>.<br/>
+                They do not occupy memory space as <b>class variables</b> in the <b>method area</b>.<span class="note">以前我没有注意到这一点，constant不在method area上分配内存空间。</span><br/>
+                They don't receive default initial values.<br/>
+                Because they are declared <code>static</code> and <code>final</code>,<br/>
+                they appear as <code>CONSTANT_String_info</code> entries in <code>Salutation</code>'s constant pool.<br/>
+                The constant pool for <code>Salutation</code> that was generated by javac is shown in Table 8-1.<br/>
+                The entries that represent <code>Salutation</code>'s constant strings are:<br/>
+                for <code>greeting</code>, entry 1; for <code>hello</code>, entry 2; and for <code>Salutation</code>, entry 3.<br/>
+                <span class="note">在linking的prepare阶段，需要为class variable分配内存空间，但不需要为constants分配内存空间</span>
+            </p>
+            <p>
+                After the processes of <b>verification</b> and <b>preparation</b> have successfully completed, the class is ready for <b>resolution</b>.<br/>
+                As mentioned above, different implementations of the Java virtual machine may perform the <b>resolution</b> phase of <b>linking</b> at different times.<br/>
+                <b>Resolution</b> of <code>Salutation</code> is optional at this point in its lifetime.<br/>
+                Java virtual machines are not required to perform <b>resolution</b><br/>
+                until each <b>symbolic reference</b> is actually used by the program.<br/>
+                If a <b>symbolic reference</b> is never actually used by a program, the virtual machine is not required to resolve it.<br/>
+                <span class="note">这里讲linking的resolution阶段</span>
+            </p>
+            <p>
+                A Java virtual machine implementation could perform the recursive <b>resolution</b> process,<br/>
+                described above for <code>Salutation</code>, at this point in the lifetime of a program.<br/>
+                If so, the program would be completely <b>linked</b> before <code>main()</code> is ever invoked.<br/>
+                A different Java virtual machine implementation could perform none of the <b>resolution</b> process at this point.<br/>
+                Instead, it could resolve each <b>symbolic reference</b> the first time it is actually used by the running program.<br/>
+                Other implementations could choose a <b>resolution</b> strategy between these two extremes.<br/>
+                Although different implementations may perform <b>resolution</b> at different times,<br/>
+                all implementations will ensure that a type is <b>loaded</b>, <b>verified</b>, <b>prepared</b>, and <b>initialized</b> before it is <b>used</b>.<br/>
+                <span class="note">这里讲linking的resolution的触发时机，随着JVM的不同而不同。</span>
+            </p>
+            <p>
+                Assume this implementation of the Java virtual machine uses <b>late resolution</b>.<br/>
+                As each <b>symbolic reference</b> is used for the first time by the program,<br/>
+                it will be checked for accuracy and converted into a <b>direct reference</b>.<br/>
+                Assume also that this implementation uses the technique of replacing the <b>opcode</b> that refers to the constant pool with <b>_quick</b> equivalents.<br/>
+                <span class="note">这里假设使用了late resolution和_quick instruction</span>
+            </p>
+            <p>
+                Once this Java virtual machine implementation has <b>loaded</b>, <b>verified</b>, and <b>prepared</b> <code>Salutation</code>,<br/>
+                it is ready to <b>initialize</b> it.<br/>
+                As mentioned above, the Java virtual machine must <b>initialize</b> all <b>superclasses</b> of a class before it can <b>initialize</b> the class.<br/>
+                In this case, the virtual machine has already <b>initialized</b> <code>Object</code>, the superclass of <code>Salutation</code>.<br/>
+                <span class="note">这里开始讲initialization阶段，要保证父先进行initialization，再进行子类的initialization</span>
+            </p>
+            <p>
+                After the virtual machine has made sure all of <code>Salutation</code>'s <b>superclasses</b> have been <b>initialized</b> (in this case, just class <code>Object</code>),<br/>
+                it is ready to invoke <code>Salutation</code>'s &lt;clinit&gt;() method.<br/>
+                Because <code>Salutation</code> contains a <b>class variable</b>, <code>choice</code>,<br/>
+                that has an initializer that doesn't resolve at compile-time to a constant,<br/>
+                the compiler does place a <code>&lt;clinit&gt;()</code> method into <code>Salutation</code>'s class file.<br/>
+                <span class="note">要开始调用class initialzation method了</span>
+            </p>
+            <p>
+                Here's the <code>&lt;clinit&gt;()</code> method for <code>Salutation</code>:
+            </p>
+<pre class="pre-block">             // Invoke class method Math.random(), passing no
+             // parameters. Push double result.
+ 0 invokestatic #13 &lt;Method double random()&gt;
+            // Push double constant 2.99 from constant pool.
+ 3 ldc2_w #14 &lt;Double 2.99&gt;
+ 6 dmul     // Pop two doubles, multiple, push double result.
+ 7 d2i      // Pop double, convert to int, push int result.
+            // Pop int, store int Salutation.choice
+ 8 putstatic #10 &lt;Field int choice&gt;
+11 return   // Return void from &lt;clinit&gt;()
+</pre>
+            <p>
+                The Java virtual machine executes <code>Salutation</code>'s <code>&lt;clinit&gt;()</code> method<br/>
+                to set the <code>choice</code> field to its proper initial value.<br/>
+                Before executing <code>&lt;clinit&gt;()</code>, <code>choice</code> has its default initial value of zero.<br/>
+                After executing <code>&lt;clinit&gt;()</code>, it has one of three values chosen pseudo-randomly: zero, one, or two.<br/>
+                <span class="note">这里讲执行class intialization method之前和之后，choice变量的取值情况</span>
+            </p>
+            <p>
+                The first instruction of the <code>&lt;clinit&gt;()</code> method, <code>invokestatic #13</code>, refers to constant pool entry 13,<br/>
+                a <code>CONSTANT_Methodref_info</code> that represents a symbolic reference to the <code>random()</code> method of class <code>java.lang.Math</code>.<br/>
+                You can see a graphical depiction of this symbolic reference in Figure 8-6.<br/>
+                The Java virtual machine resolves this symbolic reference,<br/>
+                which causes it to load, link, and initialize class <code>java.lang.Math</code>.<br/>
+                It places a direct reference to the <code>random()</code> method into constant pool entry 13, marks the entry as resolved,<br/>
+                and replaces the <code>invokestatic</code> opcode with <code>invokestatic_quick</code>.<br/>
+                <span class="note">解析第1条instruction</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig8-6.gif" alt="figure 8-6"/>
+            </div>
+            <p>
+                Having completed the resolution process for constant pool entry 13,<br/>
+                the Java virtual machine is ready to invoke the method.<br/>
+                When the virtual machine actually invokes the <code>random()</code> method,<br/>
+                it will load, link, and initialize any types referenced symbolically from <code>Math</code>'s constant pool and <code>random()</code>'s code.<br/>
+                When this method returns,<br/>
+                the virtual machine will push the returned <code>double</code> value onto the <code>main()</code> method's operand stack.<br/>
+                <span class="note">调用Math.random()方法</span>
+            </p>
+            <p>
+                To execute the next instruction, <code>ldc2_w #14</code>,<br/>
+                the virtual machine looks into constant pool entry 14 and finds an unresolved <code>CONSTANT_Double_info</code> entry.<br/>
+                The virtual machine resolves this entry to the double value 2.99, marks the entry as resolved,<br/>
+                and replaces the <code>ldc2_w</code> opcode with <code>ldc2_w_quick</code>.<br/>
+                Once the virtual machine has resolved constant pool entry 14,<br/>
+                it pushes the constant <code>double</code> value, 2.99, onto the operand stack.<br/>
+                <span class="note">解析第2条instruction</span>
+            </p>
+            <p>
+                Note that this entry, a <code>CONSTANT_Double_info</code>, does not refer to any other constant pool entry or item outside this class.<br/>
+                The eight bytes of the <code>double</code> value 2.99 are specified within the entry itself.<br/>
+            </p>
+            <p>
+                Note also that in this constant pool, there is no entry with an index of 15.<br/>
+                As mentioned in Chapter 6, "The Java Class File,"<br/>
+                entries of type <code>CONSTANT_Double_info</code> and <code>CONSTANT_Long_info</code> occupy two slots in the constant pool.<br/>
+                Thus, the <code>CONSTANT_Double_info</code> at index 14 is considered to occupy both indices 14 and 15.<br/>
+                <span class="note">CONSTANT_Double_info和CONSTANT_Long_info占用2个slot</span>
+            </p>
+            <p>
+                To execute the next instruction, <code>dmul</code>,<br/>
+                the virtual machine pops two <code>double</code>s, multiplies them, and pushes the <code>double</code> result.<br/>
+                For the next instruction, the virtual machine pops the <code>double</code>,<br/>
+                converts it to <code>int</code>, and pushes the <code>int</code> result.<br/>
+                Assume that for this particular execution of <code>Salutation</code>,<br/>
+                the result of this operation is the <code>int</code> value two.<br/>
+                <span class="note">解析第3条instruction</span>
+            </p>
+            <p>
+                The next instruction, <code>putstatic #10</code>, uses another symbolic reference from the constant pool,<br/>
+                this one to the <code>choice</code> variable of <code>Salutation</code> itself.<br/>
+                This instruction illustrates that a class's bytecodes use symbolic references to refer<br/>
+                not only to fields and methods of other types,<br/>
+                but also to its own fields and methods.<br/>
+                When the virtual machine executes this instruction,<br/>
+                it looks up constant pool entry 10 and finds an as yet unresolved <code>CONSTANT_Fieldref_info</code> item.<br/>
+                See Figure 8-7 For a graphical depiction of this symbolic reference.<br/>
+                The virtual machine resolves the reference by locating the <code>choice</code> class variable<br/>
+                in <code>Salutation</code>'s type data in the method area,<br/>
+                and placing a pointer to the actual variable data in constant pool entry 10.<br/>
+                It marks the entry as resolved and replaces the <code>putstatic</code> opcode with <code>putstatic_quick</code>.<br/>
+                <span class="note">解析第5条instruction</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig8-7.gif" alt="figure 8-7"/>
+            </div>
+            <p>
+                Once it has resolved the <code>CONSTANT_Fieldref_info</code> entry for <code>choice</code>,<br/>
+                the virtual machine pops an <code>int</code> (in this case a two) from the operand stack and<br/>
+                places it into the <code>choice</code> variable.<br/>
+                The execution of the <code>putstatic</code> instruction is now complete.<br/>
+                <span class="note">解释putstatic的作用</span>
+            </p>
+            <p>
+                Lastly, the virtual machine executes the return instruction,<br/>
+                which signals to the virtual machine that the <code>&lt;clinit&gt;()</code> method,<br/>
+                and hence the initialization of class <code>Salutation</code>, is complete.<br/>
+                Now that class <code>Salutation</code> has been initialized, it is finally ready for use.<br/>
+                The Java virtual machine invokes <code>main()</code>, and the program begins.<br/>
+                Here's the bytecode sequence for <code>Salutation</code>'s <code>main()</code> method:<br/>
+                <span class="note">等class initialization method执行结束后，就该main()方法执行了</span>
+            </p>
+<pre class="pre-block">
+                // Push objref to literal string from constant pool
+                // entry 2
+ 0 ldc #2 &lt;String "Hello, world!"&gt;
+ 2 astore_1     // Pop objref into loc var 1: String s = hello;
+                // Push int from static field Salutation.choice. Note
+                // that by this time, choice has definitely been
+                // given its proper initial value.
+ 3 getstatic #10 &lt;Field int choice&gt;
+ 6 iconst_1     // Push int constant 1
+                // Pop two ints, compare, if not equal branch to 16:
+ 7 if_icmpne 16 // if (choice == 1) {
+                // Here, choice does equal 1. Push objref to string
+                // literal from constant pool:
+10 ldc #1 &lt;String "Greetings, planet!"&gt;
+12 astore_1     // Pop objref into loc var 1: s = greeting;
+13 goto 26      // Branch unconditionally to offset 26
+                // Push int from static field Salutation.choice
+16 getstatic #10 &lt;Field int choice&gt;
+19 iconst_2     // Push int constant 2
+                // Pop two ints, compare, if not equal branch to 26:
+20 if_icmpne 26 // if (choice == 2) {
+                // Here, choice does equal 2. Push objref to string
+                // literal from constant pool:
+23 ldc #3 &lt;String "Salutations, orb!"&gt;
+25 astore_1     // Pop objref into loc var 1: String s = salutation;
+                // Push objref from System.out
+26 getstatic #11 &lt;Field java.io.PrintStream out&gt;
+29 aload_1      // Push objref (to a String) from loc var 1
+                // Pop objref (to a String), pop objref(to
+                // System.out), invoke println() on System.out
+                // passing the string as the only parameter:
+                // System.out.println(s);
+30 invokevirtual #12 &lt;Method void println(java.lang.String)&gt;
+33 return       // Return void from main()
+</pre>
+            <p>
+                The first instruction in <code>main()</code>, <code>ldc #2</code>,<br/>
+                uses a symbolic reference to the string literal <code>"Hello, world!"</code>.<br/>
+                When the virtual machine executes this instruction,<br/>
+                it looks up constant pool entry two and finds a <code>CONSTANT_String_info</code> item that hasn't yet been resolved.<br/>
+                See Figure 8-8 for a graphical depiction of the symbolic reference to this string literal.<br/>
+                <span class="note">第1条instruction</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig8-8.gif" alt="figure 8-8"/>
+            </div>
+            <p>
+                As part of executing the <code>ldc</code> instruction, the virtual machine resolves the constant pool entry.<br/>
+                It creates and interns a new <code>String</code> object with the value <code>"Hello, world!"</code>,<br/>
+                places a reference to the string object in the constant pool entry,<br/>
+                marks the entry as resolved, and replaces the <code>ldc</code> opcode with an <code>ldc_quick</code>.<br/>
+                <span class="note">继续说明第1条instruction</span>
+            </p>
+            <p>
+                Now that the virtual machine has resolved the <code>"Hello, world!"</code> string literal,<br/>
+                it pushes the reference to that <code>String</code> object onto the stack.<br/>
+                The next instruction, <code>astore_1</code>, pops the reference and stores it into local variable position one, the <code>s</code> variable.<br/>
+                <span class="note">第2条instruction</span>
+            </p>
+            <p>
+                To execute the next instruction, <code>getstatic #10</code>,<br/>
+                the virtual machine looks up constant pool entry 10 and discovers a <code>CONSTANT_Fieldref_info</code> entry that has already been resolved.<br/>
+                This entry, a symbolic reference to <code>Salutation</code>'s own <code>choice</code> field,<br/>
+                was resolved by the <code>putstatic #10</code> instruction in the <code>&lt;clinit&gt;()</code> method.<br/>
+                The virtual machine simply replaces the <code>getstatic</code> opcode with <code>getstatic_quick</code>,<br/>
+                and pushes the <code>int</code> value of <code>choice</code> onto the stack.<br/>
+                <span class="note">第3条instruction</span>
+            </p>
+            <p>
+                To execute <code>main()</code>'s next instruction, <code>iconst_1</code>,<br/>
+                the virtual machine simply pushes <code>int</code> one onto the operand stack.<br/>
+                For the next instruction, <code>ificmpne 16</code>,<br/>
+                the virtual machine pops the top two <code>int</code>s and subtracts one from the other.<br/>
+                In this case, since the value of <code>choice</code> was set by the <code>&lt;clinit&gt;()</code> method to be two,<br/>
+                the result of the subtraction is not zero.<br/>
+                As a consequence, the virtual machine takes the branch.<br/>
+                It updates the <b>pc register</b> so that the next instruction it executes is the <code>getstatic</code> instruction at offset 16.<br/>
+                <span class="note">继续向下执行，if跳转</span>
+            </p>
+            <p>
+                The <code>getstatic</code> instruction at offset 16 refers to the same constant pool entry<br/>
+                referred to by the <code>getstatic</code> instruction at offset 3: constant pool entry 10.<br/>
+                When the virtual machine executes the <code>getstatic</code> at offset 16,<br/>
+                it looks up constant pool entry 10 and finds a <code>CONSTANT_Fieldref_info</code> entry that is already resolved.<br/>
+                It replaces the <code>getstatic</code> opcode with <code>getstatic_quick</code>,<br/>
+                and pushes the <code>int</code> value of <code>Salutation</code>'s <code>choice</code> class variable (a two) onto the operand stack.<br/>
+                <span class="note">继续向下执行</span>
+            </p>
+            <p>
+                To execute the next instruction, <code>iconst_2</code>, the virtual machine pushes an <code>int</code> two onto the stack.<br/>
+                For the next instruction, another <code>ificmpne 26</code>,<br/>
+                the virtual machine again pops two <code>int</code>s and subtracts one from the other.<br/>
+                This time, however, both <code>int</code>s equal two, so the result of the subtraction is zero.<br/>
+                As a consequence, the virtual machine does not take the branch and continues on to execute the next instruction in the bytecode array,<br/>
+                another <code>ldc</code>.<br/>
+                <span class="note">继续向下执行</span>
+            </p>
+            <p>
+                The <code>ldc</code> instruction at offset 23 refers to constant pool entry 3,<br/>
+                a <code>CONSTANT_String_info</code> entry that serves as a symbolic reference to the string literal <code>"Salutations, orb!"</code>.<br/>
+                The virtual machine looks up this entry in the constant pool and discovers it is as yet unresolved.<br/>
+                To resolve the entry, the virtual machine creates and interns a new <code>String</code> object with the value <code>"Salutations, orb!"</code>,<br/>
+                places a reference to the new object in the data for constant pool entry 3,<br/>
+                and replaces the <code>ldc</code> opcode with <code>ldc_quick</code>.<br/>
+                Having resolved the string literal, the virtual machine pushes the reference to the <code>String</code> object onto the stack.<br/>
+                <span class="note">继续向下执行</span>
+            </p>
+            <p>
+                To execute the next instruction, <code>astore_1</code>,<br/>
+                the virtual machine pops the object reference to the <code>"Salutations, orb!"</code> string literal off the stack and<br/>
+                stores it into local variable slot one,<br/>
+                overwriting the reference to <code>"Hello, world!"</code> written there by the <code>astore_1</code> instruction at offset 2.<br/>
+                <span class="note">继续向下执行</span>
+            </p>
+            <p>
+                The next instruction, <code>getstatic #11</code>, uses a symbolic reference to a public static class variable of <code>java.lang.System</code><br/>
+                with the name <code>out</code> and the type <code>java.io.PrintStream</code>.<br/>
+                This symbolic reference occupies the <code>CONSTANT_Fieldref_info</code> entry at index 11 in the constant pool.<br/>
+                See Figure 8-9 for a graphical depiction of this symbolic reference.<br/>
+                <span class="note">继续向下执行</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig8-9.gif" alt="figure 8-9"/>
+            </div>
+            <p>
+                To resolve the reference to <code>System.out</code>,<br/>
+                the Java virtual machine must load, link, and initialize <code>java.lang.System</code> to make sure it has a public static field,<br/>
+                named <code>out</code>, of type <code>java.io.PrintStream</code>.<br/>
+                Then, the virtual machine will replace the symbolic reference with a direct reference,<br/>
+                such as a native pointer, so that any future uses of <code>System.out</code> by <code>Saluation</code> won't require resolution and will be faster.<br/>
+                Lastly, the virtual machine will replace the <code>getstatic</code> opcode with <code>getstatic_quick</code>.<br/>
+                <span class="note">继续向下执行</span>
+            </p>
+            <p>
+                Once the virtual machine has successfully resolved the symbolic reference,<br/>
+                it will push the reference to <code>System.out</code> onto the stack.<br/>
+                To execute the next instruction, <code>aload_1</code>,<br/>
+                the virtual machine simply pushes onto the stack the object reference from local variable 1,<br/>
+                which is the reference to the <code>"Salutations, orb!"</code> string literal.<br/>
+                <span class="note">继续向下执行</span>
+            </p>
+            <p>
+                To execute the next instruction, <code>invokevirtual #12</code>,<br/>
+                the Java virtual machine looks up constant pool entry 12 and finds an unresolved <code>CONSTANT_Methodref_info</code> entry,<br/>
+                a symbolic reference to the <code>println()</code> method of <code>java.io.PrintStream</code>.<br/>
+                See Figure 8-10 for a graphical depiction of this symbolic reference.<br/>
+                The virtual machine loads, links, and initializes <code>java.io.PrintStream</code>,<br/>
+                and makes sure it has a <code>println()</code> method that is <code>public</code>, returns <code>void</code>, and takes a <code>String</code> argument.<br/>
+                It marks the entry as resolved and puts a direct reference (an index into <code>PrintStream</code>'s method table) into the data for the resolved constant pool entry.<br/>
+                Lastly, the virtual machine replaces the <code>invokevirtual</code> opcode with <code>invokevirtual_quick</code>,<br/>
+                and places the method table index and the number of arguments accepted by the method as operands to the <code>invokevirtual_quick</code> opcode.<br/>
+                <span class="note">继续向下执行</span>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig8-10.gif" alt="figure 8-10"/>
+            </div>
+            <p>
+                When the virtual machine actually invokes the <code>println()</code> method,<br/>
+                it will load, link, and initialize any types referenced symbolically from <code>PrintStream</code>'s constant pool and <code>println()</code>'s code.<br/>
+                <span class="note">继续向下执行</span>
+            </p>
+            <p>
+                The next instruction is the last instruction the <code>main()</code> method: <code>return</code>.<br/>
+                Because <code>main()</code> was being executed by the only non-deamon thread running in the <code>Salutation</code> application,<br/>
+                executing the <code>return</code> instruction will cause the virtual machine to exit.<br/>
+                Note that constant pool entry one,<br/>
+                which contained a symbolic reference to the <code>"Greetings, planet!"</code> string literal,<br/>
+                was never resolved during this execution of the <code>Salutation</code> application.<br/>
+                Because <code>choice</code> happened to be initialized with a value of two,<br/>
+                the instruction that referred to constant pool entry one, the <code>ldc #1</code> instruction at offset 10, was never executed.<br/>
+                As a result, the virtual machine never created a <code>String</code> object with the value <code>"Greetings, planet!"</code>.<br/>
+                <span class="note">执行结束</span>
+            </p>
+
+            <h2 id="example-of-dynamic-extension-with-class-loader">Example: The Dynamic Extension of the Greet Application</h2>
+            <p>
+                As an example of an application that performs <b>dynamic extension</b> through <b>user-defined class loaders</b>,
+                consider the following class:
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file linking/ex6/Greet.java
+import com.artima.greeter.*;
+
+public class Greet {
+
+    // Arguments to this application:
+    //     args[0] - path name of directory in which class files
+    //               for greeters are stored
+    //     args[1], args[2], ... - class names of greeters to load
+    //               and invoke the greet() method on.
+    //
+    // All greeters must implement the com.artima.greeter.Greeter
+    // interface.
+    //
+    static public void main(String[] args) {
+
+        if (args.length &lt;= 1) {
+            System.out.println("Enter base path and greeter class names as args.");
+            return;
+        }
+
+        GreeterClassLoader gcl = new GreeterClassLoader(args[0]);
+
+        for (int i = 1; i &lt; args.length; ++i) {
+            try {
+
+                // Load the greeter specified on the command line
+                Class c = gcl.loadClass(args[i]);
+
+                // Instantiate it into a greeter object
+                Object o = c.newInstance();
+
+                // Cast the Object ref to the Greeter interface type
+                // so greet() can be invoked on it
+                Greeter greeter = (Greeter) o;
+
+                // Greet the world in this greeter's special way
+                greeter.greet();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+</pre>
+            <p>
+                The <code>Greet</code> application is a fancy incarnation of the typical "Hello, world!" program.<br/>
+                <code>Greet</code> uses a user-defined class loader to dynamically extend itself with<br/>
+                classes--called "greeters"--that do the actual work of telling the world hello.<br/>
+                <span class="note">介绍上面代码的作用</span>
+            </p>
+            <p>
+                A greeter is any class that implements the <code>com.artima.greeter.Greeter</code> interface:
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file linking/ex6/com/artima/greeter/Greeter.java
+package com.artima.greeter;
+
+public interface Greeter {
+
+    void greet();
+}
+</pre>
+            <p>
+                As you can see from the code above,<br/>
+                the <code>Greeter</code> interface declares only one method: <code>greet()</code>.<br/>
+                When a greeter object's <code>greet()</code> method is invoked,<br/>
+                the object should say hello to the world in its own unique way.<br/>
+                Here are a few examples of greeters:<br/>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file linking/ex6/greeters/Hello.java
+import com.artima.greeter.Greeter;
+
+public class Hello implements Greeter {
+    public void greet() {
+        System.out.println("Hello, world!");
+    }
+}
+
+// On CD-ROM in file linking/ex6/greeters/Greetings.java
+import com.artima.greeter.Greeter;
+
+public class Greetings implements Greeter {
+    public void greet() {
+        System.out.println("Greetings, planet!");
+    }
+}
+
+// On CD-ROM in file linking/ex6/greeters/Salutations.java
+import com.artima.greeter.Greeter;
+
+public class Salutations implements Greeter {
+    public void greet() {
+        System.out.println("Salutations, orb!");
+    }
+}
+
+// On CD-ROM in file linking/ex6/greeters/HowDoYouDo.java
+import com.artima.greeter.Greeter;
+
+public class HowDoYouDo implements Greeter {
+    public void greet() {
+        System.out.println("How do you do, globe!");
+    }
+}
+</pre>
+            <p>
+                Greeters can be more complex than the above four examples.<br/>
+                Here's an example of a greeter that chooses a greeting based on the time of day:
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file linking/ex6/greeters/HiTime.java
+import com.artima.greeter.Greeter;
+import java.util.Date;
+
+public class HiTime implements Greeter {
+    public void greet() {
+        // Date's no-arg constructor initializes itself to the
+        // current date and time
+        Date date = new Date();
+        int hours = date.getHours();
+
+        // Some hours: midnight, 0; noon, 12; 11PM, 23;
+        if (hours &gt;= 4 &amp;&amp; hours &lt;= 11) {
+            System.out.println("Good morning, world!");
+        }
+        else if (hours &gt;= 12 &amp;&amp; hours &lt;= 16) {
+            System.out.println("Good afternoon, world!");
+        }
+        else if (hours &gt;= 17 &amp;&amp; hours &lt;= 21) {
+            System.out.println("Good evening, world!");
+        }
+        else {
+            System.out.println("Good night, world!");
+        }
+    }
+}
+</pre>
+            <p>
+                The <code>Greet</code> application doesn't know at compile-time what greeter classes it will load and where those classes will be stored.<br/>
+                At run-time it takes a directory path as its first command-line argument and greeter class names as subsequent arguments.<br/>
+                It attempts to load the greeters using the path name as a base directory.<br/>
+            </p>
+            <p>
+                For example, imagine you invoke the <code>Greet</code> application with the following command line:
+            </p>
+<pre class="pre-block">
+java Greet greeters Hello
+</pre>
+            <p>
+                In this command line, <code>java</code> is the name of the Java virtual machine executable.<br/>
+                <code>Greet</code> is the class name of the Greet application.<br/>
+                <code>greeters</code> is the name of a directory relative to the current directory in which the Greet application should look for greeters.<br/>
+                <code>Hello</code> is the name of the greeter.<br/>
+            </p>
+            <p>
+                When the <code>Greet</code> application is invoked with the above command line,<br/>
+                it attempts to load <code>greeters/Hello.class</code> and invoke <code>Hello</code>'s <code>greet()</code> method.<br/>
+                If the <code>Hello.class</code> file is indeed sitting in a directory named <code>greeters</code>, the application will print:<br/>
+            </p>
+<pre class="pre-block">
+Hello, world!
+</pre>
+            <p>
+                The <code>Greet</code> application can handle more than one greeter.<br/>
+                If you invoke it with the following command line:
+            </p>
+<pre class="pre-block">
+java Greet greeters Hello Greetings Salutations HowDoYouDo
+</pre>
+            <p>
+                the <code>Greet</code> application will load each of the four greeters listed and invoke their <code>greet()</code> methods, yielding the following output:
+            </p>
+<pre class="pre-block">
+Hello, world!
+Greetings, planet!
+Salutations, orb!
+How do you do, globe!
+</pre>
+            <p>
+                The <code>Greet</code> application works by first checking to make sure there are at least two command-line arguments:<br/>
+                a directory path and at least one greeter class name.<br/>
+                It then instantiates a new <code>GreeterClassLoader</code> object, which will be responsible for loading the greeters.<br/>
+                (The inner workings of class <code>GreeterClassLoader</code>,<br/>
+                a subclass of <code>java.lang.ClassLoader</code>, will be described later in this section.)<br/>
+                The constructor for <code>GreeterClassLoader</code> accepts a <code>String</code><br/>
+                that it uses as a directory path in which to look for greeters.<br/>
+            </p>
+            <p>
+                After it has created the <code>GreeterClassLoader</code> object,<br/>
+                the <code>Greet</code> application invokes its <code>loadClass()</code> method for each greeter name that appears on the command line.<br/>
+                When it invokes <code>loadClass()</code>,<br/>
+                it passes the greeter class name, <code>args[i]</code>, as the sole parameter:<br/>
+            </p>
+<pre class="pre-block">
+// Load the greeter specified on the command line
+Class c = gcl.loadClass(args[i]);
+</pre>
+            <p>
+                If the <code>loadClass()</code> method is unsuccessful, it throws an exception or error.<br/>
+                If the <code>loadClass()</code> method is successful, it returns the <code>Class</code> instance for the newly loaded type.<br/>
+            </p>
+            <p>
+                Note that in addition to being loaded,
+                the type requested of <code>loadClass()</code> may possibly be linked and initialized by the time <code>loadClass()</code> returns.<br/>
+                If the type had been actively used prior to the <code>loadClass()</code> invocation that requested the type,<br/>
+                that <b>active use</b> would have triggered its loading, linking, and initialization.<br/>
+                Regardless, by the time the next statement,<br/>
+                which calls <code>newInstance()</code> on a <code>Class</code> reference,<br/>
+                is executed,<br/>
+                the type will definitely have been initialized.<br/>
+                If the type has not yet been initialized,<br/>
+                calling <code>newInstance()</code> will trigger the initialization of the type (which must be a class),<br/>
+                because <span class="text-underline">a class must be initialized before an object of that class is instantiated.</span><br/>
+                So if the type hadn't been initialized prior to the <code>loadClass()</code> invocation,<br/>
+                calling <code>newInstance()</code> will trigger the initialization.<br/>
+                <span class="note">创建instance之前，会进行initialization。</span>
+            </p>
+            <p>
+                Once <code>loadClass()</code> has returned a <code>Class</code> instance,<br/>
+                the <code>Greet</code> application's <code>main()</code> method instantiates<br/>
+                a new instance of the greeter by calling <code>newInstance()</code> on the <code>Class</code> instance:<br/>
+            </p>
+<pre class="pre-block">
+// Instantiate it into a greeter object
+Object o = c.newInstance();
+</pre>
+            <p>
+                When the <code>newInstance()</code> method is invoked on a <code>Class</code> object,<br/>
+                the virtual machine creates and initializes a new instance of the class represented by the <code>Class</code> object.<br/>
+                To initialize the new instance, the virtual machine invokes its no-arg constructor.<br/>
+                (Note that for this statement to work without throwing an exception, the newly loaded type must be a class, not an interface,<br/>
+                must be accessible, must not be abstract, and must contain a no-arg constructor that is accessible.)<br/>
+                <span class="note">调用newInstance()方法的时候，会调用no-arg constructor</span>
+            </p>
+            <p>
+                The <code>Greet</code> application then casts the <code>Object</code> reference<br/>
+                that points to the greeter object to type <code>Greeter</code>:
+            </p>
+<pre class="pre-block">
+// Cast the Object ref to the Greeter interface type
+// so greet() can be invoked on it
+Greeter greeter = (Greeter) o;
+</pre>
+            <p>
+                Finally, armed with a <code>Greeter</code> reference,<br/>
+                the <code>main()</code> method invokes the <code>greet()</code> method on the greeter object:
+            </p>
+<pre class="pre-block">
+// Greet the world in this greeter's special way
+greeter.greet();
+</pre>
+            <p>
+                The <code>Greet</code> application demonstrates the flexibility inherent in Java's linking model.<br/>
+                The <code>Greet</code> application does not know at compile time<br/>
+                what greeters it will be loading and dynamically linking to at run-time.<br/>
+                In the examples above, class <code>Greet</code> invokes the <code>greet()</code> method<br/>
+                in classes <code>Hello</code>, <code>Greetings</code>, <code>Salutations</code>, and <code>HowDoYouDo</code>.<br/>
+                But if you look at <code>Greet</code>'s constant pool,<br/>
+                there is no symbolic reference to any of these classes.<br/>
+                There is only a symbolic reference to their shared superinterface, <code>com.artima.greeter.Greeter</code>.<br/>
+                Greeters themselves, so long as they implement the <code>com.artima.greeter.Greeter</code> interface,<br/>
+                can be anything and can be written and compiled anytime,<br/>
+                even after the <code>Greet</code> application itself is compiled.<br/>
+                <span class="note">实现类的dynamic extension</span>
+            </p>
+
+
+            <h3 id="using-1-user-defined-class-loader">Using a 1.1 User-Defined Class Loader</h3>
+            <p>
+                Prior to 1.2, the <code>loadClass()</code> method of <code>java.lang.ClassLoader</code> was abstract.<span class="note">在Java 1.2之前</span><br/>
+                To create your own user-defined class loader, you subclassed <code>ClassLoader</code> and implemented <code>loadClass()</code>.<br/>
+                In 1.2, a concrete implementation of <code>loadClass()</code> was included in <code>ClassLoader</code>.<span class="note">在Java 1.2之后</span><br/>
+                This concrete <code>loadClass()</code> supports the parent-delegation model introduced in 1.2,<br/>
+                and in general makes it easier and less error prone to create a user-defined class loader.<br/>
+                To create a user-defined class loader in 1.2, you can subclass <code>ClassLoader</code> and,<br/>
+                rather than override <code>loadClass()</code>, you can override <code>findClass()</code><span class="note">推荐修改findClass()方法</span><br/>
+                -- a method with a much simpler contract than <code>loadClass()</code>.<br/>
+                This approach to creating a user-defined class loader will be described later in this chapter.<br/>
+                <span class="note">介绍如何自定义ClassLoader</span>
+            </p>
+            <p>
+                To give you some historical perspective of how class loaders changed between 1.1 and 1.2,<br/>
+                consider this implementation of <code>GreeterClassLoader</code>,<br/>
+                written for 1.1 and included in the first edition of this book:<br/>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file
+// linking/ex6/COM/artima/greeter/GreeterClassLoader.java
+package COM.artima.greeter;
+
+import java.io.*;
+import java.util.Hashtable;
+
+public class GreeterClassLoader extends ClassLoader {
+
+    // basePath gives the path to which this class
+    // loader appends "/&lt;typename&gt;.class" to get the
+    // full path name of the class file to load
+    private String basePath;
+
+    public GreeterClassLoader(String basePath) {
+
+        this.basePath = basePath;
+    }
+
+    public synchronized Class loadClass(String className, boolean resolveIt) throws ClassNotFoundException {
+
+        Class result;
+        byte classData[];
+
+        // Check the loaded class cache
+        result = findLoadedClass(className);
+        if (result != null) {
+            // Return a cached class
+            return result;
+        }
+
+        // Check with the primordial class loader
+        try {
+            result = super.findSystemClass(className);
+            // Return a system class
+            return result;
+        }
+        catch (ClassNotFoundException e) {
+        }
+
+        // Don't attempt to load a system file except through
+        // the primordial class loader
+        if (className.startsWith("java.")) {
+            throw new ClassNotFoundException();
+        }
+
+        // Try to load it from the basePath directory.
+        classData = getTypeFromBasePath(className);
+        if (classData == null) {
+            System.out.println("GCL - Can't load class: " + className);
+            throw new ClassNotFoundException();
+        }
+
+        // Parse it
+        result = defineClass(className, classData, 0, classData.length);
+        if (result == null) {
+            System.out.println("GCL - Class format error: " + className);
+            throw new ClassFormatError();
+        }
+
+        if (resolveIt) {
+            resolveClass(result);
+        }
+
+        // Return class from basePath directory
+        return result;
+    }
+
+    private byte[] getTypeFromBasePath(String typeName) {
+
+        FileInputStream fis;
+        String fileName = basePath + File.separatorChar
+            + typeName.replace('.', File.separatorChar)
+            + ".class";
+
+        try {
+            fis = new FileInputStream(fileName);
+        }
+        catch (FileNotFoundException e) {
+            return null;
+        }
+
+        BufferedInputStream bis = new BufferedInputStream(fis);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+            int c = bis.read();
+            while (c != -1) {
+                out.write(c);
+                c = bis.read();
+            }
+        }
+        catch (IOException e) {
+            return null;
+        }
+
+        return out.toByteArray();
+    }
+}
+</pre>
+            <p>
+                The 1.1 <code>GreeterClassLoader</code> declares one instance variable, <code>basePath</code>.<br/>
+                This variable, a <code>String</code>, is used to store the directory path (passed to <code>GreetingClassLoader</code>'s constructor)<br/>
+                in which the <code>loadClass()</code> method should look for the class file of the type it has been requested to load.<br/>
+            </p>
+            <p>
+                The <code>loadClass()</code> method begins by checking to see<br/>
+                if the requested type has already been loaded by this class loader.<br/>
+                It does this by invoking <code>findLoadedClass()</code>, an instance method in <code>ClassLoader</code>,<br/>
+                passing in the fully qualified name of the requested type as a parameter.<br/>
+                If this class loader has already been marked as an <b>initiating class loader</b> of a type with the requested fully qualified name,<br/>
+                <code>findLoadedClass()</code> will return the <code>Class</code> instance representing the type:<br/>
+            </p>
+<pre>
+// Check the loaded class cache
+result = findLoadedClass(className);
+if (result != null) {
+    // Return a cached class
+    return result;
+}
+</pre>
+            <p>
+                As mentioned earlier in this chapter,<br/>
+                the virtual machine maintains <b>a list of type names</b> that have already been requested of each class loader.<br/>
+                These lists, which include all the types for which each class loader has been marked as an initiating loader,<br/>
+                represent the sets of unique names that currently populate each class loader's namespace.<br/>
+                When loading classes in Step 1a of the process of resolving <code>CONSTANT_Class_info</code> entries (described earlier in this chapter),<br/>
+                the virtual machine always checks its internal list before automatically invoking <code>loadClass()</code>.<span class="note">解析CONSTANT_Class_info的时候，JVM先检查internal list</span><br/>
+                As a result, the virtual machine will never automatically invoke <code>loadClass()</code> on a user-defined class loader <span class="note">如果该类型已经加载，则JVM不会再调用loadClass()方法</span><br/>
+                with the name of a type already loaded by that user-defined class loader.<br/>
+                Nevertheless, the <code>GreeterClassLoader</code> invokes <code>findLoadedClass()</code><br/>
+                to check the requested class against the list of the names of the types it has already loaded.<br/>
+                Why? Because even though the virtual machine will never ask a <b>user-defined class loader</b><br/>
+                to load the same type twice, the application just might.<br/>
+                <span class="note">class loader对于具体的Class只加载一次</span>
+            </p>
+            <p>
+                As an example, imagine the <code>Greet</code> application were invoked with this command line:
+            </p>
+<pre class="pre-block">
+java Greet greeters Hello Hello Hello Hello Hello
+</pre>
+            <p>
+                Given this command line, the <code>Greet</code> application would invoke <code>loadClass()</code><br/>
+                with the name <code>Hello</code> five times on the same <code>GreeterClassLoader</code> object.<br/>
+                The first time, the <code>GreeterClassLoader</code> would load the class.<br/>
+                The next four times, however, the <code>GreeterClassLoader</code> would simply get the <code>Class</code> instance<br/>
+                for <code>Hello</code> by calling <code>findLoadedClass()</code> and return that.<br/>
+                It would only load class <code>Hello</code> once.<br/>
+                <span class="note">类只加载一次</span>
+            </p>
+            <p>
+                If the <code>loadClass()</code> method determines that the requested type has not been loaded into its name space,<br/>
+                it next passes the name of the requested type to <code>findSystemClass()</code>:<br/>
+                <span class="note">如果类还没有被加载</span>
+            </p>
+<pre class="pre-block">
+// Check with the primordial class loader
+try {
+    result = super.findSystemClass(className);
+    // Return a system class
+    return result;
+}
+catch (ClassNotFoundException e) {
+}
+</pre>
+            <p>
+                When the <code>findSystemClass()</code> method is invoked in a 1.1 virtual machine,<br/>
+                the <b>primordial class loader</b> attempts to load the type.<br/>
+                In 1.2, the <b>system class loader</b> attempts to load the type.<br/>
+                If the load is successful, <code>findSystemClass()</code> returns the <code>Class</code> instance representing the type,<br/>
+                and <code>loadClass()</code> returns that same <code>Class</code> instance.<br/>
+                <span class="note">版本变化带来的差异</span>
+            </p>
+            <p>
+                If the primordial (in 1.1) or system (in 1.2) class loader is unable to load the type,<br/>
+                <code>findSystemClass()</code> throws <code>ClassNotFoundException</code>.<br/>
+                In this case, the <code>loadClass()</code> method next checks to make sure the requested class is not part of the <code>java</code> package:<br/>
+                <span class="note">如果findSystemClass()找不到相应的类</span>
+            </p>
+<pre class="pre-block">
+// Don't attempt to load a system file except through
+// the primordial class loader
+if (className.startsWith("java.")) {
+    throw new ClassNotFoundException();
+}
+</pre>
+            <p>
+                This check prevents members of the standard <code>java</code> packages <span class="note">以java开头的包只能由bootstrap class loader加载</span><br/>
+                (<code>java.lang</code>, <code>java.io</code>, etc.) from being loaded by anything but the <b>bootstrap class loader</b>.<br/>
+                As mentioned in Chapter 3, "Security," two types<br/>
+                that declare themselves to be part of the same named package<br/>
+                are only granted access to each other's package-visible members<br/>
+                if they belong to the same runtime package (if they were loaded by the same class loader).<span class="note">这里介绍了runtime package的概念</span><br/>
+                But the notion of a "runtime package" and its affect on accessibility<br/>
+                was first introduced in the second edition of the Java virtual machine specification.<br/>
+                Thus, early versions of class loaders had to explicitly prevent user-defined class loaders <span class="note">用户定义的class loader，不能去加载bootstrap class loader加载的类</span><br/>
+                from attempting to load types that declare themselves to be part of the Java API (or any other "restricted" packages)<br/>
+                but that couldn't be loaded by the <b>bootstrap class loader</b>.<br/>
+            </p>
+            <p>
+                If the type name doesn't begin with <code>"java."</code>,<br/>
+                the <code>loadClass()</code> method next invokes <code>getTypeFromBasePath()</code>,<br/>
+                which attempts to import the binary data in the user-defined class loader's custom way:<br/>
+                <span class="note">使用user-defined class loader去加载类</span>
+            </p>
+<pre class="pre-block">
+// Try to load it from the basePath directory.
+classData = getTypeFromBasePath(className);
+if (classData == null) {
+    throw new ClassNotFoundException();
+}
+</pre>
+            <p>
+                The <code>getTypeFromBasePath()</code> method looks for a file with the type name plus a "<code>.class</code>" extension<br/>
+                in the base directory passed to the <code>GreeterClassLoader</code>'s constructor.<br/>
+                If the <code>getTypeFromBasePath()</code> method is unable to find the file,<br/>
+                it returns a <code>null</code> result and the <code>loadClass()</code> method throws <code>ClassNotFoundException</code>.<br/>
+                Otherwise, <code>loadClass()</code> invokes <code>defineClass()</code>,<br/>
+                passing the <b>byte array</b> returned by <code>getTypeFromBasePath()</code>:<br/>
+            </p>
+<pre class="pre-block">
+// Parse it
+result = defineClass(className, classData, 0, classData.length);
+if (result == null) {
+    System.out.println("GCL - Class format error: " + className);
+    throw new ClassFormatError();
+}
+</pre>
+            <p>
+                The <code>defineClass()</code> method completes the loading process:<span class="note">对于defineClass()方法的调用，意味着loading的结束</span><br/>
+                it parses the binary data into internal data structures and creates a <code>Class</code> instance.<br/>
+                The <code>defineClass()</code> method does not <b>link</b> and <b>initialize</b> the type.<br/>
+                (As mentioned earlier in this chapter,<br/>
+                the <code>defineClass()</code> method also makes sure all the type's <b>supertypes</b> are loaded.<span class="note">这里的defineClass()方法要保证supertypes被加载</span><br/>
+                It does this by invoking <code>loadClass()</code> on this <b>user-defined class loader</b> for each <b>direct superclass</b> and <b>superinterface</b>,<br/>
+                and recursively applies the resolution process on all <b>supertypes</b> in the hierarchy.)<br/>
+            </p>
+            <p>
+                If <code>defineClass()</code> is successful,<br/>
+                the <code>loadClass()</code> method checks to see if <code>resolve</code> were set to <code>true</code>.<br/>
+                If so, it invokes <code>resolveClass()</code>, passing the <code>Class</code> instance returned by <code>defineClass()</code>.<br/>
+                The <code>resolveClass()</code> method <b>links</b> the class. <span class="note">resolveClass()就是对class进行link操作</span><br/>
+                Finally, <code>loadClass()</code> returns the newly created <code>Class</code> instance:<br/>
+                <span class="note">这里loadClass()返回成功</span>
+            </p>
+<pre class="pre-block">
+if (resolveIt) {
+    resolveClass(result);
+}
+
+// Return class from basePath directory
+return result;
+</pre>
+
+            <h3 id="using-2-user-defined-class-loader">Using a 1.2 User-Defined Class Loader</h3>
+            <p>
+                The class loader described in the previous section,<br/>
+                which was originally designed for a 1.1 virtual machine,<br/>
+                will still work in 1.2.<br/>
+                Although 1.2 added a concrete default implementation of <code>loadClass()</code> to <code>java.lang.ClassLoader</code>,<br/>
+                this concrete method can still be overridden in subclasses.<br/>
+                Because the contract of <code>loadClass()</code> did not change from 1.1 to 1.2,<br/>
+                legacy user-defined class loaders that override <code>loadClass()</code> should still work as expected in 1.2.<br/>
+            </p>
+            <p>
+                The basic contract of <code>loadClass()</code> is this:<br/>
+                Given the fully qualified name of the type to find,<br/>
+                the <code>loadClass()</code> method should in some way attempt to locate or produce an array of bytes,<br/>
+                purportedly in the Java class file format, that define the type.<br/>
+                If <code>loadClass()</code> is unable to locate or produce the bytes, it should throw <code>ClassNotFoundException</code>.<span class="note">如果加载byte[]不成功，抛出异常</span><br/>
+                Otherwise, <code>loadClass()</code> should pass the array of bytes to <span class="note">如果加载byte[]成功，接着调用defineClass()方法</span><br/>
+                one of the <code>defineClass()</code> methods declared in class <code>ClassLoader</code>.<br/>
+                By passing the byte array to <code>defineClass()</code>,<br/>
+                <code>loadClass()</code> asks the virtual machine to import the type<br/>
+                represented by the passed byte array<br/>
+                into the namespace of this user-defined class loader.<br/>
+                When <code>loadClass()</code> calls <code>defineClass()</code> in 1.2,<br/>
+                it can also specify a <b>protection domain</b> with which the type data should be associated.<br/>
+                When the <code>loadClass()</code> method of a class loader successfully loads a type,<span class="note">返回一个Class对象</span><br/>
+                it returns a <code>java.lang.Class</code> object to represent the newly loaded type.<br/>
+            </p>
+            <p>
+                The concrete implementation of <code>loadClass()</code> from class <code>java.lang.ClassLoader</code><br/>
+                fulfills the <code>loadClass()</code> method's contract using these four basic steps:<br/>
+            </p>
+            <ol>
+                <li>
+                    See if the requested type has already been loaded into this class loader's namespace (via <code>findLoadedClass()</code>).
+                    If so, return the <code>Class</code> instance for that already-loaded type.
+                    <span class="note">查看是否已经加载过该类</span>
+                </li>
+                <li>
+                    Otherwise, delegate to this class loader's parent loader.
+                    If the parent returns a <code>Class</code> instance, return that same <code>Class</code> instance.
+                    <span class="note">先交给parent loader进行加载</span>
+                </li>
+                <li>
+                    Otherwise, invoke <code>findClass()</code>,
+                    which should attempt to locate or produce an array of bytes, purportedly in the Java class file format,
+                    that define the desired type.
+                    If successful, <code>findClass()</code> should pass those bytes to <code>defineClass()</code>,
+                    which will attempt to import the type and return a <code>Class</code> instance.
+                    If <code>findClass()</code> returns a <code>Class</code>instance,
+                    <code>loadClass()</code> returns that same <code>Class</code> instance.
+                    <span class="note">自己进行加载</span>
+                </li>
+                <li>
+                    Otherwise, <code>findClass()</code> completes abruptly with some exception,
+                    and <code>loadClass()</code> completes abruptly with the same exception.
+                    <span class="note">加载失败</span>
+                </li>
+            </ol>
+            <p>
+                Although in 1.2 you can still subclass <code>ClassLoader</code> and override the <code>loadClass()</code> method,<br/>
+                the recommended approach to creating your own <b>user-defined class loader</b> in 1.2<br/>
+                is to subclass <code>ClassLoader</code> and implement the <code>findClass()</code> method.<span class="note">推荐方式是重写findClass()方法</span><br/>
+                The <code>findClass()</code> method looks like this:<br/>
+            </p>
+<pre>
+// A method declared in class java.lang.ClassLoader:
+protected Class findClass(String name) throws ClassNotFoundException;
+</pre>
+            <p>
+                The basic contract of the <code>findClass()</code> method is this:<br/>
+                <code>findClass()</code> accepts the fully qualified name of a desired type as its only parameter.<span class="note">接收参数</span><br/>
+                <code>findClass()</code> first attempts to locate or produce an array of bytes,<span class="note">查找byte[]</span><br/>
+                purportedly in the Java class file format, that define the type of the requested name.<br/>
+                If <code>findClass()</code> is unable to locate or produce the array of bytes,<span class="note">无法找到byte[]</span><br/>
+                it completes abruptly with <code>ClassNotFoundException</code>.<br/>
+                Otherwise, <code>findClass()</code> invokes <code>defineClass()</code>,<span class="note">如果找到byte[]，调用defineClass()方法</span><br/>
+                passing in the requested name, the array of bytes and,<br/>
+                optionally, a <code>ProtectionDomain</code> object with which the type should be associated.<br/>
+                If <code>defineClass()</code> returns a <code>Class</code> instance for the type,<span class="note">返回结果</span><br/>
+                <code>findClass()</code> simply returns that same <code>Class</code> instance to its caller.<br/>
+                Otherwise, <code>defineClass()</code> completes abruptly with some exception,<span class="note">出现异常</span><br/>
+                and <code>findClass()</code> completes abruptly with the same exception.<br/>
+                <span class="note">这里就是对findClass()方法进行介绍</span>
+            </p>
+            <p>
+                Here's a version of <code>GreeterClassLoader</code> that,<br/>
+                rather than overriding <code>loadClass()</code>, merely overrides <code>findClass()</code>:
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file
+// linking/ex7/com/artima/greeter/GreeterClassLoader.java
+package com.artima.greeter;
+
+import java.io.*;
+
+public class GreeterClassLoader extends ClassLoader {
+
+    // basePath gives the path to which this class
+    // loader appends "/&lt;typename&gt;.class" to get the
+    // full path name of the class file to load
+    private String basePath;
+
+    public GreeterClassLoader(String basePath) {
+
+        this.basePath = basePath;
+    }
+
+    public GreeterClassLoader(ClassLoader parent, String basePath) {
+
+        super(parent);
+        this.basePath = basePath;
+    }
+
+    protected Class findClass(String className)
+        throws ClassNotFoundException {
+
+        byte classData[];
+
+        // Try to load it from the basePath directory.
+        classData = getTypeFromBasePath(className);
+        if (classData == null) {
+            throw new ClassNotFoundException();
+        }
+
+        // Parse it
+        return defineClass(className, classData, 0, classData.length);
+    }
+
+    private byte[] getTypeFromBasePath(String typeName) {
+
+        FileInputStream fis;
+        String fileName = basePath + File.separatorChar
+            + typeName.replace('.', File.separatorChar)
+            + ".class";
+
+        try {
+            fis = new FileInputStream(fileName);
+        }
+        catch (FileNotFoundException e) {
+            return null;
+        }
+
+        BufferedInputStream bis = new BufferedInputStream(fis);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+            int c = bis.read();
+            while (c != -1) {
+                out.write(c);
+                c = bis.read();
+            }
+        }
+        catch (IOException e) {
+            return null;
+        }
+
+        return out.toByteArray();
+    }
+}
+</pre>
+            <p>
+                This version of <code>GreeterClassLoader</code> appears in the <code>linking/ex7</code> directory of the CD-ROM.<br/>
+                All of the source files in <code>linking/ex6</code>,<br/>
+                which were described in detail in previous sections,<br/>
+                appear unchanged in <code>linking/ex7</code>, except for <code>GreeterClassLoader.java</code>.<br/>
+                Where the <code>GreeterClassLoader</code> class,<br/>
+                described in the previous section,<br/>
+                that overrides <code>loadClass()</code> appears in <code>linking/ex6</code>,<br/>
+                the <code>GreeterClassLoader</code>, described in this section,<br/>
+                that overrides <code>findClass()</code> appears in <code>linking/ex7</code>.<br/>
+            </p>
+            <p>
+                This second version of <code>GreeterClassLoader</code> declares one instance variable, <code>basePath</code>,<br/>
+                which is a <code>String</code> that is used to store the directory path<br/>
+                in which <code>findClass()</code> should look for the class file of the type it has been requested to load.<br/>
+                The <code>basePath</code> <code>String</code> is the only parameter passed to <code>GreetingClassLoader</code>'s 1-arg constructor.<br/>
+                Because the 1-arg constructor accepts no reference to a caller-specified parent class loader,<br/>
+                this class loader can't invoke the superclass constructor that takes a reference to a user-defined class loader.<br/>
+                Thus, it simply invokes the superclass's no-arg constructor by default, which sets this class loader's parent to be the <b>system class loader</b>.<br/>
+                The other constructor (the 2-arg constructor), however,<br/>
+                accepts a reference to a user-defined class loader instance as well as the <code>basePath</code> <code>String</code>.<br/>
+                This constructor explicitly invokes the superclass's 1-arg constructor, passing along the reference.<br/>
+                The superclass sets this class loader's parent to be the passed user-defined class loader instance.<br/>
+                <span class="note">介绍GreeterClassLoader的字段和构造方法。</span>
+            </p>
+            <p>
+                By comparing the implementation of <code>findClass()</code> in this version of <code>GreeterClassLoader</code> with<br/>
+                the implementation of <code>loadClass()</code> in the previous version of <code>GreeterClassLoader</code>,<br/>
+                you can easily see how much simpler it is to write <code>findClass()</code> than <code>loadClass()</code>.<br/>
+                You have much less to worry about when you write <code>findClass()</code>, and fewer opportunities to make mistakes.<br/>
+                <code>findClass()</code> merely invokes <code>getTypeFromBasePath()</code> to attempt in this user-defined class loader's custom way to load the requested type.<br/>
+                If <code>getTypeFromBasePath()</code> is unable to locate the requested type in the <code>basePath</code> directory,<br/>
+                it returns <code>null</code> and <code>findClass()</code> throws a <code>ClassNotFoundException</code>.<br/>
+                Otherwise, <code>getTypeFromBasePath()</code> returns the array of bytes,<br/>
+                which <code>findClass()</code> simply passes on to <code>defineClass()</code>.<br/>
+                If <code>defineClass()</code> returns a reference to a <code>Class</code> instance to represent the successfully loaded type,<br/>
+                <code>findClass()</code> returns that same reference.<br/>
+                Otherwise, <code>defineClass()</code> completes abruptly with an exception,<br/>
+                which causes <code>findClass()</code> to complete abruptly with the same exception.<br/>
+                <span class="note">使用findClass()，而不使用loadClass()，这么做会更简单、更不容易出错</span>
+            </p>
+            <p>
+                The <code>findClass()</code> method's contract is a subset of the <code>loadClass()</code> method's contract.<br/>
+                <code>findClass()</code> isolates the only two parts of <code>loadClass()</code><br/>
+                that should in general be customized by subclasses of <code>java.lang.ClassLoader</code>:<br/>
+                <span class="note">这里说明findClass()是loadClass()的一个“子集”</span>
+            </p>
+            <ol>
+                <li>
+                    the custom manner in which an array of bytes is located or produced given a fully qualified type name
+                </li>
+                <li>
+                    optionally, the custom manner in which a type's protection domain is determined
+                </li>
+            </ol>
+            <p>
+                When an implementation of <code>findClass()</code> performs these two tasks,<br/>
+                the result is an array of bytes and a reference to a <code>ProtectionDomain</code> object.<br/>
+                <code>findClass()</code> passes both the byte array and the <code>ProtectionDomain</code> reference to <code>defineClass()</code>.<br/>
+            </p>
+
+            <h2 id="example-of-dynamic-extension-with-for-name">Example: Dynamic Extension with forName()</h2>
+            <p>
+                As an example of a Java application that performs <b>dynamic extension</b> with <code>forName()</code>, consider the <code>EasyGreet</code> class:
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file linking/ex7/EasyGreet.java
+import com.artima.greeter.*;
+
+public class EasyGreet {
+
+    // Arguments to this application:
+    //     args[0], args[1], ... - class names of greeters to load
+    //               and invoke the greet() method on.
+    //
+    // All greeters must implement the com.artima.greeter.Greeter
+    // interface.
+    //
+    static public void main(String[] args) {
+
+        if (args.length == 0) {
+            System.out.println("Enter greeter class names as args.");
+            return;
+        }
+
+        for (int i = 0; i &lt; args.length; ++i) {
+            try {
+
+                // Load the greeter specified on the command line
+                Class c = Class.forName(args[i]);
+
+                // Instantiate it into a greeter object
+                Object o = c.newInstance();
+
+                // Cast the Object ref to the Greeter interface type
+                // so greet() can be invoked on it
+                Greeter greeter = (Greeter) o;
+
+                // Greet the world in this greeter's special way
+                greeter.greet();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+</pre>
+            <p>
+                The <code>EasyGreet</code> application is very similar to the <code>Greet</code> application from the previous example.<br/>
+                Like <code>Greet</code>, <code>EasyGreet</code> will attempt to dynamically load and execute greeters mentioned in command line arguments.<span class="note">相似之处</span><br/>
+                But unlike <code>Greet</code>, <code>EasyGreet</code> doesn't take as its first command line argument a path name of the directory<span class="note">不同之处</span><br/>
+                in which the class files for the greeters are stored.<br/>
+                All of <code>EasyGreet</code>'s command line arguments are greeter class names.<br/>
+                Another difference is that <code>EasyGreeter</code>,<br/>
+                because it is going to use <code>forName()</code> to load greeters dynamically,<br/>
+                doesn't instantiate a <code>GreeterClassLoader</code>.<br/>
+                Then, where <code>Greet</code> invoked <code>loadClass()</code> on its <code>GreeterClassLoader</code> instance,<br/>
+                <code>EasyGreet</code> invokes <code>forName()</code>, a static method of class <code>Class</code>.<br/>
+                <span class="note">这是主要是比较Greet和EasyGreet两者的差异</span>
+            </p>
+            <p>
+                <code>EasyGreet</code>'s <code>forName()</code> invocation looks very similar to <code>Greet</code>'s <code>loadClass()</code> invocation.<br/>
+                Like <code>loadClass()</code>, <code>forName()</code> accepts the fully qualified name of the requested type in a <code>String</code> parameter.<br/>
+                If successful in loading the type (or if the type had been loaded previously),<br/>
+                <code>forName()</code>, like <code>loadClass()</code>, returns the <code>Class</code> instance that represents the type.<br/>
+                If unsuccessful, <code>forName()</code>, like <code>loadClass()</code>, throws <code>ClassNotFoundException</code>.<br/>
+                The big difference between the two approaches is that<br/>
+                whereas <code>loadClass()</code> attempts to ensure the requested type is loaded into the user-defined class loader's namespace,<br/>
+                <code>forName()</code> attempts to ensure the requested type is loaded into the current namespace --<br/>
+                the namespace of the <b>defining class loader</b> for the type whose method includes the <code>forName()</code> invocation.<br/>
+                <span class="note">这里主要是比较loadClass()和forName()之间的差异。</span>
+            </p>
+            <p>
+                Because <code>forName()</code> is invoked from the <code>main()</code> method of class <code>EasyGreet</code>,<br/>
+                the class loader that <code>forName()</code> asks to load the requested type is <code>EasyGreet</code>'s defining class loader.<br/>
+                When run from Sun's Java 2 SDK version 1.2, the class loader that loads <code>EasyGreet</code> is the <b>system class loader</b>,<br/>
+                which looks for classes on the class path.<br/>
+                To use the class path environment variable, you can execute the <code>EasyGreet</code> application<br/>
+                in the <code>linking/ex7</code> directory of the CD-ROM with a command like this:<br/>
+            </p>
+<pre class="pre-block">
+java EasyGreet Hello
+</pre>
+            <p>
+                If you don't specify a class path either explicitly on the command line or in an environment variable,<br/>
+                the system loader will look in the current directory for requested types.<br/>
+                Because the current directory (the <code>linking/ex7</code> directory from the CD-ROM) doesn't contain <code>Hello.class</code>,<br/>
+                the system class loader is unable to locate <code>Hello.class</code>.<br/>
+                The <code>forName()</code> method, and in turn <code>EasyGreet</code>'s <code>main()</code> method,<br/>
+                completes abruptly with a <code>ClassNotFoundException</code>:<br/>
+                <span class="note">如果不指定class path，就找不到相应的类。</span>
+            </p>
+            <p>
+                To enable <code>EasyGreet</code> to find <code>Hello.class</code> merely requires that<br/>
+                the <code>greeters</code> directory be included in a class path specified on the command line<br/>
+                with the "<code>-cp</code>" option, as in:<br/>
+                <span class="note">添加class path信息</span>
+            </p>
+<pre class="pre-block">
+java -cp .;greeters; EasyGreet Hello
+</pre>
+            <p>
+                When started with this command, the <code>EasyGreet</code> program prints:
+            </p>
+<pre class="pre-block">
+Hello, world!
+</pre>
+            <p>
+                Like the <code>Greet</code> method, <code>EasyGreet</code> will accept multiple greeter names on the command line:
+            </p>
+<pre class="pre-block">
+java -cp .;greeters; EasyGreet Hello Greetings Salutations HowDoYouDo
+</pre>
+            <p>
+                When invoked with this command, the <code>EasyGreet</code> application will load each of the four greeters listed and invoke their <code>greet()</code> methods, yielding this output:
+            </p>
+<pre class="pre-block">
+Hello, world!
+Greetings, planet!
+Salutations, orb!
+How do you do, globe!
+</pre>
+            <p>
+                The important difference that arises from <code>Greet</code>'s use of <code>loadClass()</code> on <code>GreeterClassLoader</code> and<br/>
+                <code>EasyGreet</code>'s use of <code>forName()</code> is<br/>
+                the namespaces into which the greeter classes get loaded.<span class="note">差异，就是引入的namespace不同</span><br/>
+                In <code>Greet</code>, the greeter classes get loaded into the <code>GreeterClassLoader</code>'s namespace.<br/>
+                In <code>EasyGreet</code>, the greeter classes get loaded into the <b>system class loader</b>'s namespace.<br/>
+                <span class="note">两个程序的主要差异，就是引入的namespace是不同的。</span>
+            </p>
+
+            <h2 id="example-of-unloading-unreachable-class">Example: Unloading Unreachable Greeters</h2>
+            <p>
+                As an example of <b>dynamically loaded types</b> becoming <b>unreachable</b> and <b>getting unloaded</b> by the virtual machine,<br/>
+                consider the following application:<br/>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file linking/ex7/GreetAndForget.java
+import com.artima.greeter.*;
+
+public class GreetAndForget {
+
+    // Arguments to this application:
+    //     args[0] - path name of directory in which class files
+    //               for greeters are stored
+    //     args[1], args[2], ... - class names of greeters to load
+    //               and invoke the greet() method on.
+    //
+    // All greeters must implement the com.artima.greeter.Greeter
+    // interface.
+    //
+    static public void main(String[] args) {
+
+        if (args.length &lt;= 1) {
+            System.out.println("Enter base path and greeter class names as args.");
+            return;
+        }
+
+        for (int i = 1; i &lt; args.length; ++i) {
+            try {
+
+                GreeterClassLoader gcl = new GreeterClassLoader(args[0]);
+
+                // Load the greeter specified on the command line
+                Class c = gcl.loadClass(args[i]);
+
+                // Instantiate it into a greeter object
+                Object o = c.newInstance();
+
+                // Cast the Object ref to the Greeter interface type
+                // so greet() can be invoked on it
+                Greeter greeter = (Greeter) o;
+
+                // Greet the world in this greeter's special way
+                greeter.greet();
+
+                // Forget the class loader object, Class
+                // instance, and greeter object
+                gcl = null;
+                c = null;
+                o = null;
+                greeter = null;
+
+                // At this point, the types loaded through the
+                // GreeterClassLoader object created at the top of
+                // this for loop are unreferenced and can be unloaded
+                // by the virtual machine.
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+</pre>
+            <p>
+                The <code>GreetAndForget</code> application accepts the same command line arguments as the <code>Greet</code> application of the previous example.<br/>
+                The first argument is a base directory path name where the <code>GreetAndForget</code> application will look for greeters.<br/>
+                Subsequent arguments are greeter names.<br/>
+                To understand this example you should be familiar with the <code>Greet</code> application presented earlier in this chapter.<br/>
+                <span class="note">这个程序与前面的Greet程序很相似</span>
+            </p>
+            <p>
+                Imagine you invoke the <code>GreetAndForget</code> application with the following command line:
+            </p>
+<pre class="pre-block">
+java GreetAndForget greeters Surprise HiTime Surprise
+</pre>
+            <p>
+                The code for the <code>HiTime</code> greeter,<br/>
+                which selects a different greeting based on the time of day,<br/>
+                is shown above in the previous section of this chapter.<br/>
+                The code for the <code>Surprise</code> greeter,<br/>
+                which pseudo-randomly selects one of four helper greeters-- <br/>
+                <code>Hello</code>, <code>Greetings</code>, <code>Salutations</code>, or <code>HowDoYouDo</code>--<br/>
+                and invokes its <code>greet()</code> method, is shown here:<br/>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file linking/ex7/greeters/Surprise.java
+import com.artima.greeter.Greeter;
+
+public class Surprise implements Greeter {
+
+    public void greet() {
+
+        // Choose one of four greeters pseudo-randomly and
+        // invoke its greet() method.
+        int choice = (int) (Math.random() * 3.99);
+
+        Greeter g;
+
+        switch(choice) {
+
+        case 0:
+            g = new Hello();
+            g.greet();
+            break;
+
+        case 1:
+            g = new Greetings();
+            g.greet();
+            break;
+
+        case 2:
+            g = new Salutations();
+            g.greet();
+            break;
+
+        case 3:
+            g = new HowDoYouDo();
+            g.greet();
+            break;
+        }
+    }
+}
+</pre>
+            <p>
+                Given the command line shown above,<br/>
+                the <code>GreetAndForget</code> application invokes the <code>greet()</code> method of the <code>Surprise</code> greeter first,<br/>
+                then the <code>HiTime</code> greeter, then the <code>Surprise</code> greeter again.<br/>
+                <code>GreetAndForget</code>'s actual output would vary depending on the time of day and <code>Surprise</code>'s pseudo-random mood.<br/>
+                For the purposes of this example, assume that you typed in the above command, hit return, and got the following output:<br/>
+            </p>
+<pre class="pre-block">
+How do you do, globe!
+Good afternoon, world!
+Greetings, planet!
+</pre>
+            <p>
+                This output indicates <code>Surprise</code> chose to execute <code>HowDoYouDo</code>'s <code>greet()</code> method the first time around and
+                <code>Greetings</code>'s <code>greet()</code> method the second time around.
+            </p>
+            <p>
+                The first pass through <code>GreetAndForget</code>'s for loop,<br/>
+                the virtual machine loads the <code>Surprise</code> class and invokes its <code>greet()</code> method.<br/>
+                The constant pool for <code>Surprise</code> includes a symbolic reference to each of the four helper greeters that it may choose:<br/>
+                <code>Hello</code>, <code>Greetings</code>, <code>Salutations</code>, and <code>HowDoYouDo</code>.<br/>
+                Assuming the Java virtual machine that you used to run the <code>GreetAndForget</code> application uses <b>late resolution</b>,<br/>
+                only one of these four symbolic references will be resolved during the first pass of <code>GreetAndForget</code>'s for loop:<br/>
+                the symbolic reference to <code>HowDoYouDo</code>.<br/>
+                The virtual machine resolves this symbolic reference<br/>
+                when it executes the bytecodes that correspond to the following statement in <code>Surprise</code>'s <code>greet()</code> method:<br/>
+            </p>
+<pre class="pre-block">
+g = new HowDoYouDo();
+</pre>
+            <p>
+                To resolve the symbolic reference from <code>Surprise</code>'s constant pool to <code>HowDoYouDo</code>,<br/>
+                the virtual machine invokes the <code>GreeterClassLoader</code> object's <code>loadClass()</code> method,<br/>
+                passing the string "<code>HowDoYouDo</code>" in the <code>name</code> parameter.<br/>
+                The virtual machine uses the <code>GreeterClassLoader</code> object to load <code>HowDoYouDo</code><br/>
+                because <code>Surprise</code> was loaded through the <code>GreeterClassLoader</code> object.<br/>
+                As mentioned earlier in this chapter, when the Java virtual machine resolves a symbolic reference,<br/>
+                it uses the same class loader that defined the referencing type<br/>
+                (in this case, <code>Surprise</code>) to initiate loading the referenced type (in this case, <code>HowDoYouDo</code>).<br/>
+            </p>
+            <p>
+                Once <code>Surprise</code>'s <code>greet()</code> method has created a new <code>HowDoYouDo</code> instance,<br/>
+                it invokes its <code>greet()</code> method:<br/>
+            </p>
+<pre class="pre-block">
+g.greet();
+</pre>
+            <p>
+                As the virtual machine executes <code>HowDoYouDo</code>'s <code>greet()</code> method,<br/>
+                it must resolve two symbolic references from <code>HowDoYouDo</code>'s constant pool--<br/>
+                one to class <code>java.lang.System</code> and another to class <code>java.io.PrintStream</code>.<br/>
+                To resolve these symbolic references,<br/>
+                the virtual machine invokes the <code>GreeterClassLoader</code> object's <code>loadClass()</code> method,<br/>
+                once with the name <code>java.lang.System</code> and once with the name <code>java.io.PrintStream</code>.<br/>
+                As before, the virtual machine uses the <code>GreeterClassLoader</code> object to load these classes<br/>
+                because the referencing class--in this case, <code>HowDoYouDo</code>--was loaded through the <code>GreeterClassLoader</code> object.<br/>
+                But these two classes, both members of the Java API, will end up being loaded by the <b>bootstrap class loader</b> anyway,<br/>
+                because <code>loadClass()</code> will first delegate to its parent.<br/>
+                <span class="note">值得一读，加载类的细节描述</span>
+            </p>
+            <p>
+                Remember that before the <code>loadClass()</code> method of <code>GreeterClassLoader</code> attempts to look for a requested type in the base directory<br/>
+                (in this case, directory <code>greeters</code>),<br/>
+                it invokes its parent, the <b>system class loader</b>.<br/>
+                The <b>system class loader</b> will first delegate to its parent, which will first delegate to its parent, and so on.<br/>
+                Eventually <code>findSystemClass()</code> will be invoked to delegate to the <b>bootstrap class loader</b>, the end-point of the parent-delegation chain.<br/>
+                Because the <b>bootstrap class loader</b> (via <code>findSystemClass()</code>) is able to load both <code>java.lang.System</code> and <code>java.io.PrintStream</code>,<br/>
+                the <code>loadClass()</code> method will simply return the <code>Class</code> instance returned by <code>findSystemClass()</code>.<br/>
+                These classes will be marked not as having been loaded by the <code>GreeterClassLoader</code> object,<br/>
+                but as having been loaded by the <b>bootstrap class loader</b>.<br/>
+                To resolve any references from <code>java.lang.System</code> or <code>java.io.PrintStream</code>,<br/>
+                the virtual machine will not invoke the <code>loadClass()</code> method of the <code>GreeterClassLoader</code> object,<br/>
+                or even the <b>system class loader</b>.<br/>
+                It will just use the <b>bootstrap class loader</b> directly.<br/>
+                <span class="note">值得一读，加载类的细节描述</span>
+            </p>
+            <p>
+                As a result, after <code>Surprise</code>'s <code>greet()</code> method has returned,<br/>
+                there will be two types marked as having been loaded by the <code>GreeterClassLoader</code> object:<br/>
+                class <code>Surprise</code> and class <code>HowDoYouDo</code>.<br/>
+                These two types will be in the virtual machine's internal list of the types loaded by the <code>GreeterClassLoader</code> object.<br/>
+                <span class="note">GreeterClassLoader加载了两个类</span>
+            </p>
+            <p>
+                Just after <code>Surprise</code>'s <code>greet()</code> method returns,<br/>
+                the <code>Class</code> instances for <code>Surprise</code> and <code>HowDoYouDo</code> are reachable by the application.<br/>
+                The garbage collector will not reclaim the space occupied by these <code>Class</code> instances,<br/>
+                because there are ways for the application's code to access and use them.<br/>
+                See Figure 8-11 for a graphical depiction of the reachability of these two <code>Class</code> instances.<br/>
+            </p>
+            <div class="w3-display-container w3-center">
+                <img class="w3-image w3-center" src="images/fig8-11.gif" alt="figure 8-11"/><br/>
+                <span>Figure 8-11. The reachability of the Class instances for Surprise and HowDoYouDo.</span>
+            </div>
+            <p>
+                The <code>Class</code> instance for <code>Surprise</code> can be reached in two ways.<br/>
+                First, it can be reached directly from local variable <code>c</code> of <code>GreetAndForget</code>'s <code>main()</code> method.<br/>
+                Second, it can be reached from local variables <code>o</code> and <code>greeter</code>,<br/>
+                which both point to the same <code>Surprise</code> object.<br/>
+                From the <code>Surprise</code> object, the virtual machine can get at <code>Surprise</code>'s type data,<br/>
+                which includes a reference to <code>Surprise</code>'s <code>Class</code> object.<br/>
+                <span class="note">获取该Class实例的两种方式</span>
+            </p>
+            <p>
+                The <code>Class</code> instance for <code>HowDoYouDo</code> can be reached in two ways.<br/>
+                One way is identical to the one of the paths to the <code>Class</code> instance for <code>Surprise</code>:<br/>
+                the <code>gcl</code> local variable of <code>GreetAndForget</code>'s <code>main()</code> method points to the <code>GreeterClassLoader</code> object,<br/>
+                which includes a reference to a <code>HashTable</code> object.<br/>
+                The <code>Hashtable</code> contains a reference to <code>HowDoYouDo</code>'s <code>Class</code> instance.<br/>
+                The other way to reach <code>HowDoYouDo</code>'s class instance is through <code>Surprise</code>'s constant pool.<br/>
+                <span class="note">这段和上面那段都有问题，是因为Java版本更新和书版本更新造成的</span>
+            </p>
+            <p>
+                When the virtual machine resolved the symbolic reference from <code>Surprise</code>'s constant pool to <code>HowDoYouDo</code>,<br/>
+                it replaced the <b>symbolic reference</b> with a <b>direct reference</b>.<br/>
+                The <b>direct reference</b> points to <code>HowDoYouDo</code>'s type data,<br/>
+                which includes a reference to <code>HowDoYouDo</code>'s <code>Class</code> instance.<br/>
+            </p>
+            <p>
+                Thus, starting from <code>Surprise</code>'s constant pool, the <code>Class</code> instance to <code>HowDoYouDo</code> is reachable.<br/>
+                But why would the garbage collector look at direct references emanating from <code>Surprise</code>'s constant pool in the first place?<br/>
+                Because <code>Surprise</code>'s <code>Class</code> instance is reachable.<br/>
+                When the garbage collector finds that it can reach <code>Surprise</code>'s <code>Class</code> instance,<br/>
+                it makes sure it marks the <code>Class</code> instances for any types that are directly referenced from <code>Surprise</code>'s constant pool as reachable.<br/>
+                If <code>Surprise</code> is still live, the virtual machine can't unload any types <code>Surprise</code> may need to use.<br/>
+            </p>
+            <p>
+                Note that of the three ways, described above, that <code>Surprise</code>'s <code>Class</code> instance can be reached,<br/>
+                none of them involve a constant pool of another type.<br/>
+                <code>Surprise</code> does not appear as a symbolic reference in the constant pool for <code>GreetAndForget</code>.<br/>
+                Class <code>GreetAndForget</code> did not know about <code>Surprise</code> at compile-time.<br/>
+                Instead, the <code>GreetAndForget</code> application decided at run-time to load and link to class <code>Surprise</code>.<br/>
+                Thus, the <code>Class</code> instance for class <code>Surprise</code> is only reachable<br/>
+                by starting from the local variables of <code>GreetAndForget</code>'s <code>main()</code> method.<br/>
+                Unfortunately for <code>Surprise</code> (and ultimately for <code>HowDoYouDo)</code>, this does not constitute a very firm grasp on life.<br/>
+            </p>
+            <p>
+                The next four statements in <code>GreetAndForget</code>'s <code>main()</code> method,<br/>
+                will change the reachability situation completely:
+            </p>
+<pre class="pre-block">
+// Forget the user-defined class loader, Class
+// instance, and greeter object
+gcl = null;
+c = null;
+o = null;
+greeter = null;
+</pre>
+            <p>
+                These statements null out all four starting places from which <code>Surprise</code>'s <code>Class</code> instance is reachable.<br/>
+                As a result, after these statements have been executed, the <code>Class</code> instance for <code>Surprise</code> is no longer reachable.<br/>
+                These statements also render unreachable the <code>Class</code> instance for <code>HowDoYouDo</code>,<br/>
+                the <code>Surprise</code> instance that was formerly pointed to by the <code>o</code> and <code>greeter</code> variables,<br/>
+                the <code>GreeterClassLoader</code> instance that was formerly pointed to by the <code>gcl</code> variable,<br/>
+                and the <code>Hashtable</code> instance that was pointed to by the classes variable of the <code>GreeterClassLoader</code> object.<br/>
+                All five of these objects are now available for garbage collection.<br/>
+                <span class="note">Class和具体的instance对已经无法引用到的，就可以进行garbage collection了</span>
+            </p>
+            <p>
+                When (and if) the garbage collector gets around to freeing the unreferenced <code>Class</code> instances for <code>Surprise</code> and <code>HowDoYouDo</code>,<br/>
+                it can also free up all the associated <b>type data</b> in the <b>method area</b> for <code>Surprise</code> and <code>HowDoYouDo</code>.<br/>
+                Because these class's <code>Class</code> instances are unreachable,<br/>
+                the types themselves are unreachable and can be unloaded by the virtual machine.<br/>
+                <span class="note">method area中的type data也要unload了</span>
+            </p>
+            <p>
+                Note that two iterations of the for loop later (given the command line shown above),<br/>
+                the <code>GreetAndForget</code> application will again load class <code>Surprise</code>.<br/>
+                Keep in mind that the virtual machine will not reuse the <b>type data</b> for <code>Surprise</code><br/>
+                that was loaded during the first pass of the for loop.<br/>
+                Granted, that <b>type data</b> became available for unloading at the end of the first pass.<br/>
+                But even if the <code>Class</code> instance for <code>Surprise</code> hadn't become unreferenced at the end of the first pass,<br/>
+                the <b>type data</b> from the first pass wouldn't be reused during the third pass.<br/>
+                <span class="note">Class不能重用，我觉得，是因为它是从不同的ClassLoader当中加载的</span>
+            </p>
+            <p>
+                With each pass of the for loop, the <code>main()</code> method of <code>GreetAndForget</code> creates a new <code>GreeterClassLoader</code> object.<br/>
+                Thus, every greeter that <code>GreetAndForget</code> loads is loaded through a different user-defined class loader.<br/>
+                For example, if you invoke the <code>GreetAndForget</code> application with the <code>Hello</code> greeter listed five times on the command line,<br/>
+                the application will create five instances of class <code>GreeterClassLoader</code>.<br/>
+                The <code>Hello</code> greeter will be loaded five times by five different user-defined class loaders.<br/>
+                The method area will contain five different copies of the type data for <code>Hello</code>.<br/>
+                The heap will contain five <code>Class</code> instances that represent the <code>Hello</code> class--<br/>
+                one for each namespace into which <code>Hello</code> is loaded.<br/>
+                When one of the <code>Class</code> instances for <code>Hello</code> becomes unreferenced,<br/>
+                only the <code>Hello</code> type data associated with that particular <code>Class</code> instance would be available for unloading.<br/>
+                <span class="note">我猜测的是对的</span>
+            </p>
+
+            <h2 id="example">Example: Type Safety and Loading Constraints</h2>
+            <p>
+                In early implementations of the Java virtual machine, it was possible to confuse Java's type system.<br/>
+                A Java application could trick the Java virtual machine into using an object of one type as if it were an object of a different type.<span class="note">这里应该说的就是type safety反面吧</span><br/>
+                This capability makes cracker's happy, because they can potentially spoof trusted classes to gain access to non-public data or<br/>
+                change the behavior of methods by replacing them with new versions.<span class="note">我觉得有点像Java Agent的行为</span><br/>
+                For example, if a cracker could write a class and successfully fool the Java virtual machine into thinking it was class <code>SecurityManager</code>,<br/>
+                that cracker could potentially break out of the sandbox.<br/>
+                The example presented in this section is designed to help you understand the <b>type safety problems</b> that can arise with delegating class loaders,<br/>
+                and the <b>loading constraints</b> that appeared in the second edition of the Java virtual machine specification to address the problem.<br/>
+                <span class="note">总结：type safety在原来的版本中存在问题，而loading constraints的出现是为了修复type safety的问题。</span>
+            </p>
+            <p>
+                The <b>type safety problem</b> arises because the multiple namespaces inside a Java virtual machine can share types.<span class="note">这里讲出现type safety的原因</span><br/>
+                If one class loader delegates to another class loader, and the delegated-to class loader defines the type,<br/>
+                both class loaders are marked as <b>initiating loaders</b> for that type.<br/>
+                The type defined by the delegated-to class loader is shared among all the namespaces of the <b>initiating loaders</b> of the type.<br/>
+                <span class="note">type safety problem出现的原因，是由于一个type可以在多个namespace中共享。</span>
+            </p>
+            <p>
+                At compile time, a type is uniquely identifiable by its fully qualified name.<span class="note">在编译的时候，全限定名作为唯一标识。</span><br/>
+                For example, only one class named <code>Spoofed</code> can exist at compile time.<br/>
+                At runtime, however, a fully qualified name is not enough to uniquely identify a type that has been loaded into a Java virtual machine.<span class="note">在运行的时候，全限定名就不能唯一确定了</span><br/>
+                Because a Java application can have multiple class loaders,<br/>
+                and each class loader maintains its own namespace,<br/>
+                multiple types with the same fully qualified name can be loaded into the same Java virtual machine.<br/>
+                Thus, to uniquely identify a type loaded into a Java virtual machine requires the fully qualified name <em>and</em> the defining class loader.<br/>
+                <span class="note">在运行的时候，a type = fully qualified name + defining class loader</span>
+            </p>
+            <p>
+                The <b>type safety problems</b> made possible by this class loader architecture<span class="note">问题的出现，是由于compile-time和runtime时，两者的概念不统一造成的。</span><br/>
+                arose from the Java virtual machine's initial reliance on the compile time notion of a type being uniquely identifiable by only its fully qualified name.<br/>
+                You can always load two types both named <code>Spoofed</code> into the same Java virtual machine.<br/>
+                Each <code>Spoofed</code> class would be defined by different class loader.<br/>
+                But with a little finesse, you could fool an early implementation of the Java virtual machine into<br/>
+                treating an instance of one <code>Spoofed</code> as if it were an instance of the other <code>Spoofed</code>.<br/>
+                <span class="note">在早期的JVM版本当中，type safety problems会出现。</span>
+            </p>
+            <p>
+                To address this problem, the second edition of the Java virtual machine specification introduced the notion of <b>loading constraints</b>.<br/>
+                <b>Loading constraints</b> basically enable the Java virtual machine to enforce <b>type safety</b> based not just on <b>fully qualified name</b>,<br/>
+                but also on the <b>defining class loader</b>, without forcing eager class loading.<br/>
+                When the virtual machine detects a potential for <b>type confusion</b> during <b>constant pool resolution</b>,<br/>
+                it adds a constraint to <b>an internal list of constraints</b>.<br/>
+                All future resolutions must satisfy this new constraint, as well as all other constraints in the list.<br/>
+                <span class="note">loading constraints出现就是为了解决type safety problems</span>
+            </p>
+            <p>
+                For an example of the <b>type confusion problem</b> and its <b>loading constraints solution</b>,<br/>
+                consider this implementation of a greeter, written by a devious cracker:
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file linking/ex8/greeters/Cracker.java
+import com.artima.greeter.Greeter;
+
+public class Cracker implements Greeter {
+
+    public void greet() {
+
+        Spoofed spoofed = new Spoofed();
+
+        System.out.println("secret val = " + spoofed.giveMeFive());
+
+        spoofed = Delegated.getSpoofed();
+
+        System.out.println("secret val = " + spoofed.giveMeFive());
+    }
+}
+</pre>
+            <p>
+                Class <code>Cracker</code> is a greeter, like <code>Hello</code> or <code>Salutations</code> of the previous examples,<br/>
+                because it implements the <code>com.artima.greeter.Greeter</code> interface.<br/>
+                Class <code>Cracker</code> is sitting in the <code>linking/ex8</code> directory of the CD-ROM, along with other, more well-meaning, greeters.<br/>
+            </p>
+            <p>
+                All the classes from the <code>linking/ex7</code> directory appear unchanged in <code>linking/ex8</code>,<br/>
+                except for <code>GreeterClassLoader</code>, which has been slightly modified. (More on this modification later.)<br/>
+                You can invoke <code>Cracker</code> with the <code>greet()</code> method just like any other greeter.<br/>
+                From the <code>linking/ex8</code> directory, you can simply type:<br/>
+            </p>
+<pre class="pre-block">
+java Greet greeters Cracker
+</pre>
+            <p>
+                The <code>main()</code> method of <code>Greet</code> will, as it did in the previous examples,<br/>
+                create a <code>GreeterClassLoader</code> and invoke its <code>loadClass()</code> method, passing in the name <code>Cracker</code>.<br/>
+                <code>GreeterClassLoader</code>'s <code>loadClass()</code> method will look in the <code>greeters</code> directory,<br/>
+                load <code>Cracker.class</code>, instantiate a new <code>Cracker</code> object, and invoke <code>greet()</code> on it.<br/>
+                <code>Cracker</code>'s <code>greet()</code> method starts by instantiating a new <code>Spoofed</code>.<br/>
+                This is where the plot thickens.
+            </p>
+            <p>
+                It turns out that there are two implementations of a class named <code>Spoofed</code>.<br/>
+                The class file for the "trusted" implementation is sitting in the <code>linking/ex8</code> directory,<br/>
+                where it will be discovered by the <b>system class loader</b>:<br/>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file linking/ex8/Spoofed.java
+// Trusted version - when asked to give five, gives 5
+
+public class Spoofed {
+
+    private int secretValue = 42;
+
+    public int giveMeFive() {
+        return 5;
+    }
+
+    static {
+        System.out.println("linking/ex8/Spoofed initialized.");
+    }
+}
+</pre>
+            <p>
+                The trusted <code>Spoofed</code> declares a private variable, named <code>secretValue</code>, that is initialized to 42.<br/>
+                This private variable represents anything that needs to be kept secret:<br/>
+                a credit card number, a private key, an amount of e-cash, a reference to the current <code>Policy</code> object, and so on.<br/>
+                Because the designers of this class didn't want the rest of the world to have access to the secret value,<br/>
+                they made the <code>secretValue</code> variable private.<br/>
+                Only the methods of class <code>Spoofed</code> can access <code>secretValue</code>.<br/>
+                If you inspect the code to the trusted <code>Spoofed</code> class,<br/>
+                you'll see that the designers of Spoofed didn't provide any method that reveals information about <code>secretValue</code>.<br/>
+                The only method in <code>Spoofed</code>, <code>giveMeFive()</code>, returns the value 5.<br/>
+            </p>
+            <p>
+                But what if a maladjusted cracker was able to trick the virtual machine that<br/>
+                an instance of the trusted <code>Spoofed</code> was really an instance of this class,<br/>
+                also named <code>Spoofed</code>, which was written by the cracker:<br/>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file linking/ex8/greeters/Spoofed.java
+// Malicious version - when asked to give five, this
+//     version of Spoofed reveals secret_value
+
+public class Spoofed {
+
+    private int secretValue = 100;
+
+    public int giveMeFive() {
+        return secretValue;
+    }
+
+    static {
+        System.out.println("linking/ex8/greeters/Spoofed initialized.");
+    }
+}
+</pre>
+            <p>
+                When this <code>Spoofed</code> class's <code>giveMeFive()</code> method is invoked, it returns <code>secretValue</code>,<br/>
+                effectively rendering the value of the private variable public knowledge.<br/>
+            </p>
+            <p>
+                So which version of <code>Spoofed</code> gets used by the <code>Cracker</code> greeter?<br/>
+                <code>Cracker</code> deviously attempts to use both.<br/>
+                First, <code>Cracker</code>'s <code>greet()</code> method loads the malicious <code>Spoofed</code> and<br/>
+                executes its <code>greet()</code> method, just to get the feel of it:<br/>
+            </p>
+<pre class="pre-block">
+Spoofed spoofed = new Spoofed();
+
+System.out.println("secret val = " + spoofed.giveMeFive());
+</pre>
+            <p>
+                The Java compiler translates the <code>new Spoofed()</code> expression into a <code>new</code> bytecode instruction<br/>
+                that gives the index of a <code>CONSTANT_Class_info</code> constant pool entry,<br/>
+                which represents a symbolic reference to <code>Spoofed</code>.<br/>
+                When the virtual machine resolves this reference, it will ask the <b>defining loader</b> of <code>Cracker</code> to load spoofed.<br/>
+                The <b>defining loader</b> of <code>Cracker</code> is this version of <code>GreeterClassLoader</code>,<br/>
+                which the cracker has had the opportunity to modify:<br/>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file
+// linking/ex8/COM/artima/greeter/GreeterClassLoader.java
+package com.artima.greeter;
+
+import java.io.*;
+import java.util.Hashtable;
+
+public class GreeterClassLoader extends ClassLoader {
+
+    // basePath gives the path to which this class
+    // loader appends "/&lt;typename&gt;.class" to get the
+    // full path name of the class file to load
+    private String basePath;
+
+    public GreeterClassLoader(String basePath) {
+
+        this.basePath = basePath;
+    }
+
+    public synchronized Class loadClass(String className, boolean resolveIt) throws ClassNotFoundException {
+
+        Class result;
+        byte classData[];
+
+        // Check the loaded class cache
+        result = findLoadedClass(className);
+        if (result != null) {
+            // Return a cached class
+            return result;
+        }
+
+        // If Spoofed, don't delegate
+        if (className.compareTo("Spoofed") != 0) {
+
+            // Check with the system class loader
+            try {
+                result = super.findSystemClass(className);
+                // Return a system class
+                return result;
+            }
+            catch (ClassNotFoundException e) {
+            }
+        }
+
+        // Don't attempt to load a system file except through
+        // the primordial class loader
+        if (className.startsWith("java.")) {
+            throw new ClassNotFoundException();
+        }
+
+        // Try to load it from the basePath directory.
+        classData = getTypeFromBasePath(className);
+        if (classData == null) {
+            System.out.println("GCL - Can't load class: " + className);
+            throw new ClassNotFoundException();
+        }
+
+        // Parse it
+        result = defineClass(className, classData, 0, classData.length);
+        if (result == null) {
+            System.out.println("GCL - Class format error: " + className);
+            throw new ClassFormatError();
+        }
+
+        if (resolveIt) {
+            resolveClass(result);
+        }
+
+        // Return class from basePath directory
+        return result;
+    }
+
+    private byte[] getTypeFromBasePath(String typeName) {
+
+        FileInputStream fis;
+        String fileName = basePath + File.separatorChar
+            + typeName.replace('.', File.separatorChar)
+            + ".class";
+
+        try {
+            fis = new FileInputStream(fileName);
+        }
+        catch (FileNotFoundException e) {
+            return null;
+        }
+
+        BufferedInputStream bis = new BufferedInputStream(fis);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+            int c = bis.read();
+            while (c != -1) {
+                out.write(c);
+                c = bis.read();
+            }
+        }
+        catch (IOException e) {
+            return null;
+        }
+
+        return out.toByteArray();
+    }
+}
+</pre>
+            <p>
+                To create this user-defined class loader,<br/>
+                the cracker took the <code>GreeterClassLoader</code> from the <code>linking/ex6</code> directory of the CD-ROM<br/>
+                (the one that overrides <code>loadClass()</code>), and added one if statement:<br/>
+            </p>
+<pre class="pre-block">
+// If Spoofed, don't delegate
+if (className.compareTo("Spoofed") != 0) {
+
+    // Check with the system class loader
+    try {
+        result = super.findSystemClass(className);
+        // Return a system class
+        return result;
+    }
+    catch (ClassNotFoundException e) {
+    }
+}
+</pre>
+            <p>
+                If the type name passed to <code>loadClass()</code> is <code>"Spoofed"</code>,<br/>
+                the <code>loadClass()</code> method doesn't first delegate to the system class loader<br/>
+                before attempting to load the class in its custom way, by looking in the <code>basePath</code> directory.<br/>
+                As a result, when the virtual machine asks this class loader (<code>Cracker</code>'s defining class loader) to load <code>Spoofed</code>,<br/>
+                its <code>loadClass()</code> doesn't delegate.<br/>
+                It just looks in the <code>basePath</code> directory for <code>Spoofed.class</code>,<br/>
+                where it finds and loads the definition of the malicious <code>Spoofed</code>.<br/>
+                The application prints:<br/>
+            </p>
+<pre class="pre-block">
+linking/ex8/greeters/Spoofed initialized.
+</pre>
+            <p>
+                The next statement in <code>Cracker</code>'s <code>greet()</code> method invokes <code>giveMeFive()</code><br/>
+                on the new <code>Spoofed</code> instance and prints its return value:<br/>
+            </p>
+<pre class="pre-block">
+secret val = 100
+</pre>
+            <p>
+                Having exercised the <code>giveMeFive()</code> method and feeling smug,<br/>
+                <code>Cracker</code>'s <code>greet()</code> method invokes a static method in a class named <code>Delegated</code>,<br/>
+                which returns a reference of type <code>Spoofed</code>:<br/>
+            </p>
+<pre class="pre-block">
+spoofed = Delegated.getSpoofed();
+</pre>
+            <p>
+                The Java compiler transforms the <code>Delegated.getSpoofed()</code> expression in the source code to<br/>
+                an <code>invokestatic</code> bytecode instruction that gives the index of a <code>CONSTANT_Methodref_info</code> entry in the constant pool.<br/>
+                To execute this instruction, the virtual machine must resolve the constant pool entry.<br/>
+                As the first step in resolving this symbolic reference to <code>getSpoofed()</code>,<br/>
+                the virtual machine resolves the <code>CONSTANT_Class_info</code> reference<br/>
+                whose index is given in the <code>class_index</code> of the <code>CONSTANT_Methodref_info</code> entry.<br/>
+                The <code>CONSTANT_Class_info</code> entry is a symbolic reference to class <code>Delegated</code>.<br/>
+            </p>
+            <p>
+                To resolve <code>Cracker</code>'s symbolic reference to <code>Delegated</code>,<br/>
+                the virtual machine asks the defining class loader of <code>Cracker</code> to load <code>Delegated</code>.<br/>
+                Once again the virtual machine invokes <code>GreeterClassLoader</code>'s <code>loadClass()</code> method,<br/>
+                this time passing in the name <code>Delegated</code>.<br/>
+                However, because the requested name isn't <code>"Spoofed"</code>,<br/>
+                the <code>loadClass()</code> method goes ahead and delegates the load request to the <b>system class loader</b>.<br/>
+                Because <code>Delegated.class</code> is sitting in the <code>linking/ex8</code> directory,<br/>
+                the <b>system class loader</b> is able to load the class.<br/>
+                The <b>system class loader</b> is marked as the <b>defining class loader</b> for <code>Delegated</code>,<br/>
+                and both the <b>system class loader</b> and the <code>GreeterClassLoader</code> are marked as <b>initiating class loaders</b>.<br/>
+            </p>
+            <p>
+                Once <code>Delegated</code> has been loaded,<br/>
+                the virtual machine completes the resolution of the <code>CONSTANT_Methodref_info</code> and invokes the <code>getSpoofed()</code> method.<br/>
+                Here's what <code>Delegated</code>'s <code>getSpoofed()</code> method looks like:<br/>
+            </p>
+<pre class="pre-block">
+// On CD-ROM in file linking/ex8/Delegated.java
+
+public class Delegated {
+
+    public static Spoofed getSpoofed() {
+
+        return new Spoofed();
+    }
+}
+</pre>
+            <p>
+                In Java source code, this looks quite innocuous.<br/>
+                The <code>getSpoofed()</code> method merely instantiates yet another <code>Spoofed</code> object and returns a reference to it.<br/>
+                Inside the Java virtual machine, however, a serious challenge to Java's guarantee of type safety is looming.<br/>
+            </p>
+            <p>
+                When the Java compiler encounters the <code>new Spoofed()</code> expression in class <code>Delegated</code>,<br/>
+                it generates a <code>new</code> bytecode that gives the index of a <code>CONSTANT_Class_info</code><br/>
+                that forms a symbolic reference to <code>Spoofed</code>.<br/>
+                This is exactly what happened when the Java compiler encountered the <code>new Spoofed()</code> expression in class <code>Cracker</code>.<br/>
+                When the Java virtual machine executes this <code>new</code> instruction,<br/>
+                just as when it executed the <code>new</code> instruction in <code>Cracker</code>'s <code>greet()</code> method,<br/>
+                it starts by resolving the symbolic reference to <code>Spoofed</code>.<br/>
+                The virtual machine asks <code>Delegated</code>'s defining loader, which is the <b>system class loader</b>, to load <code>Spoofed</code>.<br/>
+            </p>
+            <p>
+                Although this is the same process that the virtual machine used to resolve <code>Cracker</code>'s symbolic reference to <code>Spoofed</code>,<br/>
+                the class loader to which the virtual machine makes its load request is different.<br/>
+                Because <code>Cracker</code>'s defining loader was <code>GreeterClassLoader</code>,<br/>
+                the virtual machine asked <code>GreeterClassLoader</code> to load <code>Spoofed</code>.<br/>
+                But because <code>Delegated</code>'s defining loader was the <b>system class loader</b>,<br/>
+                the virtual machine now asks the <b>system class loader</b> to load <code>Spoofed</code>.<br/>
+            </p>
+            <p>
+                Because the trusted version of <code>Spoofed</code> is sitting in the <code>linking/ex8</code> directory of the CD-ROM,<br/>
+                the <b>system class loader</b> is able to read in the bytes of the <code>Spoofed.class</code> and pass them to <code>defineClass()</code>.<br/>
+                What happens next depends on whether or not<br/>
+                the application is running in a Java virtual machine that adheres to the <b>loading constraints</b><br/>
+                specified in the second edition of the Java virtual machine specification.<br/>
+                <span class="note">这里就是loading constraints起作用的地方</span>
+            </p>
+            <p>
+                Assume for a moment that the application is running in an early Java virtual machine implementation that doesn't apply the <b>loading constraints</b>.<br/>
+                In that case, <code>defineClass()</code> is able to define the type from the bytes read in from <code>linking/ex2/Spoofed.class</code>.<br/>
+                The virtual machine creates a new instance of this trusted <code>Spoofed</code> type.<br/>
+                Shortly thereafter, <code>Delegated</code>'s <code>getSpoofed()</code> method returns a reference to the trusted <code>Spoofed</code> object to its caller,<br/>
+                <code>Cracker</code>'s <code>greet()</code> method.<br/>
+                <code>Cracker</code> stores this reference in local variable <code>spoofed</code>,<br/>
+                and proceeds to print out the value returned by invoking <code>giveMeFive()</code> on <code>spoofed</code>.<br/>
+                <span class="note">如果JVM还没有支持loading constraints</span>
+            </p>
+            <p>
+                When <code>Cracker.java</code> was compiled,<br/>
+                the Java compiler transformed this second <code>giveMeFive()</code> invocation into<br/>
+                yet another <code>invokevirtual</code> instruction that references a <code>CONSTANT_Methodref_info</code> entry in the constant pool,<br/>
+                the symbolic reference to <code>giveMeFive()</code> in <code>Spoofed</code>.<br/>
+                When the virtual machine goes to resolve this symbolic reference, however, it discovers it has already been resolved.<br/>
+                The <code>CONSTANT_Methodref_info</code> entry specified by the second <code>giveMeFive()</code> invocation is the same as that specified by the first one,<br/>
+                which was resolved to the malicious <code>Spoofed</code>'s implementation of <code>giveMeFive()</code>.<br/>
+                The virtual machine invokes the malicious <code>Spoofed</code> method on the trusted <code>Spoofed</code> object, and the application prints:<br/>
+            </p>
+<pre class="pre-block">
+secret val = 42
+</pre>
+            <p>
+                Although this kind of <b>type confusion attack</b> was possible in many implementations of the Java virtual machine prior to version 1.2,<br/>
+                it usually couldn't be exploited in practice, because it requires the assistance of the class loader.<br/>
+                In this example, the cracker added an if statement to <code>GreeterClassLoader</code>'s <code>loadClass()</code> method<br/>
+                that causes it to treat <code>Spoofed</code> specially.<br/>
+                Were the cracker to attempt to instigate this kind of <b>type confusion attack</b> via an untrusted applet, he or she would run into trouble.<br/>
+                Untrusted applets are not allowed to create class loaders.<br/>
+                Thus, providing the designers of the class loaders in the application that loads applets into browsers did their jobs correctly,<br/>
+                the cracker would have no way to exploit this (former) weakness in Java's <b>type safety</b> guarantee.<br/>
+            </p>
+            <p>
+                In Java virtual machine implementations that check the <b>loading constraints</b> that are now part of the Java virtual machine specification,<br/>
+                the <b>type confusion</b> is not possible at all.<br/>
+                All virtual machines must now keep <b>an internal list of loading constraints</b> that must be met as types are loaded.<br/>
+                For example, when such a virtual machine resolves the <code>CONSTANT_Methodref_info</code> entry in <code>Cracker</code>' s constant pool<br/>
+                that forms a symbolic reference to the <code>getSpoofed()</code> method of class <code>Delegated</code>,<br/>
+                the virtual machine records a loading constraint.<br/>
+                Because <code>Delegated</code> was defined by a different class loader than <code>Cracker</code>,<br/>
+                and <code>Delegated</code>'s <code>getSpoofed()</code> method returns a reference to a <code>Spoofed</code>,<br/>
+                the virtual machine records the following constraint:<br/>
+                <span class="note">这里讲JVM支持loading constraints的情况</span>
+            </p>
+            <ul>
+                <li>
+                    The type named <code>Spoofed</code> for which the system class loader (<code>Delegated</code> defining class loader) is marked as an initiating loader
+                    must be the same type named <code>Spoofed</code> for which <code>GreeterClassLoader</code> (<code>Cracker</code>'s defining class loader) is marked as an initiating class loader.
+                </li>
+            </ul>
+            <p>
+                This constraint is checked later,<br/>
+                when the virtual machine attempts to resolve the <code>CONSTANT_Class_info</code> entry in <code>Delegated</code>'s constant pool<br/>
+                that forms a symbolic reference to class <code>Spoofed</code>.<br/>
+                At that time, the virtual machine discovers that the constraint is violated.<br/>
+                The type named <code>Spoofed</code> that is being loaded by the <b>system class loader</b><br/>
+                is not the same type named <code>Spoofed</code> that was loaded by <code>GreeterClassLoader</code>.<br/>
+                As a result, the Java virtual machine throws a <code>LinkageError</code>:<br/>
+            </p>
+<pre class="pre-block">
+Exception in thread "main" java.lang.LinkageError: Class Spoofed
+violates loader constraints
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:422)
+	at
+java.security.SecureClassLoader.defineClass(SecureClassLoader.java:10)
+	at java.net.URLClassLoader.defineClass(URLClassLoader.java:248)
+	at java.net.URLClassLoader.access$1(URLClassLoader.java:216)
+	at java.net.URLClassLoader$1.run (URLClassLoader.java:197)
+	at java.security.AccessController.doPrivileged (Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:191)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:290)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:275)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:247)
+	at Delegated.getSpoofed(Delegated.java, Compiled Code)
+	at Cracker.greet(Cracker.java:13)
+	at Greet.main(Greet.java, Compiled Code)
+</pre>
+            <p>
+                Java's guarantee of <b>type safety</b> is a cornerstone of its security model.<br/>
+                <span class="text-underline">Type safety means that programs are allowed to manipulate the memory</span><br/>
+                <span class="text-underline">occupied by an object's instance variables on the heap only in ways that are defined by that object's class.</span><br/>
+                Likewise, <span class="text-underline">type safety means that programs are allowed to manipulate the memory</span><br/>
+                <span class="text-underline">occupied by a class's static variables in the method area only in ways that are defined by that class.</span><br/>
+                If the virtual machine can become confused about types, as demonstrated in this example,<br/>
+                malicious code can potentially look at or change non-public variables.<br/>
+                In addition, if malicious code could use a method defined in one version of a type to set an <code>int</code> instance variable,<br/>
+                then use a method in another version of that type to interpret and return the value of the <code>int</code> as an array,<br/>
+                the malicious code would in effect transform an <code>int</code> to an array reference.<br/>
+                With this forged pointer, the malicious code could wreak all kinds of havoc.<br/>
+                Thus, it is important that Java's type safety guarantee be iron-clad.<br/>
+                The <b>loading constraints</b> ensure that, even in the presence of <b>multiple namespaces</b>, Java's <b>type safety</b> will be enforced at runtime.<br/>
+            </p>
+
+            <h2 id="on-the-cd-rom">On the CD-ROM</h2>
+            <p>
+                The CD-ROM contains the source code examples from this chapter in the <code>linking</code> directory.
+            </p>
+
+            <h2 id="resource-page">The Resources Page</h2>
+            <p>
+                For more information about the material presented in this chapter, visit the resources page:
+                <code>http://www.artima.com/insidejvm/resources/</code>
+            </p>
+            <p></p>
             <p></p>
             <p></p>
             <p></p>

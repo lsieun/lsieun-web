@@ -1,0 +1,84 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">ClassLoader + Class + Instance</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../java-classloader-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<div class="w3-display-container w3-center">
+    <img class="w3-image w3-center" src="/images/java/classloader/classloader-class-instance-arrow.png" alt=""/>
+</div>
+
+<h2>Instance</h2>
+
+<ul>
+    <li>
+        <code>new</code>关键字：<code>HelloWorld instance = new HelloWorld();</code>
+    </li>
+</ul>
+
+<h2 id="class">Class</h2>
+
+<ul>
+    <li>
+        <code>Class.forName()</code>方法: <code>Class&lt;?&gt; clazz = Class.forName("sample.HelloWorld");</code>
+    </li>
+</ul>
+
+<h2 id="class-loader">ClassLoader</h2>
+
+<ul>
+    <li>
+        方式一：获取当前类的ClassLoader。 <code>clazz.getClassLoader();</code>
+    </li>
+    <li>
+        方式二：获取当前线程上下文件的ClassLoader。 <code>Thread.currentThread().getContextClassLoader()</code>
+    </li>
+    <li>
+        方式三：获取系统的ClassLoader。
+        <code>ClassLoader.getSystemClassLoader()</code>方法: <code>ClassLoader classLoader = ClassLoader.getSystemClassLoader();</code>
+    </li>
+    <li>
+        方式四：获取调用者的ClassLoader。 DriverManager.getCallerClassLoader()
+    </li>
+
+</ul>
+
+<h2 id="class-vs-instance">Class VS. Instance</h2>
+
+<ul>
+    <li>
+        Instance --&gt; Class&lt;?&gt;: <code>Class&lt;?&gt; clazz = instance.getClass();</code>
+    </li>
+    <li>
+        Class&lt;?&gt; --&gt; Instance: <code>Object instance = clazz.newInstance();</code>
+    </li>
+</ul>
+
+<h2 id="class-loader-vs-class">ClassLoader VS. Class</h2>
+
+<ul>
+    <li>
+        Class --&gt; ClassLoader: <code>ClassLoader classLoader = clazz.getClassLoader();</code>
+    </li>
+    <li>
+        ClassLoader --&gt; Class: <code>Class&lt;?&gt; clazz = classLoader.loadClass("sample.HelloWorld");</code>
+    </li>
+</ul>
+
+<h2>Summing Up</h2>
+
+<p>
+    总结：
+</p>
+
+<ul>
+    <li>
+        第一，理解ClassLoader、Class和Instance三者之间的关系。换句话说，通过调用哪个方法，才能建立起一个概念与另一个概念之间的关系。
+    </li>
+    <li>
+        第二，在理解上述关系的基础上，了解一下在JVM的Runtime Data Area上各自占用的内存区域在哪里。
+    </li>
+</ul>

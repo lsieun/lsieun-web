@@ -1,0 +1,113 @@
+<!-- 标题 -->
+<link rel="stylesheet" href="../../../../../tmp/myblog/_sass/main.scss"><h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Assets</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    Jekyll provides built-in support for <a href="https://sass-lang.com/">Sass</a>
+    and can work with <a href="https://coffeescript.org/">CoffeeScript</a> via a Ruby gem.<br/>
+    In order to use them, you must first create a file with the proper extension name<br/>
+    (one of <code>.sass</code>, <code>.scss</code>, or <code>.coffee</code>)<br/>
+    and <strong><em>start the file with two lines of triple dashes</em></strong>, like this:
+</p>
+
+<pre title="" class="plaintext">
+---
+---
+
+// start content
+.my-definition
+  font-size: 1.2em
+</pre>
+
+<p>
+    Jekyll treats these files the same as a regular page,<br/>
+    in that the output file will be placed in the same directory that it came from.<br/>
+    For instance, if you have a file named <code>css/styles.scss</code> in your site’s source folder,<br/>
+    Jekyll will process it and put it in your site’s destination folder under <code>css/styles.css</code>.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p class="text-emphasize">Jekyll processes all Liquid filters and tags in asset files</p>
+    <p>
+        If you are using <a href="https://mustache.github.io">Mustache</a> or another JavaScript templating language<br/>
+        that conflicts with the Liquid template syntax,<br/>
+        you will need to place <code>{% raw %}</code> and <code>{% endraw %}</code> tags around your code.
+    </p>
+</div>
+
+<h2 id="sassscss">Sass/SCSS</h2>
+
+<p>
+    Jekyll allows you to customize your Sass conversion in certain ways.
+</p>
+
+<p>
+    Place all your partials in your <code>sass_dir</code>, which defaults to <code>&lt;source&gt;/_sass</code>.<br/>
+    Place your main SCSS or Sass files in the place you want them to be in the output file, such as <code>&lt;source&gt;/css</code>.<br/>
+    For an example, take a look at <a href="https://github.com/jekyll/jekyll-sass-converter/tree/master/docs">this example site using Sass support in Jekyll</a>.
+</p>
+
+<p>
+    If you are using Sass <code>@import</code> statements,<br/>
+    you’ll need to ensure that your <code>sass_dir</code> is set to the base directory that contains your Sass files:
+</p>
+
+<pre title="_config.yml" class="plaintext">
+sass:
+    sass_dir: _sass
+</pre>
+
+<p>
+    The Sass converter will default the <code>sass_dir</code> configuration option to <code>_sass</code>.
+</p>
+
+<div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+    <p class="text-emphasize">The <code>sass_dir</code> is only used by Sass</p>
+    <p>
+        Note that the <code>sass_dir</code> becomes the load path for Sass imports, nothing more.<br/>
+        This means that Jekyll does not know about these files directly.<br/>
+        Any files here should not contain the empty front matter as described above.<br/>
+        If they do, they'll not be transformed as described above.<br/>
+        This folder should only contain imports.
+    </p>
+</div>
+
+<p>
+    You may also specify the output style with the <code>style</code> option in your <code>_config.yml</code> file:
+</p>
+
+<pre title="_config.yml" class="plaintext">
+sass:
+    style: compressed
+</pre>
+
+<p>
+    These are passed to Sass, so any output style options Sass supports are valid here, too.
+</p>
+
+<h2 id="coffeescript">Coffeescript</h2>
+
+<p>
+    To enable Coffeescript in Jekyll 3.0 and up you must
+</p>
+
+<ul>
+    <li>Install the <code>jekyll-coffeescript</code> gem</li>
+    <li>Ensure that your <code>_config.yml</code> is up-to-date and includes the following:</li>
+</ul>
+
+<pre title="_config.yml" class="plaintext">
+plugins:
+  - jekyll-coffeescript
+</pre>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://jekyllrb.com/docs/assets/" target="_blank">jekyllrb: Assets</a></li>
+</ul>

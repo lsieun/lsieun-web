@@ -1,0 +1,188 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Data Files</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="jekyll-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    In addition to the <a href="variables.html">built-in variables</a> available from Jekyll,<br/>
+    you can specify your own custom data that can be accessed via the
+    <a href="https://github.com/Shopify/liquid/wiki/Liquid-for-Designers">Liquid templating system</a>.
+</p>
+
+<p>
+    Jekyll supports loading data from <a href="http://yaml.org/">YAML</a>,
+    <a href="http://www.json.org/">JSON</a>,
+    <a href="https://en.wikipedia.org/wiki/Comma-separated_values">CSV</a>,
+    and <a href="https://en.wikipedia.org/wiki/Tab-separated_values">TSV</a> files located in the <code>_data</code> directory.<br/>
+    Note that CSV and TSV files <b>must</b> contain a header row.
+</p>
+
+<p>
+    This powerful feature allows you to avoid repetition in your templates and to
+    set site specific options without changing <code>_config.yml</code>.
+</p>
+
+<p>
+    Plugins/themes can also leverage Data Files to set configuration variables.
+</p>
+
+<h2 id="the-data-folder">The Data Folder</h2>
+
+<p>
+    The <code>_data</code> folder is where you can store additional data for Jekyll to use when generating your site.<br/>
+    These files must be YAML, JSON, TSV or CSV files<br/>
+    (using either the <code>.yml</code>, <code>.yaml</code>, <code>.json</code>, <code>.tsv</code>, or <code>.csv</code> extension),<br/>
+    and they will be accessible via <code>site.data</code>.
+</p>
+
+<h2 id="example-list-of-members">Example: List of members</h2>
+
+<p>
+    Here is a basic example of using Data Files to avoid copy-pasting large chunks of code in your Jekyll templates:
+</p>
+
+<p>In <code>_data/members.yml</code>:</p>
+
+<pre title="_data/members.yml" class="plaintext">
+- name: Eric Mill
+  github: konklone
+
+- name: Parker Moore
+  github: parkr
+
+- name: Liu Fengyun
+  github: liufengyun
+</pre>
+
+<p>
+    Or <code>_data/members.csv</code>:
+</p>
+
+<pre title="_data/members.csv" class="plaintext">
+name,github
+Eric Mill,konklone
+Parker Moore,parkr
+Liu Fengyun,liufengyun
+</pre>
+
+<p>
+    This data can be accessed via <code>site.data.members</code><br/>
+    (notice that the file’s <em>basename</em> determines the variable name and<br/>
+    therefore one should avoid having data files with the same basename but different extensions, in the same directory).
+</p>
+
+<p>
+    You can now render the list of members in a template:
+</p>
+
+<pre title="render the list of members" class="plaintext">
+&lt;ul&gt;
+{% for member in site.data.members %}
+  &lt;li&gt;
+    &lt;a href="https://github.com/{{ member.github }}"&gt;
+      {{ member.name }}
+    &lt;/a&gt;
+  &lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;
+</pre>
+
+<h2 id="subfolders">Subfolders</h2>
+
+<p>
+    Data files can also be placed in sub-folders of the <code>_data</code> folder.<br/>
+    Each folder level will be added to a variable’s namespace.<br/>
+    The example below shows how GitHub organizations could be defined separately in a file under the <code>orgs</code> folder:
+</p>
+
+<p>
+    In <code>_data/orgs/jekyll.yml</code>:
+</p>
+
+<pre title="_data/orgs/jekyll.yml" class="plaintext">
+username: jekyll
+name: Jekyll
+members:
+  - name: Tom Preston-Werner
+    github: mojombo
+
+  - name: Parker Moore
+    github: parkr
+</pre>
+
+<p>
+    In <code>_data/orgs/doeorg.yml</code>:
+</p>
+
+<pre title="_data/orgs/doeorg.yml" class="plaintext">
+username: doeorg
+name: Doe Org
+members:
+  - name: John Doe
+    github: jdoe
+</pre>
+
+<p>
+    The organizations can then be accessed via <code>site.data.orgs</code>, followed by the file name:
+</p>
+
+<pre title="site.data.orgs" class="plaintext">
+&lt;ul&gt;
+{% for org_hash in site.data.orgs %}
+{% assign org = org_hash[1] %}
+  &lt;li&gt;
+    &lt;a href="https://github.com/{{ org.username }}"&gt;
+      {{ org.name }}
+    &lt;/a&gt;
+    ({{ org.members | size }} members)
+  &lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;
+</pre>
+
+<h2 id="example-accessing-a-specific-author">Example: Accessing a specific author</h2>
+
+<p>
+    Pages and posts can also access a specific data item.<br/>
+    The example below shows how to access a specific item:
+</p>
+
+<pre title="_data/people.yml" class="plaintext">
+dave:
+    name: David Smith
+    twitter: DavidSilvaSmith
+</pre>
+
+<p>
+    The author can then be specified as a page variable in a post’s front matter:
+</p>
+
+<pre title="" class="plaintext">
+---
+title: sample post
+author: dave
+---
+
+{% assign author = site.data.people[page.author] %}
+&lt;a rel="author"
+  href="https://twitter.com/{{ author.twitter }}"
+  title="{{ author.name }}"&gt;
+    {{ author.name }}
+&lt;/a&gt;
+</pre>
+
+<p>
+    For information on how to build robust navigation for your site<br/>
+    (especially if you have a documentation website or another type of Jekyll site with a lot of pages to organize),<br/>
+    see <a class="external" href="https://jekyllrb.com/tutorials/navigation/" target="_blank">Navigation</a>.
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://jekyllrb.com/docs/datafiles/" target="_blank">jekyllrb: Data Files</a></li>
+</ul>

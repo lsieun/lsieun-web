@@ -1,0 +1,248 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">Three Builtin ClassLoaders</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="java-classloader-index.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<pre title="ThreeClassLoader.java" class="javacode">
+public class ThreeClassLoader {
+    public static void main(String[] args) {
+        ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+        System.out.println(systemClassLoader); // sun.misc.Launcher$AppClassLoader@18b4aac2
+
+        ClassLoader extClassLoader = systemClassLoader.getParent();
+        System.out.println(extClassLoader); // sun.misc.Launcher$ExtClassLoader@1b6d3586
+
+        ClassLoader bootstrapClassLoader = extClassLoader.getParent();
+        System.out.println(bootstrapClassLoader); // null
+
+        ClassLoader classLoader = ThreeClassLoader.class.getClassLoader();
+        System.out.println(classLoader); // sun.misc.Launcher$AppClassLoader@18b4aac2
+
+        ClassLoader classLoader2 = String.class.getClassLoader();
+        System.out.println(classLoader2); // null
+    }
+}
+</pre>
+
+<pre title="ClassLoaderPath.java" class="javacode">
+import com.sun.javafx.util.Logging;
+import sun.misc.Launcher;
+import sun.misc.URLClassPath;
+
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+
+public class ClassLoaderPath {
+    public static void main(String[] args) {
+        // (1-1) Bootstrap ClassLoader
+        System.out.println("=========Bootstrap ClassLoader=========");
+        URLClassPath bootstrapClassPath = Launcher.getBootstrapClassPath();
+        URL[] urls = bootstrapClassPath.getURLs();
+        printURLS(urls);
+
+        // (1-2) Bootstrap ClassLoader
+        System.out.println("=========sun.boot.class.path=========");
+        String bootClassPath = System.getProperty("sun.boot.class.path");
+        printPath(bootClassPath);
+
+
+        // (2-1) Extension ClassLoader
+        System.out.println("=========Extension ClassLoader=========");
+        ClassLoader extClassLoader = Logging.class.getClassLoader();
+        URLClassLoader urlClassLoader1 = (URLClassLoader) extClassLoader;
+        printURLS(urlClassLoader1.getURLs());
+
+        // (2-2) Extension ClassLoader
+        System.out.println("=========java.ext.dirs=========");
+        String extDirs = System.getProperty("java.ext.dirs");
+        printPath(extDirs);
+
+        // (3-1) App ClassLoader
+        System.out.println("=========App ClassLoader=========");
+        ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+        URLClassLoader urlClassLoader2 = (URLClassLoader) systemClassLoader;
+        printURLS(urlClassLoader2.getURLs());
+
+        // (3-2) App ClassLoader
+        System.out.println("=========java.class.path=========");
+        String classpath = System.getProperty("java.class.path");
+        printPath(classpath);
+    }
+
+    private static void printURLS(URL[] urls) {
+        for (URL url : urls) {
+            System.out.println(url.toExternalForm());
+        }
+        System.out.println();
+    }
+
+    private static void printPath(String path) {
+        String separator = File.pathSeparator;
+        String[] array = path.split(separator);
+        for (String item : array) {
+            System.out.println(item);
+        }
+        System.out.println();
+    }
+}
+</pre>
+
+<pre title="Run output" hidden class="plaintext">
+=========Bootstrap ClassLoader=========
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/resources.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/rt.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/sunrsasign.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/jsse.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/jce.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/charsets.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/jfr.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/classes
+
+=========sun.boot.class.path=========
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\resources.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\rt.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\sunrsasign.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\jsse.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\jce.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\charsets.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\jfr.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\classes
+
+=========Extension ClassLoader=========
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/access-bridge-64.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/cldrdata.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/dnsns.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/jaccess.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/jfxrt.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/localedata.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/nashorn.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/sunec.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/sunjce_provider.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/sunmscapi.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/sunpkcs11.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/zipfs.jar
+
+=========java.ext.dirs=========
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\ext
+C:\Windows\Sun\Java\lib\ext
+
+=========App ClassLoader=========
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/charsets.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/deploy.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/access-bridge-64.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/cldrdata.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/dnsns.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/jaccess.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/jfxrt.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/localedata.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/nashorn.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/sunec.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/sunjce_provider.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/sunmscapi.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/sunpkcs11.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/ext/zipfs.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/javaws.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/jce.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/jfr.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/jfxswt.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/jsse.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/management-agent.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/plugin.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/resources.jar
+file:/C:/Program%20Files/Java/jdk1.8.0_261/jre/lib/rt.jar
+file:/D:/git-repo/learn-java-classloader/target/classes/
+file:/C:/Program%20Files/JetBrains/IntelliJ%20IDEA%20Community%20Edition/lib/idea_rt.jar
+
+=========java.class.path=========
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\charsets.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\deploy.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\ext\access-bridge-64.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\ext\cldrdata.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\ext\dnsns.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\ext\jaccess.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\ext\jfxrt.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\ext\localedata.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\ext\nashorn.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\ext\sunec.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\ext\sunjce_provider.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\ext\sunmscapi.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\ext\sunpkcs11.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\ext\zipfs.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\javaws.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\jce.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\jfr.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\jfxswt.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\jsse.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\management-agent.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\plugin.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\resources.jar
+C:\Program Files\Java\jdk1.8.0_261\jre\lib\rt.jar
+D:\git-repo\learn-java-classloader\target\classes
+C:\Program Files\JetBrains\IntelliJ IDEA Community Edition\lib\idea_rt.jar
+</pre>
+
+<h2 id="bootstrap-classloader">Bootstrap ClassLoader</h2>
+
+<ul>
+    <li>
+        实现：使用C/C++语言实现的，嵌套在JVM内部。
+    </li>
+    <li>
+        作用：用来加载Java的核心库（JAVA_HOME/jre/lib/rt.jar、resources.jar或sun.boot.class.path路径下的内容），用于加载JVM自身需要的类。
+    </li>
+    <li>
+        并不继承自<code>java.lang.ClassLoader</code>，没有父加载器。
+    </li>
+    <li>
+        出于安全考虑，Bootstrap启动类加载器只加载包名为java，javax，jdk，sun等开头的类。
+    </li>
+    <li></li>
+</ul>
+
+<h2 id="extension-classloader">Extension ClassLoader</h2>
+
+<ul>
+    <li>
+        Java语言编写，由sun.misc.Launcher$ExtClassLoader实现
+    </li>
+    <li>
+        派生于ClassLoader类
+    </li>
+    <li>
+        父类加载器为Bootstrap ClassLoader
+    </li>
+    <li>
+        从<code>java.ext.dirs</code>系统属性所指定的目录中加载类库，或从JDK的安装目录的jre/lib/ext子目录（扩展目录）下加载类库。如果用户创建的Jar放在此目录，也会自动由Extension ClassLoader加载。
+    </li>
+    <li></li>
+</ul>
+
+<h2 id="app-classloader">AppClassLoader</h2>
+
+<ul>
+    <li>
+        Java语言编写，由sun.misc.Launcher$AppClassLoader实现
+    </li>
+    <li>
+        派生于ClassLoader类
+    </li>
+    <li>
+        父类加载器为Extension ClassLoader
+    </li>
+    <li>
+        它负责加载环境变量classpath或系统属性java.class.path指定路径下的类库
+    </li>
+    <li>
+        AppClassLoader是程序中默认的类加载器，一般来说，Java应用的类都是由它来完成加载的。
+    </li>
+    <li>
+        通过ClassLoader.getSystemClassLoader()方法可以获取到AppClassLoader
+    </li>
+</ul>
+
+

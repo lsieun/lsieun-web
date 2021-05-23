@@ -1,0 +1,35 @@
+<!-- 标题 -->
+<h1 class="w3-center w3-padding-64 w3-tangerine"><span class="w3-tag w3-wide">WEBrick Options</span></h1>
+<!-- 内容 -->
+
+<div style="text-align: right">
+    <a title="Table Of Content" href="../configuration.html">TOC</a>
+    <a href="javascript:void(0);" onclick="toggle_all_sub_note()">Toggle Commentary</a>
+</div>
+
+<p>
+    You can provide custom headers for your site by adding them to <code>_config.yml</code>
+</p>
+
+<pre title="_config.yml" class="plaintext">
+# File: _config.yml
+webrick:
+  headers:
+    My-Header: My-Value
+    My-Other-Header: My-Other-Value
+</pre>
+
+<h2 id="defaults">Defaults</h2>
+
+<p>
+    Jekyll provides by default <code>Content-Type</code> and <code>Cache-Control</code> response headers:<br/>
+    one dynamic in order to specify the nature of the data being served,<br/>
+    the other static in order to disable caching<br/>
+    so that you don’t have to fight with Chrome’s aggressive caching when you are in development mode.
+</p>
+
+<h2>References</h2>
+
+<ul>
+    <li><a class="external" href="https://jekyllrb.com/docs/configuration/webrick/" target="_blank">jekyllrb: WEBrick Options</a></li>
+</ul>
