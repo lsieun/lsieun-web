@@ -8,8 +8,8 @@
 </div>
 
 <p class="indented">
-    RSA isn’t the only game in town, at least not when it comes to digital
-    signatures. A competing standard is the U.S. government’s <strong>Digital Signature
+    RSA isn't the only game in town, at least not when it comes to digital
+    signatures. A competing standard is the U.S. government's <strong>Digital Signature
     Algorithm</strong>, specified in FIPS 186-3.
 </p>
 
@@ -24,7 +24,7 @@
 <p class="indented">
     Like RSA, the DSA signature is performed on a secure
     hash of the message to be signed.<sub class="my_note" style="color:green">笔记：DSA算法是更高一层的算法，它是在Hash算法基础上构建起来的</sub> However, the hash algorithm is somewhat part
-    of the signature, so you can’t necessarily just pick a random signature algorithm
+    of the signature, so you can't necessarily just pick a random signature algorithm
     and try to apply it. DSA is certified for SHA-1 and SHA-256; if you try to use it
     with some other hash algorithm, “behavior is undefined.”
     <sub class="my_note" style="color:blue">笔记：DSA算法只支持SHA-1和SHA-256，而并不支持MD5。</sub>
@@ -61,7 +61,7 @@
 </p>
 
 <p class="indented">
-    After performing these operations, you’ve generated <code>r</code> and <code>s</code>, which make up the signature.
+    After performing these operations, you've generated <code>r</code> and <code>s</code>, which make up the signature.
 </p>
 
 <h2>Receiver-Side DSA Signature Verification</h2>
@@ -91,5 +91,5 @@
     DSA keys consist of the parameters <code>p</code>, <code>q</code>, and <code>g</code>, a private key <code>x</code>, and a
     public key <code>y</code>. <code>q</code> must be a (random) prime number; <code>p – 1</code> must be a multiple of
     <code>q</code>; and <code>g</code> is a small number (usually 2). <code>x</code>, the private key, is random, and <code>y = g<sup>x</sup> % p</code>. In general, rather than compute their own <code>p</code>, <code>q</code>, and <code>g</code>, most implementations use standardized DSA parameters. As long as <code>x</code> is random, the security of
-    the algorithm isn’t weakened by the sharing of parameters.
+    the algorithm isn't weakened by the sharing of parameters.
 </p>

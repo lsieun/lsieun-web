@@ -47,7 +47,7 @@ let words = [
         "id": "geological",
         "type": "adj.",
         "ch": "地质的",
-        "en": "relating to geology, or to the features of the Earth’s surface"
+        "en": "relating to geology, or to the features of the Earth's surface"
     },
     {
         "id": "groove",

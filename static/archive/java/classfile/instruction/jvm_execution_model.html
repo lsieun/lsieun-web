@@ -70,7 +70,7 @@ index  start_pc  length  name_and_type
 </p>
 
 <p class="indented">
-    As you know Java code is executed inside threads. Each <b>thread</b> has its own <b>execution stack</b>, which is made of <b>frames</b>. Each frame represents a method invocation: each time a method is invoked, a new frame is pushed on the current thread’s execution stack. When the method returns, either normally or because of an exception, this frame is popped from the execution stack and execution continues in the calling method (whose frame is now on top of the stack).
+    As you know Java code is executed inside threads. Each <b>thread</b> has its own <b>execution stack</b>, which is made of <b>frames</b>. Each frame represents a method invocation: each time a method is invoked, a new frame is pushed on the current thread's execution stack. When the method returns, either normally or because of an exception, this frame is popped from the execution stack and execution continues in the calling method (whose frame is now on top of the stack).
     <sub class="my_note" style="color:blue">笔记：thread--&gt;execution stack--&gt;frame(method invocation)</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
@@ -80,13 +80,13 @@ index  start_pc  length  name_and_type
 </div>
 
 <p class="indented">
-    Each <b>frame</b> contains two parts: a <b>local variables</b> part and an <b>operand stack</b> part. The local variables part contains variables that can be accessed by their index, in random order. The operand stack part, as its name implies, is a stack of values that are used as operands by bytecode instructions. This means that the values in this stack can only be accessed in Last In First Out order. Do not confuse <b>the operand stack</b> and <b>the thread’s execution stack</b>: each frame in the execution stack contains its own operand stack.
+    Each <b>frame</b> contains two parts: a <b>local variables</b> part and an <b>operand stack</b> part. The local variables part contains variables that can be accessed by their index, in random order. The operand stack part, as its name implies, is a stack of values that are used as operands by bytecode instructions. This means that the values in this stack can only be accessed in Last In First Out order. Do not confuse <b>the operand stack</b> and <b>the thread's execution stack</b>: each frame in the execution stack contains its own operand stack.
     <sub class="my_note" style="color:blue">笔记：frame = local variables + operand stack</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
 <p class="indented">
-    The <b>size</b> of the <b>local variables</b> and <b>operand stack</b> parts depends on the method’s <code>code</code>. It is computed at compile time and is stored along with the bytecode instructions in compiled classes. As a consequence, all the frames that correspond to the invocation of a given method have the same size, but frames that correspond to different methods can have different sizes for their local variables and operand stack parts.
+    The <b>size</b> of the <b>local variables</b> and <b>operand stack</b> parts depends on the method's <code>code</code>. It is computed at compile time and is stored along with the bytecode instructions in compiled classes. As a consequence, all the frames that correspond to the invocation of a given method have the same size, but frames that correspond to different methods can have different sizes for their local variables and operand stack parts.
     <sub class="my_note" style="color:blue">笔记：local variables和operand stack是在compile的时候决定的。</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>

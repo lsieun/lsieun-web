@@ -12,7 +12,7 @@
     First of all, you should notice that <span class="text-key-point">all the files required by the agent need to be bundled up in a JAR file</span>.
     <sub class="my_note" style="color:green">笔记：所有文件，都将被打成JAR包</sub>
     There are many ways to prepare our <code>agent.jar</code>.
-    But let’s keep the bundling part aside, till we finish writing a simple agent, and move to files needed.
+    But let's keep the bundling part aside, till we finish writing a simple agent, and move to files needed.
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
@@ -28,7 +28,7 @@
 
 <p class="indented">
     <span class="text-key-point">This is the class file which contain our agent</span>.
-    It’ll include a <code>premain</code> method or <code>agentmain</code> method according to the requirement of the writer.
+    It'll include a <code>premain</code> method or <code>agentmain</code> method according to the requirement of the writer.
     There may be either one method type or both in a single class file.
     <sub class="my_note" style="color:green">笔记：premain和agentmain这两个方法，可以使用其中的一个，也可以使用两个。</sub>
     But <span class="text-key-point">the selection of method</span> used to invoke the agent <span class="text-key-point">will be decided based on the time user want to invoke the agent</span>.
@@ -115,7 +115,7 @@ Created-By: 1.7.0_06 (Oracle Corporation)
     <li>
         <code>Premain-class</code> – <span class="text-key-point">Used when agent is invoked at JVM launch time</span>.
         It need to include <span class="text-emphasize">the fully qualified name of the agent class</span>.
-        In our case also, we’ll be defining this attribute, because we are working with <code>premain</code> method.
+        In our case also, we'll be defining this attribute, because we are working with <code>premain</code> method.
         This will provide an entry point to our agent by specifying where to look for <code>SimpleAgent.class</code> which need to be invoked before the <code>main.class</code>
     </li>
     <li>
@@ -124,11 +124,11 @@ Created-By: 1.7.0_06 (Oracle Corporation)
     </li>
     <li>
         <code>Can-Retransform-Classes</code> – (optional) Specify as <code>true</code> or <code>false</code>, where default value is <code>false</code>.
-        If it is not specified as <code>true</code>, it won’t allow to carryout re-transformation of classes.
+        If it is not specified as <code>true</code>, it won't allow to carryout re-transformation of classes.
     </li>
     <li>
         <code>Can-Redefine-Classes</code> – (optional) Specify as <code>true</code> or <code>false</code>.
-        It won’t allow to redefine classes during the instrumentation process, if it is not specified as <code>true</code>.
+        It won't allow to redefine classes during the instrumentation process, if it is not specified as <code>true</code>.
     </li>
     <li>
         <code>Class-Path</code> – We need to add paths of all the jars needed by the agent during run time. (Eg; javassist-xyz.jar)

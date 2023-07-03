@@ -29,9 +29,9 @@
     <strong>Indeed, networks and computers constitute a more and more heterogeneous
     world: computers can have different internal representation modes
     for the data they store.</strong><sub class="my_note" style="color:green">笔记：data exchange的数据结构(structure)没有简化的原因就是，networks和computer构成了一个异构的世界（heterogeneous world），data exchange需要化解heterogeneous world中的各种差异才能完成。</sub> For example, a great majority uses the ASCII
-    encoding, but some mainframes, such as IBM’s, handle EBCDIC encoding.
-    Most of PCs use 16 or 32-bit memory-word in two’s complement
-    arithmetic but some mainframes, sailing out of the mainstream, use 60-bit word in one’s complement arithmetic for instance.
+    encoding, but some mainframes, such as IBM's, handle EBCDIC encoding.
+    Most of PCs use 16 or 32-bit memory-word in two's complement
+    arithmetic but some mainframes, sailing out of the mainstream, use 60-bit word in one's complement arithmetic for instance.
     <sub class="my_note" style="color:blue">笔记：data exchange是一个理想的目标，它需要克服现实世界中networks和computers中存在的具体差异。</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
@@ -49,9 +49,9 @@
 </div>
 
 <p class="indented">
-    This makes Danny Cohen<sub class="my_note" style="color:green">笔记：Danny Cohen，计算机科学家，1937年12月9日—2019年8月12日。Danny 最为人所知的事迹是在1980年通过其具有重大影响的论文《论圣战以及对和平的祈祷》（On holy wars and a plea for peace），为计算机科学界引入了字节序（endianness）的概念。Danny 将字节序归结为一个异常简单的问题：消息中正确的字节顺序是什么？并用外行人听得懂的浅显语言解释了这个问题，逐层解读，这一具有深远意义的贡献使他在现代计算历史长河中拥有一席之地。2012年，互联网名人堂将 Danny Cohen 列入名录，以表彰这位先驱。</sub> call Intel a ‘little Endian’
-    and Motorola a ‘big Endian’, referring to theological arguments between
-    Catholics and Protestants in Swift’s<sub class="my_note" style="color:green">笔记：乔纳森·斯威夫特 Jonathan Swift （1667年11月30日—1745年10月19日），爱尔兰作家，政论家，讽刺文学大师，以著名的《格列佛游记》和《一只桶的故事》等作品闻名于世，他曾被高尔基称为“世界文学创造者之一”。</sub> Gulliver’s Travels<sub class="my_note" style="color:green">笔记：格列佛游记</sub> as to whether
+    This makes Danny Cohen<sub class="my_note" style="color:green">笔记：Danny Cohen，计算机科学家，1937年12月9日—2019年8月12日。Danny 最为人所知的事迹是在1980年通过其具有重大影响的论文《论圣战以及对和平的祈祷》（On holy wars and a plea for peace），为计算机科学界引入了字节序（endianness）的概念。Danny 将字节序归结为一个异常简单的问题：消息中正确的字节顺序是什么？并用外行人听得懂的浅显语言解释了这个问题，逐层解读，这一具有深远意义的贡献使他在现代计算历史长河中拥有一席之地。2012年，互联网名人堂将 Danny Cohen 列入名录，以表彰这位先驱。</sub> call Intel a ‘little Endian'
+    and Motorola a ‘big Endian', referring to theological arguments between
+    Catholics and Protestants in Swift's<sub class="my_note" style="color:green">笔记：乔纳森·斯威夫特 Jonathan Swift （1667年11月30日—1745年10月19日），爱尔兰作家，政论家，讽刺文学大师，以著名的《格列佛游记》和《一只桶的故事》等作品闻名于世，他曾被高尔基称为“世界文学创造者之一”。</sub> Gulliver's Travels<sub class="my_note" style="color:green">笔记：格列佛游记</sub> as to whether
     boiled eggs should be broken at the top or the bottom!
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
@@ -61,10 +61,10 @@
 </div>
 
 <p class="indented">
-    To prevent the ‘big Endians’ manufacturers (or the ‘little Endians’
-    manufacturers if you are on the ‘big Endians’ side’) from being banished
-    to remote Blefuscu Island where communicating with the ‘little Endians’
-    is no longer possible, the latter would have to adopt the former’s convention.
+    To prevent the ‘big Endians' manufacturers (or the ‘little Endians'
+    manufacturers if you are on the ‘big Endians' side') from being banished
+    to remote Blefuscu Island where communicating with the ‘little Endians'
+    is no longer possible, the latter would have to adopt the former's convention.
     But we know that, in order to avoid any compatibility
     malfunctions<sub class="my_note" style="color:green">运转失常；失灵；出现故障 to fail to work correctly</sub> in their own products or even to preserve their position of
     hegemony<sub class="my_note" style="color:green">支配权；霸权 control by one country, organization, etc. over other countries, etc. within a particular group</sub> in the market, <strong>few manufacturers would be inclined to sign
@@ -81,7 +81,7 @@
     diversity in programming languages</strong>. For example, some data may be
     represented by an array of integers in one language and by a list of
     integers in another. Besides, a language may use its own representation
-    in the internal memory: in C language, for instance, the ‘\0’ character
+    in the internal memory: in C language, for instance, the ‘\0' character
     is added at the end of a string and programmers are free for their own
     defined boolean values because none exists by default.
     <sub class="my_note" style="color:blue">笔记：现实生活当中，一方面，不同的machine architecture存在差异，另一方面，同一种machine architecture上的不同programming language也存在差异。</sub>
@@ -105,7 +105,7 @@
 <ul>
     <li>the field <code>name</code> ends with a NULL byte in C but not in Objective Caml;</li>
     <li>the <code>name</code> field size is not limited in Objective Caml;</li>
-    <li>nothing is known about the internal representation of <code>age</code> (one’s or two’s complement?...);</li>
+    <li>nothing is known about the internal representation of <code>age</code> (one's or two's complement?...);</li>
     <li>the default values (provided they exist) of the enumerated type variables are unknown in Objective Caml.</li>
 </ul>
 
@@ -122,7 +122,7 @@
     <li>
         How can we transfer the <code>gender</code> of a person without one of the
         three identifiers as a string (which can be arbitrary long) while
-        keeping the ‘semantics’ (that is, the common acceptance of the identifier)?
+        keeping the ‘semantics' (that is, the common acceptance of the identifier)?
     </li>
 </ul>
 
@@ -138,7 +138,7 @@
 
 <p class="indented">
     Bearing in mind the variety of internal data representations we have just
-    described, how does one make <code>n</code> machines ‘converse’?
+    described, how does one make <code>n</code> machines ‘converse'?
     <sub class="my_note" style="color:blue">笔记：面对machine architecture和programming language的差异，要实现data exchange要使用什么样的程序呢？</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
@@ -149,12 +149,12 @@
 
 <p class="indented">
     We could decide that every machine knows the internal data representation of its <code>n−1</code> neighbors so
-    that the data formats is agreed to be the receiver’s or sender’s. Should
+    that the data formats is agreed to be the receiver's or sender's. Should
     the dialog take place both ways, this would require <code>n * (n − 1)</code> conversion
     programs. This kind of communication has the undeniable advantage of
     translating data only once during the transfer. Although it could have
     been a decisive argument when processing time was a limiting factor, it
-    is no longer relevant for today’s data transfer.
+    is no longer relevant for today's data transfer.
     <sub class="my_note" style="color:blue">笔记：共两种方法，这是第一种方法，图(a)</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
@@ -192,11 +192,11 @@
 
 <p class="indented">
     We call <strong>concrete syntax</strong>, the representation, in a given programming
-    language, of the data structures to be transferred. It is a ‘syntax’ because it
+    language, of the data structures to be transferred. It is a ‘syntax' because it
     respects the lexical and grammatical rules of a language (C for
     instance); it is called concrete because it is actually handled by applications
     (implemented in this very language) and it complies with the
-    machine architectures’ restrictions. Two examples of concrete syntaxes
+    machine architectures' restrictions. Two examples of concrete syntaxes
     have been given in the following figure.
     <sub class="my_note" style="color:blue">笔记：concrete syntax就是具体的编程语言的syntax，例如C语言、Objective Caml语言、Java语言</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
@@ -220,7 +220,7 @@
 
 <p class="indented">
     Though independent from programming languages, the <strong>abstract syntax notation</strong>
-    should be at least as powerful as any language’s datatype
+    should be at least as powerful as any language's datatype
     formalism, that is, a recursive notation that allows building complex
     data types from basic types (equivalent to the <code>string</code>, <code>int</code>, <code>enum</code>... C
     types for instance) and type constructors (equivalent to <code>struct</code>, <code>union</code>... in C).
@@ -239,8 +239,8 @@
     Of course, this <strong>transfer syntax</strong> thoroughly depends on the <strong>abstract syntax</strong>,
     since it sets up how the data should be transmitted according to
     this abstract syntax. In fact, the transfer syntax structures and orders
-    the bytes (the ‘format’) that are sent to the other machine (this process
-    is sometimes called ‘marshalling’).
+    the bytes (the ‘format') that are sent to the other machine (this process
+    is sometimes called ‘marshalling').
     <sub class="my_note" style="color:blue">笔记：transfer syntax要依赖于abstract syntax</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>

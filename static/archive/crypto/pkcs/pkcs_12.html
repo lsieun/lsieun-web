@@ -8,13 +8,13 @@
 </div>
 
 <p class="indented">
-    Notice that the private key itself doesn’t appear anywhere in the certificate
+    Notice that the private key itself doesn't appear anywhere in the certificate
     format, nor the CSR format. (This a good thing!) As you can imagine, when
     dealing with several certificates, it can become difficult to keep track of which
     private keys correspond to which public keys; some certificates expire, some
     need to be revoked due to a key compromise, some domains have their own
     certificates for security purposes, and so on. If you lose track of which private
-    key goes with which certificate, you’re pretty much out of luck; it would be nice
+    key goes with which certificate, you're pretty much out of luck; it would be nice
     to store them together so you can always go back to the source.
     <sub class="my_note" style="color:blue">笔记：建立public key和private key之间的关系，是非常重要的。</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
@@ -37,8 +37,8 @@
 <p class="indented">
     The PKCS #12 format is actually extremely general — a bit too general, in fact.
     The top-level structure consists of a version number, a sequence of bit strings,
-    and a MAC over the whole thing. It’s up to the reader of the file to interpret the
-    bit strings to figure out if they’re encrypted and what they contain.
+    and a MAC over the whole thing. It's up to the reader of the file to interpret the
+    bit strings to figure out if they're encrypted and what they contain.
     <sub class="my_note" style="color:blue">笔记：PKCS #12 format的定义太过宽泛，仍然需要由使用者具体解析其中的内容。</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>

@@ -60,7 +60,7 @@ public static final int[] pc1_table = {
     used more fault-prone hardware than you are probably used to — the LSBs of
     the keys were used as <strong>parity bits</strong> to ensure that the key was transmitted correctly.
     Strictly speaking, you should ensure that the LSB of each byte is the sum
-    (modulo 2) of the other seven bits. Most implementers don’t bother, as you can
+    (modulo 2) of the other seven bits. Most implementers don't bother, as you can
     probably trust your hardware to hang on to the key you loaded into it correctly.
 </p>
 
@@ -125,7 +125,7 @@ decrypted message: 6162636465666768
 <p class="indented">
     One of the nice things about the way DES was specified is that decryption
     is the exact same as encryption, except that the <strong>key schedule</strong> is inverted.
-    Instead of the original key being rotated left at each round, it’s rotated right.
+    Instead of the original key being rotated left at each round, it's rotated right.
     Otherwise, the routines are identical.
 </p>
 
@@ -170,8 +170,8 @@ public static final int[] pc2_table = {
     DES specifies that the input should undergo an initial permutation. The purpose
     of this permutation is unclear, as it serves no cryptographic purpose (the output
     would be just as secure without this). It may have been added for optimization
-    for certain hardware types. Nevertheless, if you don’t include it, your output
-    will be wrong, and you won’t be able to interoperate with other implementations.
+    for certain hardware types. Nevertheless, if you don't include it, your output
+    will be wrong, and you won't be able to interoperate with other implementations.
 </p>
 
 <p class="indented">
@@ -217,7 +217,7 @@ public static final int[] pc2_table = {
 
 <p class="indented">
     Notice in the previous section that the subkeys are 48-bits long, but the input
-    halves that are to be XORed are 32 bits long. Now, you can’t properly XOR
+    halves that are to be XORed are 32 bits long. Now, you can't properly XOR
     a 32-bit input with a 48-bit key, so the input is expanded — some bits are
     duplicated — before being XORed. The output of the expansion function is
     illustrated in the following figure.
@@ -244,7 +244,7 @@ public static final int[] expansion_table = {
 
 <p class="indented">
     After this has been XORed with the correct subkey for this round, it is fed
-    into the s-box lookup. The s-boxes are what makes DES secure. It’s important
+    into the s-box lookup. The s-boxes are what makes DES secure. It's important
     that the output not be a linear function of the input; if it was, a simple statistical
     analysis would reveal the key. An attacker knows, for example, that the letter
     “E” is the most common letter in the English language — if he knew that the

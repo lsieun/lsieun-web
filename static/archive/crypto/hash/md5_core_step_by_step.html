@@ -117,17 +117,17 @@
 </pre>
 
 <p>
-    If you need to encrypt less than 512 bits, or a bit string that’s not an even multiple
-    of 512 bits, you pad the last block. However, you can’t just pad with 0’s or just
-    with 1’s. Remember, 512 0’s is a legitimate input to MD5. So is one 0. You need
-    some way to ensure that 512 0’s hashes to a different value than one 0. Therefore,
+    If you need to encrypt less than 512 bits, or a bit string that's not an even multiple
+    of 512 bits, you pad the last block. However, you can't just pad with 0's or just
+    with 1's. Remember, 512 0's is a legitimate input to MD5. So is one 0. You need
+    some way to ensure that 512 0's hashes to a different value than one 0. Therefore,
     <strong>MD5 requires that the last eight bytes of the input be set to the length, in bits</strong>
-    (remember that you may want to hash a value that’s not an even multiple of eight
+    (remember that you may want to hash a value that's not an even multiple of eight
     bits) of the input preceding it. This means that MD5 is essentially undefined for
     lengths greater than 2<sup>64</sup> bits, and that if the input happens to be between 448
     (512 – 64) and 512 bits, you need to add an extra 512-bit block of padding just to
     store the length. <strong>A sole “1” bit follows the last bit of input, followed by enough
-    0’s to pad up to 448 bits, followed by the length of the message itself in bits.</strong>
+    0's to pad up to 448 bits, followed by the length of the message itself in bits.</strong>
 </p>
 
 <p>
@@ -297,12 +297,12 @@
 
 <p>
     The purpose of these functions is simply to shuffle bits in an unpredictable
-    way; don’t look for any deep meaning here.
+    way; don't look for any deep meaning here.
 </p>
 
 <p>
     So, what are the inputs to F, G, H, and I?
-    They’re actually permutations<sub class="my_note" style="color:green">排列（方式）；组合（方式） any of the different ways in which a set of things can be ordered</sub> of A, B, C, and D — remember that the
+    They're actually permutations<sub class="my_note" style="color:green">排列（方式）；组合（方式） any of the different ways in which a set of things can be ordered</sub> of A, B, C, and D — remember that the
     hash was referred to as A, B, C, and D.<sub class="my_note" style="color:blue">笔记：这是在探讨方法的输入</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
@@ -311,7 +311,7 @@
     The results of F, G, H, and I are added to
     A, B, C, and D along with each of the input blocks, as well as a set of constants,
     shifted, and added again. In all cases, adds are performed modulo 32 — that is,
-    they’re allowed to silently overflow in a 32-bit register.<sub class="my_note" style="color:blue">笔记：这是在探讨方法的输出</sub>
+    they're allowed to silently overflow in a 32-bit register.<sub class="my_note" style="color:blue">笔记：这是在探讨方法的输出</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 

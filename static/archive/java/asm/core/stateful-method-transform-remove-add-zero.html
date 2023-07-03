@@ -29,7 +29,7 @@
 <h2>Remove Add Zero</h2>
 
 <p>
-    Let’s look in more details at this example. When an <code>ICONST_0</code> is visited,
+    Let's look in more details at this example. When an <code>ICONST_0</code> is visited,
     it must be removed only if the next instruction is an <code>IADD</code>.
     <span class="text-key-point">The problem is that the next instruction is not yet known</span>.
     The solution is to postpone this decision to the next instruction:

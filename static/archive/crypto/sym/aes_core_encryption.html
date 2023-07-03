@@ -98,7 +98,7 @@ public static void shift_rows(byte[][] state) {
 
 <p class="indented">
     Note that for simplicity and clarity, the position shifts are just hardcoded at
-    each row. The relative positions never change, so there’s no particular reason
+    each row. The relative positions never change, so there's no particular reason
     to compute them on each iteration.
 </p>
 
@@ -117,13 +117,13 @@ public static void shift_rows(byte[][] state) {
 </div>
 
 <p class="indented">
-    If you do remember linear algebra, don’t get too excited because AES redefines the terms
+    If you do remember linear algebra, don't get too excited because AES redefines the terms
     <strong>multiply</strong> and <strong>add</strong> to mean something completely different than what you probably consider multiply and add.
 </p>
 
 <p class="indented">
     <strong>Adding</strong> in AES is actually redefined as <strong>XORing</strong>, which is nothing at all like
-    adding. <strong>Multiplying</strong> is <strong>repeated adding</strong>, just as in ordinary arithmetic, but it’s
+    adding. <strong>Multiplying</strong> is <strong>repeated adding</strong>, just as in ordinary arithmetic, but it's
     done modulo <code class="w3-codespan">0x1B</code>. The specification refers to this as a <code>dot product</code> — another linear algebra term, but again
     redefined. If your head is spinning from this mathematicalese, perhaps some
     code will help.

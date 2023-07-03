@@ -31,7 +31,7 @@
 <h2>Encoded Values</h2>
 
 <p class="indented">
-    Every encoded value is represented as a <code>type</code>, followed by the <code>value’s length</code>,
+    Every encoded value is represented as a <code>type</code>, followed by the <code>value's length</code>,
     followed by <code>the actual contents of the value itself</code>; the representation of the value
     depends on the type.
 </p>
@@ -55,7 +55,7 @@
 
 <p class="indented">
     DER allows for <strong>multi-byte types</strong> as well — and has complex rules on how to encode and
-    recognize them — but X.509 doesn’t need to make use of them and sticks with
+    recognize them — but X.509 doesn't need to make use of them and sticks with
     <strong>single-byte types</strong>.
     <sub class="my_note" style="color:blue">笔记：这里在讲type，其重点是在X.509的应用场景中，使用DER编码时的type只占用1个byte。</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
@@ -88,7 +88,7 @@
 <h2>OID</h2>
 
 <p class="indented">
-    OID’s are simple to encode. They’re stored just like integers, but they have a <code>type</code> of <code>6</code> instead of <code>2</code>. Otherwise, they’re
+    OID's are simple to encode. They're stored just like integers, but they have a <code>type</code> of <code>6</code> instead of <code>2</code>. Otherwise, they're
     encoded the same way: <code>type, length, value</code>.
 </p>
 
@@ -112,7 +112,7 @@
     <code>24</code> is a generalized — four-digit year — time.
     Although the <code>type</code> actually includes enough information to infer
     the length — you know that generalized times are 15 digits, and UTC times
-    are 13 — for consistency’s sake the lengths are included as well. After that, the
+    are 13 — for consistency's sake the lengths are included as well. After that, the
     year, month, day, hour, minute, second and Z are included in ASCII format. So
     the date Feb. 23, 2010, 6:50:13 is encoded in UTC time as
 </p>
@@ -175,7 +175,7 @@ System.out.println(str); // 北京市
 <p class="indented">
     Bit strings are just like strings, with one minor difference. Their type is <code>3</code> to distinguish them from <strong>printable strings</strong>, but the
     encoding is exactly the same: <code>tag, length, contents</code>. The only difference between
-    <strong>bit strings</strong> and <strong>character strings</strong> is that bit strings don’t necessarily have to end
+    <strong>bit strings</strong> and <strong>character strings</strong> is that bit strings don't necessarily have to end
     on an eight-bit boundary, so they have <strong>an extra byte</strong> to indicate how much padding
     was included. In practice, this is always <code>0</code> because all useful bit patterns
     are eight-bit aligned anyway.
@@ -189,7 +189,7 @@ System.out.println(str); // 北京市
 
 <p class="indented">
     Actually, a single-length byte can only represent 127 byte values. The high-order
-    bit is reserved. If it’s 1, then the low order seven bits represent not the
+    bit is reserved. If it's 1, then the low order seven bits represent not the
     length of the value, but the length of the length — that is, how many of the
     bytes following encode the length of the subsequently following value.
     <sub class="my_note" style="color:blue">笔记：这里在讲length表达不同长度的方法。</sub>
@@ -218,7 +218,7 @@ System.out.println(str); // 北京市
 </table>
 
 <p class="indented">
-    Technically, a value doesn’t have to be a bit string to have a length greater
+    Technically, a value doesn't have to be a bit string to have a length greater
     than 127; integers, strings, and OIDs could, at least in theory. In practice, though,
     this never happens.
 </p>
@@ -227,7 +227,7 @@ System.out.println(str); // 北京市
 
 <p class="indented">
     <strong>Sets</strong> and <strong>sequences</strong> are what ASN.1 calls a <strong>constructed type</strong> — that is, a type containing other types.
-    Technically, they’re encoded the same way as other values are. They
+    Technically, they're encoded the same way as other values are. They
     start with a <code>tag</code>, are followed by <strong>a variable number of length bytes</strong>, and are then
     followed by their contents. However, for <strong>constructed types</strong>, the contents themselves
     are further ASN.1-encoded tags. <strong>Sequences</strong> are identified by tag <code>0x30</code>, and <strong>sets</strong> are

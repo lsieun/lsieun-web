@@ -30,7 +30,7 @@
 </pre>
 
 <p>
-    You won’t need to place your included content within the <code>_includes</code> directory.<br/>
+    You won't need to place your included content within the <code>_includes</code> directory.<br/>
     Instead, the inclusion is specifically relative to the file where the tag is being used.<br/>
     For example, if <code>_posts/2014-09-03-my-file.markdown</code> uses the <code>include_relative</code> tag,<br/>
     the included file must be within the <code>_posts</code> directory or one of its subdirectories.
@@ -49,10 +49,10 @@
 
 <p>
     The name of the file you want to embed can be specified as <b>a variable</b> instead of <b>an actual file name</b>.<br/>
-    For example, suppose you defined a variable in your page’s front matter like this:
+    For example, suppose you defined a variable in your page's front matter like this:
 </p>
 
-<pre title="defined a variable in your page’s front matter" class="plaintext">
+<pre title="defined a variable in your page's front matter" class="plaintext">
 ---
 title: My page
 my_variable: footer_company_a.html
@@ -107,9 +107,9 @@ my_variable: footer_company_a.html
 
 <p>
     For example, suppose you have a special image syntax with complex formatting,<br/>
-    and you don’t want your authors to remember the complex formatting.<br/>
+    and you don't want your authors to remember the complex formatting.<br/>
     As a result, you decide to simplify the formatting by using an include with parameters.<br/>
-    Here’s an example of the special image syntax you might want to populate with an include:
+    Here's an example of the special image syntax you might want to populate with an include:
 </p>
 
 <pre title="a special image syntax" class="plaintext">
@@ -147,7 +147,7 @@ my_variable: footer_company_a.html
 </ul>
 
 <p>
-    Here’s an example that passes all the parameters to this include (the include file is named <code>image.html</code>):
+    Here's an example that passes all the parameters to this include (the include file is named <code>image.html</code>):
 </p>
 
 <pre title="passes all the parameters to this include" class="plaintext">
@@ -161,15 +161,15 @@ caption="This is the Jekyll logo." %}
 </p>
 
 <p>
-    To safeguard situations where users don’t supply a value for the parameter,<br/>
-    you can use <a href="https://shopify.github.io/liquid/filters/default/">Liquid’s default filter</a>.
+    To safeguard situations where users don't supply a value for the parameter,<br/>
+    you can use <a href="https://shopify.github.io/liquid/filters/default/">Liquid's default filter</a>.
 </p>
 
 <p>
     Overall, you can create includes that act as templates for a variety of uses<br/>
     — inserting audio or video clips, alerts, special formatting, and more.<br/>
     Note that you should avoid using too many includes, as this will slow down the build time of your site.<br/>
-    For example, don’t use includes every time you insert an image.<br/>
+    For example, don't use includes every time you insert an image.<br/>
     (The above technique shows a use case for special images.)
 </p>
 
@@ -180,12 +180,12 @@ caption="This is the Jekyll logo." %}
     For example, you might be using <code>{{ site.product_name }}</code><br/>
     to refer to every instance of your product rather than the actual hard-coded name.<br/>
     (In this case, your <code>_config.yml</code> file<br/>
-    would have a key called <code>product_name</code> with a value of your product’s name.)
+    would have a key called <code>product_name</code> with a value of your product's name.)
 </p>
 
 <p>
-    The string you pass to your include parameter can’t contain curly braces.<br/>
-    For example, you can’t pass a parameter that contains this:<br/>
+    The string you pass to your include parameter can't contain curly braces.<br/>
+    For example, you can't pass a parameter that contains this:<br/>
     <code>"The latest version of {{ site.product_name }} is now available."</code>
 </p>
 
@@ -203,7 +203,7 @@ The latest version of {{ site.product_name }} is now available.
 
 <p>
     Then pass this captured variable into the parameter for the include.<br/>
-    Omit the quotation marks around the parameter content because it’s no longer a string (it’s a variable):
+    Omit the quotation marks around the parameter content because it's no longer a string (it's a variable):
 </p>
 
 <pre title="" class="plaintext">

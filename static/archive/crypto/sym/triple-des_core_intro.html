@@ -11,7 +11,7 @@
 
 <p class="indented">
     DES is secure. After forty years of cryptanalysis, no feasible attack has been
-    demonstrated; if anybody has cracked it, they’ve kept it a secret.
+    demonstrated; if anybody has cracked it, they've kept it a secret.
     <sub class="my_note" style="color:blue">笔记：这里要明确区分三个概念，输入数据（input）、key和DES算法。这段的重点是说，DES算法本身是安全的，不安全的地方在key的长度比较短，只有56-bit数据。</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
@@ -48,7 +48,7 @@
 </p>
 
 <p class="indented">
-    3DES has a 168-bit (56 * 3) key. It’s called triple-DES because it splits
+    3DES has a 168-bit (56 * 3) key. It's called triple-DES because it splits
     the 168-bit key into three 56-bit keys and repeats the DES
     rounds three times, once with each key.
     <sub class="my_note" style="color:blue">笔记：3DES使用168-bit的key数据，需要调用DES算法3次。</sub>
@@ -77,7 +77,7 @@
 </div>
 
 <p class="indented">
-    One important wrinkle<sub class="my_note" style="color:green">小问题 a small problem</sub> in the 3DES implementation is that you don’t encrypt
+    One important wrinkle<sub class="my_note" style="color:green">小问题 a small problem</sub> in the 3DES implementation is that you don't encrypt
     three times with the three keys. Instead you <b>encrypt with one key</b>, <b>decrypt that
     with a different key</b> — remember that decrypting with a mismatched key produces garbage,
     but reversible garbage, which is exactly what you want when

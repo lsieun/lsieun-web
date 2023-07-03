@@ -13,19 +13,19 @@
     numerically combined with the key (also a number) in a specified way according
     to a cryptographic algorithm. As such, an attacker without the key can try
     all keys, starting at “1” and incrementing over and over again, until the correct
-    key is found. To determine when he’s hit the right combination, the attacker
+    key is found. To determine when he's hit the right combination, the attacker
     has to know something about the message that was encrypted in the first place,
     obviously. However, this is usually the case. Consider the case of an HTTP
     exchange. The first four characters of the first request are likely to be “GET.”
     The hypothetical attacker can just do a decryption using a proposed key, check
-    the first four letters, and if they don’t match, move on to the next.
+    the first four letters, and if they don't match, move on to the next.
 </p>
 
 <p>
     This sort of attack is called a <strong>brute<sub class="my_note" style="color:green">蛮干不动脑筋的 involving physical strength only and not thought or intelligence</sub> force</strong> attack. To be useful and resistant to
     brute-force attacks, keys should be fairly large numbers, and algorithms should
     accept a huge range of potential keys so that an attacker has to try for a very, very
-    long time before hitting on the right combination. <strong>There’s no defense against a
+    long time before hitting on the right combination. <strong>There's no defense against a
     brute-force attack; the best you can hope for is to ensure that an attacker spends
     so much time performing one that the data loses its value before a brute force
     attack might be successful.</strong>

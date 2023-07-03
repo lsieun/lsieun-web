@@ -12,7 +12,7 @@
 <h3>Automation Initialization</h3>
 
 <p>
-    If a primitive is a field in a class, each primitive field of a class is guaranteed to get an initial value. Here’s a program that verifies this, and shows the values:
+    If a primitive is a field in a class, each primitive field of a class is guaranteed to get an initial value. Here's a program that verifies this, and shows the values:
 </p>
 
 <pre title="HelloWorld.java" class="javacode">
@@ -61,7 +61,7 @@ reference    null
 </pre>
 
 <p>
-    You can see that even though the values are not specified, they automatically get initialized (the <code>char</code> value is a <b>zero</b>, which prints as a space). So at least there’s no threat of working with uninitialized variables.
+    You can see that even though the values are not specified, they automatically get initialized (the <code>char</code> value is a <b>zero</b>, which prints as a space). So at least there's no threat of working with uninitialized variables.
 </p>
 
 <p>
@@ -278,7 +278,7 @@ index  start_pc  length  name_and_type
 <h3>Constructor Initialization</h3>
 
 <p>
-    The constructor can be used to perform initialization, and this gives you greater flexibility in your programming because you can call methods and perform actions at run time to determine the initial values. There’s one thing to keep in mind, however: You aren’t precluding the automatic initialization, which happens before the constructor is entered. So, for example, if you say:
+    The constructor can be used to perform initialization, and this gives you greater flexibility in your programming because you can call methods and perform actions at run time to determine the initial values. There's one thing to keep in mind, however: You aren't precluding the automatic initialization, which happens before the constructor is entered. So, for example, if you say:
 </p>
 
 <pre title="HelloWorld.java" class="javacode">
@@ -292,7 +292,7 @@ public class HelloWorld {
 </pre>
 
 <p>
-    then <code>i</code> will first be initialized to <code>0</code>, then to <code>7</code>. This is true with all the primitive types and with object references, including those that are given explicit initialization at the point of definition. For this reason, the compiler doesn’t try to force you to initialize elements in the constructor at any particular place, or before they are used — initialization is already guaranteed.
+    then <code>i</code> will first be initialized to <code>0</code>, then to <code>7</code>. This is true with all the primitive types and with object references, including those that are given explicit initialization at the point of definition. For this reason, the compiler doesn't try to force you to initialize elements in the constructor at any particular place, or before they are used — initialization is already guaranteed.
 </p>
 
 <pre title="init:()V" class="plaintext">
@@ -422,7 +422,7 @@ code = 04B30002B1
 </pre>
 
 <p>
-    It appears to be a method, but it’s just the <code>static</code> keyword followed by a block of code. This code, like other static initializations, is executed only once: <b>the first time you make an object of that class</b> or <b>the first time you access a static member of that class</b> (even if you never make an object of that class).
+    It appears to be a method, but it's just the <code>static</code> keyword followed by a block of code. This code, like other static initializations, is executed only once: <b>the first time you make an object of that class</b> or <b>the first time you access a static member of that class</b> (even if you never make an object of that class).
 </p>
 
 <pre title="HelloWorld.java" class="javacode">
@@ -554,7 +554,7 @@ code = BB000259B70001B30003B1
 
 <ol>
     <li>
-        Even though it doesn’t explicitly use the <code>static</code> keyword, the constructor is actually a static method. So the first time an object of type <code>Dog</code> is created, or the first time a static method or static field of class <code>Dog</code> is accessed, the Java interpreter must locate <code>Dog.class</code>, which it does by searching through the classpath.
+        Even though it doesn't explicitly use the <code>static</code> keyword, the constructor is actually a static method. So the first time an object of type <code>Dog</code> is created, or the first time a static method or static field of class <code>Dog</code> is accessed, the Java interpreter must locate <code>Dog.class</code>, which it does by searching through the classpath.
         <sub class="my_note" style="color:blue">笔记：先要找到ClassFile</sub>
         <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
     </li>

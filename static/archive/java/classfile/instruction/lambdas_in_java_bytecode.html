@@ -93,7 +93,7 @@ code = BA00030000B0
     <sub class="my_note" style="color:green">笔记：这里指出问题所在，有些方法要在runtime时才能决定。</sub>
     No amount of polymorphism helped them out<sub class="my_note" style="color:green">笔记：多态，并不能解决这个问题。多态，是同一操作作用于不同的对象，可以有不同的解释，产生不同的执行结果。多态，强调的是“同一个方法”，在不同的对象上调用，有不同的处理方式；而这里的问题是强调“多个方法”，希望能够在多个方法之间进行选择。</sub>:
     they simply had to defer the decision about what method to run until the moment the code was executed.
-    The result was that each dynamic language had its own method dispatch structure<sub class="my_note" style="color:green">笔记：不同的语言，在Java已有功能的基础之上，提供了自己的实现，其结果是不利于Java的优化。</sub> built on top of Java’s own method dispatch structure, and those structures tended to be bad for Java’s optimizations.
+    The result was that each dynamic language had its own method dispatch structure<sub class="my_note" style="color:green">笔记：不同的语言，在Java已有功能的基础之上，提供了自己的实现，其结果是不利于Java的优化。</sub> built on top of Java's own method dispatch structure, and those structures tended to be bad for Java's optimizations.
     To help them out (and lay the groundwork for lambdas), Java 7 introduced <code>invokedynamic</code>.
     <sub class="my_note" style="color:green">笔记：Java 7引入了invokedynamic，一方面为问题提供了解决方法，另一方面也为lambda的出现做了铺垫。</sub>
     The <code>invokedynamic</code> instruction tells Java to wait until runtime.
@@ -210,7 +210,7 @@ bootstrap_arguments='0019001A001B' ([#25,#26,#27])
 </p>
 
 <p class="indented">
-    Let’s pull it all together. The <code>invokedynamic</code> instruction is encountered for the first time.
+    Let's pull it all together. The <code>invokedynamic</code> instruction is encountered for the first time.
     The <code>metafactory</code> method is called, being passed some <b>default arguments</b> and some <b>custom arguments</b>.
     The <b>default arguments</b> are the utility for method lookup, the name of the invoked method, and an instruction to return a <code>Supplier</code>.
     The <b>custom arguments</b> specify that we will implement <code>Supplier.get()</code>, and even though it normally takes no arguments and returns an <code>Object</code>,
@@ -304,10 +304,10 @@ BootstrapMethods:
     It is possible that this variable came from some other classloader far away, or that it was somehow gamed into existence.
     The bootstrap method, however, is going to need access to the class, and is going to need it to be fully formed.
     <b>To ensure that the class is fully loaded and accessible in the current context</b>, we will call the <code>Object.getClass()</code> method on <code>System.out</code>.
-    The <code>invokevirtual</code> call, however, will consume the top element of the stack as the target, and we want to keep the top element around – it’s our reference to <code>System.out</code>.
+    The <code>invokevirtual</code> call, however, will consume the top element of the stack as the target, and we want to keep the top element around – it's our reference to <code>System.out</code>.
     So we first do a <code>dup</code>, which duplicates the top element of the stack.
     The stack now has two <code>System.out</code> references, and we consume one with <code>invokevirtual</code> to call the <code>Object.getClass()</code> method.
-    We don’t want to actually do anything with the class, however, so we can then just <code>pop</code> it off the stack.
+    We don't want to actually do anything with the class, however, so we can then just <code>pop</code> it off the stack.
     <sub class="my_note" style="color:blue">笔记：这三个instruction的目的，就是为了保证class已经被加载，并且能访问到</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
@@ -327,7 +327,7 @@ BootstrapMethods:
     There is one last kind of method reference: <b>the free instance method reference</b>.
     This is the case when we pass in a type and an instance method to the method reference, and it creates a method that accepts that type and calls the given instance method.
     This is somewhat like <b>the bound method reference</b>, in that it has to track what type is being called.
-    However, <b>we do not have a particular instance</b> that is being called in this case, so it can’t act like the bound instance method reference. How does it work?
+    However, <b>we do not have a particular instance</b> that is being called in this case, so it can't act like the bound instance method reference. How does it work?
 </p>
 
 <pre title="HelloWorld.java" class="javacode">
@@ -453,7 +453,7 @@ BootstrapMethods:
 
 <p class="indented">
     The more interesting case is when you have variables in the mix.
-    Let’s create a method that calls an <b>instance method</b> (requiring access to <code>this</code>) along with <b>a local variable</b> in the scope.
+    Let's create a method that calls an <b>instance method</b> (requiring access to <code>this</code>) along with <b>a local variable</b> in the scope.
     After all, these lambdas are closures: they enclose their scope. This kind of stuff is their job! How is the compiler going to deal with that complexity? The answer is in Following.
 </p>
 

@@ -147,8 +147,8 @@ Extension  ::=  SEQUENCE  {
 
 <p class="indented">
     Each extension has a unique object identifier(<code class="w3-codespan">extnID</code>); this object identifier determines
-    how the <code class="w3-codespan">extnValue</code> is parsed, or if it’s even present. Additionally, there’s a <code class="w3-codespan">critical</code>
-    field. If an extension is marked critical, and the reader doesn’t recognize it,
+    how the <code class="w3-codespan">extnValue</code> is parsed, or if it's even present. Additionally, there's a <code class="w3-codespan">critical</code>
+    field. If an extension is marked critical, and the reader doesn't recognize it,
     it must reject the entire certificate; otherwise, unrecognized extensions can be
     ignored. Most extensions are not marked critical.
 </p>

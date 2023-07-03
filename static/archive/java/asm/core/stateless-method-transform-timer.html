@@ -8,7 +8,7 @@
 </div>
 
 <p>
-    Let’s suppose <span class="text-example">we want to measure the time spent in each class of a program</span>.
+    Let's suppose <span class="text-example">we want to measure the time spent in each class of a program</span>.
     We need to add a static <code>timer</code> field in each class,
     and we need to add the execution time of each method of this class to this <code>timer</code> field.
 </p>
@@ -133,14 +133,14 @@ public class ClassTimerVisitor extends ClassVisitor {
 </p>
 
 <p>
-    The beginning of the method’s code is visited with the <code>visitCode</code> method.
+    The beginning of the method's code is visited with the <code>visitCode</code> method.
     We can therefore <span class="text-example">add the first four instructions</span> by overriding this method in our method adapter.
 </p>
 
 <p>
     We must <span class="text-example">add four other instructions</span> before any <code>RETURN</code>,
     but also before any <code>xRETURN</code> or before <code>ATHROW</code>,
-    which are all the instructions that terminate the method’s execution.
+    which are all the instructions that terminate the method's execution.
     These instructions do not have any argument,
     and are therefore visited in the <code>visitInsn</code> method.
     We can then override this method in order to add our instructions.

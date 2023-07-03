@@ -9,7 +9,7 @@
 
 <p>
     Collections are similar to posts
-    except the content doesn’t have to be grouped by date.
+    except the content doesn't have to be grouped by date.
 </p>
 
 <h2 id="configuration">Configuration</h2>
@@ -63,7 +63,7 @@ Ted has been eating fruit since he was baby.
 <h2 id="staff-page">Staff page</h2>
 
 <p>
-    Let’s add a page which lists all the authors on the site.<br/>
+    Let's add a page which lists all the authors on the site.<br/>
     Jekyll makes the collection available at <code>site.authors</code>.
 </p>
 
@@ -114,7 +114,7 @@ title: Staff
 
 <p>
     By default, collections do not output a page for documents.<br/>
-    In this case we want each author to have their own page so let’s tweak the collection configuration.
+    In this case we want each author to have their own page so let's tweak the collection configuration.
 </p>
 
 <p>
@@ -151,7 +151,7 @@ title: Staff
 &lt;/ul&gt;
 </pre>
 
-<p>Just like posts you’ll need to create a layout for authors.</p>
+<p>Just like posts you'll need to create a layout for authors.</p>
 
 <p>Create <code>_layouts/author.html</code> with the following content:</p>
 
@@ -169,7 +169,7 @@ layout: default
 
 <p>
     Now you need to configure the author documents to use the <code>author</code> layout.<br/>
-    You could do this in the front matter like we have previously but that’s getting repetitive.
+    You could do this in the front matter like we have previously but that's getting repetitive.
 </p>
 
 <p>
@@ -179,7 +179,7 @@ layout: default
 
 <p>
     You can achieve this by using <a href="../configuration/front-matter-defaults.html">front matter defaults</a> in <code>_config.yml</code>.<br/>
-    You set a scope of what the default applies to, then the default front matter you’d like.
+    You set a scope of what the default applies to, then the default front matter you'd like.
 </p>
 
 <p>
@@ -210,19 +210,19 @@ defaults:
 
 <p>
     Now you can remove layout from the front matter of all pages and posts.<br/>
-    Note that any time you update <code>_config.yml</code> you’ll need to restart Jekyll for the changes to take effect.
+    Note that any time you update <code>_config.yml</code> you'll need to restart Jekyll for the changes to take effect.
 </p>
 
-<h2 id="list-authors-posts">List author’s posts</h2>
+<h2 id="list-authors-posts">List author's posts</h2>
 
 <p>
-    Let’s list the posts an author has published on their page.<br/>
+    Let's list the posts an author has published on their page.<br/>
     To do this you need to match the author <code>short_name</code> to the post <code>author</code>.<br/>
     You use this to filter the posts by author.
 </p>
 
 <p>
-    Iterate over this filtered list in <code>_layouts/author.html</code> to output the author’s posts:
+    Iterate over this filtered list in <code>_layouts/author.html</code> to output the author's posts:
 </p>
 
 <pre title="_layouts/author.html" class="plaintext">
@@ -246,7 +246,7 @@ layout: default
 <h2 id="link-to-authors-page">Link to authors page</h2>
 
 <p>
-    The posts have a reference to the author so let’s link it to the author’s page.<br/>
+    The posts have a reference to the author so let's link it to the author's page.<br/>
     You can do this using a similar filtering technique in <code>_layouts/post.html</code>:
 </p>
 

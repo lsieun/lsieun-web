@@ -23,7 +23,7 @@
 <p class="indented">
     Not all numbers work this way; in fact, finding three numbers <code>e</code>, <code>d</code>, and <code>n</code> that
     satisfy this property is complex, and forms the core of the RSA specification. After
-    you’ve found them, though, using them to encrypt is fairly straightforward. The
+    you've found them, though, using them to encrypt is fairly straightforward. The
     number <code>d</code> is called the <strong>private key</strong>, and you should never share it with anybody.
     <code>e</code> and <code>n</code> together make up the <strong>public key</strong>, and you can make them available to
     anybody who cares to send you an encoded message. When the sender is ready
@@ -35,7 +35,7 @@
 
 <p class="indented">
     The security of the system relies on the fact that even if an attacker has access to
-    <code>e</code> and <code>n</code> — which he does because they’re public — it’s computationally infeasible
+    <code>e</code> and <code>n</code> — which he does because they're public — it's computationally infeasible
     for him to compute <code>d</code>. For this to be true, <code>d</code> and <code>n</code> have to be enormous — at least
     512 bit numbers (which is on the order of 10<sup>154</sup>) — but most public key cryptosystems
     use even larger numbers. 1,024- or even 2,048-bit numbers are common.
@@ -44,7 +44,7 @@
 <p class="indented">
     RSA works on blocks of data. Each block includes <strong>a header</strong> and <strong>some padding</strong> (of at least 11 bytes), so
     the resulting input blocks are <strong>modulus_length - 11</strong> bytes minimum. The header is
-    pretty simple: It’s a <code>0</code> byte, followed by a padding identifier of <code>0</code>, <code>1</code>, or <code>2</code>.
+    pretty simple: It's a <code>0</code> byte, followed by a padding identifier of <code>0</code>, <code>1</code>, or <code>2</code>.
 </p>
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">

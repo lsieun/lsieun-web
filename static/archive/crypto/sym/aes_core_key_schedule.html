@@ -12,10 +12,10 @@
 <h2>Complex Transformation</h2>
 
 <p class="indented">
-    This isn’t the whole story, though — every four iterations, there’s a complex
+    This isn't the whole story, though — every four iterations, there's a complex
     transformation function applied to the previous four bytes before it is XORed
     with the previous key-length four bytes. This function consists of first <strong>rotating
-    the four-byte word</strong>, then <strong>applying it to a substitution table</strong> (AES’s s-box), and
+    the four-byte word</strong>, then <strong>applying it to a substitution table</strong> (AES's s-box), and
     <strong>XORing it with a <a href="/archive/crypto/sym/aes_core_round_constant.html">round constant</a></strong>.
 </p>
 
@@ -123,7 +123,7 @@ public static int[][] sbox = {
 </p>
 
 <p class="indented">
-    If you’ve been following closely, though, you may notice that for a 128-bit key,
+    If you've been following closely, though, you may notice that for a 128-bit key,
     the round constant is left-shifted 10 times because a 128-bit key requires 44 iterations
     with a left-shift occurring every four iterations. However, if you left-shift a
     single byte eight times, you end up with zeros from that point on. Instead, AES
@@ -151,7 +151,7 @@ d4, b3, 7d, fa, ef, c5, 91, 39, 72, e4, d3, bd, 61, c2, 9f, 25, 4a, 94, 33, 66, 
 
 <p class="indented">
     For a 256-bit key, rotation, substitution, and XORing happens every eighth iteration.
-    Because every eight iterations doesn’t work out to that many, a 256-bit key
+    Because every eight iterations doesn't work out to that many, a 256-bit key
     schedule adds one small additional wrinkle — every fourth iteration, substitution
     takes place, but rotation and XOR — only take place every eighth iteration.
 </p>

@@ -24,11 +24,11 @@
 
 <p>
     A <b>lambda expression</b> can be understood as a <b>concise</b> representation of an <b>anonymous function</b> that can be <b>passed around</b>:
-    it doesn’t have a name, but it has a list of parameters, a body, a return type, and also possibly a list of exceptions that can be thrown.
+    it doesn't have a name, but it has a list of parameters, a body, a return type, and also possibly a list of exceptions that can be thrown.
 </p>
 
 <p>
-    That’s one big definition; let’s break it down:
+    That's one big definition; let's break it down:
 </p>
 
 <ul>
@@ -42,7 +42,7 @@
         Passed around: A lambda expression can be passed as argument to a method or stored in a variable.
     </li>
     <li>
-        Concise— You don’t need to write a lot of boilerplate like you do for anonymous classes.
+        Concise— You don't need to write a lot of boilerplate like you do for anonymous classes.
     </li>
 </ul>
 
@@ -70,7 +70,7 @@ parameters            arrow       lambda body
         <b>An arrow</b>: The arrow <code>-&gt;</code> separates the list of parameters from the body of the lambda.
     </li>
     <li>
-        <b>The body of the lambda</b>: Compare two Apples using their weights. The expression is considered the lambda’s return value.
+        <b>The body of the lambda</b>: Compare two Apples using their weights. The expression is considered the lambda's return value.
     </li>
 </ul>
 
@@ -112,9 +112,9 @@ parameters            arrow       lambda body
 </p>
 
 <p>
-    If you explore the new Java API, you’ll notice that <b>functional interfaces</b> are annotated with <code>@FunctionalInterface</code>.
+    If you explore the new Java API, you'll notice that <b>functional interfaces</b> are annotated with <code>@FunctionalInterface</code>.
     This annotation is used to indicate that the interface is intended to be a functional interface.
-    The compiler will return a meaningful error if you define an interface using the <code>@FunctionalInterface</code> annotation and it isn’t a functional interface.
+    The compiler will return a meaningful error if you define an interface using the <code>@FunctionalInterface</code> annotation and it isn't a functional interface.
 </p>
 
 <p>
@@ -151,7 +151,7 @@ Foo.java:1: error: Unexpected @FunctionalInterface annotation
     How does it work?
     When you need a method reference, the target reference is placed before the delimiter <code>::</code> and the name of the method is provided after it.
     For example, <code>Apple::getWeight</code> is a method reference to the method <code>getWeight</code> defined in the <code>Apple</code> class.
-    Remember that no brackets(<code>()</code>) are needed because you’re not actually calling the method.
+    Remember that no brackets(<code>()</code>) are needed because you're not actually calling the method.
 </p>
 
 <h3>construct method references</h3>
@@ -207,7 +207,7 @@ Foo.java:1: error: Unexpected @FunctionalInterface annotation
 
 <p>
     You can create a reference to <b>an existing constructor</b> using its name and the keyword <code>new</code> as follows: <code>ClassName::new</code>.
-    It works similarly to a reference to a static method. For example, suppose there’s a zero-argument constructor.
+    It works similarly to a reference to a static method. For example, suppose there's a zero-argument constructor.
 </p>
 
 <pre title="examples" class="javacode">
@@ -254,7 +254,7 @@ Apple a3 = c3.apply("green", 110);
 <h3>create arrays</h3>
 
 <p>
-    It’s also possible to create arrays using this method. Here is how you would create a String array: <code>String[]::new</code>.
+    It's also possible to create arrays using this method. Here is how you would create a String array: <code>String[]::new</code>.
 </p>
 
 <pre title="HelloWorld.java" class="javacode">

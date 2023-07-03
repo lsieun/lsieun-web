@@ -24,12 +24,13 @@ e is 65537 (0x10001)
 </div>
 
 <p class="indented">
-    The <code>e</code> value that you see in the output refers to the <strong>public exponent</strong>, which is set to <code>65,537</code> by default.
-    This is what’s known as a short public exponent, and it significantly improves the performance of RSA verification.
+    The <code>e</code> value that you see in the output refers to the <strong>public exponent</strong>,
+    which is set to <code>65,537</code> by default.
+    This is what's known as a short public exponent, and it significantly improves the performance of RSA verification.
     Using the <code>-3</code> switch, you can choose 3 as your public exponent and make verification even faster.
     However, there are some unpleasant historical weaknesses associated with the use of 3 as a public exponent,
     which is why generally everyone recommends that you stick with <code>65,537</code>.
-    The latter choice provides a safety margin that’s been proven effective in the past.
+    The latter choice provides a safety margin that's been proven effective in the past.
 </p>
 
 <p class="indented">
@@ -70,8 +71,8 @@ WI946nBeCudrxGtdZzmzK7gAr/PhH6uP1ZEJxUvIxJk9giOxrBRDlu0rRJ1FilCI
 <h3>Examine RSA Key</h3>
 
 <p class="indented">
-    A private key isn’t just a blob of random data, even though that’s what it looks like at a glance.
-    You can see a key’s structure using the following <code>rsa</code> command:
+    A private key isn't just a blob of random data, even though that's what it looks like at a glance.
+    You can see a key's structure using the following <code>rsa</code> command:
 </p>
 
 <div title="examine RSA key" hidden class="plaintext">
@@ -259,7 +260,7 @@ writing RSA key
 
 <div class="w3-panel w3-pale-red w3-leftbar w3-rightbar w3-border-red">
     <p>
-        事实上，rsa-private.key和rsa.key的内容是一模一样的。
+        事实上，rsa-private.key 和 rsa.key 的内容是一模一样的。
     </p>
 </div>
 
@@ -275,11 +276,12 @@ writing RSA key
 </p>
 
 <p class="indented">
-    CSR creation is usually an interactive process, during which you’ll be providing the elements of the certificate distinguished name.
+    CSR creation is usually an interactive process,
+    during which you'll be providing the elements of the certificate distinguished name.
     Read the instructions given by the openssl tool carefully; if you want a field to be empty,
     you must enter a single dot (.) on the line, rather than just hit Return.
     If you do the latter, OpenSSL will populate the corresponding CSR field with the default value.
-    (This behavior doesn’t make any sense when used with the default OpenSSL configuration, which is what virtually everyone does.
+    (This behavior doesn't make any sense when used with the default OpenSSL configuration, which is what virtually everyone does.
     It does make sense once you realize you can actually change the defaults,
     either by modifying the OpenSSL configuration or by providing your own configuration files.)
 </p>
@@ -370,7 +372,7 @@ FYQ=
 
 <p class="indented">
     After a CSR is generated, use it to sign your own certificate and/or send it to a public CA and ask him or her to sign the certificate.
-    But before you do that, it’s a good idea to double-check that the CSR is correct. Here’s how:
+    But before you do that, it's a good idea to double-check that the CSR is correct. Here's how:
 </p>
 
 <div title="examine certificate signing request" hidden class="plaintext">
@@ -425,8 +427,10 @@ Certificate Request:
 <h3>Sign Your Own Certificates</h3>
 
 <p class="indented">
-    If you’re installing a TLS server for your own use, you probably don’t want to go to a CA to get a publicly trusted certificate.
-    It’s much easier to sign your own. The fastest way to do this is to generate a self-signed certificate.
+    If you're installing a TLS server for your own use,
+    you probably don't want to go to a CA to get a publicly trusted certificate.
+    It's much easier to sign your own.
+    The fastest way to do this is to generate a self-signed certificate.
 </p>
 
 <p class="indented">
@@ -467,11 +471,14 @@ Gxs=
 <h3>Examine Signed Certificate</h3>
 
 <p class="indented">
-    Certificates might look a lot like random data at first glance, but they contain a great deal of information; you just need to know how to unpack it. The <code>x509</code> command does just that, so use it to look at the self-signed certificates you generated.
+    Certificates might look a lot like random data at first glance, but they contain a great deal of information;
+    you just need to know how to unpack it.
+    The <code>x509</code> command does just that, so use it to look at the self-signed certificates you generated.
 </p>
 
 <p class="indented">
-    In the following example, I use the <code>-text</code> switch to print certificate contents and <code>-noout</code> to reduce clutter
+    In the following example,
+    I use the <code>-text</code> switch to print certificate contents and <code>-noout</code> to reduce clutter
     by not printing the encoded certificate itself (which is the default behavior):
 </p>
 

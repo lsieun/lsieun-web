@@ -61,11 +61,11 @@
 <p>
     And <code>Z</code> is the key that both sides use as the symmetric key. The server knows
     the value <code>a</code> (because it chose it), and the client knows the value <code>b</code> (because,
-    again, it chose it). Neither knows the other’s value, but they don’t need to. Nor
+    again, it chose it). Neither knows the other's value, but they don't need to. Nor
     can an eavesdropper glean the value of <code>Z</code> without either <code>a</code> or <code>b</code>, neither of which
     has been shared. You can think of each side as computing one-half of an exponentiation
     and sharing that half with the other side, which then completes the
-    exponentiation. Because the exponentiation operation is done mod <code>p</code>, it can’t
+    exponentiation. Because the exponentiation operation is done mod <code>p</code>, it can't
     be feasibly inverted by an attacker, unless the attacker has solved the discrete
     logarithm problem.
 </p>

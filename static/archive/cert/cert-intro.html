@@ -11,7 +11,7 @@
     <strong>Fundamentally, the certificate is a holder for a public key.</strong><sub class="my_note" style="color:green">笔记：从根本上来说，certificate是一个容器，是public key的容器。</sub>
     Although it contains a lot more information about the subject of the public key, the primary purpose of the certificate is to present the user agent
     with a public key that should then be used to encrypt a symmetric key<sub class="my_note" style="color:green">笔记：public key是为了加密symmetric key。</sub> that is
-    subsequently used to protect the remainder of the connection’s traffic.<sub class="my_note" style="color:green">笔记：symmetric key是为了保护后续数据的安全。</sub>
+    subsequently used to protect the remainder of the connection's traffic.<sub class="my_note" style="color:green">笔记：symmetric key是为了保护后续数据的安全。</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
 
@@ -20,7 +20,7 @@
     can be put together to establish a secure communications link: First, a symmetric algorithm<sub class="my_note" style="color:green">第一个概念，对称加密算法</sub> and key is chosen, and then the key is
     exchanged using public-key techniques<sub class="my_note" style="color:green">第二个概念，非对称加密</sub>. Finally, everything is encrypted using
     the secret symmetric key and authenticated using an HMAC<sub class="my_note" style="color:green">第三个概念，</sub> with another secret key.
-    However, the digital signatures haven’t come into
+    However, the digital signatures haven't come into
     play yet. How are these used and why are they important? Digital signatures are
     how certificates are authenticated and how you can determine whether or not to
     trust a certifi cate. This is examined in much greater detail later in this chapter.

@@ -9,9 +9,9 @@
 
 <p>
     Jekyll has an extensive theme system<br/>
-    that allows you to leverage community-maintained templates and styles to customize your site’s presentation.<br/>
+    that allows you to leverage community-maintained templates and styles to customize your site's presentation.<br/>
     Jekyll themes specify plugins and package up assets, layouts, includes, and stylesheets in a way<br/>
-    that can be overridden by your site’s content.
+    that can be overridden by your site's content.
 </p>
 
 <h2 id="pick-up-a-theme">Pick up a theme</h2>
@@ -40,10 +40,10 @@
 </p>
 
 <p>
-    With gem-based themes, some of the site’s directories<br/>
+    With gem-based themes, some of the site's directories<br/>
     (such as the <code>assets</code>, <code>_layouts</code>, <code>_includes</code>, and <code>_sass</code> directories)<br/>
-    are stored in the theme’s gem, hidden from your immediate view.<br/>
-    Yet all of the necessary directories will be read and processed during Jekyll’s build process.
+    are stored in the theme's gem, hidden from your immediate view.<br/>
+    Yet all of the necessary directories will be read and processed during Jekyll's build process.
 </p>
 
 <p>
@@ -68,7 +68,7 @@
 
 <p>
     Gem-based themes make it easier for theme developers to make updates available to anyone who has the theme gem.<br/>
-    When there’s an update, theme developers push the update to RubyGems.
+    When there's an update, theme developers push the update to RubyGems.
 </p>
 
 <p>
@@ -81,7 +81,7 @@
 <p>
     The goal of gem-based themes is to allow you to<br/>
     get all the benefits of a robust, continually updated theme<br/>
-    without having all the theme’s files getting in your way and<br/>
+    without having all the theme's files getting in your way and<br/>
     over-complicating what might be your primary focus: creating content.
 </p>
 
@@ -100,25 +100,25 @@
 
 <p>
     For example, if your selected theme has a <code>page</code> layout,<br/>
-    you can override the theme’s layout<br/>
+    you can override the theme's layout<br/>
     by creating your own <code>page</code> layout in the <code>_layouts</code> directory<br/>
     (that is, <code>_layouts/page.html</code>).
 </p>
 
 <p>
-    To locate a theme’s files on your computer:
+    To locate a theme's files on your computer:
 </p>
 
 <ol>
     <li>
-        <p>Run <code>bundle info --path</code> followed by the name of the theme’s gem, e.g., <code>bundle info --path minima</code> for Jekyll’s default theme.</p>
+        <p>Run <code>bundle info --path</code> followed by the name of the theme's gem, e.g., <code>bundle info --path minima</code> for Jekyll's default theme.</p>
 
-        <p>This returns the location of the gem-based theme files. For example, the Minima theme’s files might be located in <code>/usr/local/lib/ruby/gems/2.6.0/gems/minima-2.5.1</code> on macOS.</p>
+        <p>This returns the location of the gem-based theme files. For example, the Minima theme's files might be located in <code>/usr/local/lib/ruby/gems/2.6.0/gems/minima-2.5.1</code> on macOS.</p>
     </li>
     <li>
-        <p>Open the theme’s directory in Finder or Explorer:</p>
+        <p>Open the theme's directory in Finder or Explorer:</p>
 
-<pre title="Open the theme’s directory" class="plaintext">
+<pre title="Open the theme's directory" class="plaintext">
 # On MacOS
 open $(bundle info --path minima)
 
@@ -135,7 +135,7 @@ explorer C:\Ruby26-x64\lib\ruby\gems\3.0.0\gems\minima-2.5.1
 xdg-open $(bundle info --path minima)
 </pre>
 
-        <p>A Finder or Explorer window opens showing the theme’s files and directories. The Minima theme gem contains these files:</p>
+        <p>A Finder or Explorer window opens showing the theme's files and directories. The Minima theme gem contains these files:</p>
 
 <pre title="Minima theme gem" class="plaintext">
 .
@@ -169,24 +169,24 @@ xdg-open $(bundle info --path minima)
 </ol>
 
 <p>
-    With a clear understanding of the theme’s files, you can now override any theme file by creating a similarly named file in your Jekyll site directory.
+    With a clear understanding of the theme's files, you can now override any theme file by creating a similarly named file in your Jekyll site directory.
 </p>
 
 <p>
-    Let’s say, for a second example, you want to override Minima’s footer.<br/>
+    Let's say, for a second example, you want to override Minima's footer.<br/>
     In your Jekyll site, create an <code>_includes</code> folder and add a file in it called <code>footer.html</code>.<br/>
-    Jekyll will now use your site’s <code>footer.html</code> file instead of the <code>footer.html</code> file from the Minima theme gem.
+    Jekyll will now use your site's <code>footer.html</code> file instead of the <code>footer.html</code> file from the Minima theme gem.
 </p>
 
 <p>
     To modify any stylesheet<br/>
     you must take the extra step of also copying the main sass file (<code>_sass/minima.scss</code> in the Minima theme)<br/>
-    into the <code>_sass</code> directory in your site’s source.
+    into the <code>_sass</code> directory in your site's source.
 </p>
 
 <p>
-    Jekyll will look first to your site’s content<br/>
-    before looking to the theme’s defaults for any requested file in the following folders:
+    Jekyll will look first to your site's content<br/>
+    before looking to the theme's defaults for any requested file in the following folders:
 </p>
 
 <ul>
@@ -204,7 +204,7 @@ xdg-open $(bundle info --path minima)
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
-        Refer to your selected theme’s documentation and source repository for more information on which files you can override.
+        Refer to your selected theme's documentation and source repository for more information on which files you can override.
     </p>
 </div>
 
@@ -216,13 +216,13 @@ xdg-open $(bundle info --path minima)
 </p>
 
 <p>
-    To do this, copy the files from the theme gem’s directory into your Jekyll site directory.<br/>
+    To do this, copy the files from the theme gem's directory into your Jekyll site directory.<br/>
     (For example, copy them to <code>/myblog</code> if you created your Jekyll site at <code>/myblog</code>.)
 </p>
 
 <p>
     Then you must tell Jekyll about the plugins that were referenced by the theme.<br/>
-    You can find these plugins in the theme’s gemspec file as runtime dependencies.<br/>
+    You can find these plugins in the theme's gemspec file as runtime dependencies.<br/>
     If you were converting the Minima theme, for example, you might see:
 </p>
 
@@ -268,10 +268,10 @@ group :jekyll_plugins do
 end
 </pre>
 
-<p>Either way, don’t forget to <code>bundle update</code>.</p>
+<p>Either way, don't forget to <code>bundle update</code>.</p>
 
 <p>
-    If you’re publishing on GitHub Pages you should update only your <code>_config.yml</code> as GitHub Pages doesn’t load plugins via Bundler.
+    If you're publishing on GitHub Pages you should update only your <code>_config.yml</code> as GitHub Pages doesn't load plugins via Bundler.
 </p>
 
 <p>
@@ -291,7 +291,7 @@ end
 <h2 id="installing-a-theme">Installing a gem-based theme</h2>
 
 <p>
-    The <code>jekyll new &lt;PATH&gt;</code> command isn’t the only way to create a new Jekyll site with a gem-based theme.<br/>
+    The <code>jekyll new &lt;PATH&gt;</code> command isn't the only way to create a new Jekyll site with a gem-based theme.<br/>
     You can also find gem-based themes online and incorporate them into your Jekyll project.
 </p>
 
@@ -306,7 +306,7 @@ end
 
 <ol>
     <li>
-        <p>Add the theme gem to your site’s <code>Gemfile</code>:</p>
+        <p>Add the theme gem to your site's <code>Gemfile</code>:</p>
 
 <pre title="Gemfile" class="plaintext">
 # ./Gemfile
@@ -315,7 +315,7 @@ end
 gem "jekyll-theme-minimal"
 </pre>
 
-        <p>Or if you’ve started with the <code>jekyll new</code> command, replace <code>gem "minima", "~&gt; 2.0"</code> with the gem you want, e.g:</p>
+        <p>Or if you've started with the <code>jekyll new</code> command, replace <code>gem "minima", "~&gt; 2.0"</code> with the gem you want, e.g:</p>
 
 <pre title="Gemfile" class="plaintext">
 # ./Gemfile
@@ -331,7 +331,7 @@ gem "jekyll-theme-minimal"
         </p>
     </li>
     <li>
-        <p>Add the following to your site’s <code>_config.yml</code> to activate the theme:</p>
+        <p>Add the following to your site's <code>_config.yml</code> to activate the theme:</p>
 
 <pre title="_config.yml" class="plaintext">
 theme: jekyll-theme-minimal
@@ -346,13 +346,13 @@ theme: jekyll-theme-minimal
 
 <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
     <p>
-        You can have multiple themes listed in your site’s <code>Gemfile</code>,<br/>
-        but only one theme can be selected in your site’s <code>_config.yml</code>.
+        You can have multiple themes listed in your site's <code>Gemfile</code>,<br/>
+        but only one theme can be selected in your site's <code>_config.yml</code>.
     </p>
 </div>
 
 <p>
-    If you’re publishing your Jekyll site on <a href="https://pages.github.com/">GitHub Pages</a>,<br/>
+    If you're publishing your Jekyll site on <a href="https://pages.github.com/">GitHub Pages</a>,<br/>
     note that GitHub Pages supports only <a href="https://pages.github.com/themes/">some gem-based themes</a>.<br/>
     GitHub Pages also supports <a href="https://help.github.com/articles/adding-a-jekyll-theme-to-your-github-pages-site/#adding-a-jekyll-theme-in-your-sites-_configyml-file">using any theme hosted on GitHub</a> using the <code>remote_theme</code> configuration as if it were a gem-based theme.
 </p>

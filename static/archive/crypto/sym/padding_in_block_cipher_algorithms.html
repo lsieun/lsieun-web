@@ -10,7 +10,7 @@
 <p class="indented">
     As we know, DES operates on eight-byte input blocks. If the input is longer
     than eight bytes, the <code class="w3-codespan">des_block_operate</code> function must be called repeatedly. If the
-    input isn’t aligned on an eight-byte boundary, it has to be padded.
+    input isn't aligned on an eight-byte boundary, it has to be padded.
 </p>
 
 <p class="indented">
@@ -26,7 +26,7 @@
     National Institute for Standards and Technology (NIST) publication 800-38A
     (http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf) recommends that
     a “1” bit be added to the input followed by enough zero-bits to make up eight
-    bytes. Because you’re working with byte arrays that must end on an 8-bit (one-byte) boundary,
+    bytes. Because you're working with byte arrays that must end on an 8-bit (one-byte) boundary,
     this means that, if the input block is less than eight bytes, you
     add the byte 0x80 (128), followed by zero bytes to pad. The decryption routine
     just starts at the end of the decrypted output, removing zero bytes until 0x80 is
@@ -53,11 +53,11 @@
 </p>
 
 <p class="indented">
-    There’s one wrinkle here; if the input <b>did</b> end on an eight-byte boundary that
+    There's one wrinkle here; if the input <b>did</b> end on an eight-byte boundary that
     happened to contain 0 bytes following a <code class="w3-codespan">0x80</code>, the decryption routine would
     remove legitimate input. Therefore, if the input ends on an eight-byte boundary,
     you have to add a whole block of padding (<code class="w3-codespan">0x80 0x0 0x0 0x0 0x0 0x0 0x0 0x0</code>) so
-    that the decryptor doesn’t accidentally remove something it wasn’t supposed to.
+    that the decryptor doesn't accidentally remove something it wasn't supposed to.
 </p>
 
 <h2>PKCS #5 padding</h2>

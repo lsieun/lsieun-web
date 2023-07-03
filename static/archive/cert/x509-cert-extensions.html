@@ -130,7 +130,7 @@ KeyUsage ::= BIT STRING {
 </p>
 
 <p class="indented">
-    Of course, there’s nothing stopping an unscrupulous<sub class="my_note" style="color:green">不道德的；无道德原则的；不诚实的；不公正的 without moral principles; not honest or fair</sub>
+    Of course, there's nothing stopping an unscrupulous<sub class="my_note" style="color:green">不道德的；无道德原则的；不诚实的；不公正的 without moral principles; not honest or fair</sub>
     user from using the key for a non-specified purpose anyway, but the receiver
     can check the key usage bit and determine whether to allow the sender to do so.
     <sub class="my_note" style="color:blue">笔记：KeyUsage只是提供了“保证安全的机制”，但这并不能阻止坏人做坏事，仍然需要receiver来配合检查，才能保证“安全性”。</sub>
@@ -178,13 +178,13 @@ EDIPartyName ::= SEQUENCE {
 <p class="indented">
     The Subject Alternative Name extension (OID <code class="w3-codespan">55 1D 11</code>) is a useful, but not
     widely used, extension. This extension offers a place to specifically identify a
-    server’s domain name; it also supports e-mail addresses, IP addresses, other directory
+    server's domain name; it also supports e-mail addresses, IP addresses, other directory
     names, and so on. Because the domain name is explicit, the common-name
     field no longer needs to be assumed to be the domain name. Unfortunately, this
     extension has failed to catch on, chiefly for the same reason the DC component
     in the subject name failed to catch on; to support older clients, servers must
     continue to set the common name to be the same as domain name. (In fact,
-    it’s unclear what, if anything, ought to be in the CN component of a certifi cate’s
+    it's unclear what, if anything, ought to be in the CN component of a certifi cate's
     subject when the certifi cate identifi es a web site, if not the domain name.)
 </p>
 

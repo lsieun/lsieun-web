@@ -25,10 +25,10 @@
 
 <p>
     Cryptographic operations are defined in terms of multiplicative operations
-    on this curve.<sub class="my_note" style="color:green">笔记：第一步，Cryptographic operations，依赖于在elliptic-curve上进行multiplication操作。</sub> It’s not readily apparent how one would go about “multiplying”
+    on this curve.<sub class="my_note" style="color:green">笔记：第一步，Cryptographic operations，依赖于在elliptic-curve上进行multiplication操作。</sub> It's not readily apparent how one would go about “multiplying”
     anything on a curve, though. Multiplication is defined in terms of addition<sub class="my_note" style="color:green">笔记：第二步，在elliptic-curve上，multiplication操作依赖于addition操作</sub>,
     and “addition,” in ECC, is the process of drawing a line through two points
-    and finding it’s intersection at a third point on the curve<sub class="my_note" style="color:green">笔记：第三步，在elliptic-curve上的addition操作，转换为几何上的直线与曲线交点的问题</sub>.
+    and finding it's intersection at a third point on the curve<sub class="my_note" style="color:green">笔记：第三步，在elliptic-curve上的addition操作，转换为几何上的直线与曲线交点的问题</sub>.
     <sub class="my_note" style="color:blue">笔记：这里主要是讲如何将一个“密码学”领域里“加密问题”逐步转换为“几何”领域的“求直线与曲线之间的交点问题”</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
@@ -108,7 +108,7 @@ double_val = multiplicand
 </h2>
 
 <p>
-    You can’t really call it division, but you do need an operation referred to as
+    You can't really call it division, but you do need an operation referred to as
     the <strong>modular inverse</strong> to complete elliptic-curve operations. This is an operation
     on <code class="w3-codespan">x</code> such that
 </p>
@@ -150,8 +150,8 @@ double_val = multiplicand
 </p>
 
 <p>
-    For elliptic curves, there’s an O(n) algorithm to multiply a <strong>point</strong> by a scalar <code class="w3-codespan">n</code> but no feasible inverse operation.
-    You can’t “divide” a point by a scalar and find the original point. This property
+    For elliptic curves, there's an O(n) algorithm to multiply a <strong>point</strong> by a scalar <code class="w3-codespan">n</code> but no feasible inverse operation.
+    You can't “divide” a point by a scalar and find the original point. This property
     of being able to perform an operation in one direction in a reasonable amount of
     time, but not invert it, makes it usable as a public-key cryptosystem.
 </p>

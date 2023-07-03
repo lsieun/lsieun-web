@@ -46,9 +46,9 @@
     The two entities, A and B, which want to perform a secure key
     exchange, each have a <strong>private scalar</strong> and a <strong>public point</strong>, plus another <strong>shared point</strong>
     and, of course, the <code class="w3-codespan">a</code>, <code class="w3-codespan">b</code>, and <code class="w3-codespan">p</code> that define an elliptic-curve and its prime field. If
-    A multiplies his private key by B’s public-key and B multiplies his private key
-    by A’s public key, they both arrive at the same point <code class="w3-codespan">Z</code> because they started at
-    the same shared point <code class="w3-codespan">G</code>. <code class="w3-codespan">Z</code> can’t be computed by anybody else without access
+    A multiplies his private key by B's public-key and B multiplies his private key
+    by A's public key, they both arrive at the same point <code class="w3-codespan">Z</code> because they started at
+    the same shared point <code class="w3-codespan">G</code>. <code class="w3-codespan">Z</code> can't be computed by anybody else without access
     to one of the private keys, so <code class="w3-codespan">Z</code> can be used as a shared secret. Typically the
     <strong>x-coordinate</strong> of <code class="w3-codespan">Z</code> is used and the y-coordinate is discarded.
 </p>

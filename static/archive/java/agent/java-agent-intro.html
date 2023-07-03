@@ -84,7 +84,7 @@
 </ul>
 
 <p class="indented">
-    Since we are new to the process, let’s start with the simple <code>premain()</code> method.
+    Since we are new to the process, let's start with the simple <code>premain()</code> method.
     <sub class="my_note" style="color:green">笔记：premain()和agentmain()两个方法，其中premain()是较为简单的那个</sub>
     <span class="text-emphasize">JVM</span> will be informed about our agent by passing <span class="text-key-point">the path to our agent jar</span> as a parameter.
     It can be done by including the <code>-javaagent</code> parameter in the command line.
@@ -106,7 +106,7 @@
     It will <span class="text-key-point">make a copy of those byte code as a byte array and do requested changes on the instruction set</span>
     by pushing and popping instruction on the stack.
     <sub class="my_note" style="color:green">笔记：第二步，对bytecode内容进行修改</sub>
-    Finally, once the instrumentation is completed, it’ll <span class="text-key-point">recompile the new bytecode</span> to verify whether there are any compilation errors.
+    Finally, once the instrumentation is completed, it'll <span class="text-key-point">recompile the new bytecode</span> to verify whether there are any compilation errors.
     If it cause no compilation errors, it will <span class="text-key-point">load the new bytecode to the JVM</span>,
     which can then be used in the tasks it was assigned to do.
     <sub class="my_note" style="color:green">笔记：第三步，将修改之后的bytecode内容加载到JVM当中</sub>

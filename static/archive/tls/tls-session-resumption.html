@@ -37,18 +37,18 @@
     To get a handle on this, SSL, and TLS, allow keying material to be reused
     across multiple sockets. This works by passing an old session ID in the client
     hello message and short-circuiting the handshake. This allows the lifetime of
-    the SSL session — the keying material that’s used to protect the data — to be
+    the SSL session — the keying material that's used to protect the data — to be
     independent of the lifetime of the socket. Regardless of the protocol used, this
     is a good thing. After a 128-bit key has been successfully negotiated, depending
     on the cipher spec, it can be used to protect potentially hundreds of thousands
-    of bytes of content. There’s no reason to throw away these carefully negotiated
+    of bytes of content. There's no reason to throw away these carefully negotiated
     keys just because the top-level protocol itself has ended.
 </p>
 
 <p class="indented">
     The following figure shows that the <em>certificate</em>, <em>server hello done</em>, and <em>key exchange messages</em>
     have all been elided. Because the client and the server have already negotiated
-    a master secret, there’s no reason to resend these parameters.
+    a master secret, there's no reason to resend these parameters.
     <sub class="my_note" style="color:blue">笔记：由于是resumption，因此就省略了一些步骤</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
 </p>
@@ -60,8 +60,8 @@
 <p class="indented">
     Interestingly, when the handshake is shortened for session resumption, the
     server sends the <em>finished message</em> first, whereas for a normal handshake,
-    it’s the client. This is a nod to efficiency: The server
-    needn’t wait for the client to send a key exchange before it computes its finished
+    it's the client. This is a nod to efficiency: The server
+    needn't wait for the client to send a key exchange before it computes its finished
     message, so it can go ahead and pipeline all three of its messages in a single
     burst if the server is willing to renegotiate.
     <sub class="my_note" style="color:blue">笔记：在使用resumption的情况下，server会先发送finished message。</sub>
@@ -69,17 +69,17 @@
 </p>
 
 <p class="indented">
-    What if the server isn’t willing to renegotiate? According to the specification,
+    What if the server isn't willing to renegotiate? According to the specification,
     the server should go ahead and silently begin a new handshake, and send its
-    <em>certificate</em> and <em>server hello done</em> message. It’s technically up to the client if it wants to
+    <em>certificate</em> and <em>server hello done</em> message. It's technically up to the client if it wants to
     abort at this point, or go ahead and just negotiate a new session. In most cases,
-    the client wants to continue anyway. It’s hard to imagine a scenario where a
-    client wouldn’t want to negotiate a new session in this case. All TLS-based
-    software that I’m familiar with automatically does so, without prompting or
-    notifying the user. It’s possible, though, that some particularly security-conscious
+    the client wants to continue anyway. It's hard to imagine a scenario where a
+    client wouldn't want to negotiate a new session in this case. All TLS-based
+    software that I'm familiar with automatically does so, without prompting or
+    notifying the user. It's possible, though, that some particularly security-conscious
     (say, military) software somewhere may say, “Hey, you gave me this session ID
-    two minutes ago, and now you’re not willing to resume it? Something’s wrong
-    here, I’m bailing,” and notify the user to investigate what could possibly be a
+    two minutes ago, and now you're not willing to resume it? Something's wrong
+    here, I'm bailing,” and notify the user to investigate what could possibly be a
     security breach.
     <sub class="my_note" style="color:blue">笔记：前面的内容在讲server端是如何支持resumption的，而这里讲如果server端不支持resumption，将如何处理。</sub>
     <img src="/images/note.png" onclick="toggle_paragraph_sub_note(this)"/>
@@ -87,7 +87,7 @@
 
 <p class="indented">
     The TLS specification, RFC 2246, mandates that if a session was not shut down
-    correctly — if the client didn’t send a close notify alert before shutting down the
+    correctly — if the client didn't send a close notify alert before shutting down the
     socket — then the session should be marked non-resumable and attempts to resume
     it should fail. From section 7.2.1 of the RFC, which discusses the <code>close_notify</code> alert:
 </p>
